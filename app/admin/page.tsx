@@ -240,16 +240,9 @@ export default function AdminPage() {
     const raw = `RR-${secureToken().slice(0, 12).toUpperCase()}`;
     const codeHash = await sha256(raw);
     const supabase = getSupabaseBrowserClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return setError("Sesi admin tidak ditemukan.");
     const now = Date.now();
-    const { error: insertError } = await supabase.from("event_checkin_codes").insert({
-      event_id: checkinEvent,
-      code_hash: codeHash,
-      active_from: new Date(now - 60 * 60 * 1000).toISOString(),
-      active_until: new Date(now + 12 * 60 * 60 * 1000).toISOString(),
-      created_by: user.id,
-    });
+    const activeUntil = new Date(now + 12 * 60 * 60 * 1000).toISOString();
+    const { error: insertError } = await supabase.rpc("create_event_checkin_code", { p_event_id: checkinEvent, p_code_hash: codeHash, p_active_until: activeUntil });
     if (insertError) setError(insertError.message);
     else { setCheckinCode(raw); setCheckinExpiresAt(new Date(now + 12 * 60 * 60 * 1000).toISOString()); }
   };
