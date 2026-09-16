@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Camera, CameraOff, CheckCircle2, ScanLine, ShieldCheck } from "lucide-react";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -9,8 +10,8 @@ type BarcodeDetectorLike = { detect: (source: ImageBitmapSource) => Promise<Arra
 type BarcodeDetectorConstructor = new (options: { formats: string[] }) => BarcodeDetectorLike;
 
 export default function CheckInPage() {
+  const { account, loading: accessLoading } = useMemberAccess();
   const [code, setCode] = useState("");
-  const [ready, setReady] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -32,10 +33,12 @@ export default function CheckInPage() {
     setCameraOpen(false);
   };
 
-  useEffect(() => {
-    let live = true;
-    void getSupabaseBrowserClient().auth.getUser().then(({ data }) => { if (live) setReady(Boolean(data.user)); });
-    return () => { live = false; stopCamera(); };
+  const ready = account?.status === "active";
+
+  useEffect(() => () => {
+    scanningRef.current = false;
+    if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
+    streamRef.current?.getTracks().forEach((track) => track.stop());
   }, []);
 
   const submitCode = async (rawCode: string) => {
@@ -106,5 +109,5 @@ export default function CheckInPage() {
 
   const submit = async (event: FormEvent) => { event.preventDefault(); await submitCode(code); };
 
-  return <AppShell active="Check-in" title="Check-in"><div className="page-wrap"><section className="form-card card checkin-card"><div className="form-heading"><ScanLine/><span><em>KEHADIRAN AGENDA</em><h2>Check-in member</h2><p>Scan QR dari pengurus atau masukkan kode agenda sebagai alternatif.</p></span></div>{!ready ? <div className="notice">Masuk terlebih dahulu dengan akun member aktif untuk mencatat kehadiran. <a href="/login">Masuk sekarang</a></div> : <><div className="scanner-stage"><video ref={videoRef} className={cameraOpen ? "camera-live" : ""} playsInline muted aria-label="Pratinjau kamera pemindai QR"/><div className="scanner-frame" aria-hidden="true"/><span>{cameraOpen ? "MEMINDAI QR…" : "SIAP MEMINDAI"}</span></div><button className="dark-action camera-button" onClick={() => cameraOpen ? stopCamera() : void startCamera()} disabled={saving}>{cameraOpen ? <><CameraOff/>TUTUP KAMERA</> : <><Camera/>SCAN QR DENGAN KAMERA</>}</button>{cameraMessage && <p className="system-message">{cameraMessage}</p>}<div className="manual-divider"><span>atau masukkan kode</span></div><form onSubmit={submit}><label>Kode check-in<input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="Contoh: RR-AB12-CD34" autoCapitalize="characters" required/></label><button className="primary-action" disabled={saving}>{saving ? "MEMPROSES…" : "CHECK-IN SEKARANG"}</button></form></>}{message && <p className="success-message"><CheckCircle2/>{message}</p>}{error && <p className="error-message">{error}</p>}<div className="notice"><ShieldCheck/> Sistem menolak check-in ganda dengan aman. Kode hanya berlaku pada jadwal yang ditentukan pengurus.</div></section></div></AppShell>;
+  return <AppShell active="Check-in" title="Check-in"><div className="page-wrap"><section className="form-card card checkin-card"><div className="form-heading"><ScanLine/><span><em>KEHADIRAN AGENDA</em><h2>Check-in member</h2><p>Scan QR dari pengurus atau masukkan kode agenda sebagai alternatif.</p></span></div>{accessLoading ? <p className="system-message">Memeriksa status akun…</p> : !ready ? <div className="notice">Akun member harus aktif untuk mencatat kehadiran. <a href={account?"/profil":"/login"}>{account?"Lihat status akun":"Masuk sekarang"}</a></div> : <><div className="scanner-stage"><video ref={videoRef} className={cameraOpen ? "camera-live" : ""} playsInline muted aria-label="Pratinjau kamera pemindai QR"/><div className="scanner-frame" aria-hidden="true"/><span>{cameraOpen ? "MEMINDAI QR…" : "SIAP MEMINDAI"}</span></div><button className="dark-action camera-button" onClick={() => cameraOpen ? stopCamera() : void startCamera()} disabled={saving}>{cameraOpen ? <><CameraOff/>TUTUP KAMERA</> : <><Camera/>SCAN QR DENGAN KAMERA</>}</button>{cameraMessage && <p className="system-message">{cameraMessage}</p>}<div className="manual-divider"><span>atau masukkan kode</span></div><form onSubmit={submit}><label>Kode check-in<input value={code} onChange={(event) => setCode(event.target.value.toUpperCase())} placeholder="Contoh: RR-AB12-CD34" autoCapitalize="characters" required/></label><button className="primary-action" disabled={saving}>{saving ? "MEMPROSES…" : "CHECK-IN SEKARANG"}</button></form></>}{message && <p className="success-message"><CheckCircle2/>{message}</p>}{error && <p className="error-message">{error}</p>}<div className="notice"><ShieldCheck/> Sistem menolak check-in ganda dengan aman. Kode hanya berlaku pada jadwal yang ditentukan pengurus.</div></section></div></AppShell>;
 }

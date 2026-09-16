@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-type Account = { role: string };
+type Account = { role: string; status: "pending" | "active" | "inactive" };
 type PendingRequest = { id: string; user_id: string; member_external_id: string; email: string | null };
 type Member = { member_external_id: string; full_name: string; nickname: string | null };
 type Invitation = { event_id: string; member_external_id: string };
@@ -120,8 +120,11 @@ export default function AdminPage() {
   const load = async () => {
     const supabase = getSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const accountResult = user ? await supabase.from("member_accounts").select("role").eq("user_id", user.id).maybeSingle() : { data: null };
-    const isSuperadmin = accountResult.data?.role === "superadmin";
+    const accountResult = user ? await supabase.from("member_accounts").select("role,status").eq("user_id", user.id).maybeSingle() : { data: null };
+    const isActiveAdmin = accountResult.data?.status === "active" && ["admin", "superadmin"].includes(accountResult.data.role);
+    const isSuperadmin = isActiveAdmin && accountResult.data?.role === "superadmin";
+    setAccount(accountResult.data as Account | null);
+    if (!isActiveAdmin) { setLoading(false); return; }
     const [eventResult, requestResult, memberResult, invitationResult, rsvpResult, managedAccountResult] = await Promise.all([
       supabase.from("events").select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status").order("start_at", { ascending: false }),
       supabase.from("member_account_requests").select("id,user_id,member_external_id,email").eq("status", "pending").order("created_at"),
@@ -130,7 +133,6 @@ export default function AdminPage() {
       supabase.from("event_rsvps").select("event_id,member_external_id,status,guest_count,responded_at"),
       isSuperadmin ? supabase.from("member_accounts").select("id,member_external_id,role,status").order("member_external_id") : Promise.resolve({ data: [] }),
     ]);
-    setAccount(accountResult.data as Account | null);
     setEvents((eventResult.data ?? []) as EventRecord[]);
     setRequests((requestResult.data ?? []) as PendingRequest[]);
     setMembers((memberResult.data ?? []) as Member[]);
@@ -269,7 +271,7 @@ export default function AdminPage() {
   };
 
   if (loading) return <AppShell active="Admin" title="Admin"><div className="page-wrap"><p>Memeriksa izin…</p></div></AppShell>;
-  if (!account || !["admin", "superadmin"].includes(account.role)) return <AppShell active="Admin" title="Admin"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses pengurus diperlukan</h2><p>Halaman ini hanya tersedia untuk Admin dan Superadmin yang telah diverifikasi.</p><a className="primary-action" href="/login">MASUK</a></section></div></AppShell>;
+  if (!account || account.status !== "active" || !["admin", "superadmin"].includes(account.role)) return <AppShell active="Admin" title="Admin"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses pengurus diperlukan</h2><p>Halaman ini hanya tersedia untuk akun aktif Admin dan Superadmin.</p><a className="primary-action" href={account?"/profil":"/login"}>{account?"LIHAT STATUS AKUN":"MASUK"}</a></section></div></AppShell>;
 
   return <AppShell active="Admin" title="Admin">
     <div className="page-wrap admin-grid">

@@ -6,7 +6,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Check, ClipboardCheck, ShieldAlert, UserCheck, Users } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-type Account = { role: string };
+type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Member = { member_external_id: string; full_name: string; nickname: string | null };
 type Attendance = { id: string; event_id: string; member_external_id: string; checked_in_at: string; method: "qr" | "manual" };
 type Rsvp = { event_id: string; member_external_id: string; status: "attending" | "declined" | "maybe" };
@@ -29,10 +29,10 @@ export default function AttendancePage() {
   const load = async () => {
     const supabase = getSupabaseBrowserClient();
     const { data: { user } } = await supabase.auth.getUser();
-    const accountResult = user ? await supabase.from("member_accounts").select("role").eq("user_id", user.id).maybeSingle() : { data: null };
+    const accountResult = user ? await supabase.from("member_accounts").select("role,status").eq("user_id", user.id).maybeSingle() : { data: null };
     const nextAccount = accountResult.data as Account | null;
     setAccount(nextAccount);
-    if (!canManageAttendance(nextAccount?.role)) { setLoading(false); return; }
+    if (nextAccount?.status !== "active" || !canManageAttendance(nextAccount.role)) { setLoading(false); return; }
     const [eventResult, memberResult, attendanceResult, rsvpResult] = await Promise.all([
       supabase.from("events").select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status").in("status", ["published", "completed"]).order("start_at", { ascending: false }),
       supabase.from("member_profiles").select("member_external_id,full_name,nickname").order("full_name"),
@@ -75,7 +75,7 @@ export default function AttendancePage() {
   };
 
   if (loading) return <AppShell active="Kehadiran" title="Kehadiran"><div className="page-wrap"><p>Memeriksa akses…</p></div></AppShell>;
-  if (!canManageAttendance(account?.role)) return <AppShell active="Kehadiran" title="Kehadiran"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses pengurus diperlukan</h2><p>Dashboard kehadiran tersedia untuk Road Captain, Admin, dan Superadmin.</p><a className="primary-action" href="/login">MASUK</a></section></div></AppShell>;
+  if (account?.status !== "active" || !canManageAttendance(account?.role)) return <AppShell active="Kehadiran" title="Kehadiran"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses pengurus diperlukan</h2><p>Dashboard kehadiran tersedia untuk akun aktif Road Captain, Admin, dan Superadmin.</p><a className="primary-action" href={account?"/profil":"/login"}>{account?"LIHAT STATUS AKUN":"MASUK"}</a></section></div></AppShell>;
 
   return <AppShell active="Kehadiran" title="Kehadiran"><div className="page-wrap"><div className="page-intro"><div><em>EVENT ATTENDANCE</em><h2>Kehadiran Agenda</h2><p>Pantau check-in QR secara live atau catat kehadiran manual saat diperlukan.</p></div></div><section className="attendance-workspace"><section className="card attendance-dashboard"><div className="section-title"><span><em>LIVE CHECK-IN</em><h3>Dashboard Kehadiran</h3></span><span className="live-status">● LIVE</span></div><label className="rsvp-select">Agenda<select value={selectedEvent} onChange={(event) => setSelectedEvent(event.target.value)}><option value="">Pilih agenda</option>{events.map((event) => <option key={event.id} value={event.id}>{event.title}</option>)}</select></label>{!selectedEvent ? <p className="system-message">Belum ada agenda untuk dipantau.</p> : <><div className="attendance-stats"><article><small>RSVP HADIR</small><b>{attendingRsvp.length}</b></article><article><small>CHECK-IN</small><b>{eventAttendance.length}</b></article><article><small>ATTENDANCE RATE</small><b>{attendanceRate}%</b></article></div><div className="attendance-list">{eventAttendance.length === 0 ? <p className="system-message">Belum ada member yang check-in.</p> : eventAttendance.map((row) => { const member = memberById.get(row.member_external_id); return <article key={row.id}><i>{(member?.nickname || member?.full_name || row.member_external_id).slice(0, 2).toUpperCase()}</i><span><b>{member?.nickname || member?.full_name || row.member_external_id}</b><small>{row.member_external_id} · {new Intl.DateTimeFormat("id-ID", { timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(row.checked_in_at))} WIB</small></span><em>{row.method === "manual" ? "Manual" : "QR"}</em></article>; })}</div></>}</section><section className="form-card card manual-checkin"><div className="form-heading"><UserCheck/><span><em>CADANGAN</em><h2>Check-in manual</h2><p>Gunakan bila member tidak dapat memindai QR.</p></span></div><form onSubmit={manualCheckIn}><label>Agenda<select value={selectedEvent} onChange={(event) => setSelectedEvent(event.target.value)} required><option value="">Pilih agenda</option>{events.map((event) => <option key={event.id} value={event.id}>{event.title}</option>)}</select></label><label>Member<select value={memberId} onChange={(event) => setMemberId(event.target.value)} required><option value="">Pilih member</option>{members.map((member) => <option key={member.member_external_id} value={member.member_external_id}>{member.nickname || member.full_name} · {member.member_external_id}</option>)}</select></label>{message && <p className="success-message"><Check/>{message}</p>}{error && <p className="error-message">{error}</p>}<button className="primary-action" disabled={saving || !selectedEvent}>{saving ? "MENYIMPAN…" : "CATAT KEHADIRAN"}</button></form></section></section></div></AppShell>;
 }
