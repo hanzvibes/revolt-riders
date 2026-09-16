@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Ride = { id: string; member_external_id: string; odometer_start: number; odometer_end: number; distance_km: number | null; created_at: string; status: "pending" | "approved" | "rejected" };
+type RideRow = Omit<Ride, "odometer_start" | "odometer_end" | "distance_km"> & { odometer_start: number | string; odometer_end: number | string; distance_km: number | string | null };
 type Member = { member_external_id: string; full_name: string; nickname: string | null };
 
 const canReview = (role?: string) => ["road_captain", "admin", "superadmin"].includes(role || "");
@@ -36,7 +37,7 @@ export default function RideApprovalPage() {
       supabase.from("member_profiles").select("member_external_id,full_name,nickname"),
     ]);
     if (rideError) setError(rideError.message);
-    setRides((rideData ?? []).map((ride) => ({ ...ride, odometer_start: Number(ride.odometer_start), odometer_end: Number(ride.odometer_end), distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[]);
+    setRides(((rideData ?? []) as RideRow[]).map((ride: RideRow) => ({ ...ride, odometer_start: Number(ride.odometer_start), odometer_end: Number(ride.odometer_end), distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[]);
     setMembers((memberData ?? []) as Member[]);
     setLoading(false);
   };

@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState, type FormEvent } from "react";
 type Summary = { total_balance: number; income_this_month: number; expense_this_month: number; last_updated: string | null };
 type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Transaction = { id: string; transaction_type: "income" | "expense" | "advance"; transaction_date: string | null; description: string; amount: number; created_at: string; source: "import" | "production" };
+type TransactionRow = Omit<Transaction, "source" | "amount"> & { amount: number | string };
 
 const rupiah = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 const isStaffRole = (role?: string) => ["treasurer", "admin", "superadmin"].includes(role || "");
@@ -59,8 +60,8 @@ export default function CashPage() {
         if (imported.error) throw imported.error;
         if (production.error) throw production.error;
         setTransactions([
-          ...(imported.data ?? []).map((row) => ({ ...row, amount: Number(row.amount), source: "import" as const })),
-          ...(production.data ?? []).map((row) => ({ ...row, amount: Number(row.amount), source: "production" as const })),
+          ...((imported.data ?? []) as TransactionRow[]).map((row: TransactionRow) => ({ ...row, amount: Number(row.amount), source: "import" as const })),
+          ...((production.data ?? []) as TransactionRow[]).map((row: TransactionRow) => ({ ...row, amount: Number(row.amount), source: "production" as const })),
         ] as Transaction[]);
       } else {
         setTransactions([]);

@@ -1,7 +1,7 @@
 "use client";
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { useCallback, useEffect, useState } from "react";
 
 export type AppRole = "member" | "road_captain" | "treasurer" | "admin" | "superadmin";
@@ -37,7 +37,7 @@ export function useMemberAccess() {
   useEffect(() => {
     void refresh();
     const supabase = getSupabaseBrowserClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (!session) {
         setUser(null); setAccount(null); setLoading(false);
         return;

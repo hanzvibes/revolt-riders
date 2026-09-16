@@ -9,6 +9,7 @@ type Account = { member_external_id: string; role: string; status: string };
 type Profile = { member_external_id: string; full_name: string; nickname: string | null; city: string | null; join_date: string | null; club_role: string | null; total_km: number };
 type Detail = { nickname_override: string | null; motorcycle: string | null; city_override: string | null };
 type Ride = { id: string; event_id: string | null; status: "pending" | "approved" | "rejected"; distance_km: number | null; created_at: string; rejection_reason: string | null };
+type RideRow = Omit<Ride, "distance_km"> & { distance_km: number | string | null };
 type RsvpActivity = { event_id: string; status: "attending" | "declined" | "maybe"; responded_at: string };
 type ActivityEvent = { id: string; title: string };
 
@@ -50,7 +51,7 @@ export default function ProfilePage() {
     ]);
     const nextProfile = profileResult.data ? { ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile : null;
     const nextDetail = detailResult.data as Detail | null;
-    const nextRides = (rideResult.data ?? []).map((ride) => ({ ...ride, distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[];
+    const nextRides = ((rideResult.data ?? []) as RideRow[]).map((ride: RideRow) => ({ ...ride, distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[];
     const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
     const activityEventIds = [...new Set([...nextRides.map((ride) => ride.event_id), ...nextRsvps.map((rsvp) => rsvp.event_id)].filter(Boolean))] as string[];
     const eventResult = activityEventIds.length ? await supabase.from("events").select("id,title").in("id", activityEventIds) : { data: [] };
