@@ -6,7 +6,8 @@ import { ArrowDownLeft, ArrowUpRight, CheckCircle2, CircleDollarSign, FileDown, 
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Summary = { total_balance: number; income_this_month: number; expense_this_month: number; last_updated: string | null };
-type Account = { role: string; status: "pending" | "active" | "inactive" };
+type Account = { role: string; status: "pending" | "active" | "inactive"; member_external_id: string };
+type Due = { id: string; member_external_id: string; period_label: string; amount_paid: number | string; recorded_at: string | null };
 type Transaction = { id: string; transaction_type: "income" | "expense" | "advance"; transaction_date: string | null; description: string; category: string | null; amount: number; created_at: string; voided_at: string | null; void_reason: string | null; source: "import" | "production" };
 type TransactionRow = Omit<Transaction, "source" | "amount"> & { amount: number | string };
 type FilterType = "all" | "income" | "expense";
@@ -21,6 +22,7 @@ export default function CashPage() {
   const [summary, setSummary] = useState<Summary | null>(null);
   const [account, setAccount] = useState<Account | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [dues, setDues] = useState<Due[]>([]);
   const [message, setMessage] = useState("Memuat ringkasan kas…");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -58,6 +60,7 @@ export default function CashPage() {
     return Array.from(totals, ([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value).slice(0, 5);
   }, [visibleTransactions]);
   const maxCategory = categories[0]?.value || 1;
+  const duesTotal = useMemo(() => dues.reduce((total, due) => total + Number(due.amount_paid), 0), [dues]);
 
   const load = async () => {
     let authenticated = true;
@@ -65,7 +68,7 @@ export default function CashPage() {
       const supabase = getSupabaseBrowserClient();
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { authenticated = false; setMessage("Masuk ke akun untuk melihat ringkasan Kas Revolt."); return; }
-      const { data: accountData, error: accountError } = await supabase.from("member_accounts").select("role,status").eq("user_id", user.id).maybeSingle();
+      const { data: accountData, error: accountError } = await supabase.from("member_accounts").select("role,status,member_external_id").eq("user_id", user.id).maybeSingle();
       if (accountError) throw accountError;
       const nextAccount = accountData as Account | null;
       setAccount(nextAccount);
@@ -84,7 +87,15 @@ export default function CashPage() {
           ...((imported.data ?? []) as Omit<TransactionRow, "category" | "voided_at" | "void_reason">[]).map((row) => ({ ...row, category: "Data awal", amount: Number(row.amount), voided_at: null, void_reason: null, source: "import" as const })),
           ...((production.data ?? []) as TransactionRow[]).map((row) => ({ ...row, amount: Number(row.amount), source: "production" as const })),
         ]);
-      } else setTransactions([]);
+        const { data: dueData, error: dueError } = await supabase.from("member_dues").select("id,member_external_id,period_label,amount_paid,recorded_at").order("recorded_at", { ascending: false }).limit(250);
+        if (dueError) throw dueError;
+        setDues((dueData ?? []) as Due[]);
+      } else {
+        setTransactions([]);
+        const { data: dueData, error: dueError } = await supabase.from("member_dues").select("id,member_external_id,period_label,amount_paid,recorded_at").eq("member_external_id", nextAccount.member_external_id).order("recorded_at", { ascending: false }).limit(24);
+        if (dueError) throw dueError;
+        setDues((dueData ?? []) as Due[]);
+      }
       setMessage("");
     } catch (caught) {
       setMessage("Ringkasan kas belum dapat dimuat.");
@@ -139,6 +150,7 @@ export default function CashPage() {
     <div className="page-intro"><div><em>FINANCE CENTER</em><h2>Kas Revolt</h2><p>Pantau saldo, arus masuk, pengeluaran, dan transaksi komunitas dalam satu tempat.</p></div>{staff && <button className="cash-add-button" onClick={() => setFormOpen((current) => !current)}>{formOpen ? <X/> : <Plus/>}{formOpen ? "Tutup" : "Transaksi baru"}</button>}</div>
     {message ? <div className="card empty-state"><CircleDollarSign/><h2>{message}</h2>{(message.startsWith("Masuk") || message.startsWith("Akun")) && <a className="primary-action" href={account ? "/profil" : "/login"}>{account ? "LIHAT STATUS AKUN" : "MASUK KE AKUN"}</a>}</div> : <>
       <section className="finance-overview"><article className="finance-balance"><span><WalletCards/><em>SALDO KAS TERKINI</em></span><b>{rupiah(Number(summary?.total_balance ?? 0))}</b><small>Diperbarui dari seluruh transaksi tercatat</small></article><article className="finance-metric income"><i><ArrowDownLeft/></i><span><small>PEMASUKAN BULAN INI</small><b>{compactRupiah(Number(summary?.income_this_month ?? 0))}</b><em>Arus dana masuk</em></span></article><article className="finance-metric expense"><i><ArrowUpRight/></i><span><small>PENGELUARAN BULAN INI</small><b>{compactRupiah(Number(summary?.expense_this_month ?? 0))}</b><em>Arus dana keluar</em></span></article></section>
+      <section className="card dues-card"><div className="section-title"><span><em>IURAN MEMBER</em><h3>{staff ? "Rekap iuran tercatat" : "Riwayat iuran kamu"}</h3></span><b>{rupiah(duesTotal)}</b></div>{dues.length === 0 ? <p className="system-message">Belum ada iuran yang tercatat.</p> : <div>{dues.slice(0, staff ? 6 : 4).map((due) => <article key={due.id}><span><b>{staff ? due.member_external_id : due.period_label}</b><small>{staff ? due.period_label : due.recorded_at ? new Intl.DateTimeFormat("id-ID", { month: "short", year: "numeric" }).format(new Date(`${due.recorded_at}T00:00:00`)) : "Tanggal belum tersedia"}</small></span><strong>{rupiah(Number(due.amount_paid))}</strong></article>)}</div>}</section>
       {formOpen && <section className="card finance-entry"><div className="form-heading"><Plus/><span><em>TRANSAKSI BARU</em><h2>Catat transaksi kas</h2><p>Transaksi tersimpan permanen dan langsung memperbarui saldo.</p></span></div><form onSubmit={addTransaction}><label>Tipe<select value={type} onChange={(event) => setType(event.target.value as "income" | "expense")}><option value="income">Pemasukan</option><option value="expense">Pengeluaran</option></select></label><label>Tanggal<input type="date" value={date} onChange={(event) => setDate(event.target.value)} required/></label><label>Kategori<input value={category} onChange={(event) => setCategory(event.target.value)} placeholder="Kas bulanan / Konsumsi" required/></label><label>Nominal<input type="number" min="1" step="1" value={amount} onChange={(event) => setAmount(event.target.value)} placeholder="0" required/></label><label className="entry-description">Keterangan<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Keterangan transaksi" required/></label>{error && <p className="error-message">{error}</p>}{success && <p className="success-message"><CheckCircle2/>{success}</p>}<button className="primary-action" disabled={saving}>{saving ? "MENYIMPAN…" : "SIMPAN TRANSAKSI"}</button></form></section>}
       {staff ? <section className="finance-workspace"><div className="card finance-ledger"><div className="ledger-head"><div><em>BUKU KAS</em><h3>Riwayat transaksi</h3></div><span><b>{visibleTransactions.length} data</b><button className="ledger-export" onClick={downloadLedger}><FileDown/>CSV</button></span></div><div className="finance-toolbar"><label className="finance-search"><Search/><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari transaksi atau kategori"/></label><select value={period} onChange={(event) => setPeriod(event.target.value)} aria-label="Periode transaksi"><option value="all">Semua periode</option>{periods.map((item) => <option key={item} value={item}>{monthLabel(item)}</option>)}</select></div><div className="finance-segments">{(["all", "income", "expense"] as FilterType[]).map((item) => <button key={item} className={filterType === item ? "active" : ""} onClick={() => setFilterType(item)}>{item === "all" ? "Semua" : item === "income" ? "Pemasukan" : "Pengeluaran"}</button>)}</div>{visibleTransactions.length === 0 ? <p className="system-message">Tidak ada transaksi yang cocok dengan filter.</p> : <div className="native-transactions">{visibleTransactions.map((transaction) => { const incoming = transaction.transaction_type === "income"; return <article className={transaction.voided_at ? "voided" : ""} key={`${transaction.source}-${transaction.id}`}><i className={incoming ? "in" : "out"}>{incoming ? <ArrowDownLeft/> : <ArrowUpRight/>}</i><span><b>{transaction.description}</b><small>{transaction.voided_at ? `Dikoreksi · ${transaction.void_reason}` : `${transaction.category || "Tanpa kategori"} · ${transaction.transaction_date ? new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", year: "numeric" }).format(new Date(`${transaction.transaction_date}T00:00:00`)) : "Tanggal belum tersedia"}`}</small></span><strong className={incoming ? "cash-income" : "cash-expense"}>{incoming ? "+" : "−"}{rupiah(transaction.amount)}</strong>{transaction.source === "production" && !transaction.voided_at && <button className="void-transaction" onClick={() => void voidTransaction(transaction)} aria-label={`Koreksi transaksi ${transaction.description}`}><Undo2/></button>}</article>; })}</div>}</div>
         <aside className="finance-side"><section className="card flow-card"><div className="section-title"><span><em>ARUS KAS</em><h3>Ringkasan filter</h3></span></div><div><span><small>Dana masuk</small><b className="cash-income">{rupiah(flow.income)}</b></span><span><small>Dana keluar</small><b className="cash-expense">{rupiah(flow.expense)}</b></span><span className="flow-net"><small>Arus bersih</small><b>{rupiah(flow.income - flow.expense)}</b></span></div></section><section className="card category-card"><div className="section-title"><span><em>PENGELUARAN</em><h3>Kategori terbesar</h3></span></div>{categories.length === 0 ? <p className="system-message">Belum ada pengeluaran pada filter ini.</p> : <div className="category-bars">{categories.map((item) => <article key={item.label}><span><b>{item.label}</b><small>{rupiah(item.value)}</small></span><i><em style={{ width: `${Math.max(8, item.value / maxCategory * 100)}%` }}/></i></article>)}</div>}</section></aside>
