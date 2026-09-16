@@ -1,0 +1,87 @@
+"use client";
+
+import { AppShell } from "@/components/app-shell";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Bike, CalendarDays, Check, Clock3, LogOut, MapPin, Route, Save, ShieldCheck, UserRound } from "lucide-react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
+
+type Account = { member_external_id: string; role: string; status: string };
+type Profile = { member_external_id: string; full_name: string; nickname: string | null; city: string | null; join_date: string | null; club_role: string | null; total_km: number };
+type Detail = { nickname_override: string | null; motorcycle: string | null; city_override: string | null };
+type Ride = { id: string; event_id: string | null; status: "pending" | "approved" | "rejected"; distance_km: number | null; created_at: string; rejection_reason: string | null };
+type RsvpActivity = { event_id: string; status: "attending" | "declined" | "maybe"; responded_at: string };
+type ActivityEvent = { id: string; title: string };
+
+export default function ProfilePage() {
+  const [email, setEmail] = useState("");
+  const [account, setAccount] = useState<Account | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [detail, setDetail] = useState<Detail | null>(null);
+  const [rides, setRides] = useState<Ride[]>([]);
+  const [rsvpActivities, setRsvpActivities] = useState<RsvpActivity[]>([]);
+  const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+  const [nickname, setNickname] = useState("");
+  const [motorcycle, setMotorcycle] = useState("");
+  const [city, setCity] = useState("");
+
+  const displayName = detail?.nickname_override || profile?.nickname || profile?.full_name || account?.member_external_id || "Member";
+  const approvedDistance = useMemo(() => rides.filter((ride) => ride.status === "approved").reduce((total, ride) => total + Number(ride.distance_km || 0), 0), [rides]);
+  const totalKm = Number(profile?.total_km || 0) + approvedDistance;
+  const eventTitleById = useMemo(() => new Map(activityEvents.map((event) => [event.id, event.title])), [activityEvents]);
+
+  const load = async () => {
+    const supabase = getSupabaseBrowserClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+    setEmail(user.email ?? "");
+    const { data: accountData } = await supabase.from("member_accounts").select("member_external_id,role,status").eq("user_id", user.id).maybeSingle();
+    const nextAccount = accountData as Account | null;
+    setAccount(nextAccount);
+    if (!nextAccount) { setLoading(false); return; }
+    const [profileResult, detailResult, rideResult, rsvpResult] = await Promise.all([
+      supabase.from("member_profiles").select("member_external_id,full_name,nickname,city,join_date,club_role,total_km").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
+      supabase.from("member_details").select("nickname_override,motorcycle,city_override").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
+      supabase.from("ride_logs").select("id,event_id,status,distance_km,created_at,rejection_reason").eq("member_external_id", nextAccount.member_external_id).order("created_at", { ascending: false }).limit(10),
+      supabase.from("event_rsvps").select("event_id,status,responded_at").eq("member_external_id", nextAccount.member_external_id).order("responded_at", { ascending: false }).limit(10),
+    ]);
+    const nextProfile = profileResult.data ? { ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile : null;
+    const nextDetail = detailResult.data as Detail | null;
+    const nextRides = (rideResult.data ?? []).map((ride) => ({ ...ride, distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[];
+    const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
+    const activityEventIds = [...new Set([...nextRides.map((ride) => ride.event_id), ...nextRsvps.map((rsvp) => rsvp.event_id)].filter(Boolean))] as string[];
+    const eventResult = activityEventIds.length ? await supabase.from("events").select("id,title").in("id", activityEventIds) : { data: [] };
+    setProfile(nextProfile); setDetail(nextDetail); setRides(nextRides); setRsvpActivities(nextRsvps); setActivityEvents((eventResult.data ?? []) as ActivityEvent[]);
+    setNickname(nextDetail?.nickname_override || nextProfile?.nickname || "");
+    setMotorcycle(nextDetail?.motorcycle || "");
+    setCity(nextDetail?.city_override || nextProfile?.city || "");
+    setLoading(false);
+  };
+
+  useEffect(() => { void load(); }, []);
+
+  const saveDetails = async (event: FormEvent) => {
+    event.preventDefault(); setSaving(true); setMessage(""); setError("");
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user || !account) throw new Error("Sesi member tidak ditemukan.");
+      const { error: upsertError } = await supabase.from("member_details").upsert({ member_external_id: account.member_external_id, nickname_override: nickname.trim() || null, motorcycle: motorcycle.trim() || null, city_override: city.trim() || null, updated_by: user.id, updated_at: new Date().toISOString() });
+      if (upsertError) throw upsertError;
+      setMessage("Profil member berhasil diperbarui.");
+      await load();
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "Profil belum dapat diperbarui."); }
+    finally { setSaving(false); }
+  };
+
+  const logout = async () => { await getSupabaseBrowserClient().auth.signOut(); window.location.assign("/"); };
+
+  return <AppShell active="Profil" title="Profil"><div className="page-wrap"><section className="profile-overview card">{loading ? <h2>Memuat profil…</h2> : !email ? <><UserRound/><h2>Belum masuk</h2><p>Masuk untuk membuka profil dan aktivitas personalmu.</p><a className="primary-action" href="/login">MASUK</a></> : !account ? <><UserRound/><h2>Akun menunggu verifikasi</h2><p>{email}</p><p className="notice">Pengurus perlu menghubungkan akun ini dengan data member resmi terlebih dahulu.</p></> : <><i>{displayName.slice(0, 2).toUpperCase()}</i><em>MEMBER REVOLT RIDERS</em><h2>{displayName}</h2><p>{profile?.full_name && profile.full_name !== displayName ? profile.full_name : account.member_external_id} · {account.role.replaceAll("_", " ")}</p><div className="profile-stat-grid"><span><Route/><small>TOTAL KM</small><b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}</b></span><span><Bike/><small>RIDE DIKIRIM</small><b>{rides.length}</b></span><span><Check/><small>RSVP</small><b>{rsvpActivities.length}</b></span></div><div className="profile-meta"><span><MapPin/>{city || "Kota belum diisi"}</span><span><Bike/>{motorcycle || "Motor belum diisi"}</span><span><ShieldCheck/>{account.status}</span></div></>}</section>
+    {account && <section className="profile-edit card"><div className="section-title"><span><em>DATA PRIBADI</em><h3>Lengkapi profil</h3></span><Save/></div><p>Perbarui nama panggilan, motor, dan kota. Data ini dapat digunakan untuk tampilan internal komunitas.</p><form onSubmit={saveDetails}><label>Nama panggilan<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength={40} placeholder="Nama panggilan"/></label><label>Motor<input value={motorcycle} onChange={(event) => setMotorcycle(event.target.value)} maxLength={120} placeholder="Contoh: Honda CB150R"/></label><label>Kota<input value={city} onChange={(event) => setCity(event.target.value)} maxLength={100} placeholder="Contoh: Situbondo"/></label>{message && <p className="success-message"><Check/>{message}</p>}{error && <p className="error-message">{error}</p>}<button className="primary-action" disabled={saving}>{saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}</button></form></section>}
+    {account && <section className="profile-activity"><section className="card"><div className="section-title"><span><em>RIDING TERBARU</em><h3>Riwayat Ride Log</h3></span><Bike/></div>{rides.length === 0 ? <p className="system-message">Belum ada ride log yang dikirim.</p> : <div className="activity-list">{rides.slice(0, 5).map((ride) => <article key={ride.id}><i><Route/></i><span><b>{ride.event_id ? eventTitleById.get(ride.event_id) || "Agenda riding" : "Ride mandiri"}</b><small>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM</small></span><em className={`activity-${ride.status}`}>{ride.status}</em></article>)}</div>}</section><section className="card"><div className="section-title"><span><em>AGENDA</em><h3>Respons RSVP</h3></span><CalendarDays/></div>{rsvpActivities.length === 0 ? <p className="system-message">Belum ada respons undangan.</p> : <div className="activity-list">{rsvpActivities.slice(0, 5).map((rsvp) => <article key={`${rsvp.event_id}-${rsvp.responded_at}`}><i><Clock3/></i><span><b>{eventTitleById.get(rsvp.event_id) || "Agenda Revolt Riders"}</b><small>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(rsvp.responded_at))}</small></span><em className={`rsvp-${rsvp.status}`}>{rsvp.status === "attending" ? "hadir" : rsvp.status === "declined" ? "tidak hadir" : "mungkin"}</em></article>)}</div>}</section></section>}
+    {email && <button className="dark-action profile-logout" onClick={logout}><LogOut/>KELUAR DARI AKUN</button>}
+  </div></AppShell>;
+}
