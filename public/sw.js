@@ -1,4 +1,4 @@
-const CACHE = "revolt-static-v1";
+const CACHE = "revolt-static-v2";
 const PRECACHE = ["/offline", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -26,4 +26,22 @@ self.addEventListener("fetch", (event) => {
       return response;
     })));
   }
+});
+
+self.addEventListener("push", (event) => {
+  const payload = event.data ? event.data.json() : {};
+  const title = payload.title || "Revolt Riders";
+  const options = {
+    body: payload.body || "Ada informasi baru dari Revolt Riders.",
+    icon: "/icons/icon-192.png",
+    badge: "/icons/icon-192.png",
+    tag: payload.tag || "revolt-update",
+    data: { url: payload.url || "/" },
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  event.waitUntil(clients.openWindow(event.notification.data?.url || "/"));
 });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemberAccess, type AppRole } from "@/hooks/use-member-access";
-import { Activity, Bell, Bike, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
+import { Activity, Bell, BellRing, Bike, CalendarCog, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, History, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState, type ComponentType, type ReactNode } from "react";
@@ -9,7 +9,7 @@ import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 type NavItem = readonly [string, string, ComponentType];
 const primary: readonly NavItem[] = [["Home", "/", Home], ["Agenda", "/agenda", CalendarDays], ["Riding", "/riding", Bike], ["Member", "/member", UsersRound]];
 const bottomItems: readonly NavItem[] = [...primary, ["Profil", "/profil", UserRound]];
-const community: readonly NavItem[] = [["Kas Revolt", "/kas", CircleDollarSign], ["Leaderboard", "/leaderboard", Trophy], ["Bulletin", "/bulletin", Bell]];
+const community: readonly NavItem[] = [["Kas Revolt", "/kas", CircleDollarSign], ["Leaderboard", "/leaderboard", Trophy], ["Bulletin", "/bulletin", Bell], ["History", "/history", History], ["Notifikasi", "/notifications", BellRing]];
 const hasRole = (role: AppRole | undefined, roles: AppRole[]) => Boolean(role && roles.includes(role));
 
 export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
@@ -19,7 +19,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
     if (account?.status !== "active") return [];
     const items: NavItem[] = [["Check-in", "/check-in", ScanLine]];
     if (hasRole(account.role, ["road_captain", "admin", "superadmin"])) items.push(["Kehadiran", "/admin/attendance", ClipboardCheck], ["Validasi Ride", "/riding/approval", ShieldCheck]);
-    if (hasRole(account.role, ["admin", "superadmin"])) items.push(["Admin", "/admin", Settings], ["Analytics", "/admin/insights", Activity], ["Kelola Member", "/admin/members", UserCog], ["Kelola Bulletin", "/admin/bulletins", Megaphone], ["Import CSV", "/admin/import", FileSpreadsheet]);
+    if (hasRole(account.role, ["admin", "superadmin"])) items.push(["Admin", "/admin", Settings], ["Kelola Agenda", "/admin/events", CalendarCog], ["Analytics", "/admin/insights", Activity], ["Kelola Member", "/admin/members", UserCog], ["Kelola Bulletin", "/admin/bulletins", Megaphone], ["Import CSV", "/admin/import", FileSpreadsheet]);
     return items;
   }, [account]);
   const operationalActive = operational.some(([label]) => label === active);

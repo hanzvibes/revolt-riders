@@ -20,6 +20,8 @@ test("service worker provides offline navigation fallback", async () => {
   assert.match(worker, /request\.mode === "navigate"/);
   assert.match(worker, /caches\.match\("\/offline"\)/);
   assert.match(worker, /self\.clients\.claim\(\)/);
+  assert.match(worker, /addEventListener\("push"/);
+  assert.match(worker, /showNotification/);
 });
 
 test("cash correction and QR rotation remain server-authorized", async () => {
@@ -37,4 +39,13 @@ test("dashboard cash excludes corrected production transactions", async () => {
   assert.match(migration, /from public\.club_cash_transactions\s+where voided_at is null/);
   assert.match(migration, /security definer/);
   assert.match(migration, /set search_path = ''/);
+});
+
+test("event lifecycle and ride distance are enforced by the database", async () => {
+  const migration = await read("supabase/migrations/20260916150000_add_event_lifecycle_rides_history_push.sql");
+  assert.match(migration, /cancellation_reason text/);
+  assert.match(migration, /create trigger validate_ride_log/);
+  assert.match(migration, /new\.distance_km := new\.odometer_end - new\.odometer_start/);
+  assert.match(migration, /push_subscriptions_owner_all/);
+  assert.match(migration, /notification_preferences_owner_all/);
 });
