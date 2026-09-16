@@ -2,6 +2,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CheckinQr } from "@/components/checkin-qr";
 import type { EventRecord } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -85,6 +86,7 @@ export default function AdminPage() {
   const [checkinEvent, setCheckinEvent] = useState("");
   const [invitation, setInvitation] = useState("");
   const [checkinCode, setCheckinCode] = useState("");
+  const [checkinExpiresAt, setCheckinExpiresAt] = useState("");
   const [bulkLinks, setBulkLinks] = useState<BulkLink[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -234,7 +236,7 @@ export default function AdminPage() {
 
   const generateCheckinCode = async (event: FormEvent) => {
     event.preventDefault();
-    setError(""); setCheckinCode("");
+    setError(""); setCheckinCode(""); setCheckinExpiresAt("");
     const raw = `RR-${secureToken().slice(0, 12).toUpperCase()}`;
     const codeHash = await sha256(raw);
     const supabase = getSupabaseBrowserClient();
@@ -249,7 +251,7 @@ export default function AdminPage() {
       created_by: user.id,
     });
     if (insertError) setError(insertError.message);
-    else setCheckinCode(raw);
+    else { setCheckinCode(raw); setCheckinExpiresAt(new Date(now + 12 * 60 * 60 * 1000).toISOString()); }
   };
 
   const approveRequest = async (request: PendingRequest) => {
@@ -343,7 +345,9 @@ export default function AdminPage() {
       <section className="form-card card">
         <div className="form-heading"><ScanLine/><span><em>ATTENDANCE</em><h2>Buat kode check-in</h2><p>Kode aktif satu jam sebelum dibuat hingga 12 jam berikutnya.</p></span></div>
         <form onSubmit={generateCheckinCode}><label>Agenda<select value={checkinEvent} onChange={(event) => setCheckinEvent(event.target.value)} required><option value="">Pilih agenda</option>{publishedEvents.map((event) => <option value={event.id} key={event.id}>{event.title}</option>)}</select></label><button className="dark-action"><ScanLine/>BUAT KODE CHECK-IN</button></form>
-        {checkinCode && <div className="generated-link"><Check/><span><b>Kode check-in aktif</b><small>{checkinCode}</small></span><button onClick={() => navigator.clipboard.writeText(checkinCode)} aria-label="Salin kode"><Copy/></button></div>}
+        {checkinCode && checkinExpiresAt && (
+          <CheckinQr code={checkinCode} eventTitle={events.find((event) => event.id === checkinEvent)?.title || "Agenda Revolt Riders"} activeUntil={checkinExpiresAt}/>
+        )}
       </section>
 
       <section className="card approval-card">
