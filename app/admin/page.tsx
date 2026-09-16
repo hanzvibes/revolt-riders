@@ -270,6 +270,18 @@ export default function AdminPage() {
     await load();
   };
 
+  const changeEventStatus = async (eventRecord: EventRecord, nextStatus: EventRecord["status"]) => {
+    if (eventRecord.status === nextStatus) return;
+    if (nextStatus === "cancelled" && !window.confirm(`Batalkan agenda ${eventRecord.title}? Undangan dan histori respons tetap disimpan.`)) return;
+    setError(""); setMessage("");
+    const payload: { status: EventRecord["status"]; published_at?: string | null } = { status: nextStatus };
+    if (nextStatus === "published") payload.published_at = new Date().toISOString();
+    const { error: statusError } = await getSupabaseBrowserClient().from("events").update(payload).eq("id", eventRecord.id);
+    if (statusError) return setError(statusError.message);
+    setMessage(`Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}.`);
+    await load();
+  };
+
   if (loading) return <AppShell active="Admin" title="Admin"><div className="page-wrap"><p>Memeriksa izin…</p></div></AppShell>;
   if (!account || account.status !== "active" || !["admin", "superadmin"].includes(account.role)) return <AppShell active="Admin" title="Admin"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses pengurus diperlukan</h2><p>Halaman ini hanya tersedia untuk akun aktif Admin dan Superadmin.</p><a className="primary-action" href={account?"/profil":"/login"}>{account?"LIHAT STATUS AKUN":"MASUK"}</a></section></div></AppShell>;
 
@@ -288,6 +300,12 @@ export default function AdminPage() {
           <label>Selesai (opsional)<input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)}/></label>
           <button className="primary-action"><Send/>PUBLISH AGENDA</button>
         </form>
+      </section>
+
+      <section className="card event-management admin-wide">
+        <div className="section-title"><span><em>STATUS AGENDA</em><h3>Kelola agenda terbit</h3></span><CalendarPlus/></div>
+        <p className="role-panel-intro">Tandai agenda selesai agar masuk ke riwayat komunitas, atau batalkan tanpa menghapus data RSVP dan kehadiran.</p>
+        {events.length === 0 ? <p className="system-message">Belum ada agenda untuk dikelola.</p> : <div className="event-management-list">{events.slice(0, 12).map((eventRecord) => <article key={eventRecord.id}><time>{new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(eventRecord.start_at))}</time><span><b>{eventRecord.title}</b><small>{eventRecord.location_name || "Lokasi belum ditentukan"}</small></span><em className={`event-status event-status-${eventRecord.status}`}>{eventRecord.status}</em><select value={eventRecord.status} onChange={(event) => void changeEventStatus(eventRecord, event.target.value as EventRecord["status"])} aria-label={`Status agenda ${eventRecord.title}`}><option value="draft">Draft</option><option value="published">Published</option><option value="completed">Selesai</option><option value="cancelled">Dibatalkan</option></select></article>)}</div>}
       </section>
 
       <section className="form-card card">
