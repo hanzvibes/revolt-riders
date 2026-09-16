@@ -48,7 +48,6 @@ export default function AttendancePage() {
 
   useEffect(() => {
     // The initial load and subsequent Supabase change events intentionally share one loader.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
     const supabase = getSupabaseBrowserClient();
     const channel = supabase.channel("attendance-admin-live").on("postgres_changes", { event: "*", schema: "public", table: "event_attendance" }, () => void load()).subscribe();

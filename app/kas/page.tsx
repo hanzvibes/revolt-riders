@@ -105,7 +105,6 @@ export default function CashPage() {
 
   useEffect(() => {
     // Initial authenticated ledger hydration.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void load();
   }, []);
 

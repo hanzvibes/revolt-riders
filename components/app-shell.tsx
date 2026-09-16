@@ -3,6 +3,7 @@
 import { useMemberAccess, type AppRole } from "@/hooks/use-member-access";
 import { Activity, Bell, Bike, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 
 type NavItem = readonly [string, string, ComponentType];
@@ -23,10 +24,10 @@ export function AppShell({ active, title, children }: { active: string; title: s
   }, [account]);
   const operationalActive = operational.some(([label]) => label === active);
   const accountLabel = loading ? "Memuat" : !user ? "Masuk" : account?.status === "active" ? "Profil" : account?.status === "inactive" ? "Nonaktif" : "Verifikasi";
-  const nav = (items: readonly NavItem[]) => items.map(([label, href, Icon]) => <a className={active === label ? "active" : ""} href={href} key={label} onClick={() => setOpen(false)}><Icon />{label}</a>);
+  const nav = (items: readonly NavItem[]) => items.map(([label, href, Icon]) => <Link className={active === label ? "active" : ""} href={href} key={label} onClick={() => setOpen(false)}><Icon />{label}</Link>);
 
   return <main className="app-shell"><aside className={open ? "open" : ""}>
-    <a className="brand" href="/" aria-label="Revolt Riders home"><Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority/><strong>REVOLT RIDERS<small>MEMBER HUB</small></strong></a>
+    <Link className="brand" href="/" aria-label="Revolt Riders home"><Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority/><strong>REVOLT RIDERS<small>MEMBER HUB</small></strong></Link>
     <button className="close-menu" onClick={() => setOpen(false)} aria-label="Tutup menu"><X/></button>
     <nav>{nav(primary)}</nav>
     <p className="navlabel">KOMUNITAS</p><nav>{nav(community)}</nav>
@@ -34,8 +35,8 @@ export function AppShell({ active, title, children }: { active: string; title: s
     <div className="motto"><Route/><span><b>Ride safe.</b><small>Brotherhood tanpa batas.</small></span></div>
   </aside>
   {open && <button className="shade" onClick={() => setOpen(false)} aria-label="Tutup menu"/>}
-  <section className="content"><header><button className="hamb" onClick={() => setOpen(true)} aria-label="Buka menu"><Menu/></button><div><small>REVOLT RIDERS · SITUBONDO</small><h1>{title}</h1></div><div className="tools"><span className="live-dot">● LIVE</span><a className={`login-link${account?.status && account.status !== "active" ? " account-warning" : ""}`} href={user ? "/profil" : "/login"}>{accountLabel}</a></div></header>{children}</section>
-  <nav className="bottom">{bottomItems.map(([label, href, Icon]) => <a key={label} className={active === label ? "active" : ""} href={href}><Icon/><small>{label}</small></a>)}</nav>
+  <section className="content"><header><button className="hamb" onClick={() => setOpen(true)} aria-label="Buka menu"><Menu/></button><div><small>REVOLT RIDERS · SITUBONDO</small><h1>{title}</h1></div><div className="tools"><span className="live-dot">● LIVE</span><Link className={`login-link${account?.status && account.status !== "active" ? " account-warning" : ""}`} href={user ? "/profil" : "/login"}>{accountLabel}</Link></div></header>{children}</section>
+  <nav className="bottom">{bottomItems.map(([label, href, Icon]) => <Link key={label} className={active === label ? "active" : ""} href={href}><Icon/><small>{label}</small></Link>)}</nav>
   </main>;
 }
 
