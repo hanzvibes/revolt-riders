@@ -1,0 +1,90 @@
+"use client";
+
+import { AppShell } from "@/components/app-shell";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Activity, BarChart3, Bike, CalendarDays, CircleDollarSign, ShieldAlert, UsersRound } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+
+type Account = { user_id: string; member_external_id: string; role: string; status: string };
+type Event = { id: string; status: string };
+type Invitation = { event_id: string; member_external_id: string };
+type Rsvp = { event_id: string; member_external_id: string; status: string };
+type Attendance = { event_id: string; member_external_id: string };
+type Ride = { status: string; distance_km: number | string | null };
+type Cash = { transaction_type: "income" | "expense" | "advance"; amount: number | string };
+type Audit = { id: number; actor_id: string | null; action: string; entity_type: string; entity_id: string | null; created_at: string };
+
+const money = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
+const number = (value: number) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value);
+
+export default function AdminInsightsPage() {
+  const [account, setAccount] = useState<Account | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [rsvps, setRsvps] = useState<Rsvp[]>([]);
+  const [attendance, setAttendance] = useState<Attendance[]>([]);
+  const [rides, setRides] = useState<Ride[]>([]);
+  const [cash, setCash] = useState<Cash[]>([]);
+  const [audits, setAudits] = useState<Audit[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const allowed = account?.status === "active" && ["admin", "superadmin"].includes(account.role);
+
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const supabase = getSupabaseBrowserClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      const accountResult = user ? await supabase.from("member_accounts").select("user_id,member_external_id,role,status").eq("user_id", user.id).maybeSingle() : { data: null, error: null };
+      if (!active) return;
+      const current = accountResult.data as Account | null;
+      setAccount(current);
+      if (!current || current.status !== "active" || !["admin", "superadmin"].includes(current.role)) { setLoading(false); return; }
+
+      const results = await Promise.all([
+        supabase.from("member_accounts").select("user_id,member_external_id,role,status"),
+        supabase.from("events").select("id,status"),
+        supabase.from("event_invitations").select("event_id,member_external_id"),
+        supabase.from("event_rsvps").select("event_id,member_external_id,status"),
+        supabase.from("event_attendance").select("event_id,member_external_id"),
+        supabase.from("ride_logs").select("status,distance_km"),
+        supabase.from("cash_transactions").select("transaction_type,amount"),
+        supabase.from("club_cash_transactions").select("transaction_type,amount"),
+        supabase.from("audit_logs").select("id,actor_id,action,entity_type,entity_id,created_at").order("created_at", { ascending: false }).limit(100),
+      ]);
+      if (!active) return;
+      const failed = results.find((result) => result.error)?.error;
+      if (failed) setError(failed.message);
+      setAccounts((results[0].data ?? []) as Account[]);
+      setEvents((results[1].data ?? []) as Event[]);
+      setInvitations((results[2].data ?? []) as Invitation[]);
+      setRsvps((results[3].data ?? []) as Rsvp[]);
+      setAttendance((results[4].data ?? []) as Attendance[]);
+      setRides((results[5].data ?? []) as Ride[]);
+      setCash([...(results[6].data ?? []), ...(results[7].data ?? [])] as Cash[]);
+      setAudits((results[8].data ?? []) as Audit[]);
+      setLoading(false);
+    };
+    void load();
+    return () => { active = false; };
+  }, []);
+
+  const analytics = useMemo(() => {
+    const responses = new Set(rsvps.map((row) => `${row.event_id}:${row.member_external_id}`)).size;
+    const attending = new Set(rsvps.filter((row) => row.status === "attending").map((row) => `${row.event_id}:${row.member_external_id}`)).size;
+    const checkedIn = new Set(attendance.map((row) => `${row.event_id}:${row.member_external_id}`)).size;
+    const totalKm = rides.filter((row) => row.status === "approved").reduce((total, row) => total + Number(row.distance_km ?? 0), 0);
+    const income = cash.filter((row) => row.transaction_type === "income").reduce((total, row) => total + Number(row.amount), 0);
+    const expense = cash.filter((row) => row.transaction_type === "expense").reduce((total, row) => total + Number(row.amount), 0);
+    return { activeMembers: accounts.filter((row) => row.status === "active").length, publishedEvents: events.filter((row) => row.status === "published").length, responseRate: invitations.length ? Math.round((responses / invitations.length) * 100) : 0, attendanceRate: attending ? Math.round((checkedIn / attending) * 100) : 0, totalKm, balance: income - expense };
+  }, [accounts, attendance, cash, events, invitations, rides, rsvps]);
+
+  const actorById = useMemo(() => new Map(accounts.map((row) => [row.user_id, row.member_external_id])), [accounts]);
+
+  if (loading) return <AppShell active="Analytics" title="Analytics"><div className="page-wrap"><p className="system-message">Memuat analytics production…</p></div></AppShell>;
+  if (!allowed) return <AppShell active="Analytics" title="Analytics"><div className="page-wrap"><section className="empty-state card"><ShieldAlert /><h2>Akses admin diperlukan</h2><p>Analytics dan audit trail hanya tersedia untuk Admin dan Superadmin aktif.</p><a className="primary-action" href={account ? "/profil" : "/login"}>{account ? "LIHAT STATUS AKUN" : "MASUK"}</a></section></div></AppShell>;
+
+  return <AppShell active="Analytics" title="Analytics"><div className="page-wrap"><div className="page-intro"><div><em>PRODUCTION INSIGHTS</em><h2>Analytics & Audit Trail</h2><p>Ringkasan aktivitas komunitas dan perubahan penting yang tercatat otomatis.</p></div></div>{error && <p className="error-message">{error}</p>}<section className="analytics-grid"><article className="card"><UsersRound /><small>MEMBER AKTIF</small><b>{analytics.activeMembers}</b></article><article className="card"><CalendarDays /><small>AGENDA PUBLISHED</small><b>{analytics.publishedEvents}</b></article><article className="card"><BarChart3 /><small>RSVP RESPONSE RATE</small><b>{analytics.responseRate}%</b></article><article className="card"><Activity /><small>ATTENDANCE RATE</small><b>{analytics.attendanceRate}%</b></article><article className="card"><Bike /><small>KM DISETUJUI</small><b>{number(analytics.totalKm)} KM</b></article><article className="card"><CircleDollarSign /><small>SALDO TERHITUNG</small><b>{money(analytics.balance)}</b></article></section><section className="card audit-panel"><div className="section-title"><span><em>AUDIT TRAIL</em><h3>100 aktivitas terbaru</h3></span><Activity /></div>{audits.length === 0 ? <p className="system-message">Belum ada aktivitas setelah audit trail diaktifkan.</p> : <div className="audit-list">{audits.map((audit) => <article key={audit.id}><i>{audit.action.slice(0, 1).toUpperCase()}</i><span><b>{audit.action.toUpperCase()} · {audit.entity_type.replaceAll("_", " ")}</b><small>{audit.actor_id ? actorById.get(audit.actor_id) ?? "Akun pengurus" : "Sistem / undangan publik"}{audit.entity_id ? ` · ${audit.entity_id.slice(0, 12)}` : ""}</small></span><time>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(audit.created_at))} WIB</time></article>)}</div>}</section></div></AppShell>;
+}
