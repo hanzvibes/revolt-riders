@@ -3,7 +3,7 @@
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { CalendarDays, Check, MapPin, MessageSquare, UsersRound, X } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type PublicInvitation = { event_id: string; event_title: string; event_description: string | null; location_name: string | null; location_url: string | null; start_at: string; member_external_id: string; rsvp_status: "attending" | "declined" | "maybe" | null; guest_count: number };
 type Attendee = { member_external_id: string; display_name: string; guest_count: number; rsvp_status: "attending" | "maybe" };
@@ -22,7 +22,7 @@ export default function InvitationPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const load = async (initial = false) => {
+  const load = useCallback(async (initial = false) => {
     const supabase = getSupabaseBrowserClient();
     const [invitationResult, attendeeResult] = await Promise.all([
       supabase.rpc("get_public_invitation", { p_token: token }),
@@ -36,13 +36,13 @@ export default function InvitationPage() {
     }
     if (!attendeeResult.error) setAttendees((attendeeResult.data ?? []) as Attendee[]);
     if (initial) setLoading(false);
-  };
+  }, [token]);
 
   useEffect(() => {
     void load(true);
     const refresh = window.setInterval(() => void load(), 15_000);
     return () => window.clearInterval(refresh);
-  }, [token]);
+  }, [load]);
 
   const answer = async (status: "attending" | "declined" | "maybe") => {
     setSaving(true); setError(""); setSuccess("");

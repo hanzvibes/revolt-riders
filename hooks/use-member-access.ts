@@ -36,6 +36,9 @@ export function useMemberAccess() {
 
   useEffect(() => {
     void refresh();
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
     const supabase = getSupabaseBrowserClient();
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (!session) {
@@ -44,7 +47,13 @@ export function useMemberAccess() {
       }
       window.setTimeout(() => void refresh(), 0);
     });
-    return () => subscription.unsubscribe();
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
   }, [refresh]);
 
   return { user, account, loading, error, refresh };

@@ -31,3 +31,10 @@ test("cash correction and QR rotation remain server-authorized", async () => {
   assert.match(migration, /security definer/);
   assert.match(migration, /grant execute on function public\.void_club_cash_transaction/);
 });
+
+test("dashboard cash excludes corrected production transactions", async () => {
+  const migration = await read("supabase/migrations/20260916140000_fix_dashboard_voided_cash.sql");
+  assert.match(migration, /from public\.club_cash_transactions\s+where voided_at is null/);
+  assert.match(migration, /security definer/);
+  assert.match(migration, /set search_path = ''/);
+});
