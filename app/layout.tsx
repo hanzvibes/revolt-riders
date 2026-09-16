@@ -1,6 +1,7 @@
 import { PwaRegister } from "@/components/pwa-register";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./polish.css";
 
 export const metadata: Metadata = {
   title: { default: "Revolt Riders", template: "%s · Revolt Riders" },
