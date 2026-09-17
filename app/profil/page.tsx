@@ -12,8 +12,22 @@ import { useRouter } from "next/navigation";
 type Account = { member_external_id: string; role: string; status: string };
 type Profile = { member_external_id: string; full_name: string; nickname: string | null; city: string | null; join_date: string | null; club_role: string | null; total_km: number };
 type Detail = { nickname_override: string | null; motorcycle: string | null; city_override: string | null };
-type Ride = { id: string; event_id: string | null; title: string | null; status: "pending" | "approved" | "rejected"; distance_km: number | null; created_at: string; rejection_reason: string | null };
-type RideRow = Omit<Ride, "distance_km"> & { distance_km: number | string | null };
+type Ride = {
+  id: string;
+  event_id: string | null;
+  title: string | null;
+  status: "pending" | "approved" | "rejected";
+  distance_km: number | null;
+  odometer_start?: number | null;
+  odometer_end?: number | null;
+  created_at: string;
+  rejection_reason: string | null;
+};
+type RideRow = Omit<Ride, "distance_km" | "odometer_start" | "odometer_end"> & {
+  distance_km: number | string | null;
+  odometer_start?: number | string | null;
+  odometer_end?: number | string | null;
+};
 type RsvpActivity = { event_id: string; status: "attending" | "declined" | "maybe"; responded_at: string };
 type ActivityEvent = { id: string; title: string };
 
@@ -76,12 +90,17 @@ export default function ProfilePage() {
     const [profileResult, detailResult, rideResult, rsvpResult] = await Promise.all([
       supabase.from("member_profiles").select("member_external_id,full_name,nickname,city,join_date,club_role,total_km").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
       supabase.from("member_details").select("nickname_override,motorcycle,city_override").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
-      supabase.from("ride_logs").select("id,event_id,title,status,distance_km,created_at,rejection_reason").eq("member_external_id", nextAccount.member_external_id).order("created_at", { ascending: false }).limit(30),
+      supabase.from("ride_logs").select("id,event_id,title,status,distance_km,odometer_start,odometer_end,created_at,rejection_reason").eq("member_external_id", nextAccount.member_external_id).order("created_at", { ascending: false }).limit(30),
       supabase.from("event_rsvps").select("event_id,status,responded_at").eq("member_external_id", nextAccount.member_external_id).order("responded_at", { ascending: false }).limit(15),
     ]);
     const nextProfile = profileResult.data ? { ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile : null;
     const nextDetail = detailResult.data as Detail | null;
-    const nextRides = ((rideResult.data ?? []) as RideRow[]).map((ride: RideRow) => ({ ...ride, distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[];
+    const nextRides = ((rideResult.data ?? []) as RideRow[]).map((ride: RideRow) => ({
+      ...ride,
+      distance_km: ride.distance_km === null ? null : Number(ride.distance_km),
+      odometer_start: ride.odometer_start === null || ride.odometer_start === undefined ? null : Number(ride.odometer_start),
+      odometer_end: ride.odometer_end === null || ride.odometer_end === undefined ? null : Number(ride.odometer_end),
+    })) as Ride[];
     const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
     const activityEventIds = [...new Set([...nextRides.map((ride) => ride.event_id), ...nextRsvps.map((rsvp) => rsvp.event_id)].filter(Boolean))] as string[];
     const eventResult = activityEventIds.length ? await supabase.from("events").select("id,title").in("id", activityEventIds) : { data: [] };
@@ -229,56 +248,81 @@ export default function ProfilePage() {
                 <p className="system-message">Belum ada riwayat sowan / ride log yang dicatat.</p>
               ) : (
                 <div className="activity-list">
-                  {rides.map((ride) => (
-                    <article key={ride.id} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <i><Route/></i>
-                      <span style={{ flex: 1, minWidth: 0 }}>
-                        <b style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                          {ride.title || (ride.event_id ? eventTitleById.get(ride.event_id) || "Agenda riding" : "Ride mandiri")}
-                        </b>
-                        <small>
-                          {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM
-                        </small>
-                      </span>
-                      <em className={`activity-${ride.status}`}>{ride.status}</em>
-                      <div style={{ display: "flex", gap: "5px", marginLeft: "4px" }}>
-                        <button
-                          type="button"
-                          className="member-tour-action"
-                          title="Edit catatan ini"
-                          onClick={() => {
-                            setEditModalData({
-                              id: ride.id,
-                              memberExternalId: account.member_external_id,
-                              memberName: displayName,
-                              title: ride.title || (ride.event_id ? eventTitleById.get(ride.event_id) || "Agenda riding" : "Ride mandiri"),
-                              km: Number(ride.distance_km || 0),
-                              date: ride.created_at ? ride.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                            });
-                            setEditModalOpen(true);
-                          }}
-                        >
-                          <Pencil size={12} />
-                        </button>
-                        <button
-                          type="button"
-                          className="member-tour-action delete"
-                          title="Hapus catatan ini"
-                          onClick={async () => {
-                            if (!confirm(`Hapus catatan "${ride.title || "ini"}"?`)) return;
-                            try {
-                              await deleteRideLog(ride.id, account.member_external_id);
-                              await handleRideUpdated();
-                            } catch (e) {
-                              alert(e instanceof Error ? e.message : "Gagal menghapus");
-                            }
-                          }}
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
-                    </article>
-                  ))}
+                  {rides.map((ride) => {
+                    const eventTitle = ride.event_id ? eventTitleById.get(ride.event_id) : null;
+                    const displayTitle =
+                      ride.title ||
+                      eventTitle ||
+                      "Ride Mandiri";
+
+                    return (
+                      <article key={ride.id} style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
+                        <i style={{ marginTop: "3px" }}><Route/></i>
+                        <span style={{ flex: 1, minWidth: 0 }}>
+                          <b style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                            {displayTitle}
+                          </b>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "2px" }}>
+                            <small>
+                              {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM
+                            </small>
+                            {ride.odometer_start !== null && ride.odometer_end !== null && (
+                              <small style={{ color: "#6c757d", fontSize: "0.65rem", background: "#f1f3f5", padding: "1px 5px", border: "1px solid #e9ecef", borderRadius: "4px" }}>
+                                Odo {ride.odometer_start} → {ride.odometer_end}
+                              </small>
+                            )}
+                            {eventTitle && (
+                              <small style={{ color: "var(--red)", fontSize: "0.62rem", background: "#fff5f5", padding: "1px 5px", border: "1px solid #ffe3e3", borderRadius: "4px", fontWeight: 700 }}>
+                                {eventTitle}
+                              </small>
+                            )}
+                          </div>
+                          {ride.status === "rejected" && ride.rejection_reason && (
+                            <small style={{ color: "#dc1b2a", display: "block", marginTop: "4px", fontSize: "0.68rem" }}>
+                              ⚠️ Alasan ditolak: {ride.rejection_reason}
+                            </small>
+                          )}
+                        </span>
+                        <em className={`activity-${ride.status}`}>{ride.status}</em>
+                        <div style={{ display: "flex", gap: "5px", marginLeft: "4px", marginTop: "2px" }}>
+                          <button
+                            type="button"
+                            className="member-tour-action"
+                            title="Edit catatan ini"
+                            onClick={() => {
+                              setEditModalData({
+                                id: ride.id,
+                                memberExternalId: account.member_external_id,
+                                memberName: displayName,
+                                title: ride.title || eventTitle || "Ride Mandiri",
+                                km: Number(ride.distance_km || 0),
+                                date: ride.created_at ? ride.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+                              });
+                              setEditModalOpen(true);
+                            }}
+                          >
+                            <Pencil size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            className="member-tour-action delete"
+                            title="Hapus catatan ini"
+                            onClick={async () => {
+                              if (!confirm(`Hapus catatan "${displayTitle}"?`)) return;
+                              try {
+                                await deleteRideLog(ride.id, account.member_external_id);
+                                await handleRideUpdated();
+                              } catch (e) {
+                                alert(e instanceof Error ? e.message : "Gagal menghapus");
+                              }
+                            }}
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               )}
             </section>

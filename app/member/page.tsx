@@ -42,6 +42,8 @@ type TouringItem = {
   no: number;
   title: string;
   km: number | null;
+  odometer_start?: number | null;
+  odometer_end?: number | null;
   date?: string | null;
   source: "ride_log" | "event_attendance";
 };
@@ -219,7 +221,7 @@ export default function MemberPage() {
       const [rideLogsRes, attendanceRes] = await Promise.all([
         supabase
           .from("ride_logs")
-          .select("id,event_id,title,distance_km,created_at,status")
+          .select("id,event_id,title,distance_km,odometer_start,odometer_end,created_at,status")
           .eq("member_external_id", member.member_external_id)
           .eq("status", "approved")
           .order("created_at", { ascending: false }),
@@ -235,6 +237,8 @@ export default function MemberPage() {
         event_id: string | null;
         title?: string | null;
         distance_km: number | string | null;
+        odometer_start?: number | string | null;
+        odometer_end?: number | string | null;
         created_at: string;
         status: string;
       };
@@ -268,15 +272,24 @@ export default function MemberPage() {
       // Approved ride logs
       for (const ride of rides) {
         const title =
-          ride.title ||
-          (ride.event_id
+          ride.title && !["Ride Mandiri", "Ride mandiri"].includes(ride.title.trim())
+            ? ride.title
+            : ride.event_id
             ? eventTitleMap.get(ride.event_id) || "Agenda Riding"
-            : "Ride Mandiri");
+            : "Touring / Sowan Mandiri";
         items.push({
           id: `ride-${ride.id}`,
           no: counter++,
           title,
           km: ride.distance_km !== null ? Number(ride.distance_km) : null,
+          odometer_start:
+            ride.odometer_start !== null && ride.odometer_start !== undefined
+              ? Number(ride.odometer_start)
+              : null,
+          odometer_end:
+            ride.odometer_end !== null && ride.odometer_end !== undefined
+              ? Number(ride.odometer_end)
+              : null,
           date: ride.created_at,
           source: "ride_log",
         });
@@ -648,13 +661,20 @@ export default function MemberPage() {
                           </td>
                           <td>
                             <div style={{ fontWeight: 600 }}>{item.title}</div>
-                            {item.date && (
-                              <small style={{ color: "var(--muted)", fontSize: "0.6rem" }}>
-                                {new Intl.DateTimeFormat("id-ID", {
-                                  dateStyle: "medium",
-                                }).format(new Date(item.date))}
-                              </small>
-                            )}
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "2px" }}>
+                              {item.date && (
+                                <small style={{ color: "var(--muted)", fontSize: "0.6rem" }}>
+                                  {new Intl.DateTimeFormat("id-ID", {
+                                    dateStyle: "medium",
+                                  }).format(new Date(item.date))}
+                                </small>
+                              )}
+                              {item.odometer_start !== null && item.odometer_end !== null && item.odometer_start !== undefined && item.odometer_end !== undefined && (
+                                <small style={{ color: "#6c757d", fontSize: "0.6rem", background: "#f8f9fa", padding: "0 4px", borderRadius: "3px", border: "1px solid #e9ecef" }}>
+                                  Odo: {item.odometer_start} → {item.odometer_end}
+                                </small>
+                              )}
+                            </div>
                           </td>
                           <td style={{ textAlign: "right" }}>
                             {item.km !== null ? (

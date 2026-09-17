@@ -3,6 +3,11 @@
 -- Jalankan script ini di SQL Editor Supabase untuk mengaktifkan fitur edit/tambah/hapus.
 -- ==============================================================================
 
+-- Update any ambiguous titles
+update public.ride_logs
+set title = 'Touring Resmi Founder'
+where title = 'Entri touring mandiri';
+
 -- 1. Trigger otomatis: Selalu sinkronkan total_km di member_profiles saat ada perubahan di ride_logs
 create or replace function public.sync_member_total_km()
 returns trigger

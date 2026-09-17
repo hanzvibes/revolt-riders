@@ -374,7 +374,7 @@ export const REVOLT_MEMBERS_DATA: MemberOfficialData[] = [
     club_role: "FOUNDER",
     total_km: 200,
     touring_records: [
-      { no: 1, title: "Entri touring mandiri", km: 200 },
+      { no: 1, title: "Touring Resmi Founder", km: 200 },
     ],
   },
   {

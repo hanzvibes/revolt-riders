@@ -229,7 +229,7 @@ values
   ('RR-015', 'Ride to Anniv Aspal Kiri Mei 2025', 424, 512, 'approved'::public.ride_status, now(), now()),
   ('RR-015', 'Anniv MMC BWI', 512, 613, 'approved'::public.ride_status, now(), now()),
   ('RR-015', 'Anniversary Dewata Rocker Jember 2025', 613, 683, 'approved'::public.ride_status, now(), now()),
-  ('RR-016', 'Entri touring mandiri', 0, 200, 'approved'::public.ride_status, now(), now()),
+  ('RR-016', 'Touring Resmi Founder', 0, 200, 'approved'::public.ride_status, now(), now()),
   ('RR-017', 'Voyager BWS & Sowan Wolf Road', 0, 39.9, 'approved'::public.ride_status, now(), now()),
   ('RR-017', 'Voyager Kantor Djarum Probolinggo & Pasuruan', 39.9, 173.9, 'approved'::public.ride_status, now(), now()),
   ('RR-017', 'Anniv MMC BWI', 173.9, 274.9, 'approved'::public.ride_status, now(), now()),
