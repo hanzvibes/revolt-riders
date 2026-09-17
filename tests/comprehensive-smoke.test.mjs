@@ -41,18 +41,21 @@ test("Service worker provides offline navigation fallback and push capabilities"
 // ==============================================================================
 const expectedRoutes = [
   "app/page.tsx",
+  "app/dashboard/page.tsx",
   "app/admin/page.tsx",
   "app/admin/attendance/page.tsx",
   "app/admin/bulletins/page.tsx",
   "app/admin/events/page.tsx",
   "app/admin/import/page.tsx",
   "app/admin/insights/page.tsx",
+  "app/admin/join-requests/page.tsx",
   "app/admin/members/page.tsx",
   "app/agenda/page.tsx",
   "app/api/sheets/[dataset]/route.ts",
   "app/bulletin/page.tsx",
   "app/check-in/page.tsx",
   "app/history/page.tsx",
+  "app/join/confirm/[token]/page.tsx",
   "app/kas/page.tsx",
   "app/leaderboard/page.tsx",
   "app/login/page.tsx",
@@ -66,7 +69,7 @@ const expectedRoutes = [
   "app/undangan/[token]/page.tsx",
 ];
 
-test("All 24 production routes exist and contain default export", async () => {
+test("All 27 production routes exist and contain default export", async () => {
   for (const route of expectedRoutes) {
     const exists = await fileExists(route);
     assert.ok(exists, `Route file ${route} must exist`);
@@ -189,7 +192,7 @@ test("AppShell implements streamlined navigation with collapsible operational pa
   const shellContent = await read("components/app-shell.tsx");
 
   // Utama items (5 items)
-  assert.match(shellContent, /\["Home", "\/", Home\]/);
+  assert.match(shellContent, /\["Home", "\/dashboard", Home\]/);
   assert.match(shellContent, /\["Agenda", "\/agenda", CalendarDays\]/);
   assert.match(shellContent, /\["Catat Riding", "\/riding", Bike\]/);
   assert.match(shellContent, /\["Member", "\/member", UsersRound\]/);
@@ -222,4 +225,23 @@ test("Skeleton components and shimmer animation are available for zero CLS", asy
 
   const cssContent = await read("app/globals.css");
   assert.match(cssContent, /@keyframes revolt-shimmer/);
+});
+
+// ==============================================================================
+// 7. JOIN REQUESTS & PUBLIC LANDING CONTRACT VERIFICATION
+// ==============================================================================
+test("Join requests migration enforces independent table, active unique WA, and lifecycle RPCs", async () => {
+  const migrationExists = await fileExists("supabase/migrations/20260918000300_add_join_requests_and_public_landing.sql");
+  assert.ok(migrationExists, "20260918000300 migration file must exist");
+
+  const sql = await read("supabase/migrations/20260918000300_add_join_requests_and_public_landing.sql");
+  assert.match(sql, /create table if not exists public\.join_requests/);
+  assert.match(sql, /create unique index if not exists idx_join_requests_active_whatsapp/);
+  assert.match(sql, /where status in \('pending', 'accepted', 'confirmed'\)/);
+  assert.match(sql, /create or replace function public\.submit_join_request/);
+  assert.match(sql, /create or replace function public\.accept_join_request/);
+  assert.match(sql, /create or replace function public\.confirm_join_request/);
+  assert.match(sql, /create or replace function public\.activate_join_request/);
+  assert.match(sql, /create table if not exists public\.club_gallery/);
+  assert.match(sql, /is_public boolean not null default true/);
 });

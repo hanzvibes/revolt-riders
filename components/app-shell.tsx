@@ -1,21 +1,22 @@
 "use client";
 
 import { useMemberAccess, type AppRole } from "@/hooks/use-member-access";
-import { Activity, Bell, BellRing, Bike, CalendarCog, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, History, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
+import { Activity, Bell, BellRing, Bike, CalendarCog, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, Globe, History, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserPlus, UserRound, UsersRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type NavItem = readonly [string, string, ComponentType];
 const utamaItems: readonly NavItem[] = [
-  ["Home", "/", Home],
+  ["Home", "/dashboard", Home],
   ["Agenda", "/agenda", CalendarDays],
   ["Catat Riding", "/riding", Bike],
   ["Member", "/member", UsersRound],
   ["Profil", "/profil", UserRound],
 ];
 const bottomItems: readonly NavItem[] = [
-  ["Home", "/", Home],
+  ["Home", "/dashboard", Home],
   ["Agenda", "/agenda", CalendarDays],
   ["Riding", "/riding", Bike],
   ["Member", "/member", UsersRound],
@@ -31,12 +32,34 @@ const hasRole = (role: AppRole | undefined, roles: AppRole[]) => Boolean(role &&
 
 export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [pendingJoinCount, setPendingJoinCount] = useState(0);
   const { user, account, loading } = useMemberAccess();
+
+  useEffect(() => {
+    let active = true;
+    if (account?.status === "active" && hasRole(account.role, ["road_captain", "admin", "superadmin"])) {
+      const supabase = getSupabaseBrowserClient();
+      void (async () => {
+        const res: { count?: number | null } = await supabase
+          .from("join_requests")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending");
+        if (active && typeof res?.count === "number") {
+          setPendingJoinCount(res.count);
+        }
+      })();
+    }
+    return () => {
+      active = false;
+    };
+  }, [account]);
+
   const operational = useMemo<NavItem[]>(() => {
     if (account?.status !== "active") return [];
     const items: NavItem[] = [];
     if (hasRole(account.role, ["road_captain", "admin", "superadmin"])) {
       items.push(
+        ["Join Requests", "/admin/join-requests", UserPlus],
         ["Validasi Ride", "/riding/approval", ShieldCheck],
         ["Kehadiran", "/admin/attendance", ClipboardCheck]
       );
@@ -50,7 +73,8 @@ export function AppShell({ active, title, children }: { active: string; title: s
         ["Kelola Bulletin", "/admin/bulletins", Megaphone],
         ["Import CSV", "/admin/import", FileSpreadsheet],
         ["History", "/history", History],
-        ["Notifikasi", "/notifications", BellRing]
+        ["Notifikasi", "/notifications", BellRing],
+        ["Web Publik", "/", Globe]
       );
     }
     return items;
@@ -61,7 +85,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
   const nav = (items: readonly NavItem[]) => items.map(([label, href, Icon]) => (
     <Link className={active === label ? "active" : ""} href={href} key={label} onClick={() => setOpen(false)}>
       <Icon />
-      {label}
+      <span style={{ flex: 1 }}>{label}</span>
+      {label === "Join Requests" && pendingJoinCount > 0 && (
+        <b style={{ background: "var(--red)", color: "#fff", padding: "1px 6px", borderRadius: 9999, fontSize: "0.6rem", fontWeight: 900 }}>
+          {pendingJoinCount}
+        </b>
+      )}
     </Link>
   ));
 

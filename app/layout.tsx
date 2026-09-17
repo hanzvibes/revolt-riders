@@ -5,21 +5,45 @@ import "./polish.css";
 import "./checkin-qr.css";
 import "./form-density.css";
 import "./native-admin.css";
+import "./landing.css";
 
 export const metadata: Metadata = {
-  title: { default: "Revolt Riders", template: "%s · Revolt Riders" },
-  description: "Sistem digital internal Revolt Riders Situbondo",
+  metadataBase: new URL("https://revolt-riders.com"),
+  title: { default: "Revolt Riders · Satu Aspal, Satu Persaudaraan", template: "%s · Revolt Riders" },
+  description: "Official portal komunitas motor Revolt Riders Situbondo. Wadah persaudaraan, touring, dan kegiatan sosial.",
   applicationName: "Revolt Riders",
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "Revolt Riders" },
   formatDetection: { telephone: false },
+  openGraph: {
+    title: "Revolt Riders · Satu Aspal, Satu Persaudaraan",
+    description: "Official portal komunitas motor Revolt Riders Situbondo. Wadah persaudaraan, touring, dan kegiatan sosial.",
+    url: "https://revolt-riders.com",
+    siteName: "Revolt Riders",
+    images: [
+      {
+        url: "/revolt-riders-logo.jpg",
+        width: 800,
+        height: 800,
+        alt: "Logo Resmi Revolt Riders Situbondo",
+      },
+    ],
+    locale: "id_ID",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Revolt Riders · Satu Aspal, Satu Persaudaraan",
+    description: "Official portal komunitas motor Revolt Riders Situbondo. Wadah persaudaraan, touring, dan kegiatan sosial.",
+    images: ["/revolt-riders-logo.jpg"],
+  },
   icons: {
     icon: [{ url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }, { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }],
     apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
-export const viewport: Viewport = { themeColor: "#151617", colorScheme: "light" };
+export const viewport: Viewport = { themeColor: "#0b0d10", colorScheme: "dark" };
 
 import { DataCacheProvider } from "@/context/data-cache-context";
 

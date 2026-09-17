@@ -34,6 +34,7 @@ type Event = {
   meetup_at: string | null;
   end_at: string | null;
   status: EventStatus;
+  is_public?: boolean;
   cancellation_reason: string | null;
 };
 type Rsvp = { event_id: string; status: "attending" | "declined" | "maybe" };
@@ -69,6 +70,7 @@ export default function AdminEventsPage() {
   const [start, setStart] = useState("");
   const [meetup, setMeetup] = useState("");
   const [end, setEnd] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const load = useCallback(async () => {
     if (account?.status !== "active" || !canManage(account.role)) {
       setLoading(false);
@@ -79,7 +81,7 @@ export default function AdminEventsPage() {
       supabase
         .from("events")
         .select(
-          "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,cancellation_reason",
+          "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,is_public,cancellation_reason",
         )
         .order("start_at", { ascending: false }),
       supabase.from("event_rsvps").select("event_id,status"),
@@ -102,6 +104,7 @@ export default function AdminEventsPage() {
     setStart("");
     setMeetup("");
     setEnd("");
+    setIsPublic(true);
     setFormOpen(false);
   };
   const beginCreate = () => {
@@ -119,6 +122,7 @@ export default function AdminEventsPage() {
     setStart(toInputDate(event.start_at));
     setMeetup(toInputDate(event.meetup_at));
     setEnd(toInputDate(event.end_at));
+    setIsPublic(event.is_public ?? true);
     setFormOpen(true);
     setError("");
   };
@@ -137,6 +141,7 @@ export default function AdminEventsPage() {
       start_at: new Date(start).toISOString(),
       meetup_at: meetup ? new Date(meetup).toISOString() : null,
       end_at: end ? new Date(end).toISOString() : null,
+      is_public: isPublic,
     };
     const supabase = getSupabaseBrowserClient();
     const result = editing
@@ -466,6 +471,20 @@ export default function AdminEventsPage() {
                 maxLength={2000}
                 rows={3}
               />
+            </label>
+            <label style={{ gridColumn: "1 / -1", display: "flex", alignItems: "center", gap: 10, background: "#f8fafc", padding: "10px 14px", borderRadius: 8, border: "1px solid var(--line)", cursor: "pointer", marginTop: 4 }}>
+              <input
+                type="checkbox"
+                checked={isPublic}
+                onChange={(event) => setIsPublic(event.target.checked)}
+                style={{ width: 18, height: 18, accentColor: "var(--red)", cursor: "pointer" }}
+              />
+              <span style={{ display: "flex", flexDirection: "column" }}>
+                <strong style={{ fontSize: "0.78rem", color: "var(--ink)" }}>Publik (Tampil di Landing Page)</strong>
+                <small style={{ color: "var(--muted)", fontSize: "0.68rem" }}>
+                  {isPublic ? "Agenda ini dapat dilihat masyarakat umum di Landing Page." : "Agenda internal (hanya terlihat member yang login)."}
+                </small>
+              </span>
             </label>
             {error && <p className="error-message">{error}</p>}
             <div className="sheet-actions">
