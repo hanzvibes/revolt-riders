@@ -6,9 +6,12 @@ import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import type { EventRecord } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { REVOLT_MEMBERS_DATA } from "@/lib/data/member-touring-data";
 import {
+  CalendarDays,
   CalendarPlus,
   Check,
+  CheckCircle2,
   Copy,
   Download,
   Link2,
@@ -18,6 +21,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Users,
+  UsersRound,
 } from "lucide-react";
 import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -547,6 +551,54 @@ export default function AdminPage() {
   return (
     <AppShell active="Admin" title="Admin">
       <div className="page-wrap admin-grid">
+        {/* Executive KPI Strip */}
+        <section className="admin-kpi-strip" aria-label="Ringkasan Operasional">
+          <article className="admin-kpi-card">
+            <div className="admin-kpi-icon">
+              <UsersRound />
+            </div>
+            <div className="admin-kpi-info">
+              <span className="admin-kpi-label">Member Resmi</span>
+              <b className="admin-kpi-val">{members.length || REVOLT_MEMBERS_DATA.length}</b>
+              <small className="admin-kpi-hint">Riders terdata aktif</small>
+            </div>
+          </article>
+          <article className="admin-kpi-card">
+            <div className="admin-kpi-icon">
+              <CalendarDays />
+            </div>
+            <div className="admin-kpi-info">
+              <span className="admin-kpi-label">Agenda Terbit</span>
+              <b className="admin-kpi-val">{publishedEvents.length}</b>
+              <small className="admin-kpi-hint">Kopdar & touring aktif</small>
+            </div>
+          </article>
+          <article className="admin-kpi-card">
+            <div className="admin-kpi-icon">
+              <ShieldAlert />
+            </div>
+            <div className="admin-kpi-info">
+              <span className="admin-kpi-label">Pending Akun</span>
+              <b className="admin-kpi-val">{requests.length}</b>
+              <small className="admin-kpi-hint">
+                {requests.length > 0 ? `${requests.length} perlu review` : "Semua diverifikasi"}
+              </small>
+            </div>
+          </article>
+          <article className="admin-kpi-card">
+            <div className="admin-kpi-icon">
+              <CheckCircle2 />
+            </div>
+            <div className="admin-kpi-info">
+              <span className="admin-kpi-label">Respons RSVP</span>
+              <b className="admin-kpi-val">{rsvps.length}</b>
+              <small className="admin-kpi-hint">
+                {rsvps.filter((r) => r.status === "attending").length} rider konfirmasi hadir
+              </small>
+            </div>
+          </article>
+        </section>
+
         <section className="card admin-launch-card">
           <div>
             <CalendarPlus />
