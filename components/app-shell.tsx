@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemberAccess, type AppRole } from "@/hooks/use-member-access";
-import { Activity, Bell, BellRing, Bike, CalendarCog, CalendarDays, CircleDollarSign, ClipboardCheck, FileSpreadsheet, History, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
+import { Activity, Bell, BellRing, Bike, CalendarCog, CalendarDays, ChevronDown, CircleDollarSign, ClipboardCheck, FileSpreadsheet, History, Home, Menu, Megaphone, Route, ScanLine, Settings, ShieldCheck, Trophy, UserCog, UserRound, UsersRound, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState, type ComponentType, type ReactNode } from "react";
@@ -9,6 +9,8 @@ import { useMemo, useState, type ComponentType, type ReactNode } from "react";
 type NavItem = readonly [string, string, ComponentType];
 const utamaItems: readonly NavItem[] = [
   ["Home", "/", Home],
+  ["Agenda", "/agenda", CalendarDays],
+  ["Catat Riding", "/riding", Bike],
   ["Member", "/member", UsersRound],
   ["Profil", "/profil", UserRound],
 ];
@@ -19,14 +21,11 @@ const bottomItems: readonly NavItem[] = [
   ["Member", "/member", UsersRound],
   ["Profil", "/profil", UserRound],
 ];
-const aktivitasKomunitas: readonly NavItem[] = [
-  ["Agenda", "/agenda", CalendarDays],
-  ["Catat Riding", "/riding", Bike],
+const komunitasItems: readonly NavItem[] = [
   ["Leaderboard", "/leaderboard", Trophy],
   ["Kas Revolt", "/kas", CircleDollarSign],
   ["Bulletin", "/bulletin", Bell],
-  ["History", "/history", History],
-  ["Notifikasi", "/notifications", BellRing],
+  ["Check-in", "/check-in", ScanLine],
 ];
 const hasRole = (role: AppRole | undefined, roles: AppRole[]) => Boolean(role && roles.includes(role));
 
@@ -35,23 +34,29 @@ export function AppShell({ active, title, children }: { active: string; title: s
   const { user, account, loading } = useMemberAccess();
   const operational = useMemo<NavItem[]>(() => {
     if (account?.status !== "active") return [];
-    const items: NavItem[] = [["Check-in", "/check-in", ScanLine]];
+    const items: NavItem[] = [];
     if (hasRole(account.role, ["road_captain", "admin", "superadmin"])) {
-      items.push(["Kehadiran", "/admin/attendance", ClipboardCheck], ["Validasi Ride", "/riding/approval", ShieldCheck]);
+      items.push(
+        ["Validasi Ride", "/riding/approval", ShieldCheck],
+        ["Kehadiran", "/admin/attendance", ClipboardCheck]
+      );
     }
     if (hasRole(account.role, ["admin", "superadmin"])) {
       items.push(
         ["Admin", "/admin", Settings],
-        ["Kelola Agenda", "/admin/events", CalendarCog],
         ["Kelola Member", "/admin/members", UserCog],
+        ["Kelola Agenda", "/admin/events", CalendarCog],
         ["Analytics", "/admin/insights", Activity],
         ["Kelola Bulletin", "/admin/bulletins", Megaphone],
-        ["Import CSV", "/admin/import", FileSpreadsheet]
+        ["Import CSV", "/admin/import", FileSpreadsheet],
+        ["History", "/history", History],
+        ["Notifikasi", "/notifications", BellRing]
       );
     }
     return items;
   }, [account]);
 
+  const operationalActive = operational.some(([label]) => label === active);
   const accountLabel = loading ? "Memuat" : !user ? "Masuk" : account?.status === "active" ? "Profil" : account?.status === "inactive" ? "Nonaktif" : "Verifikasi";
   const nav = (items: readonly NavItem[]) => items.map(([label, href, Icon]) => (
     <Link className={active === label ? "active" : ""} href={href} key={label} onClick={() => setOpen(false)}>
@@ -69,20 +74,24 @@ export function AppShell({ active, title, children }: { active: string; title: s
         </Link>
         <button className="close-menu" onClick={() => setOpen(false)} aria-label="Tutup menu"><X /></button>
 
-        {/* Kategori 1: Utama */}
-        <p className="navlabel" style={{ marginTop: "10px" }}>UTAMA</p>
+        {/* Menu Utama */}
+        <p className="navlabel" style={{ marginTop: "10px" }}>MENU UTAMA</p>
         <nav>{nav(utamaItems)}</nav>
 
-        {/* Kategori 2: Aktivitas & Komunitas */}
-        <p className="navlabel">AKTIVITAS & KOMUNITAS</p>
-        <nav>{nav(aktivitasKomunitas)}</nav>
+        {/* Komunitas */}
+        <p className="navlabel">KOMUNITAS</p>
+        <nav>{nav(komunitasItems)}</nav>
 
-        {/* Kategori 3: Operasional Pengurus (Khusus pengurus aktif) */}
+        {/* Panel Pengurus (Collapsible khusus Staff/Admin) */}
         {operational.length > 0 && (
-          <>
-            <p className="navlabel">OPERASIONAL PENGURUS</p>
+          <details className="sidebar-tools" open={operationalActive}>
+            <summary>
+              <Settings />
+              <span>Panel Pengurus</span>
+              <ChevronDown />
+            </summary>
             <nav>{nav(operational)}</nav>
-          </>
+          </details>
         )}
 
         <div className="motto" style={{ marginTop: "auto" }}>
