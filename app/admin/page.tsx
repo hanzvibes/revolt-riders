@@ -283,15 +283,15 @@ export default function AdminPage() {
     <div className="page-wrap admin-grid">
       <section className="form-card card">
         <div className="form-heading"><CalendarPlus/><span><em>AGENDA</em><h2>Buat & publish agenda</h2><p>Agenda langsung tampil pada dashboard member.</p></span></div>
-        <form onSubmit={createEvent}>
-          <label>Judul agenda<input value={title} onChange={(event) => setTitle(event.target.value)} required minLength={3}/></label>
-          <label>Jenis<select value={type} onChange={(event) => setType(event.target.value)}><option value="kopdar">Kopdar</option><option value="riding">Riding</option><option value="touring">Touring</option><option value="social">Sosial</option><option value="other">Lainnya</option></select></label>
-          <label>Lokasi<input value={location} onChange={(event) => setLocation(event.target.value)} required/></label>
-          <label>Link lokasi (opsional)<input type="url" value={locationUrl} onChange={(event) => setLocationUrl(event.target.value)} placeholder="https://maps.google.com/..."/></label>
-          <label>Deskripsi agenda (opsional)<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Info singkat untuk member" maxLength={500}/></label>
-          <label>Mulai (WIB)<input type="datetime-local" value={start} onChange={(event) => setStart(event.target.value)} required/></label>
-          <label>Titik kumpul (opsional)<input type="datetime-local" value={meetup} onChange={(event) => setMeetup(event.target.value)}/></label>
-          <label>Selesai (opsional)<input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)}/></label>
+        <form className="event-create-form" onSubmit={createEvent}>
+          <label className="field-title">Judul agenda<input value={title} onChange={(event) => setTitle(event.target.value)} required minLength={3}/></label>
+          <label className="field-type">Jenis<select value={type} onChange={(event) => setType(event.target.value)}><option value="kopdar">Kopdar</option><option value="riding">Riding</option><option value="touring">Touring</option><option value="social">Sosial</option><option value="other">Lainnya</option></select></label>
+          <label className="field-location">Lokasi<input value={location} onChange={(event) => setLocation(event.target.value)} required/></label>
+          <label className="field-url">Link lokasi (opsional)<input type="url" value={locationUrl} onChange={(event) => setLocationUrl(event.target.value)} placeholder="https://maps.google.com/..."/></label>
+          <label className="field-description">Deskripsi agenda (opsional)<input value={description} onChange={(event) => setDescription(event.target.value)} placeholder="Info singkat untuk member" maxLength={500}/></label>
+          <label className="field-start">Mulai (WIB)<input type="datetime-local" value={start} onChange={(event) => setStart(event.target.value)} required/></label>
+          <label className="field-meetup">Titik kumpul (opsional)<input type="datetime-local" value={meetup} onChange={(event) => setMeetup(event.target.value)}/></label>
+          <label className="field-end">Selesai (opsional)<input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)}/></label>
           <button className="primary-action"><Send/>PUBLISH AGENDA</button>
         </form>
       </section>
