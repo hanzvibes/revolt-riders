@@ -4,6 +4,7 @@ import "./globals.css";
 import "./polish.css";
 import "./checkin-qr.css";
 import "./form-density.css";
+import "./native-admin.css";
 
 export const metadata: Metadata = {
   title: { default: "Revolt Riders", template: "%s · Revolt Riders" },

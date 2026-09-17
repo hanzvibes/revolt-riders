@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
+import { ModalSheet } from "@/components/modal-sheet";
 import type { EventRecord } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -91,6 +92,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [bulkLoading, setBulkLoading] = useState(false);
+  const [agendaFormOpen, setAgendaFormOpen] = useState(false);
 
   const publishedEvents = useMemo(() => events.filter((event) => event.status === "published"), [events]);
   const activeMembers = members;
@@ -180,6 +182,7 @@ export default function AdminPage() {
     else {
       setMessage("Agenda berhasil dipublikasikan.");
       setTitle(""); setLocation(""); setLocationUrl(""); setDescription(""); setStart(""); setMeetup(""); setEnd("");
+      setAgendaFormOpen(false);
       await load();
     }
   };
@@ -281,9 +284,11 @@ export default function AdminPage() {
 
   return <AppShell active="Admin" title="Admin">
     <div className="page-wrap admin-grid">
-      <section className="form-card card">
-        <div className="form-heading"><CalendarPlus/><span><em>AGENDA</em><h2>Buat & publish agenda</h2><p>Agenda langsung tampil pada dashboard member.</p></span></div>
-        <form className="event-create-form" onSubmit={createEvent}>
+      <section className="card admin-launch-card">
+        <div><CalendarPlus/><span><em>AGENDA</em><h2>Agenda komunitas</h2><p>Buat agenda baru atau kelola agenda yang sudah terbit.</p></span></div>
+        <span><button className="primary-action" onClick={() => setAgendaFormOpen(true)}><CalendarPlus/>BUAT AGENDA</button><a className="outline-action" href="/admin/events">KELOLA AGENDA</a></span>
+      </section>
+      <ModalSheet open={agendaFormOpen} onClose={() => setAgendaFormOpen(false)} eyebrow="AGENDA BARU" title="Buat & publish agenda"><form className="event-create-form sheet-form" onSubmit={createEvent}>
           <label className="field-title">Judul agenda<input value={title} onChange={(event) => setTitle(event.target.value)} required minLength={3}/></label>
           <label className="field-type">Jenis<select value={type} onChange={(event) => setType(event.target.value)}><option value="kopdar">Kopdar</option><option value="riding">Riding</option><option value="touring">Touring</option><option value="social">Sosial</option><option value="other">Lainnya</option></select></label>
           <label className="field-location">Lokasi<input value={location} onChange={(event) => setLocation(event.target.value)} required/></label>
@@ -293,13 +298,12 @@ export default function AdminPage() {
           <label className="field-meetup">Titik kumpul (opsional)<input type="datetime-local" value={meetup} onChange={(event) => setMeetup(event.target.value)}/></label>
           <label className="field-end">Selesai (opsional)<input type="datetime-local" value={end} onChange={(event) => setEnd(event.target.value)}/></label>
           <button className="primary-action"><Send/>PUBLISH AGENDA</button>
-        </form>
-      </section>
+        </form></ModalSheet>
 
       <section className="card event-management admin-wide">
         <div className="section-title"><span><em>STATUS AGENDA</em><h3>Kelola agenda terbit</h3></span><CalendarPlus/></div>
         <p className="role-panel-intro">Tandai agenda selesai agar masuk ke riwayat komunitas, atau batalkan tanpa menghapus data RSVP dan kehadiran.</p>
-        {events.length === 0 ? <p className="system-message">Belum ada agenda untuk dikelola.</p> : <div className="event-management-list">{events.slice(0, 12).map((eventRecord) => <article key={eventRecord.id}><time>{new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(eventRecord.start_at))}</time><span><b>{eventRecord.title}</b><small>{eventRecord.location_name || "Lokasi belum ditentukan"}</small></span><em className={`event-status event-status-${eventRecord.status}`}>{eventRecord.status}</em><select value={eventRecord.status} onChange={(event) => void changeEventStatus(eventRecord, event.target.value as EventRecord["status"])} aria-label={`Status agenda ${eventRecord.title}`}><option value="draft">Draft</option><option value="published">Published</option><option value="completed">Selesai</option><option value="cancelled">Dibatalkan</option></select></article>)}</div>}
+        {events.length === 0 ? <p className="system-message">Belum ada agenda untuk dikelola.</p> : <div className="event-management-list admin-event-status-list">{events.slice(0, 6).map((eventRecord) => <article key={eventRecord.id}><time>{new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", timeZone: "Asia/Jakarta" }).format(new Date(eventRecord.start_at))}</time><span><b>{eventRecord.title}</b><small>{eventRecord.location_name || "Lokasi belum ditentukan"}</small></span><em className={`event-status event-status-${eventRecord.status}`}>{eventRecord.status}</em><select value={eventRecord.status} onChange={(event) => void changeEventStatus(eventRecord, event.target.value as EventRecord["status"])} aria-label={`Status agenda ${eventRecord.title}`}><option value="draft">Draft</option><option value="published">Published</option><option value="completed">Selesai</option><option value="cancelled">Dibatalkan</option></select></article>)}</div>}
       </section>
 
       <section className="form-card card">
