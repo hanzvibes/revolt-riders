@@ -342,163 +342,145 @@ export default function ProfilePage() {
             />
           </div>
 
-          {/* Top Header of Card */}
+          {/* Main Card Identity Layout - Clean, Centered & Symmetrical */}
           <div
             style={{
               display: "flex",
+              flexDirection: "column",
               alignItems: "center",
-              justifyContent: "space-between",
-              borderBottom: "1px solid rgba(255, 255, 255, 0.09)",
-              paddingBottom: "16px",
-              marginBottom: "22px",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              <div
-                style={{
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "8px",
-                  border: "1px solid var(--red)",
-                  display: "grid",
-                  placeItems: "center",
-                  background: "#000",
-                }}
-              >
-                <Image
-                  src="/revolt-riders-logo.jpg"
-                  alt="RR"
-                  width={30}
-                  height={30}
-                  style={{ objectFit: "contain" }}
-                />
-              </div>
-              <div>
-                <span
-                  style={{
-                    display: "block",
-                    fontSize: "0.68rem",
-                    fontWeight: 900,
-                    letterSpacing: "0.18em",
-                    color: "var(--red)",
-                    lineHeight: 1,
-                  }}
-                >
-                  REVOLT RIDERS
-                </span>
-                <small
-                  style={{
-                    fontSize: "0.55rem",
-                    color: "#888",
-                    letterSpacing: "0.1em",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  DIGITAL MEMBERSHIP PASS
-                </small>
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "5px",
-                background: "rgba(22, 163, 74, 0.15)",
-                border: "1px solid rgba(22, 163, 74, 0.35)",
-                borderRadius: "20px",
-                padding: "4px 10px",
-                fontSize: "0.62rem",
-                color: "#4ade80",
-                fontWeight: 800,
-              }}
-            >
-              <ShieldCheck size={13} />
-              <span>ACTIVE MEMBER</span>
-            </div>
-          </div>
-
-          {/* Main Card Identity Layout */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "20px",
-              flexWrap: "wrap",
+              textAlign: "center",
+              paddingTop: "6px",
             }}
           >
             {/* Avatar badge */}
             <div
               style={{
-                width: "82px",
-                height: "82px",
+                width: "86px",
+                height: "86px",
                 borderRadius: "50%",
                 background: "linear-gradient(135deg, #24272a, #0e0f10)",
                 border: "3px solid #fff",
-                boxShadow: "0 0 0 3px var(--red), 0 8px 20px rgba(0,0,0,0.5)",
+                boxShadow: "0 0 0 3px var(--red), 0 8px 24px rgba(0,0,0,0.55)",
                 display: "grid",
                 placeItems: "center",
-                fontSize: "1.65rem",
+                fontSize: "1.75rem",
                 fontWeight: 900,
                 color: "#fff",
-                flexShrink: 0,
+                marginBottom: "14px",
               }}
             >
               {displayName.slice(0, 2).toUpperCase()}
             </div>
 
-            {/* Identity Info */}
-            <div style={{ flex: 1, minWidth: "200px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                <h2 style={{ fontSize: "1.65rem", fontWeight: 900, margin: 0, letterSpacing: "-0.03em" }}>
-                  {displayName}
-                </h2>
-                {profile?.club_role && (
-                  <span
-                    className={`member-role-badge ${getRoleClass(profile.club_role)}`}
-                    style={{ fontSize: "0.65rem", padding: "3px 8px" }}
-                  >
-                    {profile.club_role}
-                  </span>
-                )}
-              </div>
+            {/* Display Name */}
+            <h2
+              style={{
+                fontSize: "1.65rem",
+                fontWeight: 900,
+                margin: 0,
+                letterSpacing: "-0.03em",
+                color: "#fff",
+                lineHeight: 1.2,
+              }}
+            >
+              {displayName}
+            </h2>
 
-              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px", flexWrap: "wrap" }}>
-                <code
-                  style={{
-                    background: "var(--red)",
-                    color: "#fff",
-                    fontWeight: 900,
-                    padding: "2px 8px",
-                    borderRadius: "4px",
-                    fontSize: "0.78rem",
-                    letterSpacing: "0.08em",
-                  }}
+            {/* Full Name Subtitle (if different from displayName) */}
+            {profile?.full_name && profile.full_name !== displayName && (
+              <p
+                style={{
+                  fontSize: "0.82rem",
+                  color: "#9ca3af",
+                  margin: "4px 0 0",
+                  fontWeight: 500,
+                }}
+              >
+                {profile.full_name}
+              </p>
+            )}
+
+            {/* Badges Row: ID RR, Club Role, Active Member */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                flexWrap: "wrap",
+                marginTop: "12px",
+              }}
+            >
+              <code
+                style={{
+                  background: "var(--red)",
+                  color: "#fff",
+                  fontWeight: 900,
+                  padding: "3px 10px",
+                  borderRadius: "6px",
+                  fontSize: "0.76rem",
+                  letterSpacing: "0.08em",
+                  boxShadow: "0 2px 8px rgba(229, 29, 42, 0.35)",
+                }}
+              >
+                {account.member_external_id}
+              </code>
+
+              {profile?.club_role && (
+                <span
+                  className={`member-role-badge ${getRoleClass(profile.club_role)}`}
+                  style={{ fontSize: "0.66rem", padding: "3.5px 9px", borderRadius: "6px" }}
                 >
-                  {account.member_external_id}
-                </code>
-                {profile?.full_name && profile.full_name !== displayName && (
-                  <span style={{ fontSize: "0.75rem", color: "#b0b4b8" }}>{profile.full_name}</span>
-                )}
-              </div>
+                  {profile.club_role}
+                </span>
+              )}
 
-              {/* Meta pills on card */}
-              <div style={{ display: "flex", gap: "12px", marginTop: "10px", flexWrap: "wrap", fontSize: "0.7rem", color: "#9ca3af" }}>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                  <MapPin size={13} color="var(--red)" />
-                  {city || profile?.city || "Kota belum diisi"}
-                </span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                  <Bike size={13} color="var(--red)" />
-                  {motorcycle || detail?.motorcycle || "Motor belum diisi"}
-                </span>
-                {profile?.join_date && (
-                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
-                    <Calendar size={13} color="var(--red)" />
-                    Bergabung {profile.join_date}
-                  </span>
-                )}
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  background: "rgba(22, 163, 74, 0.15)",
+                  border: "1px solid rgba(22, 163, 74, 0.35)",
+                  borderRadius: "20px",
+                  padding: "3px 10px",
+                  fontSize: "0.64rem",
+                  color: "#4ade80",
+                  fontWeight: 800,
+                }}
+              >
+                <ShieldCheck size={12} />
+                <span>ACTIVE MEMBER</span>
               </div>
+            </div>
+
+            {/* Meta pills on card (Kota, Motor, Tanggal Bergabung) */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "12px 18px",
+                marginTop: "14px",
+                flexWrap: "wrap",
+                fontSize: "0.72rem",
+                color: "#9ca3af",
+              }}
+            >
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <MapPin size={13} color="var(--red)" />
+                {city || profile?.city || "Kota belum diisi"}
+              </span>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                <Bike size={13} color="var(--red)" />
+                {motorcycle || detail?.motorcycle || "Motor belum diisi"}
+              </span>
+              {profile?.join_date && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
+                  <Calendar size={13} color="var(--red)" />
+                  Bergabung {profile.join_date}
+                </span>
+              )}
             </div>
           </div>
 
