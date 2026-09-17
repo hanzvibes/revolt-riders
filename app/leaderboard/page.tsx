@@ -40,29 +40,31 @@ export default function LeaderboardPage() {
         "riding_leaderboard_data",
         async () => {
           const supabase = getSupabaseBrowserClient();
-          const { data: result, error: fetchErr } =
-            await supabase.rpc("get_riding_leaderboard");
-          if (!fetchErr && result && result.length > 0) {
-            return ((result ?? []) as Rider[]).map((row: Rider) => ({
-              ...row,
-              total_km: Number(row.total_km) || 0,
-            }));
-          }
-          // Query member_profiles directly from Supabase
-          const { data: profiles, error: profErr } = await supabase
-            .from("member_profiles")
-            .select("member_external_id,full_name,nickname,total_km")
-            .order("total_km", { ascending: false });
-          if (profErr) throw profErr;
-          return ((profiles ?? []) as {
+          type ProfileRow = {
             member_external_id: string;
             full_name: string;
             nickname?: string | null;
             total_km: number | string | null;
-          }[]).map((p) => ({
-            member_external_id: p.member_external_id,
-            full_name: p.nickname ? `${p.nickname} (${p.full_name})` : p.full_name,
-            total_km: Number(p.total_km) || 0,
+          };
+          const { data: profiles, error: profErr } = await supabase
+            .from("member_profiles")
+            .select("member_external_id,full_name,nickname,total_km")
+            .order("total_km", { ascending: false });
+          if (!profErr && profiles && profiles.length > 0) {
+            return (profiles as ProfileRow[]).map((p: ProfileRow) => ({
+              member_external_id: p.member_external_id,
+              full_name: p.nickname ? `${p.nickname} (${p.full_name})` : p.full_name,
+              total_km: Math.round(Number(p.total_km) || 0),
+            }));
+          }
+
+          // Fallback to RPC get_riding_leaderboard
+          const { data: result, error: fetchErr } =
+            await supabase.rpc("get_riding_leaderboard");
+          if (fetchErr) throw profErr || fetchErr;
+          return ((result ?? []) as Rider[]).map((row: Rider) => ({
+            ...row,
+            total_km: Math.round(Number(row.total_km) || 0),
           }));
         },
         { ttlMs: 2 * 60 * 1000 },
@@ -213,7 +215,7 @@ export default function LeaderboardPage() {
                   <small>Jarak Terjauh</small>
                   <b>
                     {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 1,
+                      maximumFractionDigits: 0,
                     }).format(riders[0]?.total_km || 0)}{" "}
                     KM
                   </b>
@@ -237,7 +239,7 @@ export default function LeaderboardPage() {
                       {myRank === 1
                         ? "🔥 Luar biasa! Kamu memimpin klasemen saat ini."
                         : kmToNext > 0
-                          ? `Kurang ${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(kmToNext)} KM lagi untuk menyalip peringkat #${myRank - 1}.`
+                          ? `Kurang ${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(kmToNext)} KM lagi untuk menyalip peringkat #${myRank - 1}.`
                           : "Pertahankan ritme berkendara dan catat ride log berikutnya!"}
                     </p>
                   </div>
@@ -251,7 +253,7 @@ export default function LeaderboardPage() {
                     <small>TOTAL JARAK</small>
                     <b>
                       {new Intl.NumberFormat("id-ID", {
-                        maximumFractionDigits: 1,
+                        maximumFractionDigits: 0,
                       }).format(myRider.total_km)}{" "}
                       KM
                     </b>
@@ -280,7 +282,7 @@ export default function LeaderboardPage() {
                   <div className="podium-km">
                     <Route />
                     {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 1,
+                      maximumFractionDigits: 0,
                     }).format(top3[1].total_km)}{" "}
                     KM
                   </div>
@@ -303,7 +305,7 @@ export default function LeaderboardPage() {
                   <div className="podium-km">
                     <Flame />
                     {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 1,
+                      maximumFractionDigits: 0,
                     }).format(top3[0].total_km)}{" "}
                     KM
                   </div>
@@ -326,7 +328,7 @@ export default function LeaderboardPage() {
                   <div className="podium-km">
                     <Medal />
                     {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 1,
+                      maximumFractionDigits: 0,
                     }).format(top3[2].total_km)}{" "}
                     KM
                   </div>
@@ -415,7 +417,7 @@ export default function LeaderboardPage() {
                           <Route />
                           <span>
                             {new Intl.NumberFormat("id-ID", {
-                              maximumFractionDigits: 1,
+                              maximumFractionDigits: 0,
                             }).format(r.total_km)}{" "}
                             KM
                           </span>
