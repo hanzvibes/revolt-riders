@@ -19,8 +19,10 @@ import {
   Send,
   ShieldAlert,
   ShieldCheck,
+  Trash2,
   Users,
   UsersRound,
+  X,
 } from "lucide-react";
 import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -459,6 +461,34 @@ export default function AdminPage() {
     await load(true);
   };
 
+  const rejectRequest = async (request: PendingRequest) => {
+    if (
+      !window.confirm(
+        `Tolak pendaftaran untuk ${request.member_external_id} (${request.email})? ID RR ini akan segera dibuka kembali agar dapat didaftarkan ulang.`,
+      )
+    )
+      return;
+    setError("");
+    setMessage("");
+    const supabase = getSupabaseBrowserClient();
+    const { error: rpcError } = await supabase.rpc(
+      "reject_member_account_request",
+      { p_request_id: request.id },
+    );
+    if (rpcError) {
+      const { error: delError } = await supabase
+        .from("member_account_requests")
+        .delete()
+        .eq("id", request.id);
+      if (delError) return setError(delError.message);
+    }
+    setMessage(
+      `Pendaftaran ${request.member_external_id} dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.`,
+    );
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
+  };
+
   const changeRole = async (
     managedAccount: ManagedAccount,
     nextRole: ManagedAccount["role"],
@@ -484,18 +514,39 @@ export default function AdminPage() {
     await load(true);
   };
 
+  const deleteEventPermanently = async (eventRecord: EventRecord) => {
+    if (
+      !window.confirm(
+        `Hapus agenda "${eventRecord.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan.`,
+      )
+    )
+      return;
+    setError("");
+    setMessage("");
+    const supabase = getSupabaseBrowserClient();
+    const { error: rpcError } = await supabase.rpc("delete_event", {
+      p_event_id: eventRecord.id,
+    });
+    if (rpcError) {
+      // Fallback cleanup & direct delete
+      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", eventRecord.id);
+      await supabase.from("event_checkin_codes").delete().eq("event_id", eventRecord.id);
+      await supabase.from("event_attendance").delete().eq("event_id", eventRecord.id);
+      await supabase.from("event_rsvps").delete().eq("event_id", eventRecord.id);
+      await supabase.from("event_invitations").delete().eq("event_id", eventRecord.id);
+      const { error: delError } = await supabase.from("events").delete().eq("id", eventRecord.id);
+      if (delError) return setError(delError.message);
+    }
+    setMessage(`Agenda "${eventRecord.title}" berhasil dihapus secara permanen.`);
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
+  };
+
   const changeEventStatus = async (
     eventRecord: EventRecord,
     nextStatus: EventRecord["status"],
   ) => {
     if (eventRecord.status === nextStatus) return;
-    if (
-      nextStatus === "cancelled" &&
-      !window.confirm(
-        `Batalkan agenda ${eventRecord.title}? Undangan dan histori respons tetap disimpan.`,
-      )
-    )
-      return;
     setError("");
     setMessage("");
     const payload: {
@@ -713,14 +764,13 @@ export default function AdminPage() {
             <CalendarPlus />
           </div>
           <p className="role-panel-intro">
-            Tandai agenda selesai agar masuk ke riwayat komunitas, atau batalkan
-            tanpa menghapus data RSVP dan kehadiran.
+            Tandai agenda selesai agar masuk ke riwayat komunitas, atau hapus agenda jika batal diselenggarakan.
           </p>
           {events.length === 0 ? (
             <p className="system-message">Belum ada agenda untuk dikelola.</p>
           ) : (
             <div className="event-management-list admin-event-status-list">
-              {events.slice(0, 6).map((eventRecord) => (
+              {events.filter((e) => (e.status as string) !== "cancelled").slice(0, 6).map((eventRecord) => (
                 <article key={eventRecord.id}>
                   <time>
                     {new Intl.DateTimeFormat("id-ID", {
@@ -740,21 +790,38 @@ export default function AdminPage() {
                   >
                     {eventRecord.status}
                   </em>
-                  <select
-                    value={eventRecord.status}
-                    onChange={(event) =>
-                      void changeEventStatus(
-                        eventRecord,
-                        event.target.value as EventRecord["status"],
-                      )
-                    }
-                    aria-label={`Status agenda ${eventRecord.title}`}
-                  >
-                    <option value="draft">Draft</option>
-                    <option value="published">Published</option>
-                    <option value="completed">Selesai</option>
-                    <option value="cancelled">Dibatalkan</option>
-                  </select>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <select
+                      value={eventRecord.status}
+                      onChange={(event) =>
+                        void changeEventStatus(
+                          eventRecord,
+                          event.target.value as EventRecord["status"],
+                        )
+                      }
+                      aria-label={`Status agenda ${eventRecord.title}`}
+                    >
+                      <option value="draft">Draft</option>
+                      <option value="published">Published</option>
+                      <option value="completed">Selesai</option>
+                    </select>
+                    <button
+                      type="button"
+                      className="danger"
+                      title="Hapus agenda ini secara permanen"
+                      onClick={() => void deleteEventPermanently(eventRecord)}
+                      style={{
+                        padding: "7px 10px",
+                        border: "1px solid #ffd3d6",
+                        background: "#fff",
+                        color: "#dc1b2a",
+                        borderRadius: "7px",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -1072,10 +1139,32 @@ export default function AdminPage() {
                   <b>{request.member_external_id}</b>
                   <small>{request.email ?? "Email tidak tersedia"}</small>
                 </span>
-                <button onClick={() => void approveRequest(request)}>
-                  <Check />
-                  Setujui
-                </button>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <button type="button" onClick={() => void approveRequest(request)}>
+                    <Check />
+                    Setujui
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void rejectRequest(request)}
+                    style={{
+                      background: "#fff",
+                      color: "#dc1b2a",
+                      border: "1px solid #ffd3d6",
+                      borderRadius: "6px",
+                      padding: "8px 12px",
+                      fontSize: "0.65rem",
+                      fontWeight: 800,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "4px",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <X size={14} />
+                    Tolak
+                  </button>
+                </div>
               </article>
             ))
           )}

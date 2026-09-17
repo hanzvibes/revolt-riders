@@ -2,16 +2,49 @@
 
 import { AppShell } from "@/components/app-shell";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
+import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { Bike, CalendarDays, Check, Clock3, LogOut, MapPin, Pencil, Plus, Route, Save, ShieldCheck, Trash2, UserRound } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import {
+  Bike,
+  Calendar,
+  CalendarDays,
+  Check,
+  Clock3,
+  LogOut,
+  MapPin,
+  Pencil,
+  Plus,
+  QrCode,
+  Route,
+  Save,
+  ShieldAlert,
+  ShieldCheck,
+  Trash2,
+  Trophy,
+  UserRound,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { member_external_id: string; role: string; status: string };
-type Profile = { member_external_id: string; full_name: string; nickname: string | null; city: string | null; join_date: string | null; club_role: string | null; total_km: number };
-type Detail = { nickname_override: string | null; motorcycle: string | null; city_override: string | null };
+type Profile = {
+  member_external_id: string;
+  full_name: string;
+  nickname: string | null;
+  city: string | null;
+  join_date: string | null;
+  club_role: string | null;
+  total_km: number;
+};
+type Detail = {
+  nickname_override: string | null;
+  motorcycle: string | null;
+  city_override: string | null;
+};
 type Ride = {
   id: string;
   event_id: string | null;
@@ -28,7 +61,11 @@ type RideRow = Omit<Ride, "distance_km" | "odometer_start" | "odometer_end"> & {
   odometer_start?: number | string | null;
   odometer_end?: number | string | null;
 };
-type RsvpActivity = { event_id: string; status: "attending" | "declined" | "maybe"; responded_at: string };
+type RsvpActivity = {
+  event_id: string;
+  status: "attending" | "declined" | "maybe";
+  responded_at: string;
+};
 type ActivityEvent = { id: string; title: string };
 
 const getRoleClass = (role: string | null) => {
@@ -73,45 +110,103 @@ export default function ProfilePage() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalData, setEditModalData] = useState<RideLogEditData | null>(null);
 
-  const displayName = detail?.nickname_override || profile?.nickname || profile?.full_name || account?.member_external_id || "Member";
-  const approvedDistance = useMemo(() => rides.filter((ride) => ride.status === "approved").reduce((total, ride) => total + Number(ride.distance_km || 0), 0), [rides]);
-  const totalKm = Math.max(Number(profile?.total_km || 0), approvedDistance);
-  const eventTitleById = useMemo(() => new Map(activityEvents.map((event) => [event.id, event.title])), [activityEvents]);
+  const displayName =
+    detail?.nickname_override ||
+    profile?.nickname ||
+    profile?.full_name ||
+    account?.member_external_id ||
+    "Member";
+
+  // Single Source of Truth for Total KM (no double counting)
+  const totalKm = Number(profile?.total_km || 0);
+  const eventTitleById = useMemo(
+    () => new Map(activityEvents.map((event) => [event.id, event.title])),
+    [activityEvents]
+  );
 
   const load = async () => {
     const supabase = getSupabaseBrowserClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setEmail(user.email ?? "");
-    const { data: accountData } = await supabase.from("member_accounts").select("member_external_id,role,status").eq("user_id", user.id).maybeSingle();
+    const { data: accountData } = await supabase
+      .from("member_accounts")
+      .select("member_external_id,role,status")
+      .eq("user_id", user.id)
+      .maybeSingle();
     const nextAccount = accountData as Account | null;
     setAccount(nextAccount);
-    if (!nextAccount) { setLoading(false); return; }
+    if (!nextAccount) {
+      setLoading(false);
+      return;
+    }
     const [profileResult, detailResult, rideResult, rsvpResult] = await Promise.all([
-      supabase.from("member_profiles").select("member_external_id,full_name,nickname,city,join_date,club_role,total_km").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
-      supabase.from("member_details").select("nickname_override,motorcycle,city_override").eq("member_external_id", nextAccount.member_external_id).maybeSingle(),
-      supabase.from("ride_logs").select("id,event_id,title,status,distance_km,odometer_start,odometer_end,created_at,rejection_reason").eq("member_external_id", nextAccount.member_external_id).order("created_at", { ascending: false }).limit(30),
-      supabase.from("event_rsvps").select("event_id,status,responded_at").eq("member_external_id", nextAccount.member_external_id).order("responded_at", { ascending: false }).limit(15),
+      supabase
+        .from("member_profiles")
+        .select("member_external_id,full_name,nickname,city,join_date,club_role,total_km")
+        .eq("member_external_id", nextAccount.member_external_id)
+        .maybeSingle(),
+      supabase
+        .from("member_details")
+        .select("nickname_override,motorcycle,city_override")
+        .eq("member_external_id", nextAccount.member_external_id)
+        .maybeSingle(),
+      supabase
+        .from("ride_logs")
+        .select("id,event_id,title,status,distance_km,odometer_start,odometer_end,created_at,rejection_reason")
+        .eq("member_external_id", nextAccount.member_external_id)
+        .order("created_at", { ascending: false })
+        .limit(40),
+      supabase
+        .from("event_rsvps")
+        .select("event_id,status,responded_at")
+        .eq("member_external_id", nextAccount.member_external_id)
+        .order("responded_at", { ascending: false })
+        .limit(15),
     ]);
-    const nextProfile = profileResult.data ? { ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile : null;
+    const nextProfile = profileResult.data
+      ? ({ ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile)
+      : null;
     const nextDetail = detailResult.data as Detail | null;
     const nextRides = ((rideResult.data ?? []) as RideRow[]).map((ride: RideRow) => ({
       ...ride,
       distance_km: ride.distance_km === null ? null : Number(ride.distance_km),
-      odometer_start: ride.odometer_start === null || ride.odometer_start === undefined ? null : Number(ride.odometer_start),
-      odometer_end: ride.odometer_end === null || ride.odometer_end === undefined ? null : Number(ride.odometer_end),
+      odometer_start:
+        ride.odometer_start === null || ride.odometer_start === undefined
+          ? null
+          : Number(ride.odometer_start),
+      odometer_end:
+        ride.odometer_end === null || ride.odometer_end === undefined
+          ? null
+          : Number(ride.odometer_end),
     })) as Ride[];
     const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
-    const activityEventIds = [...new Set([...nextRides.map((ride) => ride.event_id), ...nextRsvps.map((rsvp) => rsvp.event_id)].filter(Boolean))] as string[];
-    const eventResult = activityEventIds.length ? await supabase.from("events").select("id,title").in("id", activityEventIds) : { data: [] };
-    setProfile(nextProfile); setDetail(nextDetail); setRides(nextRides); setRsvpActivities(nextRsvps); setActivityEvents((eventResult.data ?? []) as ActivityEvent[]);
+    const activityEventIds = [
+      ...new Set([...nextRides.map((r) => r.event_id), ...nextRsvps.map((r) => r.event_id)].filter(Boolean)),
+    ] as string[];
+    const eventResult = activityEventIds.length
+      ? await supabase.from("events").select("id,title").in("id", activityEventIds)
+      : { data: [] };
+
+    setProfile(nextProfile);
+    setDetail(nextDetail);
+    setRides(nextRides);
+    setRsvpActivities(nextRsvps);
+    setActivityEvents((eventResult.data ?? []) as ActivityEvent[]);
     setNickname(nextDetail?.nickname_override || nextProfile?.nickname || "");
     setMotorcycle(nextDetail?.motorcycle || "");
     setCity(nextDetail?.city_override || nextProfile?.city || "");
     setLoading(false);
   };
 
-  useEffect(() => { void load(); }, []);
+  useEffect(() => {
+    void load();
+  }, []);
 
   const handleRideUpdated = async () => {
     invalidateCache("member_profiles_list");
@@ -125,240 +220,719 @@ export default function ProfilePage() {
   };
 
   const saveDetails = async (event: FormEvent) => {
-    event.preventDefault(); setSaving(true); setMessage(""); setError("");
+    event.preventDefault();
+    setSaving(true);
+    setMessage("");
+    setError("");
     try {
       const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user || !account) throw new Error("Sesi member tidak ditemukan.");
-      const { error: upsertError } = await supabase.from("member_details").upsert({ member_external_id: account.member_external_id, nickname_override: nickname.trim() || null, motorcycle: motorcycle.trim() || null, city_override: city.trim() || null, updated_by: user.id, updated_at: new Date().toISOString() });
+      const { error: upsertError } = await supabase.from("member_details").upsert({
+        member_external_id: account.member_external_id,
+        nickname_override: nickname.trim() || null,
+        motorcycle: motorcycle.trim() || null,
+        city_override: city.trim() || null,
+        updated_by: user.id,
+        updated_at: new Date().toISOString(),
+      });
       if (upsertError) throw upsertError;
-      setMessage("Profil member berhasil diperbarui.");
+      setMessage("Profil member berhasil disimpan.");
       invalidateCache("member_profiles_list");
       invalidateCache("admin_dashboard_overview");
       invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
       await load();
-    } catch (caught) { setError(caught instanceof Error ? caught.message : "Profil belum dapat diperbarui."); }
-    finally { setSaving(false); }
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "Profil belum dapat disimpan.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const logout = async () => { await getSupabaseBrowserClient().auth.signOut(); router.replace("/"); router.refresh(); };
+  const logout = async () => {
+    await getSupabaseBrowserClient().auth.signOut();
+    router.replace("/");
+    router.refresh();
+  };
+
+  if (loading) {
+    return (
+      <AppShell active="Profil" title="Profil">
+        <PageSkeleton title="Memuat Kartu Anggota..." />
+      </AppShell>
+    );
+  }
+
+  if (!email) {
+    return (
+      <AppShell active="Profil" title="Profil">
+        <div className="page-wrap">
+          <section className="empty-state card">
+            <UserRound />
+            <h2>Belum masuk ke akun</h2>
+            <p>Silakan masuk terlebih dahulu untuk membuka kartu anggota digital Revolt Riders.</p>
+            <a className="primary-action" href="/login">
+              MASUK KE AKUN
+            </a>
+          </section>
+        </div>
+      </AppShell>
+    );
+  }
+
+  if (!account) {
+    return (
+      <AppShell active="Profil" title="Profil">
+        <div className="page-wrap">
+          <section className="empty-state card">
+            <ShieldAlert />
+            <h2>Akun menunggu verifikasi pengurus</h2>
+            <p>{email}</p>
+            <p className="notice" style={{ marginTop: "12px" }}>
+              Pendaftaran Anda telah diterima. Pengurus akan segera memverifikasi dan menghubungkan akun Anda dengan Member ID resmi.
+            </p>
+          </section>
+        </div>
+      </AppShell>
+    );
+  }
+
+  const approvedRidesCount = rides.filter((r) => r.status === "approved").length;
 
   return (
     <AppShell active="Profil" title="Profil">
       <div className="page-wrap">
-        <section className="profile-overview card">
-          {loading ? (
-            <h2>Memuat profil…</h2>
-          ) : !email ? (
-            <>
-              <UserRound/>
-              <h2>Belum masuk</h2>
-              <p>Masuk untuk membuka profil dan aktivitas personalmu.</p>
-              <a className="primary-action" href="/login">MASUK</a>
-            </>
-          ) : !account ? (
-            <>
-              <UserRound/>
-              <h2>Akun menunggu verifikasi</h2>
-              <p>{email}</p>
-              <p className="notice">Pengurus perlu menghubungkan akun ini dengan data member resmi terlebih dahulu.</p>
-            </>
-          ) : (
-            <>
-              <i>{displayName.slice(0, 2).toUpperCase()}</i>
-              <em>MEMBER REVOLT RIDERS</em>
-              <h2>{displayName}</h2>
-              {profile?.club_role && (
-                <div style={{ margin: "6px auto" }}>
-                  <span className={`member-role-badge ${getRoleClass(profile.club_role)}`}>
+        {/* ================================================================ */}
+        {/* DIGITAL MEMBERSHIP CARD (IDENTITY CARD) */}
+        {/* ================================================================ */}
+        <section
+          className="digital-id-card"
+          style={{
+            position: "relative",
+            borderRadius: "22px",
+            background: "linear-gradient(135deg, #0d0f11 0%, #1a1c1f 50%, #111315 100%)",
+            border: "1px solid rgba(255, 255, 255, 0.12)",
+            boxShadow: "0 22px 50px rgba(0, 0, 0, 0.45)",
+            padding: "30px 28px",
+            color: "#fff",
+            overflow: "hidden",
+            marginBottom: "24px",
+          }}
+        >
+          {/* Subtle watermark background logo */}
+          <div
+            style={{
+              position: "absolute",
+              right: "-20px",
+              bottom: "-25px",
+              width: "220px",
+              height: "220px",
+              opacity: 0.05,
+              pointerEvents: "none",
+            }}
+          >
+            <Image
+              src="/revolt-riders-logo.jpg"
+              alt="Revolt Riders Crest"
+              width={220}
+              height={220}
+              style={{ objectFit: "contain" }}
+            />
+          </div>
+
+          {/* Top Header of Card */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderBottom: "1px solid rgba(255, 255, 255, 0.09)",
+              paddingBottom: "16px",
+              marginBottom: "22px",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <div
+                style={{
+                  width: "36px",
+                  height: "36px",
+                  borderRadius: "8px",
+                  border: "1px solid var(--red)",
+                  display: "grid",
+                  placeItems: "center",
+                  background: "#000",
+                }}
+              >
+                <Image
+                  src="/revolt-riders-logo.jpg"
+                  alt="RR"
+                  width={30}
+                  height={30}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+              <div>
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: "0.68rem",
+                    fontWeight: 900,
+                    letterSpacing: "0.18em",
+                    color: "var(--red)",
+                    lineHeight: 1,
+                  }}
+                >
+                  REVOLT RIDERS
+                </span>
+                <small
+                  style={{
+                    fontSize: "0.55rem",
+                    color: "#888",
+                    letterSpacing: "0.1em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  DIGITAL MEMBERSHIP PASS
+                </small>
+              </div>
+            </div>
+
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "5px",
+                background: "rgba(22, 163, 74, 0.15)",
+                border: "1px solid rgba(22, 163, 74, 0.35)",
+                borderRadius: "20px",
+                padding: "4px 10px",
+                fontSize: "0.62rem",
+                color: "#4ade80",
+                fontWeight: 800,
+              }}
+            >
+              <ShieldCheck size={13} />
+              <span>ACTIVE MEMBER</span>
+            </div>
+          </div>
+
+          {/* Main Card Identity Layout */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "20px",
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Avatar badge */}
+            <div
+              style={{
+                width: "82px",
+                height: "82px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #24272a, #0e0f10)",
+                border: "3px solid #fff",
+                boxShadow: "0 0 0 3px var(--red), 0 8px 20px rgba(0,0,0,0.5)",
+                display: "grid",
+                placeItems: "center",
+                fontSize: "1.65rem",
+                fontWeight: 900,
+                color: "#fff",
+                flexShrink: 0,
+              }}
+            >
+              {displayName.slice(0, 2).toUpperCase()}
+            </div>
+
+            {/* Identity Info */}
+            <div style={{ flex: 1, minWidth: "200px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                <h2 style={{ fontSize: "1.65rem", fontWeight: 900, margin: 0, letterSpacing: "-0.03em" }}>
+                  {displayName}
+                </h2>
+                {profile?.club_role && (
+                  <span
+                    className={`member-role-badge ${getRoleClass(profile.club_role)}`}
+                    style={{ fontSize: "0.65rem", padding: "3px 8px" }}
+                  >
                     {profile.club_role}
                   </span>
-                </div>
-              )}
-              <p>
-                {profile?.full_name && profile.full_name !== displayName ? profile.full_name : account.member_external_id} · {account.role.replaceAll("_", " ")}
-              </p>
-              <div className="profile-stat-grid">
-                <span>
-                  <Route/>
-                  <small>TOTAL KM</small>
-                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}</b>
-                </span>
-                <span>
-                  <Bike/>
-                  <small>RIDE DIKIRIM</small>
-                  <b>{rides.length}</b>
-                </span>
-                <span>
-                  <Check/>
-                  <small>RSVP</small>
-                  <b>{rsvpActivities.length}</b>
-                </span>
+                )}
               </div>
-              <div className="profile-meta">
-                <span><MapPin/>{city || "Kota belum diisi"}</span>
-                <span><Bike/>{motorcycle || "Motor belum diisi"}</span>
-                <span><ShieldCheck/>{account.status}</span>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "4px", flexWrap: "wrap" }}>
+                <code
+                  style={{
+                    background: "var(--red)",
+                    color: "#fff",
+                    fontWeight: 900,
+                    padding: "2px 8px",
+                    borderRadius: "4px",
+                    fontSize: "0.78rem",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {account.member_external_id}
+                </code>
+                {profile?.full_name && profile.full_name !== displayName && (
+                  <span style={{ fontSize: "0.75rem", color: "#b0b4b8" }}>{profile.full_name}</span>
+                )}
               </div>
-            </>
+
+              {/* Meta pills on card */}
+              <div style={{ display: "flex", gap: "12px", marginTop: "10px", flexWrap: "wrap", fontSize: "0.7rem", color: "#9ca3af" }}>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <MapPin size={13} color="var(--red)" />
+                  {city || profile?.city || "Kota belum diisi"}
+                </span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                  <Bike size={13} color="var(--red)" />
+                  {motorcycle || detail?.motorcycle || "Motor belum diisi"}
+                </span>
+                {profile?.join_date && (
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}>
+                    <Calendar size={13} color="var(--red)" />
+                    Bergabung {profile.join_date}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Stats Bar On Card */}
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              background: "rgba(0, 0, 0, 0.35)",
+              border: "1px solid rgba(255, 255, 255, 0.08)",
+              borderRadius: "14px",
+              padding: "14px",
+              marginTop: "24px",
+              textAlign: "center",
+              gap: "8px",
+            }}
+          >
+            <div>
+              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
+                TOTAL KM RESMI
+              </small>
+              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
+                {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}{" "}
+                <span style={{ fontSize: "0.7rem", color: "var(--red)" }}>KM</span>
+              </b>
+            </div>
+
+            <div style={{ borderLeft: "1px solid rgba(255, 255, 255, 0.1)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>
+              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
+                RIWAYAT TOURING
+              </small>
+              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
+                {approvedRidesCount}{" "}
+                <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>log</span>
+              </b>
+            </div>
+
+            <div>
+              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
+                RESPONS RSVP
+              </small>
+              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
+                {rsvpActivities.length}{" "}
+                <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>agenda</span>
+              </b>
+            </div>
+          </div>
+
+          {/* Quick Shortcuts Strip */}
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              marginTop: "16px",
+              flexWrap: "wrap",
+            }}
+          >
+            <Link
+              href="/riding"
+              style={{
+                flex: "1 1 auto",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "10px",
+                padding: "8px 12px",
+                fontSize: "0.68rem",
+                fontWeight: 800,
+                color: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+              }}
+            >
+              <Bike size={14} color="var(--red)" />
+              <span>Catat Riding</span>
+            </Link>
+
+            <Link
+              href="/agenda"
+              style={{
+                flex: "1 1 auto",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "10px",
+                padding: "8px 12px",
+                fontSize: "0.68rem",
+                fontWeight: 800,
+                color: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+              }}
+            >
+              <CalendarDays size={14} color="var(--red)" />
+              <span>Agenda Club</span>
+            </Link>
+
+            <Link
+              href="/leaderboard"
+              style={{
+                flex: "1 1 auto",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "10px",
+                padding: "8px 12px",
+                fontSize: "0.68rem",
+                fontWeight: 800,
+                color: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+              }}
+            >
+              <Trophy size={14} color="var(--red)" />
+              <span>Leaderboard</span>
+            </Link>
+
+            <Link
+              href="/check-in"
+              style={{
+                flex: "1 1 auto",
+                background: "rgba(255, 255, 255, 0.08)",
+                border: "1px solid rgba(255, 255, 255, 0.14)",
+                borderRadius: "10px",
+                padding: "8px 12px",
+                fontSize: "0.68rem",
+                fontWeight: 800,
+                color: "#fff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "6px",
+              }}
+            >
+              <QrCode size={14} color="var(--red)" />
+              <span>Check-in</span>
+            </Link>
+          </div>
+        </section>
+
+        {/* ================================================================ */}
+        {/* SECTION RIWAYAT SOWAN & TOURING */}
+        {/* ================================================================ */}
+        <section className="card" style={{ marginBottom: "22px" }}>
+          <div
+            className="section-title"
+            style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}
+          >
+            <span>
+              <em>RIDING & SOWAN</em>
+              <h3>Riwayat Touring / Sowan ({rides.length})</h3>
+            </span>
+            <button
+              type="button"
+              className="primary-action"
+              onClick={() => {
+                setEditModalData({
+                  memberExternalId: account.member_external_id,
+                  memberName: displayName,
+                  title: "",
+                  km: 0,
+                  date: new Date().toISOString().slice(0, 10),
+                });
+                setEditModalOpen(true);
+              }}
+              style={{ height: "36px", padding: "0 14px", fontSize: "0.68rem", borderRadius: "8px" }}
+            >
+              <Plus size={14} /> Catat Riwayat
+            </button>
+          </div>
+
+          {rides.length === 0 ? (
+            <p className="system-message">Belum ada riwayat sowan / ride log yang dicatat.</p>
+          ) : (
+            <div className="activity-list" style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              {rides.map((ride) => {
+                const eventTitle = ride.event_id ? eventTitleById.get(ride.event_id) : null;
+                const displayTitle = ride.title || eventTitle || "Ride Mandiri";
+                const isApproved = ride.status === "approved";
+                const isPending = ride.status === "pending";
+
+                return (
+                  <article
+                    key={ride.id}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "11px 12px",
+                      borderTop: "1px solid var(--line)",
+                      gap: "10px",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flex: 1 }}>
+                      <i
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          borderRadius: "8px",
+                          background: isApproved ? "#edf8f1" : isPending ? "#fef3c7" : "#fff0f1",
+                          color: isApproved ? "#158050" : isPending ? "#b45309" : "#dc2626",
+                          display: "grid",
+                          placeItems: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Route size={16} />
+                      </i>
+                      <span style={{ flex: 1, minWidth: 0 }}>
+                        <b style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: "0.82rem" }}>
+                          {displayTitle}
+                        </b>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "2px" }}>
+                          <small style={{ color: "var(--muted)", fontSize: "0.68rem" }}>
+                            {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} ·{" "}
+                            {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM
+                          </small>
+                          {ride.odometer_start !== null && ride.odometer_end !== null && (
+                            <small
+                              style={{
+                                color: "#6c757d",
+                                fontSize: "0.62rem",
+                                background: "#f1f3f5",
+                                padding: "1px 5px",
+                                border: "1px solid #e9ecef",
+                                borderRadius: "4px",
+                              }}
+                            >
+                              Odo {ride.odometer_start} → {ride.odometer_end}
+                            </small>
+                          )}
+                          {eventTitle && (
+                            <small
+                              style={{
+                                color: "var(--red)",
+                                fontSize: "0.62rem",
+                                background: "#fff5f5",
+                                padding: "1px 5px",
+                                border: "1px solid #ffe3e3",
+                                borderRadius: "4px",
+                                fontWeight: 700,
+                              }}
+                            >
+                              {eventTitle}
+                            </small>
+                          )}
+                        </div>
+                        {ride.status === "rejected" && ride.rejection_reason && (
+                          <small style={{ color: "#dc1b2a", display: "block", marginTop: "4px", fontSize: "0.65rem", fontWeight: 700 }}>
+                            ⚠️ Alasan ditolak: {ride.rejection_reason}
+                          </small>
+                        )}
+                      </span>
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                      <span
+                        style={{
+                          fontSize: "0.6rem",
+                          fontWeight: 800,
+                          borderRadius: "12px",
+                          padding: "3px 8px",
+                          background: isApproved ? "#eaf8f1" : isPending ? "#fef3c7" : "#fff0f1",
+                          color: isApproved ? "#137748" : isPending ? "#b45309" : "#b31221",
+                          textTransform: "capitalize",
+                        }}
+                      >
+                        {isApproved ? "Approved" : isPending ? "Pending" : "Ditolak"}
+                      </span>
+
+                      <button
+                        type="button"
+                        className="member-tour-action"
+                        title="Edit catatan ini"
+                        onClick={() => {
+                          setEditModalData({
+                            id: ride.id,
+                            memberExternalId: account.member_external_id,
+                            memberName: displayName,
+                            title: ride.title || eventTitle || "Ride Mandiri",
+                            km: Number(ride.distance_km || 0),
+                            date: ride.created_at ? ride.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
+                          });
+                          setEditModalOpen(true);
+                        }}
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "6px",
+                          border: "1px solid var(--line)",
+                          background: "#fff",
+                          display: "grid",
+                          placeItems: "center",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Pencil size={12} />
+                      </button>
+                      <button
+                        type="button"
+                        className="member-tour-action delete"
+                        title="Hapus catatan ini"
+                        onClick={async () => {
+                          if (!confirm(`Hapus catatan "${displayTitle}"?`)) return;
+                          try {
+                            await deleteRideLog(ride.id, account.member_external_id);
+                            await handleRideUpdated();
+                          } catch (e) {
+                            alert(e instanceof Error ? e.message : "Gagal menghapus");
+                          }
+                        }}
+                        style={{
+                          width: "28px",
+                          height: "28px",
+                          borderRadius: "6px",
+                          border: "1px solid #ffd3d6",
+                          background: "#fff",
+                          display: "grid",
+                          placeItems: "center",
+                          cursor: "pointer",
+                          color: "#dc1b2a",
+                        }}
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           )}
         </section>
 
-        {account && (
-          <section className="profile-edit card">
-            <div className="section-title">
-              <span><em>DATA PRIBADI</em><h3>Lengkapi profil</h3></span>
-              <Save/>
+        {/* ================================================================ */}
+        {/* EDIT PROFIL MEMBER */}
+        {/* ================================================================ */}
+        <section className="profile-edit card" style={{ marginBottom: "22px" }}>
+          <div className="section-title">
+            <span>
+              <em>DATA PRIBADI</em>
+              <h3>Lengkapi Profil & Kendaraan</h3>
+            </span>
+            <Save />
+          </div>
+          <p style={{ margin: "0 0 14px", color: "var(--muted)", fontSize: "0.75rem" }}>
+            Perbarui nama panggilan, motor, dan kota domisili. Data ini akan ditampilkan pada identitas kartu anggota.
+          </p>
+          <form onSubmit={saveDetails}>
+            <label>
+              Nama Panggilan
+              <input
+                value={nickname}
+                onChange={(event) => setNickname(event.target.value)}
+                maxLength={40}
+                placeholder="Contoh: Rafly"
+              />
+            </label>
+            <label>
+              Motor
+              <input
+                value={motorcycle}
+                onChange={(event) => setMotorcycle(event.target.value)}
+                maxLength={120}
+                placeholder="Contoh: Honda CB150R, Yamaha XSR 155"
+              />
+            </label>
+            <label>
+              Kota Domisili
+              <input
+                value={city}
+                onChange={(event) => setCity(event.target.value)}
+                maxLength={100}
+                placeholder="Contoh: Situbondo, Bondowoso"
+              />
+            </label>
+            {message && <p className="success-message"><Check />{message}</p>}
+            {error && <p className="error-message">{error}</p>}
+            <button className="primary-action" disabled={saving}>
+              {saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}
+            </button>
+          </form>
+        </section>
+
+        {/* ================================================================ */}
+        {/* AKTIVITAS AGENDA RSVP */}
+        {/* ================================================================ */}
+        <section className="card" style={{ marginBottom: "24px" }}>
+          <div className="section-title">
+            <span>
+              <em>AGENDA CLUB</em>
+              <h3>Respons RSVP Undangan</h3>
+            </span>
+            <CalendarDays />
+          </div>
+          {rsvpActivities.length === 0 ? (
+            <p className="system-message">Belum ada respons agenda tercatat.</p>
+          ) : (
+            <div className="activity-list">
+              {rsvpActivities.slice(0, 5).map((rsvp) => (
+                <article key={`${rsvp.event_id}-${rsvp.responded_at}`}>
+                  <i>
+                    <Clock3 />
+                  </i>
+                  <span>
+                    <b>{eventTitleById.get(rsvp.event_id) || "Agenda Revolt Riders"}</b>
+                    <small>
+                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(
+                        new Date(rsvp.responded_at)
+                      )}
+                    </small>
+                  </span>
+                  <em className={`rsvp-${rsvp.status}`}>
+                    {rsvp.status === "attending"
+                      ? "hadir"
+                      : rsvp.status === "declined"
+                        ? "tidak hadir"
+                        : "mungkin"}
+                  </em>
+                </article>
+              ))}
             </div>
-            <p>Perbarui nama panggilan, motor, dan kota. Data ini dapat digunakan untuk tampilan internal komunitas.</p>
-            <form onSubmit={saveDetails}>
-              <label>Nama panggilan<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength={40} placeholder="Nama panggilan"/></label>
-              <label>Motor<input value={motorcycle} onChange={(event) => setMotorcycle(event.target.value)} maxLength={120} placeholder="Contoh: Honda CB150R"/></label>
-              <label>Kota<input value={city} onChange={(event) => setCity(event.target.value)} maxLength={100} placeholder="Contoh: Situbondo"/></label>
-              {message && <p className="success-message"><Check/>{message}</p>}
-              {error && <p className="error-message">{error}</p>}
-              <button className="primary-action" disabled={saving}>{saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}</button>
-            </form>
-          </section>
-        )}
+          )}
+        </section>
 
-        {account && (
-          <section className="profile-activity">
-            <section className="card">
-              <div className="section-title" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}>
-                <span><em>RIDING & SOWAN</em><h3>Riwayat Ride Log</h3></span>
-                <button
-                  type="button"
-                  className="member-add-tour-btn"
-                  onClick={() => {
-                    setEditModalData({
-                      memberExternalId: account.member_external_id,
-                      memberName: displayName,
-                      title: "",
-                      km: 0,
-                      date: new Date().toISOString().slice(0, 10),
-                    });
-                    setEditModalOpen(true);
-                  }}
-                >
-                  <Plus size={13} /> Catat
-                </button>
-              </div>
-              {rides.length === 0 ? (
-                <p className="system-message">Belum ada riwayat sowan / ride log yang dicatat.</p>
-              ) : (
-                <div className="activity-list">
-                  {rides.map((ride) => {
-                    const eventTitle = ride.event_id ? eventTitleById.get(ride.event_id) : null;
-                    const displayTitle =
-                      ride.title ||
-                      eventTitle ||
-                      "Ride Mandiri";
-
-                    return (
-                      <article key={ride.id} style={{ display: "flex", alignItems: "flex-start", gap: "10px" }}>
-                        <i style={{ marginTop: "3px" }}><Route/></i>
-                        <span style={{ flex: 1, minWidth: 0 }}>
-                          <b style={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                            {displayTitle}
-                          </b>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "2px" }}>
-                            <small>
-                              {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM
-                            </small>
-                            {ride.odometer_start !== null && ride.odometer_end !== null && (
-                              <small style={{ color: "#6c757d", fontSize: "0.65rem", background: "#f1f3f5", padding: "1px 5px", border: "1px solid #e9ecef", borderRadius: "4px" }}>
-                                Odo {ride.odometer_start} → {ride.odometer_end}
-                              </small>
-                            )}
-                            {eventTitle && (
-                              <small style={{ color: "var(--red)", fontSize: "0.62rem", background: "#fff5f5", padding: "1px 5px", border: "1px solid #ffe3e3", borderRadius: "4px", fontWeight: 700 }}>
-                                {eventTitle}
-                              </small>
-                            )}
-                          </div>
-                          {ride.status === "rejected" && ride.rejection_reason && (
-                            <small style={{ color: "#dc1b2a", display: "block", marginTop: "4px", fontSize: "0.68rem" }}>
-                              ⚠️ Alasan ditolak: {ride.rejection_reason}
-                            </small>
-                          )}
-                        </span>
-                        <em className={`activity-${ride.status}`}>{ride.status}</em>
-                        <div style={{ display: "flex", gap: "5px", marginLeft: "4px", marginTop: "2px" }}>
-                          <button
-                            type="button"
-                            className="member-tour-action"
-                            title="Edit catatan ini"
-                            onClick={() => {
-                              setEditModalData({
-                                id: ride.id,
-                                memberExternalId: account.member_external_id,
-                                memberName: displayName,
-                                title: ride.title || eventTitle || "Ride Mandiri",
-                                km: Number(ride.distance_km || 0),
-                                date: ride.created_at ? ride.created_at.slice(0, 10) : new Date().toISOString().slice(0, 10),
-                              });
-                              setEditModalOpen(true);
-                            }}
-                          >
-                            <Pencil size={12} />
-                          </button>
-                          <button
-                            type="button"
-                            className="member-tour-action delete"
-                            title="Hapus catatan ini"
-                            onClick={async () => {
-                              if (!confirm(`Hapus catatan "${displayTitle}"?`)) return;
-                              try {
-                                await deleteRideLog(ride.id, account.member_external_id);
-                                await handleRideUpdated();
-                              } catch (e) {
-                                alert(e instanceof Error ? e.message : "Gagal menghapus");
-                              }
-                            }}
-                          >
-                            <Trash2 size={12} />
-                          </button>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-
-            <section className="card">
-              <div className="section-title">
-                <span><em>AGENDA</em><h3>Respons RSVP</h3></span>
-                <CalendarDays/>
-              </div>
-              {rsvpActivities.length === 0 ? (
-                <p className="system-message">Belum ada respons undangan.</p>
-              ) : (
-                <div className="activity-list">
-                  {rsvpActivities.slice(0, 5).map((rsvp) => (
-                    <article key={`${rsvp.event_id}-${rsvp.responded_at}`}>
-                      <i><Clock3/></i>
-                      <span>
-                        <b>{eventTitleById.get(rsvp.event_id) || "Agenda Revolt Riders"}</b>
-                        <small>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(rsvp.responded_at))}</small>
-                      </span>
-                      <em className={`rsvp-${rsvp.status}`}>
-                        {rsvp.status === "attending" ? "hadir" : rsvp.status === "declined" ? "tidak hadir" : "mungkin"}
-                      </em>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
-          </section>
-        )}
-
-        {email && (
-          <button className="dark-action profile-logout" onClick={logout}>
-            <LogOut/>KELUAR DARI AKUN
+        {/* LOGOUT BUTTON */}
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <button className="dark-action" onClick={logout} style={{ borderRadius: "8px" }}>
+            <LogOut />
+            KELUAR DARI AKUN
           </button>
-        )}
+        </div>
       </div>
 
       <RideLogEditModal

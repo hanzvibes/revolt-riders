@@ -12,7 +12,7 @@ import {
   Plus,
   Search,
   ShieldAlert,
-  XCircle,
+  Trash2,
 } from "lucide-react";
 import {
   useCallback,
@@ -22,7 +22,7 @@ import {
   type FormEvent,
 } from "react";
 
-type EventStatus = "draft" | "published" | "completed" | "cancelled";
+type EventStatus = "draft" | "published" | "completed";
 type Event = {
   id: string;
   title: string;
@@ -159,41 +159,51 @@ export default function AdminEventsPage() {
     }
     setSaving(false);
   };
-  const changeStatus = async (event: Event, status: EventStatus) => {
-    if (!user) return;
-    let cancellationReason: string | null = null;
-    if (status === "cancelled") {
-      cancellationReason =
-        window
-          .prompt("Alasan pembatalan agenda (minimal 3 karakter):", "")
-          ?.trim() || null;
-      if (!cancellationReason || cancellationReason.length < 3)
-        return setError("Alasan pembatalan wajib diisi.");
-    }
+  const deletePermanently = async (event: Event) => {
     if (
       !window.confirm(
-        `${status === "completed" ? "Tandai agenda ini selesai?" : status === "cancelled" ? "Batalkan agenda ini?" : "Publikasikan agenda ini?"}`,
+        `Hapus agenda "${event.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan dari sistem.`,
       )
     )
       return;
     setError("");
     setMessage("");
-    const patch =
-      status === "cancelled"
-        ? {
-            status,
-            cancelled_at: new Date().toISOString(),
-            cancelled_by: user.id,
-            cancellation_reason: cancellationReason,
-          }
-        : {
-            status,
-            cancelled_at: null,
-            cancelled_by: null,
-            cancellation_reason: null,
-            published_at:
-              status === "published" ? new Date().toISOString() : undefined,
-          };
+    const supabase = getSupabaseBrowserClient();
+    const { error: rpcError } = await supabase.rpc("delete_event", {
+      p_event_id: event.id,
+    });
+    if (rpcError) {
+      // Fallback manual cleanup
+      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", event.id);
+      await supabase.from("event_checkin_codes").delete().eq("event_id", event.id);
+      await supabase.from("event_attendance").delete().eq("event_id", event.id);
+      await supabase.from("event_rsvps").delete().eq("event_id", event.id);
+      await supabase.from("event_invitations").delete().eq("event_id", event.id);
+      const { error: delError } = await supabase.from("events").delete().eq("id", event.id);
+      if (delError) return setError(delError.message);
+    }
+    setMessage(`Agenda "${event.title}" berhasil dihapus secara permanen.`);
+    await load();
+  };
+
+  const changeStatus = async (event: Event, status: EventStatus) => {
+    if (!user) return;
+    if (
+      !window.confirm(
+        `${status === "completed" ? "Tandai agenda ini selesai?" : "Publikasikan agenda ini?"}`,
+      )
+    )
+      return;
+    setError("");
+    setMessage("");
+    const patch = {
+      status,
+      cancelled_at: null,
+      cancelled_by: null,
+      cancellation_reason: null,
+      published_at:
+        status === "published" ? new Date().toISOString() : undefined,
+    };
     const { error: updateError } = await getSupabaseBrowserClient()
       .from("events")
       .update(patch)
@@ -203,9 +213,7 @@ export default function AdminEventsPage() {
       setMessage(
         status === "completed"
           ? "Agenda masuk History komunitas."
-          : status === "cancelled"
-            ? "Agenda dibatalkan. Undangan publik otomatis tidak aktif."
-            : "Agenda dipublikasikan.",
+          : "Agenda dipublikasikan.",
       );
       await load();
     }
@@ -214,6 +222,7 @@ export default function AdminEventsPage() {
     () =>
       events.filter(
         (event) =>
+          (event.status as string) !== "cancelled" &&
           (filter === "all" || event.status === filter) &&
           `${event.title} ${event.type} ${event.location_name ?? ""}`
             .toLowerCase()
@@ -293,7 +302,6 @@ export default function AdminEventsPage() {
               <option value="draft">Draft</option>
               <option value="published">Published</option>
               <option value="completed">Selesai</option>
-              <option value="cancelled">Dibatalkan</option>
             </select>
             <select
               value={rsvpFilter}
@@ -334,9 +342,6 @@ export default function AdminEventsPage() {
                           RSVP: {stats.attending} hadir · {stats.maybe} mungkin
                           · {stats.declined} tidak hadir
                         </small>
-                        {event.cancellation_reason && (
-                          <small>Pembatalan: {event.cancellation_reason}</small>
-                        )}
                       </div>
                       <div className="event-management-actions">
                         <button onClick={() => beginEdit(event)}>
@@ -363,17 +368,16 @@ export default function AdminEventsPage() {
                             Selesaikan
                           </button>
                         )}
-                        {["draft", "published"].includes(event.status) && (
-                          <button
-                            className="danger"
-                            onClick={() =>
-                              void changeStatus(event, "cancelled")
-                            }
-                          >
-                            <XCircle />
-                            Batalkan
-                          </button>
-                        )}
+                        <button
+                          className="danger"
+                          title="Hapus agenda ini secara permanen"
+                          onClick={() =>
+                            void deletePermanently(event)
+                          }
+                        >
+                          <Trash2 />
+                          Hapus
+                        </button>
                       </div>
                     </article>
                   )

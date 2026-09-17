@@ -44,6 +44,12 @@ export async function saveRideLog(
   }
 
   // Fallback to direct table mutation
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: callerAccount } = user
+    ? await supabase.from("member_accounts").select("role, status").eq("user_id", user.id).maybeSingle()
+    : { data: null };
+  const isStaff = callerAccount && ["admin", "superadmin", "road_captain"].includes(callerAccount.role);
+
   if (isUpdate && input.id) {
     const { error: updateError } = await supabase
       .from("ride_logs")
@@ -52,7 +58,8 @@ export async function saveRideLog(
         odometer_start: 0,
         odometer_end: cleanKm,
         created_at: cleanDate,
-        reviewed_at: new Date().toISOString(),
+        reviewed_at: isStaff ? new Date().toISOString() : undefined,
+        reviewed_by: isStaff && user ? user.id : undefined,
       })
       .eq("id", input.id);
 
@@ -63,9 +70,11 @@ export async function saveRideLog(
       title: cleanTitle,
       odometer_start: 0,
       odometer_end: cleanKm,
-      status: "approved",
+      status: isStaff ? "approved" : "pending",
       created_at: cleanDate,
-      reviewed_at: new Date().toISOString(),
+      reviewed_at: isStaff ? new Date().toISOString() : null,
+      reviewed_by: isStaff && user ? user.id : null,
+      submitted_by: user ? user.id : null,
     });
 
     if (insertError) throw insertError;

@@ -3,6 +3,7 @@
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
+import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Check, Pencil, RefreshCw, Search, ShieldAlert, UsersRound } from "lucide-react";
@@ -290,9 +291,7 @@ export default function ManageMembersPage() {
   if (loading)
     return (
       <AppShell active="Kelola Member" title="Kelola Member">
-        <div className="page-wrap">
-          <p>Memeriksa izin…</p>
-        </div>
+        <PageSkeleton title="Memuat Direktori Member..." />
       </AppShell>
     );
   if (
@@ -375,75 +374,143 @@ export default function ManageMembersPage() {
                 member.nickname ||
                 member.full_name;
               return (
-                <article key={member.member_external_id}>
-                  <i>{displayName.slice(0, 2).toUpperCase()}</i>
-                  <span>
-                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-                      <b>{displayName}</b>
-                      {member.club_role && (
-                        <span className={`member-role-badge ${getRoleClass(member.club_role)}`}>
-                          {member.club_role}
+                <article
+                  key={member.member_external_id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    padding: "14px 16px",
+                    border: "1px solid var(--line)",
+                    borderRadius: "12px",
+                    background: "#fff",
+                    gap: "14px",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "12px", minWidth: 0, flex: 1 }}>
+                    <i
+                      style={{
+                        width: "42px",
+                        height: "42px",
+                        borderRadius: "50%",
+                        background: "#171819",
+                        color: "#fff",
+                        display: "grid",
+                        placeItems: "center",
+                        fontWeight: 900,
+                        fontSize: "0.85rem",
+                        flexShrink: 0,
+                        fontStyle: "normal",
+                      }}
+                    >
+                      {displayName.slice(0, 2).toUpperCase()}
+                    </i>
+                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0, gap: "3px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                        <b style={{ fontSize: "0.88rem", color: "var(--ink)" }}>{displayName}</b>
+                        {member.club_role && (
+                          <span className={`member-role-badge ${getRoleClass(member.club_role)}`}>
+                            {member.club_role}
+                          </span>
+                        )}
+                      </div>
+                      <small style={{ color: "var(--muted)", fontSize: "0.68rem" }}>
+                        <strong style={{ color: "var(--red)", fontWeight: 800 }}>{member.member_external_id}</strong>
+                        {member.full_name && member.full_name !== displayName ? ` · ${member.full_name}` : ""}
+                        {detail?.motorcycle ? ` · ${detail.motorcycle}` : ""}
+                        {member.city ? ` · ${member.city}` : ""}
+                      </small>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "2px" }}>
+                        <span style={{ fontSize: "0.68rem", fontWeight: 800, color: "var(--ink-soft)" }}>
+                          {new Intl.NumberFormat("id-ID").format(member.total_km)} KM
                         </span>
-                      )}
-                    </div>
-                    <small>
-                      {member.member_external_id}
-                      {detail?.motorcycle ? ` · ${detail.motorcycle}` : ""}
-                      {member.city ? ` · ${member.city}` : ""}
-                    </small>
-                  </span>
-                  <em
-                    className={
-                      memberAccount?.status === "active"
-                        ? "member-active"
-                        : "member-waiting"
-                    }
-                  >
-                    {memberAccount?.status || "Belum ada akun"}
-                  </em>
-                  <button
-                    className="member-edit-action"
-                    onClick={() => openEdit(member)}
-                    aria-label={`Edit ${displayName}`}
-                  >
-                    <Pencil />
-                  </button>
-                  {memberAccount && (
-                    <div className="member-account-controls">
-                      {account.role === "superadmin" && (
-                        <select
-                          value={memberAccount.role}
-                          onChange={(event) =>
-                            void changeRole(memberAccount, event.target.value)
+                        <em
+                          className={
+                            memberAccount?.status === "active"
+                              ? "member-active"
+                              : "member-waiting"
                           }
-                          aria-label={`Role ${member.member_external_id}`}
+                          style={{ fontSize: "0.62rem" }}
                         >
-                          {roles.map((role) => (
-                            <option key={role} value={role}>
-                              {role.replaceAll("_", " ")}
-                            </option>
-                          ))}
-                        </select>
-                      )}
-                      <select
-                        value={
-                          memberAccount.status === "inactive"
-                            ? "inactive"
-                            : "active"
-                        }
-                        onChange={(event) =>
-                          void changeStatus(
-                            memberAccount,
-                            event.target.value as "active" | "inactive",
-                          )
-                        }
-                        aria-label={`Status ${member.member_external_id}`}
-                      >
-                        <option value="active">Aktif</option>
-                        <option value="inactive">Nonaktif</option>
-                      </select>
+                          {memberAccount?.status === "active" ? "Akun Aktif" : memberAccount?.status || "Belum ada akun"}
+                        </em>
+                      </div>
                     </div>
-                  )}
+                  </div>
+
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                    {memberAccount && (
+                      <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
+                        {account.role === "superadmin" && (
+                          <select
+                            value={memberAccount.role}
+                            onChange={(event) =>
+                              void changeRole(memberAccount, event.target.value)
+                            }
+                            aria-label={`Role ${member.member_external_id}`}
+                            style={{
+                              border: "1px solid var(--line)",
+                              borderRadius: "6px",
+                              padding: "6px 8px",
+                              fontSize: "0.65rem",
+                              fontWeight: 700,
+                              background: "#f9f9f9",
+                            }}
+                          >
+                            {roles.map((role) => (
+                              <option key={role} value={role}>
+                                {role.replaceAll("_", " ")}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                        <select
+                          value={
+                            memberAccount.status === "inactive"
+                              ? "inactive"
+                              : "active"
+                          }
+                          onChange={(event) =>
+                            void changeStatus(
+                              memberAccount,
+                              event.target.value as "active" | "inactive",
+                            )
+                          }
+                          aria-label={`Status ${member.member_external_id}`}
+                          style={{
+                            border: "1px solid var(--line)",
+                            borderRadius: "6px",
+                            padding: "6px 8px",
+                            fontSize: "0.65rem",
+                            fontWeight: 700,
+                            background: "#f9f9f9",
+                          }}
+                        >
+                          <option value="active">Aktif</option>
+                          <option value="inactive">Nonaktif</option>
+                        </select>
+                      </div>
+                    )}
+                    <button
+                      className="member-edit-action"
+                      onClick={() => openEdit(member)}
+                      aria-label={`Edit ${displayName}`}
+                      title={`Edit data ${displayName}`}
+                      style={{
+                        width: "34px",
+                        height: "34px",
+                        display: "grid",
+                        placeItems: "center",
+                        borderRadius: "8px",
+                        border: "1px solid var(--line)",
+                        background: "#fff",
+                        color: "var(--ink)",
+                        cursor: "pointer",
+                      }}
+                    >
+                      <Pencil size={14} />
+                    </button>
+                  </div>
                 </article>
               );
             })}

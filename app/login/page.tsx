@@ -23,11 +23,29 @@ export default function LoginPage() {
         if (signInError) throw signInError;
         router.replace("/profil"); router.refresh();
       } else {
-        const { error: signUpError } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/login`, data: { member_external_id: memberId.trim().toUpperCase() } } });
-        if (signUpError) throw signUpError;
+        const cleanId = memberId.trim().toUpperCase();
+        const { error: signUpError } = await supabase.auth.signUp({
+          email: email.trim().toLowerCase(),
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/login`,
+            data: { member_external_id: cleanId },
+          },
+        });
+        if (signUpError) {
+          if (signUpError.message.toLowerCase().includes("member_external_id") || signUpError.message.toLowerCase().includes("duplicate")) {
+            throw new Error(`ID ${cleanId} sedang dalam proses verifikasi atau sudah pernah diajukan. Jika salah input, pengurus dapat membatalkan permintaan sebelumnya di menu Admin agar ID dapat didaftarkan ulang.`);
+          }
+          throw signUpError;
+        }
         setMessage("Pendaftaran diterima. Cek email untuk verifikasi, lalu tunggu validasi pengurus.");
       }
-    } catch (cause) { setError(cause instanceof Error ? cause.message : "Autentikasi gagal."); } finally { setLoading(false); }
+    } catch (cause) {
+      const msg = cause instanceof Error ? cause.message : "Autentikasi gagal.";
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   };
   return <main className="auth-page"><Link href="/" className="back-link"><ArrowLeft/>Kembali</Link><section className="auth-card"><Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={128} height={128} priority/><em>MEMBER ACCESS</em><h1>{mode === "login" ? "Masuk ke Revolt" : "Daftar akun member"}</h1><p>{mode === "login" ? "Gunakan akun yang sudah diverifikasi pengurus." : "Member ID akan dicocokkan dengan data resmi club."}</p><form onSubmit={submit}>{mode === "register" && <label>Member ID<div><UserPlus/><input value={memberId} onChange={(event) => setMemberId(event.target.value)} placeholder="RR-014" required/></div></label>}<label>Email<div><Mail/><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="nama@email.com" required/></div></label><label>Password<div><LockKeyhole/><input type="password" value={password} onChange={(event) => setPassword(event.target.value)} minLength={8} required/></div></label>{error && <p className="error-message">{error}</p>}{message && <p className="success-message"><ShieldCheck/>{message}</p>}<button className="primary-action" disabled={loading}>{loading ? "Memproses…" : mode === "login" ? "MASUK" : "DAFTAR AKUN"}</button></form><button className="mode-switch" onClick={() => { setMode(mode === "login" ? "register" : "login"); setError(""); setMessage(""); }}>{mode === "login" ? "Belum punya akun? Daftar" : "Sudah punya akun? Masuk"}</button></section></main>;
 }

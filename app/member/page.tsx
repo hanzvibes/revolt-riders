@@ -6,6 +6,7 @@ import {
   RideLogEditModal,
   type RideLogEditData,
 } from "@/components/ride-log-edit-modal";
+import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -389,11 +390,10 @@ export default function MemberPage() {
             </a>
           </section>
         ) : loading ? (
-          <section className="empty-state card">
-            <UsersRound />
-            <h2>Memuat direktori member…</h2>
-            <p>Menyiapkan data profil member Revolt Riders dari Supabase.</p>
-          </section>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "12px" }}>
+            <StatsGridSkeleton count={3} />
+            <CardSkeleton height="280px" />
+          </div>
         ) : error ? (
           <section className="empty-state card">
             <UsersRound />

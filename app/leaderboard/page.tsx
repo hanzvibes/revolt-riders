@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -173,11 +174,10 @@ export default function LeaderboardPage() {
             </a>
           </section>
         ) : loading ? (
-          <section className="empty-state card">
-            <Gauge />
-            <h2>Memuat leaderboard…</h2>
-            <p>Menghitung akumulasi kilometer seluruh riders.</p>
-          </section>
+          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "12px" }}>
+            <StatsGridSkeleton count={3} />
+            <CardSkeleton height="280px" />
+          </div>
         ) : error ? (
           <section className="empty-state card">
             <Gauge />

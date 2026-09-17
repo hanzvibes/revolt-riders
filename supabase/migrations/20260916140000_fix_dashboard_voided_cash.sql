@@ -25,8 +25,7 @@ begin
   )
   select
     (select count(*) from public.member_profiles)::bigint,
-    ((select coalesce(sum(member_profile.total_km), 0) from public.member_profiles as member_profile)
-      + (select coalesce(sum(ride.distance_km), 0) from public.ride_logs as ride where ride.status = 'approved'::public.ride_status))::numeric,
+    (select coalesce(sum(member_profile.total_km), 0) from public.member_profiles as member_profile)::numeric,
     (select coalesce(sum(case when cash.transaction_type = 'income'::public.cash_transaction_type then cash.amount when cash.transaction_type = 'expense'::public.cash_transaction_type then -cash.amount else 0 end), 0) from all_cash as cash)::numeric,
     greatest(
       coalesce((select max(member_profile.updated_at) from public.member_profiles as member_profile), '-infinity'::timestamptz),

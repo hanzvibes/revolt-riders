@@ -29,10 +29,10 @@ begin
   if not exists (select 1 from public.events e where e.id = p_event_id and e.status = 'published') then raise exception 'Agenda published tidak ditemukan'; end if;
 
   update public.event_checkin_codes set active_until = now()
-  where event_id = p_event_id and active_until > now();
+  where event_checkin_codes.event_id = p_event_id and event_checkin_codes.active_until > now();
   insert into public.event_checkin_codes(event_id, code_hash, active_from, active_until, created_by)
   values(p_event_id, p_code_hash, now() - interval '1 hour', p_active_until, (select auth.uid()));
-  return query select p_active_until;
+  return query select p_active_until as active_until;
 end; $$;
 
 create or replace function public.void_club_cash_transaction(p_transaction_id uuid, p_reason text)
