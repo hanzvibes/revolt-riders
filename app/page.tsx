@@ -2,7 +2,6 @@
 
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
-import { MEMBER_BY_ID, REVOLT_MEMBERS_DATA } from "@/lib/data/member-touring-data";
 import type { AnnouncementRecord, EventRecord } from "@/lib/domain";
 import { formatEventDate, formatShortDate } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -27,6 +26,15 @@ type DashboardStats = {
   total_km: number;
   cash_balance: number;
   last_updated: string | null;
+};
+
+type LoggedInMember = {
+  member_external_id: string;
+  full_name: string;
+  nickname: string | null;
+  club_role: string | null;
+  total_km: number;
+  touring_count: number;
 };
 
 const getRoleClass = (role: string | null) => {
@@ -55,6 +63,9 @@ export default function HomePage() {
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [announcements, setAnnouncements] = useState<AnnouncementRecord[]>([]);
   const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [currentMember, setCurrentMember] = useState<LoggedInMember | null>(null);
+  const [profileCount, setProfileCount] = useState<number>(0);
+  const [profileTotalKm, setProfileTotalKm] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -113,8 +124,73 @@ export default function HomePage() {
             );
             clubStats = statsData;
           } catch {
-            // Stats RPC fallback
             clubStats = null;
+          }
+        }
+
+        // 4. Fetch member profile stats fallback from member_profiles
+        try {
+          const profileStats = await fetchWithCache<{ count: number; totalKm: number }>(
+            "dashboard_member_profiles_stats",
+            async () => {
+              const { data, count, error: pErr } = await supabase
+                .from("member_profiles")
+                .select("total_km", { count: "exact" });
+              if (pErr) return { count: 0, totalKm: 0 };
+              const kmSum = ((data ?? []) as { total_km: number | string | null }[]).reduce(
+                (sum: number, r) => sum + (Number(r.total_km) || 0),
+                0,
+              );
+              return { count: count || 0, totalKm: kmSum };
+            },
+            { ttlMs: 3 * 60 * 1000 },
+          );
+          if (active) {
+            setProfileCount(profileStats.count);
+            setProfileTotalKm(profileStats.totalKm);
+          }
+        } catch {
+          // ignore
+        }
+
+        // 5. Fetch current logged-in member data
+        if (user && account?.member_external_id) {
+          try {
+            const memberData = await fetchWithCache<LoggedInMember | null>(
+              `dashboard_member_profile_${account.member_external_id}`,
+              async () => {
+                const [pRes, dRes, rLogs] = await Promise.all([
+                  supabase
+                    .from("member_profiles")
+                    .select("member_external_id,full_name,nickname,club_role,total_km")
+                    .eq("member_external_id", account.member_external_id)
+                    .maybeSingle(),
+                  supabase
+                    .from("member_details")
+                    .select("nickname_override")
+                    .eq("member_external_id", account.member_external_id)
+                    .maybeSingle(),
+                  supabase
+                    .from("ride_logs")
+                    .select("id", { count: "exact", head: true })
+                    .eq("member_external_id", account.member_external_id)
+                    .eq("status", "approved"),
+                ]);
+                if (!pRes.data) return null;
+                return {
+                  member_external_id: pRes.data.member_external_id,
+                  full_name: pRes.data.full_name,
+                  nickname: dRes.data?.nickname_override || pRes.data.nickname || null,
+                  club_role: pRes.data.club_role || null,
+                  total_km: Number(pRes.data.total_km) || 0,
+                  touring_count: rLogs.count || 0,
+                };
+              },
+              { ttlMs: 2 * 60 * 1000 },
+            );
+            if (active) setCurrentMember(memberData);
+          } catch {
+            // ignore
           }
         }
 
@@ -137,22 +213,12 @@ export default function HomePage() {
     return () => {
       active = false;
     };
-  }, [user, fetchWithCache]);
+  }, [user, account, fetchWithCache]);
 
   const nextEvent = events[0];
 
-  // Baseline data from DataMember.md
-  const totalRidersCount = stats?.total_members || REVOLT_MEMBERS_DATA.length;
-  const totalKmAccumulated = useMemo(() => {
-    if (stats?.total_km) return Number(stats.total_km);
-    return REVOLT_MEMBERS_DATA.reduce((sum, m) => sum + m.total_km, 0);
-  }, [stats]);
-
-  // Current logged in member info (matched with official data)
-  const currentMember = useMemo(() => {
-    if (!account?.member_external_id) return null;
-    return MEMBER_BY_ID.get(account.member_external_id) ?? null;
-  }, [account]);
+  const totalRidersCount = stats?.total_members || profileCount;
+  const totalKmAccumulated = stats?.total_km ? Number(stats.total_km) : profileTotalKm;
 
   const userInitials = useMemo(() => {
     if (currentMember) {
@@ -356,7 +422,7 @@ export default function HomePage() {
                 </div>
                 <div className="rider-status-metric">
                   <small>Touring / Sowan</small>
-                  <b>{currentMember?.touring_records?.length ?? 0} Agenda</b>
+                  <b>{currentMember?.touring_count ?? 0} Agenda</b>
                 </div>
               </div>
 

@@ -2,20 +2,20 @@
 
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
-import { REVOLT_MEMBERS_DATA } from "@/lib/data/member-touring-data";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Crown,
   Flame,
   Gauge,
   Medal,
+  RefreshCw,
   Route,
   Search,
   ShieldAlert,
   Trophy,
   Users,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Rider = {
   member_external_id: string;
@@ -24,75 +24,70 @@ type Rider = {
 };
 
 export default function LeaderboardPage() {
-  const { user, account, loading: authLoading, fetchWithCache } = useDataCache();
+  const { user, account, loading: authLoading, fetchWithCache, invalidateCache } = useDataCache();
   const [riders, setRiders] = useState<Rider[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let active = true;
-
-    async function loadLeaderboard() {
-      if (authLoading) return;
-      if (!user) {
-        if (active) {
-          setLoading(false);
-          setRiders([]);
-        }
-        return;
-      }
-
-      try {
-        const data = await fetchWithCache<Rider[]>(
-          "riding_leaderboard_data",
-          async () => {
-            const supabase = getSupabaseBrowserClient();
-            const { data: result, error: fetchErr } =
-              await supabase.rpc("get_riding_leaderboard");
-            if (fetchErr) throw fetchErr;
-            const rows = ((result ?? []) as Rider[]).map((row: Rider) => ({
-              ...row,
-              total_km: Number(row.total_km),
-            }));
-            if (rows.length > 0) return rows;
-            return [...REVOLT_MEMBERS_DATA]
-              .sort((a, b) => b.total_km - a.total_km)
-              .map((m) => ({
-                member_external_id: m.member_external_id,
-                full_name: m.full_name,
-                total_km: m.total_km,
-              }));
-          },
-          { ttlMs: 2 * 60 * 1000 },
-        );
-
-        if (active) {
-          setRiders(data);
-          setError("");
-        }
-      } catch {
-        if (active) {
-          const fallback = [...REVOLT_MEMBERS_DATA]
-            .sort((a, b) => b.total_km - a.total_km)
-            .map((m) => ({
-              member_external_id: m.member_external_id,
-              full_name: m.full_name,
-              total_km: m.total_km,
-            }));
-          setRiders(fallback);
-          setError("");
-        }
-      } finally {
-        if (active) setLoading(false);
-      }
+  const loadLeaderboard = useCallback(async () => {
+    if (authLoading) return;
+    if (!user) {
+      setLoading(false);
+      setRiders([]);
+      return;
     }
 
-    void loadLeaderboard();
-    return () => {
-      active = false;
-    };
+    try {
+      setLoading(true);
+      const data = await fetchWithCache<Rider[]>(
+        "riding_leaderboard_data",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const { data: result, error: fetchErr } =
+            await supabase.rpc("get_riding_leaderboard");
+          if (!fetchErr && result && result.length > 0) {
+            return ((result ?? []) as Rider[]).map((row: Rider) => ({
+              ...row,
+              total_km: Number(row.total_km) || 0,
+            }));
+          }
+          // Query member_profiles directly from Supabase
+          const { data: profiles, error: profErr } = await supabase
+            .from("member_profiles")
+            .select("member_external_id,full_name,nickname,total_km")
+            .order("total_km", { ascending: false });
+          if (profErr) throw profErr;
+          return ((profiles ?? []) as {
+            member_external_id: string;
+            full_name: string;
+            nickname?: string | null;
+            total_km: number | string | null;
+          }[]).map((p) => ({
+            member_external_id: p.member_external_id,
+            full_name: p.nickname ? `${p.nickname} (${p.full_name})` : p.full_name,
+            total_km: Number(p.total_km) || 0,
+          }));
+        },
+        { ttlMs: 2 * 60 * 1000 },
+      );
+
+      setRiders(data);
+      setError("");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Leaderboard belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
   }, [authLoading, user, fetchWithCache]);
+
+  useEffect(() => {
+    void loadLeaderboard();
+  }, [loadLeaderboard]);
 
   const maxKm = useMemo(() => {
     return riders[0]?.total_km > 0 ? riders[0].total_km : 1;
@@ -146,7 +141,7 @@ export default function LeaderboardPage() {
   return (
     <AppShell active="Leaderboard" title="Leaderboard">
       <div className="page-wrap">
-        <div className="page-intro">
+        <div className="page-intro native-page-head">
           <div>
             <em>RIDING · KLASEMEN</em>
             <h2>Leaderboard Kilometer</h2>
@@ -155,6 +150,19 @@ export default function LeaderboardPage() {
               Captain.
             </p>
           </div>
+          <button
+            type="button"
+            className="outline-action"
+            onClick={() => {
+              invalidateCache("riding_leaderboard_data");
+              invalidateCache("member_profiles_list");
+              void loadLeaderboard();
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+          >
+            <RefreshCw className={loading ? "spin" : ""} style={{ width: 14, height: 14 }} />
+            <span>REFRESH DATA</span>
+          </button>
         </div>
 
         {!user && !authLoading ? (

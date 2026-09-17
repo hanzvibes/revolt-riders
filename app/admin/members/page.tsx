@@ -3,8 +3,9 @@
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
+import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { Check, Pencil, Search, ShieldAlert, UsersRound } from "lucide-react";
+import { Check, Pencil, RefreshCw, Search, ShieldAlert, UsersRound } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
@@ -52,7 +53,29 @@ const emptyForm: MemberForm = {
 };
 const roles = ["member", "road_captain", "treasurer", "admin", "superadmin"];
 
+const getRoleClass = (role: string | null) => {
+  const r = (role ?? "").toUpperCase().trim();
+  if (r === "PRESIDENT") return "badge-president";
+  if (r === "FOUNDER") return "badge-founder";
+  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
+  if (r === "NEGOSIATOR") return "badge-negosiator";
+  if (r === "CAPROS") return "badge-capros";
+  if (r === "PROSPEK") return "badge-prospek";
+  if (r === "VIRGIN") return "badge-virgin";
+  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
+  if (r.includes("CAPTAIN")) return "badge-rc";
+  if (
+    r.includes("ADMIN") ||
+    r.includes("KETUA") ||
+    r.includes("SEKRETARIS") ||
+    r.includes("BENDAHARA")
+  )
+    return "badge-admin";
+  return "";
+};
+
 export default function ManageMembersPage() {
+  const { invalidateCache } = useDataCache();
   const [account, setAccount] = useState<Account | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
   const [details, setDetails] = useState<Detail[]>([]);
@@ -206,6 +229,10 @@ export default function ManageMembersPage() {
       );
       setFormOpen(false);
       setForm(emptyForm);
+      invalidateCache("member_profiles_list");
+      invalidateCache("admin_dashboard_overview");
+      invalidateCache("dashboard_club_stats");
+      invalidateCache("riding_leaderboard_data");
       await load();
     }
     setSaving(false);
@@ -231,6 +258,8 @@ export default function ManageMembersPage() {
     if (statusError) setError(statusError.message);
     else {
       setMessage(`Status ${memberAccount.member_external_id} diperbarui.`);
+      invalidateCache("member_profiles_list");
+      invalidateCache("admin_dashboard_overview");
       await load();
     }
   };
@@ -252,6 +281,8 @@ export default function ManageMembersPage() {
     if (roleError) setError(roleError.message);
     else {
       setMessage(`Role ${memberAccount.member_external_id} diperbarui.`);
+      invalidateCache("member_profiles_list");
+      invalidateCache("admin_dashboard_overview");
       await load();
     }
   };
@@ -293,8 +324,22 @@ export default function ManageMembersPage() {
           <div>
             <em>MEMBER DIRECTORY</em>
             <h2>Kelola Member</h2>
-            <p>Tambah dan atur data member.</p>
+            <p>Tambah dan atur data member langsung tersinkron ke Supabase.</p>
           </div>
+          <button
+            type="button"
+            className="outline-action"
+            onClick={() => {
+              invalidateCache("member_profiles_list");
+              invalidateCache("admin_dashboard_overview");
+              invalidateCache("dashboard_club_stats");
+              void load();
+            }}
+            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
+          >
+            <RefreshCw className={loading ? "spin" : ""} style={{ width: 14, height: 14 }} />
+            <span>REFRESH DATA</span>
+          </button>
         </div>
         {message && (
           <p className="success-message">
@@ -333,10 +378,18 @@ export default function ManageMembersPage() {
                 <article key={member.member_external_id}>
                   <i>{displayName.slice(0, 2).toUpperCase()}</i>
                   <span>
-                    <b>{displayName}</b>
+                    <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                      <b>{displayName}</b>
+                      {member.club_role && (
+                        <span className={`member-role-badge ${getRoleClass(member.club_role)}`}>
+                          {member.club_role}
+                        </span>
+                      )}
+                    </div>
                     <small>
-                      {member.member_external_id} ·{" "}
-                      {detail?.motorcycle || member.club_role || "Member"}
+                      {member.member_external_id}
+                      {detail?.motorcycle ? ` · ${detail.motorcycle}` : ""}
+                      {member.city ? ` · ${member.city}` : ""}
                     </small>
                   </span>
                   <em

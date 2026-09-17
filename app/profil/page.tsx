@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Bike, CalendarDays, Check, Clock3, LogOut, MapPin, Route, Save, ShieldCheck, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -14,8 +15,30 @@ type RideRow = Omit<Ride, "distance_km"> & { distance_km: number | string | null
 type RsvpActivity = { event_id: string; status: "attending" | "declined" | "maybe"; responded_at: string };
 type ActivityEvent = { id: string; title: string };
 
+const getRoleClass = (role: string | null) => {
+  const r = (role ?? "").toUpperCase().trim();
+  if (r === "PRESIDENT") return "badge-president";
+  if (r === "FOUNDER") return "badge-founder";
+  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
+  if (r === "NEGOSIATOR") return "badge-negosiator";
+  if (r === "CAPROS") return "badge-capros";
+  if (r === "PROSPEK") return "badge-prospek";
+  if (r === "VIRGIN") return "badge-virgin";
+  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
+  if (r.includes("CAPTAIN")) return "badge-rc";
+  if (
+    r.includes("ADMIN") ||
+    r.includes("KETUA") ||
+    r.includes("SEKRETARIS") ||
+    r.includes("BENDAHARA")
+  )
+    return "badge-admin";
+  return "";
+};
+
 export default function ProfilePage() {
   const router = useRouter();
+  const { invalidateCache } = useDataCache();
   const [email, setEmail] = useState("");
   const [account, setAccount] = useState<Account | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -75,6 +98,9 @@ export default function ProfilePage() {
       const { error: upsertError } = await supabase.from("member_details").upsert({ member_external_id: account.member_external_id, nickname_override: nickname.trim() || null, motorcycle: motorcycle.trim() || null, city_override: city.trim() || null, updated_by: user.id, updated_at: new Date().toISOString() });
       if (upsertError) throw upsertError;
       setMessage("Profil member berhasil diperbarui.");
+      invalidateCache("member_profiles_list");
+      invalidateCache("admin_dashboard_overview");
+      invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
       await load();
     } catch (caught) { setError(caught instanceof Error ? caught.message : "Profil belum dapat diperbarui."); }
     finally { setSaving(false); }
@@ -82,7 +108,7 @@ export default function ProfilePage() {
 
   const logout = async () => { await getSupabaseBrowserClient().auth.signOut(); router.replace("/"); router.refresh(); };
 
-  return <AppShell active="Profil" title="Profil"><div className="page-wrap"><section className="profile-overview card">{loading ? <h2>Memuat profil…</h2> : !email ? <><UserRound/><h2>Belum masuk</h2><p>Masuk untuk membuka profil dan aktivitas personalmu.</p><a className="primary-action" href="/login">MASUK</a></> : !account ? <><UserRound/><h2>Akun menunggu verifikasi</h2><p>{email}</p><p className="notice">Pengurus perlu menghubungkan akun ini dengan data member resmi terlebih dahulu.</p></> : <><i>{displayName.slice(0, 2).toUpperCase()}</i><em>MEMBER REVOLT RIDERS</em><h2>{displayName}</h2><p>{profile?.full_name && profile.full_name !== displayName ? profile.full_name : account.member_external_id} · {account.role.replaceAll("_", " ")}</p><div className="profile-stat-grid"><span><Route/><small>TOTAL KM</small><b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}</b></span><span><Bike/><small>RIDE DIKIRIM</small><b>{rides.length}</b></span><span><Check/><small>RSVP</small><b>{rsvpActivities.length}</b></span></div><div className="profile-meta"><span><MapPin/>{city || "Kota belum diisi"}</span><span><Bike/>{motorcycle || "Motor belum diisi"}</span><span><ShieldCheck/>{account.status}</span></div></>}</section>
+  return <AppShell active="Profil" title="Profil"><div className="page-wrap"><section className="profile-overview card">{loading ? <h2>Memuat profil…</h2> : !email ? <><UserRound/><h2>Belum masuk</h2><p>Masuk untuk membuka profil dan aktivitas personalmu.</p><a className="primary-action" href="/login">MASUK</a></> : !account ? <><UserRound/><h2>Akun menunggu verifikasi</h2><p>{email}</p><p className="notice">Pengurus perlu menghubungkan akun ini dengan data member resmi terlebih dahulu.</p></> : <><i>{displayName.slice(0, 2).toUpperCase()}</i><em>MEMBER REVOLT RIDERS</em><h2>{displayName}</h2>{profile?.club_role && <div style={{ margin: "6px auto" }}><span className={`member-role-badge ${getRoleClass(profile.club_role)}`}>{profile.club_role}</span></div>}<p>{profile?.full_name && profile.full_name !== displayName ? profile.full_name : account.member_external_id} · {account.role.replaceAll("_", " ")}</p><div className="profile-stat-grid"><span><Route/><small>TOTAL KM</small><b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}</b></span><span><Bike/><small>RIDE DIKIRIM</small><b>{rides.length}</b></span><span><Check/><small>RSVP</small><b>{rsvpActivities.length}</b></span></div><div className="profile-meta"><span><MapPin/>{city || "Kota belum diisi"}</span><span><Bike/>{motorcycle || "Motor belum diisi"}</span><span><ShieldCheck/>{account.status}</span></div></>}</section>
     {account && <section className="profile-edit card"><div className="section-title"><span><em>DATA PRIBADI</em><h3>Lengkapi profil</h3></span><Save/></div><p>Perbarui nama panggilan, motor, dan kota. Data ini dapat digunakan untuk tampilan internal komunitas.</p><form onSubmit={saveDetails}><label>Nama panggilan<input value={nickname} onChange={(event) => setNickname(event.target.value)} maxLength={40} placeholder="Nama panggilan"/></label><label>Motor<input value={motorcycle} onChange={(event) => setMotorcycle(event.target.value)} maxLength={120} placeholder="Contoh: Honda CB150R"/></label><label>Kota<input value={city} onChange={(event) => setCity(event.target.value)} maxLength={100} placeholder="Contoh: Situbondo"/></label>{message && <p className="success-message"><Check/>{message}</p>}{error && <p className="error-message">{error}</p>}<button className="primary-action" disabled={saving}>{saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}</button></form></section>}
     {account && <section className="profile-activity"><section className="card"><div className="section-title"><span><em>RIDING TERBARU</em><h3>Riwayat Ride Log</h3></span><Bike/></div>{rides.length === 0 ? <p className="system-message">Belum ada ride log yang dikirim.</p> : <div className="activity-list">{rides.slice(0, 5).map((ride) => <article key={ride.id}><i><Route/></i><span><b>{ride.event_id ? eventTitleById.get(ride.event_id) || "Agenda riding" : "Ride mandiri"}</b><small>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(ride.distance_km || 0))} KM</small></span><em className={`activity-${ride.status}`}>{ride.status}</em></article>)}</div>}</section><section className="card"><div className="section-title"><span><em>AGENDA</em><h3>Respons RSVP</h3></span><CalendarDays/></div>{rsvpActivities.length === 0 ? <p className="system-message">Belum ada respons undangan.</p> : <div className="activity-list">{rsvpActivities.slice(0, 5).map((rsvp) => <article key={`${rsvp.event_id}-${rsvp.responded_at}`}><i><Clock3/></i><span><b>{eventTitleById.get(rsvp.event_id) || "Agenda Revolt Riders"}</b><small>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(rsvp.responded_at))}</small></span><em className={`rsvp-${rsvp.status}`}>{rsvp.status === "attending" ? "hadir" : rsvp.status === "declined" ? "tidak hadir" : "mungkin"}</em></article>)}</div>}</section></section>}
     {email && <button className="dark-action profile-logout" onClick={logout}><LogOut/>KELUAR DARI AKUN</button>}

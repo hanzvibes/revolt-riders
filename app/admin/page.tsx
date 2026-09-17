@@ -6,7 +6,6 @@ import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import type { EventRecord } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { REVOLT_MEMBERS_DATA } from "@/lib/data/member-touring-data";
 import {
   CalendarDays,
   CalendarPlus,
@@ -559,7 +558,7 @@ export default function AdminPage() {
             </div>
             <div className="admin-kpi-info">
               <span className="admin-kpi-label">Member Resmi</span>
-              <b className="admin-kpi-val">{members.length || REVOLT_MEMBERS_DATA.length}</b>
+              <b className="admin-kpi-val">{members.length}</b>
               <small className="admin-kpi-hint">Riders terdata aktif</small>
             </div>
           </article>
