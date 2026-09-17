@@ -476,6 +476,7 @@ export default function ManageMembersPage() {
             <label>
               Jabatan club
               <input
+                list="club-role-options"
                 value={form.clubRole}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -484,7 +485,18 @@ export default function ManageMembersPage() {
                   }))
                 }
                 maxLength={80}
+                placeholder="PRESIDENT, FOUNDER, EXCECUTOR, dll."
               />
+              <datalist id="club-role-options">
+                <option value="PRESIDENT" />
+                <option value="FOUNDER" />
+                <option value="EXCECUTOR" />
+                <option value="NEGOSIATOR" />
+                <option value="CAPROS" />
+                <option value="PROSPEK" />
+                <option value="VIRGIN" />
+                <option value="LIFE MEMBER" />
+              </datalist>
             </label>
             <label>
               Motor

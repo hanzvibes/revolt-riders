@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
+import { REVOLT_MEMBERS_DATA } from "@/lib/data/member-touring-data";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Crown,
@@ -50,10 +51,18 @@ export default function LeaderboardPage() {
             const { data: result, error: fetchErr } =
               await supabase.rpc("get_riding_leaderboard");
             if (fetchErr) throw fetchErr;
-            return ((result ?? []) as Rider[]).map((row: Rider) => ({
+            const rows = ((result ?? []) as Rider[]).map((row: Rider) => ({
               ...row,
               total_km: Number(row.total_km),
             }));
+            if (rows.length > 0) return rows;
+            return [...REVOLT_MEMBERS_DATA]
+              .sort((a, b) => b.total_km - a.total_km)
+              .map((m) => ({
+                member_external_id: m.member_external_id,
+                full_name: m.full_name,
+                total_km: m.total_km,
+              }));
           },
           { ttlMs: 2 * 60 * 1000 },
         );
@@ -62,13 +71,17 @@ export default function LeaderboardPage() {
           setRiders(data);
           setError("");
         }
-      } catch (err) {
+      } catch {
         if (active) {
-          setError(
-            err instanceof Error
-              ? err.message
-              : "Leaderboard belum dapat dimuat saat ini.",
-          );
+          const fallback = [...REVOLT_MEMBERS_DATA]
+            .sort((a, b) => b.total_km - a.total_km)
+            .map((m) => ({
+              member_external_id: m.member_external_id,
+              full_name: m.full_name,
+              total_km: m.total_km,
+            }));
+          setRiders(fallback);
+          setError("");
         }
       } finally {
         if (active) setLoading(false);
