@@ -21,6 +21,17 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = { themeColor: "#151617", colorScheme: "light" };
 
+import { DataCacheProvider } from "@/context/data-cache-context";
+
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <html lang="id"><body>{children}<PwaRegister /></body></html>;
+  return (
+    <html lang="id">
+      <body>
+        <DataCacheProvider>
+          {children}
+          <PwaRegister />
+        </DataCacheProvider>
+      </body>
+    </html>
+  );
 }

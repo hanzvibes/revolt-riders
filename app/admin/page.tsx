@@ -19,6 +19,7 @@ import {
   ShieldCheck,
   Users,
 } from "lucide-react";
+import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
@@ -102,6 +103,12 @@ function downloadLinks(links: BulkLink[], eventTitle: string) {
 }
 
 export default function AdminPage() {
+  const {
+    account: cachedAccount,
+    loading: authLoading,
+    fetchWithCache,
+    invalidateCache,
+  } = useDataCache();
   const [account, setAccount] = useState<Account | null>(null);
   const [events, setEvents] = useState<EventRecord[]>([]);
   const [requests, setRequests] = useState<PendingRequest[]>([]);
@@ -177,91 +184,118 @@ export default function AdminPage() {
     };
   }, [invitations, memberById, rsvps, selectedRsvpEvent]);
 
-  const load = async () => {
-    const supabase = getSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const accountResult = user
-      ? await supabase
-          .from("member_accounts")
-          .select("role,status")
-          .eq("user_id", user.id)
-          .maybeSingle()
-      : { data: null };
+  const load = async (forceRefresh = false) => {
+    const effectiveAccount = cachedAccount;
+    setAccount(effectiveAccount as Account | null);
     const isActiveAdmin =
-      accountResult.data?.status === "active" &&
-      ["admin", "superadmin"].includes(accountResult.data.role);
+      effectiveAccount?.status === "active" &&
+      ["admin", "superadmin"].includes(effectiveAccount.role);
     const isSuperadmin =
-      isActiveAdmin && accountResult.data?.role === "superadmin";
-    setAccount(accountResult.data as Account | null);
+      isActiveAdmin && effectiveAccount?.role === "superadmin";
+
     if (!isActiveAdmin) {
-      setLoading(false);
+      if (!authLoading) setLoading(false);
       return;
     }
-    const [
-      eventResult,
-      requestResult,
-      memberResult,
-      invitationResult,
-      rsvpResult,
-      managedAccountResult,
-    ] = await Promise.all([
-      supabase
-        .from("events")
-        .select(
-          "id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status",
-        )
-        .order("start_at", { ascending: false }),
-      supabase
-        .from("member_account_requests")
-        .select("id,user_id,member_external_id,email")
-        .eq("status", "pending")
-        .order("created_at"),
-      supabase
-        .from("member_profiles")
-        .select("member_external_id,full_name,nickname")
-        .order("full_name"),
-      supabase.from("event_invitations").select("event_id,member_external_id"),
-      supabase
-        .from("event_rsvps")
-        .select("event_id,member_external_id,status,guest_count,responded_at"),
-      isSuperadmin
-        ? supabase
-            .from("member_accounts")
-            .select("id,member_external_id,role,status")
-            .order("member_external_id")
-        : Promise.resolve({ data: [] }),
-    ]);
-    setEvents((eventResult.data ?? []) as EventRecord[]);
-    setRequests((requestResult.data ?? []) as PendingRequest[]);
-    setMembers((memberResult.data ?? []) as Member[]);
-    setInvitations((invitationResult.data ?? []) as Invitation[]);
-    setRsvps((rsvpResult.data ?? []) as Rsvp[]);
-    setManagedAccounts((managedAccountResult.data ?? []) as ManagedAccount[]);
-    setLoading(false);
+
+    try {
+      const data = await fetchWithCache(
+        "admin_dashboard_overview",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [
+            eventResult,
+            requestResult,
+            memberResult,
+            invitationResult,
+            rsvpResult,
+            managedAccountResult,
+          ] = await Promise.all([
+            supabase
+              .from("events")
+              .select(
+                "id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status",
+              )
+              .order("start_at", { ascending: false }),
+            supabase
+              .from("member_account_requests")
+              .select("id,user_id,member_external_id,email")
+              .eq("status", "pending")
+              .order("created_at"),
+            supabase
+              .from("member_profiles")
+              .select("member_external_id,full_name,nickname")
+              .order("full_name"),
+            supabase
+              .from("event_invitations")
+              .select("event_id,member_external_id"),
+            supabase
+              .from("event_rsvps")
+              .select(
+                "event_id,member_external_id,status,guest_count,responded_at",
+              ),
+            isSuperadmin
+              ? supabase
+                  .from("member_accounts")
+                  .select("id,member_external_id,role,status")
+                  .order("member_external_id")
+              : Promise.resolve({ data: [] }),
+          ]);
+          return {
+            events: (eventResult.data ?? []) as EventRecord[],
+            requests: (requestResult.data ?? []) as PendingRequest[],
+            members: (memberResult.data ?? []) as Member[],
+            invitations: (invitationResult.data ?? []) as Invitation[],
+            rsvps: (rsvpResult.data ?? []) as Rsvp[],
+            managedAccounts: (managedAccountResult.data ?? []) as ManagedAccount[],
+          };
+        },
+        { ttlMs: 60 * 1000, forceRefresh },
+      );
+
+      setEvents(data.events);
+      setRequests(data.requests);
+      setMembers(data.members);
+      setInvitations(data.invitations);
+      setRsvps(data.rsvps);
+      setManagedAccounts(data.managedAccounts);
+    } catch {
+      setError("Gagal memuat data dashboard pengurus.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    void load();
+    if (!authLoading) {
+      void load();
+    }
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
       .channel("admin-rsvp-live")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "event_rsvps" },
-        () => void load(),
+        () => {
+          invalidateCache("admin_dashboard_overview");
+          void load(true);
+        },
       )
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "event_invitations" },
-        () => void load(),
+        () => {
+          invalidateCache("admin_dashboard_overview");
+          void load(true);
+        },
       )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading, cachedAccount]);
+
 
   const createEvent = async (event: FormEvent) => {
     event.preventDefault();
@@ -297,7 +331,8 @@ export default function AdminPage() {
       setMeetup("");
       setEnd("");
       setAgendaFormOpen(false);
-      await load();
+      invalidateCache("admin_dashboard_overview");
+      await load(true);
     }
   };
 
@@ -320,7 +355,8 @@ export default function AdminPage() {
     if (upsertError) setError(upsertError.message);
     else {
       setInvitation(`${window.location.origin}/undangan/${token}`);
-      await load();
+      invalidateCache("admin_dashboard_overview");
+      await load(true);
     }
   };
 
@@ -368,7 +404,8 @@ export default function AdminPage() {
       setMessage(
         `${links.length} undangan personal dibuat. CSV link sudah diunduh; simpan sebelum meninggalkan halaman.`,
       );
-      await load();
+      invalidateCache("admin_dashboard_overview");
+      await load(true);
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -415,7 +452,8 @@ export default function AdminPage() {
     setMessage(
       `${request.member_external_id} berhasil diverifikasi sebagai member.`,
     );
-    await load();
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
   };
 
   const changeRole = async (
@@ -439,7 +477,8 @@ export default function AdminPage() {
     setMessage(
       `Role ${managedAccount.member_external_id} diperbarui menjadi ${nextRole.replaceAll("_", " ")}.`,
     );
-    await load();
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
   };
 
   const changeEventStatus = async (
@@ -470,10 +509,11 @@ export default function AdminPage() {
     setMessage(
       `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}.`,
     );
-    await load();
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
   };
 
-  if (loading)
+  if (authLoading || (loading && !account))
     return (
       <AppShell active="Admin" title="Admin">
         <div className="page-wrap">
@@ -485,6 +525,7 @@ export default function AdminPage() {
     !account ||
     account.status !== "active" ||
     !["admin", "superadmin"].includes(account.role)
+
   )
     return (
       <AppShell active="Admin" title="Admin">
@@ -858,7 +899,10 @@ export default function AdminPage() {
                   </small>
                 </span>
                 <button
-                  onClick={() => void load()}
+                  onClick={() => {
+                    invalidateCache("admin_dashboard_overview");
+                    void load(true);
+                  }}
                   aria-label="Muat ulang RSVP"
                 >
                   <RefreshCw />
