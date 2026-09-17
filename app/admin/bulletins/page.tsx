@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import { FloatingActionButton } from "@/components/floating-action-button";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Check, Edit3, Eye, EyeOff, Plus, ShieldAlert } from "lucide-react";
@@ -38,7 +39,8 @@ export default function ManageBulletinsPage() {
       setLoading(false);
       return;
     }
-    const { data, error: loadError } = await getSupabaseBrowserClient().from("announcements")
+    const { data, error: loadError } = await getSupabaseBrowserClient()
+      .from("announcements")
       .select("id,title,body,is_published,published_at,expires_at,created_at")
       .order("created_at", { ascending: false });
     if (loadError) setError(loadError.message);
@@ -46,24 +48,46 @@ export default function ManageBulletinsPage() {
     setLoading(false);
   }, [account]);
 
-  useEffect(() => { if (!accessLoading) void load(); }, [accessLoading, load]);
+  useEffect(() => {
+    if (!accessLoading) void load();
+  }, [accessLoading, load]);
 
   const resetForm = () => {
-    setEditingId(null); setTitle(""); setBody(""); setExpiresAt(""); setPublishNow(true); setFormOpen(false);
+    setEditingId(null);
+    setTitle("");
+    setBody("");
+    setExpiresAt("");
+    setPublishNow(true);
+    setFormOpen(false);
   };
 
-  const create = () => { resetForm(); setFormOpen(true); setError(""); };
+  const create = () => {
+    resetForm();
+    setFormOpen(true);
+    setError("");
+  };
 
   const edit = (item: Bulletin) => {
-    setEditingId(item.id); setTitle(item.title); setBody(item.body); setPublishNow(item.is_published);
-    setExpiresAt(item.expires_at ? new Date(item.expires_at).toISOString().slice(0, 16) : "");
-    setFormOpen(true); setError("");
+    setEditingId(item.id);
+    setTitle(item.title);
+    setBody(item.body);
+    setPublishNow(item.is_published);
+    setExpiresAt(
+      item.expires_at
+        ? new Date(item.expires_at).toISOString().slice(0, 16)
+        : "",
+    );
+    setFormOpen(true);
+    setError("");
   };
 
   const save = async (event: FormEvent) => {
     event.preventDefault();
-    if (!user || account?.status !== "active" || !canManage(account.role)) return;
-    setSaving(true); setError(""); setMessage("");
+    if (!user || account?.status !== "active" || !canManage(account.role))
+      return;
+    setSaving(true);
+    setError("");
+    setMessage("");
     const payload = {
       title: title.trim(),
       body: body.trim(),
@@ -79,7 +103,13 @@ export default function ManageBulletinsPage() {
       : await supabase.from("announcements").insert(payload);
     if (result.error) setError(result.error.message);
     else {
-      setMessage(editingId ? "Bulletin berhasil diperbarui." : publishNow ? "Bulletin berhasil dipublikasikan." : "Draft bulletin tersimpan.");
+      setMessage(
+        editingId
+          ? "Bulletin berhasil diperbarui."
+          : publishNow
+            ? "Bulletin berhasil dipublikasikan."
+            : "Draft bulletin tersimpan.",
+      );
       resetForm();
       await load();
     }
@@ -87,23 +117,191 @@ export default function ManageBulletinsPage() {
   };
 
   const togglePublish = async (item: Bulletin) => {
-    setError(""); setMessage("");
+    setError("");
+    setMessage("");
     const nextPublished = !item.is_published;
-    const { error: updateError } = await getSupabaseBrowserClient().from("announcements").update({
-      is_published: nextPublished,
-      published_at: nextPublished ? new Date().toISOString() : null,
-      updated_at: new Date().toISOString(),
-    }).eq("id", item.id);
+    const { error: updateError } = await getSupabaseBrowserClient()
+      .from("announcements")
+      .update({
+        is_published: nextPublished,
+        published_at: nextPublished ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", item.id);
     if (updateError) setError(updateError.message);
-    else { setMessage(nextPublished ? "Bulletin dipublikasikan." : "Bulletin ditarik menjadi draft."); await load(); }
+    else {
+      setMessage(
+        nextPublished
+          ? "Bulletin dipublikasikan."
+          : "Bulletin ditarik menjadi draft.",
+      );
+      await load();
+    }
   };
 
-  if (accessLoading || loading) return <AppShell active="Kelola Bulletin" title="Kelola Bulletin"><div className="page-wrap"><p>Memeriksa akses dan bulletin…</p></div></AppShell>;
-  if (account?.status !== "active" || !canManage(account?.role)) return <AppShell active="Kelola Bulletin" title="Kelola Bulletin"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses admin diperlukan</h2><p>Bulletin hanya dapat dikelola oleh akun aktif Admin atau Superadmin.</p><a className="primary-action" href={account ? "/profil" : "/login"}>{account ? "LIHAT STATUS AKUN" : "MASUK"}</a></section></div></AppShell>;
+  if (accessLoading || loading)
+    return (
+      <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+        <div className="page-wrap">
+          <p>Memeriksa akses dan bulletin…</p>
+        </div>
+      </AppShell>
+    );
+  if (account?.status !== "active" || !canManage(account?.role))
+    return (
+      <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+        <div className="page-wrap">
+          <section className="empty-state card">
+            <ShieldAlert />
+            <h2>Akses admin diperlukan</h2>
+            <p>
+              Bulletin hanya dapat dikelola oleh akun aktif Admin atau
+              Superadmin.
+            </p>
+            <a className="primary-action" href={account ? "/profil" : "/login"}>
+              {account ? "LIHAT STATUS AKUN" : "MASUK"}
+            </a>
+          </section>
+        </div>
+      </AppShell>
+    );
 
-  return <AppShell active="Kelola Bulletin" title="Kelola Bulletin"><div className="page-wrap admin-native-page">
-    <div className="page-intro native-page-head"><div><em>COMMUNITY UPDATE</em><h2>Kelola bulletin</h2><p>Tulis dan atur pengumuman komunitas.</p></div><button className="primary-action" onClick={create}><Plus/>BULLETIN BARU</button></div>
-    <section className="card bulletin-management"><div className="section-title"><span><em>ARSIP BULLETIN</em><h3>Pengumuman tersimpan</h3></span><b>{items.length}</b></div>{message && <p className="success-message"><Check/>{message}</p>}{!formOpen && error && <p className="error-message">{error}</p>}{items.length === 0 ? <p className="system-message">Belum ada bulletin. Buat pengumuman pertama.</p> : <div className="bulletin-management-list">{items.map((item) => <article key={item.id}><div><span className={item.is_published ? "bulletin-live" : "bulletin-draft"}>{item.is_published ? "TAYANG" : "DRAFT"}</span><h3>{item.title}</h3><p>{item.body}</p><small>{item.published_at ? `Terbit ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.published_at))} WIB` : "Belum dipublikasikan"}{item.expires_at ? ` · Berakhir ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.expires_at))} WIB` : ""}</small></div><div className="bulletin-actions"><button onClick={() => edit(item)}><Edit3/>Edit</button><button onClick={() => void togglePublish(item)}>{item.is_published ? <EyeOff/> : <Eye/>}{item.is_published ? "Tarik" : "Terbitkan"}</button></div></article>)}</div>}</section>
-    <ModalSheet open={formOpen} onClose={resetForm} eyebrow={editingId ? "EDIT BULLETIN" : "BULLETIN BARU"} title={editingId ? "Perbarui pengumuman" : "Tulis pengumuman"}><form className="sheet-form bulletin-sheet-form" onSubmit={save}><label>Judul<input value={title} onChange={(event) => setTitle(event.target.value)} minLength={3} maxLength={120} required/></label><label>Isi pengumuman<textarea value={body} onChange={(event) => setBody(event.target.value)} rows={5} maxLength={2000} required/></label><label>Berlaku sampai (opsional)<input type="datetime-local" value={expiresAt} onChange={(event) => setExpiresAt(event.target.value)}/></label><label className="publish-check"><input type="checkbox" checked={publishNow} onChange={(event) => setPublishNow(event.target.checked)}/><span>Publikasikan sekarang</span></label>{error && <p className="error-message">{error}</p>}<div className="sheet-actions"><button className="primary-action" disabled={saving}>{saving ? "MENYIMPAN…" : editingId ? "SIMPAN PERUBAHAN" : <><Plus/>SIMPAN BULLETIN</>}</button><button type="button" className="outline-action" onClick={resetForm}>BATAL</button></div></form></ModalSheet>
-  </div></AppShell>;
+  return (
+    <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+      <div className="page-wrap admin-native-page">
+        <div className="page-intro native-page-head">
+          <div>
+            <em>COMMUNITY UPDATE</em>
+            <h2>Kelola bulletin</h2>
+            <p>Tulis dan atur pengumuman komunitas.</p>
+          </div>
+        </div>
+        <section className="card bulletin-management">
+          <div className="section-title">
+            <span>
+              <em>ARSIP BULLETIN</em>
+              <h3>Pengumuman tersimpan</h3>
+            </span>
+            <b>{items.length}</b>
+          </div>
+          {message && (
+            <p className="success-message">
+              <Check />
+              {message}
+            </p>
+          )}
+          {!formOpen && error && <p className="error-message">{error}</p>}
+          {items.length === 0 ? (
+            <p className="system-message">
+              Belum ada bulletin. Buat pengumuman pertama.
+            </p>
+          ) : (
+            <div className="bulletin-management-list">
+              {items.map((item) => (
+                <article key={item.id}>
+                  <div>
+                    <span
+                      className={
+                        item.is_published ? "bulletin-live" : "bulletin-draft"
+                      }
+                    >
+                      {item.is_published ? "TAYANG" : "DRAFT"}
+                    </span>
+                    <h3>{item.title}</h3>
+                    <p>{item.body}</p>
+                    <small>
+                      {item.published_at
+                        ? `Terbit ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.published_at))} WIB`
+                        : "Belum dipublikasikan"}
+                      {item.expires_at
+                        ? ` · Berakhir ${new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(item.expires_at))} WIB`
+                        : ""}
+                    </small>
+                  </div>
+                  <div className="bulletin-actions">
+                    <button onClick={() => edit(item)}>
+                      <Edit3 />
+                      Edit
+                    </button>
+                    <button onClick={() => void togglePublish(item)}>
+                      {item.is_published ? <EyeOff /> : <Eye />}
+                      {item.is_published ? "Tarik" : "Terbitkan"}
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+        <FloatingActionButton label="Bulletin baru" onClick={create} />
+        <ModalSheet
+          open={formOpen}
+          onClose={resetForm}
+          eyebrow={editingId ? "EDIT BULLETIN" : "BULLETIN BARU"}
+          title={editingId ? "Perbarui pengumuman" : "Tulis pengumuman"}
+        >
+          <form className="sheet-form bulletin-sheet-form" onSubmit={save}>
+            <label>
+              Judul
+              <input
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                minLength={3}
+                maxLength={120}
+                required
+              />
+            </label>
+            <label>
+              Isi pengumuman
+              <textarea
+                value={body}
+                onChange={(event) => setBody(event.target.value)}
+                rows={5}
+                maxLength={2000}
+                required
+              />
+            </label>
+            <label>
+              Berlaku sampai (opsional)
+              <input
+                type="datetime-local"
+                value={expiresAt}
+                onChange={(event) => setExpiresAt(event.target.value)}
+              />
+            </label>
+            <label className="publish-check">
+              <input
+                type="checkbox"
+                checked={publishNow}
+                onChange={(event) => setPublishNow(event.target.checked)}
+              />
+              <span>Publikasikan sekarang</span>
+            </label>
+            {error && <p className="error-message">{error}</p>}
+            <div className="sheet-actions">
+              <button className="primary-action" disabled={saving}>
+                {saving ? (
+                  "MENYIMPAN…"
+                ) : editingId ? (
+                  "SIMPAN PERUBAHAN"
+                ) : (
+                  <>
+                    <Plus />
+                    SIMPAN BULLETIN
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                className="outline-action"
+                onClick={resetForm}
+              >
+                BATAL
+              </button>
+            </div>
+          </form>
+        </ModalSheet>
+      </div>
+    </AppShell>
+  );
 }
