@@ -7,11 +7,9 @@ import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
-  Bike,
   Check,
   Clock,
   Gauge,
-  MapPin,
   Pencil,
   RefreshCw,
   Search,
@@ -66,6 +64,15 @@ const emptyForm: MemberForm = {
   motorcycle: "",
 };
 const roles = ["member", "road_captain", "treasurer", "admin", "superadmin"];
+
+const getInitials = (name: string, nickname: string | null) => {
+  const text = (nickname || name || "RR").trim();
+  const parts = text.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return text.slice(0, 2).toUpperCase();
+};
 
 const getRoleClass = (role: string | null) => {
   const r = (role ?? "").toUpperCase().trim();
@@ -370,7 +377,7 @@ export default function ManageMembersPage() {
             style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
           >
             <RefreshCw className={loading ? "spin" : ""} style={{ width: 14, height: 14 }} />
-            <span>SEGARKA N</span>
+            <span>SEGARKAN</span>
           </button>
         </div>
 
@@ -425,7 +432,7 @@ export default function ManageMembersPage() {
         </div>
 
         {/* Clean, Modern Member Cards List */}
-        <div className="member-management-list" style={{ display: "grid", gap: "12px", paddingBottom: "96px" }}>
+        <div className="member-management-list" style={{ display: "grid", gap: "8px", paddingBottom: "96px" }}>
           {results.length === 0 ? (
             <section className="empty-state card">
               <UsersRound size={40} style={{ color: "var(--red)", margin: "0 auto 10px" }} />
@@ -440,191 +447,195 @@ export default function ManageMembersPage() {
                 detail?.nickname_override ||
                 member.nickname ||
                 member.full_name;
+              const subParts = [
+                member.full_name && member.full_name !== displayName ? member.full_name : null,
+                detail?.motorcycle || null,
+                member.city || null,
+              ].filter(Boolean);
+              const subText = subParts.join(" · ");
+              const initials = getInitials(member.full_name, member.nickname);
 
               return (
                 <article
                   key={member.member_external_id}
-                  className="card"
+                  className="member-card admin-member-card"
+                  onClick={() => openEdit(member)}
                   style={{
                     display: "flex",
-                    flexDirection: "column",
-                    padding: "16px 18px",
-                    gap: "10px",
-                    borderRadius: "14px",
+                    alignItems: "center",
+                    gap: "12px",
+                    padding: "11px 14px",
+                    borderRadius: "12px",
                     background: "#fff",
                     border: "1px solid var(--line)",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.02)",
-                    transition: "border-color 0.18s ease",
+                    boxShadow: "0 1px 4px rgba(18, 20, 22, 0.03)",
+                    cursor: "pointer",
+                    transition: "all 0.15s ease",
+                    position: "relative",
+                    width: "100%",
+                    boxSizing: "border-box",
                   }}
                 >
-                  {/* Level 1: Header (Avatar, ID RR, Nickname, Club Role, Edit Button) */}
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-                      <i
-                        style={{
-                          width: "38px",
-                          height: "38px",
-                          borderRadius: "50%",
-                          background: "#171819",
-                          color: "#fff",
-                          display: "grid",
-                          placeItems: "center",
-                          fontWeight: 900,
-                          fontSize: "0.82rem",
-                          flexShrink: 0,
-                          fontStyle: "normal",
-                          letterSpacing: "0.04em",
-                        }}
-                      >
-                        {displayName.slice(0, 2).toUpperCase()}
-                      </i>
-                      <div style={{ display: "flex", alignItems: "center", gap: "7px", flexWrap: "wrap" }}>
-                        <span
-                          style={{
-                            background: "rgba(229, 29, 42, 0.08)",
-                            color: "var(--red)",
-                            border: "1px solid rgba(229, 29, 42, 0.22)",
-                            padding: "2px 8px",
-                            borderRadius: "6px",
-                            fontSize: "0.72rem",
-                            fontWeight: 900,
-                            letterSpacing: "0.04em",
-                          }}
-                        >
-                          {member.member_external_id}
-                        </span>
-                        <b style={{ fontSize: "0.95rem", color: "var(--ink)", fontWeight: 800 }}>{displayName}</b>
-                        {member.club_role && (
-                          <span className={`member-role-badge ${getRoleClass(member.club_role)}`}>
-                            {member.club_role}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <button
-                      type="button"
-                      className="member-edit-action"
-                      onClick={() => openEdit(member)}
-                      aria-label={`Edit ${displayName}`}
-                      title={`Edit data ${displayName}`}
-                      style={{
-                        width: "36px",
-                        height: "36px",
-                        borderRadius: "10px",
-                        border: "1px solid var(--line)",
-                        background: "#f8fafc",
-                        display: "grid",
-                        placeItems: "center",
-                        color: "#475569",
-                        cursor: "pointer",
-                        flexShrink: 0,
-                        transition: "all 0.15s ease",
-                      }}
-                    >
-                      <Pencil size={15} />
-                    </button>
-                  </div>
-
-                  {/* Level 2: Sub-info (Full name, Vehicle, City) */}
+                  {/* Left: Avatar */}
                   <div
+                    className="member-avatar"
                     style={{
-                      fontSize: "0.74rem",
-                      color: "#64748b",
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: "6px 12px",
-                      paddingLeft: "48px",
+                      width: "38px",
+                      height: "38px",
+                      fontSize: "0.72rem",
+                      flexShrink: 0,
                     }}
                   >
-                    {member.full_name && member.full_name !== displayName && (
-                      <span style={{ color: "#334155", fontWeight: 650 }}>{member.full_name}</span>
-                    )}
-                    {detail?.motorcycle && (
-                      <span>
-                        <Bike size={13} style={{ verticalAlign: "-2px", marginRight: "3px", color: "var(--red)" }} />
-                        {detail.motorcycle}
-                      </span>
-                    )}
-                    {member.city && (
-                      <span>
-                        <MapPin size={13} style={{ verticalAlign: "-2px", marginRight: "3px", color: "var(--muted)" }} />
-                        {member.city}
-                      </span>
-                    )}
+                    {initials}
                   </div>
 
-                  {/* Level 3: Footer Pills (Total KM, App Account Status) */}
+                  {/* Middle: Info column */}
                   <div
                     style={{
+                      flex: 1,
+                      minWidth: 0,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      flexWrap: "wrap",
-                      gap: "8px",
-                      paddingLeft: "48px",
-                      paddingTop: "8px",
-                      borderTop: "1px solid #f1f5f9",
+                      flexDirection: "column",
+                      gap: "2px",
                     }}
                   >
-                    {/* KM Badge */}
+                    {/* Line 1: Member ID, Name, Role badge */}
                     <div
                       style={{
-                        display: "inline-flex",
+                        display: "flex",
                         alignItems: "center",
                         gap: "6px",
-                        background: "#f8fafc",
-                        padding: "3px 10px",
-                        borderRadius: "7px",
-                        border: "1px solid #e2e8f0",
+                        minWidth: 0,
                       }}
                     >
-                      <Gauge size={13} style={{ color: "var(--red)" }} />
-                      <b style={{ fontSize: "0.74rem", color: "var(--ink)", fontWeight: 800 }}>
-                        {new Intl.NumberFormat("id-ID").format(member.total_km)} KM
-                      </b>
+                      <span
+                        className="member-id-tag"
+                        style={{
+                          background: "rgba(229, 29, 42, 0.08)",
+                          color: "var(--red)",
+                          border: "1px solid rgba(229, 29, 42, 0.22)",
+                          padding: "1px 6px",
+                          borderRadius: "4px",
+                          fontSize: "0.68rem",
+                          fontWeight: 800,
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {member.member_external_id}
+                      </span>
+                      <span
+                        className="member-name"
+                        style={{
+                          fontSize: "0.86rem",
+                          fontWeight: 800,
+                          color: "var(--ink)",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        title={displayName}
+                      >
+                        {displayName}
+                      </span>
+                      {member.club_role && (
+                        <span
+                          className={`member-role-badge ${getRoleClass(member.club_role)}`}
+                          style={{ flexShrink: 0 }}
+                        >
+                          {member.club_role}
+                        </span>
+                      )}
                     </div>
 
-                    {/* Account Status Badge */}
-                    <div>
+                    {/* Line 2: Subtitle (Full name · Motorcycle · City) */}
+                    {subText ? (
+                      <div
+                        className="member-sub"
+                        style={{
+                          fontSize: "0.7rem",
+                          color: "#64748b",
+                          margin: 0,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                        title={subText}
+                      >
+                        {subText}
+                      </div>
+                    ) : null}
+
+                    {/* Line 3: Meta info (KM & Account status) */}
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "6px",
+                        fontSize: "0.68rem",
+                        marginTop: "2px",
+                        minWidth: 0,
+                      }}
+                    >
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "3px",
+                          fontWeight: 800,
+                          color: "var(--ink)",
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                        }}
+                      >
+                        <Gauge size={11} style={{ color: "var(--red)" }} />
+                        {new Intl.NumberFormat("id-ID").format(member.total_km)} KM
+                      </span>
+                      <span style={{ color: "#cbd5e1", flexShrink: 0 }}>•</span>
                       {memberAccount ? (
                         <span
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "5px",
-                            padding: "3px 9px",
-                            borderRadius: "7px",
-                            fontSize: "0.68rem",
-                            fontWeight: 800,
+                            gap: "4px",
+                            fontSize: "0.63rem",
+                            fontWeight: 700,
+                            padding: "1px 6px",
+                            borderRadius: "4px",
                             background: memberAccount.status === "active" ? "#f0fdf4" : "#fef2f2",
                             color: memberAccount.status === "active" ? "#15803d" : "#b91c1c",
                             border: memberAccount.status === "active" ? "1px solid #bbf7d0" : "1px solid #fecaca",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
                           }}
+                          title={`Akun: ${memberAccount.role.replace("_", " ")} (${memberAccount.status === "active" ? "Aktif" : "Nonaktif"})`}
                         >
                           <span
                             style={{
-                              width: 6,
-                              height: 6,
+                              width: 5,
+                              height: 5,
                               borderRadius: "50%",
                               background: memberAccount.status === "active" ? "#16a34a" : "#dc2626",
+                              flexShrink: 0,
                             }}
                           />
-                          Akun: {memberAccount.role.replace("_", " ")} ({memberAccount.status === "active" ? "Aktif" : "Nonaktif"})
+                          {memberAccount.role.replace("_", " ")} ({memberAccount.status === "active" ? "Aktif" : "Nonaktif"})
                         </span>
                       ) : (
                         <span
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            gap: "5px",
-                            padding: "3px 9px",
-                            borderRadius: "7px",
-                            fontSize: "0.68rem",
-                            fontWeight: 700,
+                            fontSize: "0.63rem",
+                            fontWeight: 600,
+                            padding: "1px 6px",
+                            borderRadius: "4px",
                             background: "#f8fafc",
                             color: "#94a3b8",
                             border: "1px solid #e2e8f0",
+                            whiteSpace: "nowrap",
+                            flexShrink: 0,
                           }}
                         >
                           Belum Ada Akun
@@ -632,6 +643,33 @@ export default function ManageMembersPage() {
                       )}
                     </div>
                   </div>
+
+                  {/* Right: Edit icon button */}
+                  <button
+                    type="button"
+                    className="member-edit-action"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEdit(member);
+                    }}
+                    aria-label={`Edit ${displayName}`}
+                    title={`Edit data ${displayName}`}
+                    style={{
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "8px",
+                      border: "1px solid var(--line)",
+                      background: "#f8fafc",
+                      display: "grid",
+                      placeItems: "center",
+                      color: "#475569",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                      marginLeft: "auto",
+                    }}
+                  >
+                    <Pencil size={14} />
+                  </button>
                 </article>
               );
             })
