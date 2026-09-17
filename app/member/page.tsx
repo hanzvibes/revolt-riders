@@ -2,15 +2,23 @@
 
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import {
+  RideLogEditModal,
+  type RideLogEditData,
+} from "@/components/ride-log-edit-modal";
 import { useDataCache } from "@/context/data-cache-context";
+import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Compass,
   Gauge,
+  Pencil,
+  Plus,
   RefreshCw,
   Route,
   Search,
   ShieldAlert,
+  Trash2,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -39,7 +47,8 @@ type TouringItem = {
 };
 
 export default function MemberPage() {
-  const { user, loading: authLoading, fetchWithCache, invalidateCache } = useDataCache();
+  const { user, account, loading: authLoading, fetchWithCache, invalidateCache } =
+    useDataCache();
   const [members, setMembers] = useState<MemberDisplay[]>([]);
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -48,6 +57,8 @@ export default function MemberPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [touringRecords, setTouringRecords] = useState<TouringItem[]>([]);
   const [loadingTouring, setLoadingTouring] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editModalData, setEditModalData] = useState<RideLogEditData | null>(null);
 
   const loadMembers = useCallback(async () => {
     if (authLoading) return;
@@ -296,6 +307,34 @@ export default function MemberPage() {
 
   const closeDetail = () => {
     setSheetOpen(false);
+  };
+
+  const canEditTouring = useMemo(() => {
+    if (!account || account.status !== "active" || !selectedMember) return false;
+    const isStaff = ["admin", "superadmin", "road_captain"].includes(account.role);
+    const isOwner = account.member_external_id === selectedMember.member_external_id;
+    return isStaff || isOwner;
+  }, [account, selectedMember]);
+
+  const handleTourUpdated = (newTotalKm?: number) => {
+    if (selectedMember) {
+      const updatedKm =
+        newTotalKm !== undefined ? newTotalKm : selectedMember.total_km;
+      const updatedMember = { ...selectedMember, total_km: updatedKm };
+      setSelectedMember(updatedMember);
+      setMembers((prev) =>
+        prev.map((m) =>
+          m.member_external_id === selectedMember.member_external_id
+            ? { ...m, total_km: updatedKm }
+            : m,
+        ),
+      );
+      void openDetail(updatedMember);
+    }
+    invalidateCache("member_profiles_list");
+    invalidateCache("riding_leaderboard_data");
+    invalidateCache("dashboard_club_stats");
+    invalidateCache("admin_dashboard_overview");
   };
 
   return (
@@ -554,9 +593,30 @@ export default function MemberPage() {
             <div className="member-touring-section">
               <div className="member-touring-header">
                 <h4>Riwayat Touring & Sowan Terverifikasi</h4>
-                <span className="member-touring-count-badge">
-                  {touringRecords.length} Kegiatan
-                </span>
+                <div className="member-touring-header-actions">
+                  <span className="member-touring-count-badge">
+                    {touringRecords.length} Kegiatan
+                  </span>
+                  {canEditTouring && (
+                    <button
+                      type="button"
+                      className="member-add-tour-btn"
+                      onClick={() => {
+                        setEditModalData({
+                          memberExternalId: selectedMember.member_external_id,
+                          memberName:
+                            selectedMember.nickname || selectedMember.full_name,
+                          title: "",
+                          km: 0,
+                          date: new Date().toISOString().slice(0, 10),
+                        });
+                        setEditModalOpen(true);
+                      }}
+                    >
+                      <Plus /> Tambah
+                    </button>
+                  )}
+                </div>
               </div>
 
               {loadingTouring ? (
@@ -573,6 +633,11 @@ export default function MemberPage() {
                         <th style={{ width: "38px" }}>No</th>
                         <th>Kegiatan / Destinasi</th>
                         <th style={{ textAlign: "right" }}>Jarak</th>
+                        {canEditTouring && (
+                          <th style={{ width: "68px", textAlign: "right" }}>
+                            Aksi
+                          </th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -603,6 +668,77 @@ export default function MemberPage() {
                               <span style={{ color: "var(--muted)" }}>—</span>
                             )}
                           </td>
+                          {canEditTouring && (
+                            <td className="member-tour-action-cell">
+                              {item.source === "ride_log" ? (
+                                <div className="member-tour-action-group">
+                                  <button
+                                    type="button"
+                                    className="member-tour-action"
+                                    title="Edit riwayat touring"
+                                    onClick={() => {
+                                      const rawId = item.id.replace(/^ride-/, "");
+                                      setEditModalData({
+                                        id: rawId,
+                                        memberExternalId:
+                                          selectedMember.member_external_id,
+                                        memberName:
+                                          selectedMember.nickname ||
+                                          selectedMember.full_name,
+                                        title: item.title,
+                                        km: item.km || 0,
+                                        date:
+                                          item.date ||
+                                          new Date().toISOString().slice(0, 10),
+                                      });
+                                      setEditModalOpen(true);
+                                    }}
+                                  >
+                                    <Pencil />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="member-tour-action delete"
+                                    title="Hapus riwayat touring"
+                                    onClick={async () => {
+                                      if (
+                                        !confirm(
+                                          `Yakin ingin menghapus catatan "${item.title}"?`,
+                                        )
+                                      )
+                                        return;
+                                      const rawId = item.id.replace(/^ride-/, "");
+                                      try {
+                                        const res = await deleteRideLog(
+                                          rawId,
+                                          selectedMember.member_external_id,
+                                        );
+                                        handleTourUpdated(res.totalKm);
+                                      } catch (err) {
+                                        alert(
+                                          err instanceof Error
+                                            ? err.message
+                                            : "Gagal menghapus riwayat.",
+                                        );
+                                      }
+                                    }}
+                                  >
+                                    <Trash2 />
+                                  </button>
+                                </div>
+                              ) : (
+                                <span
+                                  title="Berasal dari check-in agenda"
+                                  style={{
+                                    fontSize: "0.58rem",
+                                    color: "var(--muted)",
+                                  }}
+                                >
+                                  Check-in
+                                </span>
+                              )}
+                            </td>
+                          )}
                         </tr>
                       ))}
                     </tbody>
@@ -613,6 +749,14 @@ export default function MemberPage() {
           </div>
         )}
       </ModalSheet>
+
+      <RideLogEditModal
+        open={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        data={editModalData}
+        onSaved={(km) => handleTourUpdated(km)}
+        onDeleted={(km) => handleTourUpdated(km)}
+      />
     </AppShell>
   );
 }

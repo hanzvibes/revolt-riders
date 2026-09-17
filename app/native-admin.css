@@ -2155,5 +2155,279 @@
   font-weight: 700;
 }
 
+/* Touring Management UI Styles */
+.member-touring-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.member-touring-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.member-add-tour-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: #18191c;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  border: 1px solid #2d3034;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+.member-add-tour-btn:hover {
+  background: var(--red);
+  border-color: var(--red);
+  transform: translateY(-1px);
+}
+.member-add-tour-btn svg {
+  width: 12px;
+  height: 12px;
+}
+.member-tour-action-cell {
+  width: 60px;
+  text-align: right;
+  white-space: nowrap;
+}
+.member-tour-action-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.member-tour-action {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #f1f3f4;
+  color: #495057;
+  border: 1px solid #dfe2e5;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.member-tour-action:hover {
+  background: #18191c;
+  color: #fff;
+  border-color: #18191c;
+}
+.member-tour-action.delete:hover {
+  background: #fee2e2;
+  color: #dc1b2a;
+  border-color: #fca5a5;
+}
+.member-tour-action svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Modal Edit / Tambah Ride Log Dialog */
+.tour-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 14, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 10000;
+  animation: tourFadeIn 0.18s ease-out;
+}
+@keyframes tourFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.tour-modal-card {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.22);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: tourSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes tourSlideUp {
+  from { transform: translateY(12px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+.tour-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.tour-modal-header em {
+  display: block;
+  font-size: 0.54rem;
+  font-style: normal;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tour-modal-header h3 {
+  margin: 2px 0 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+.tour-modal-close {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1f3f4;
+  color: #495057;
+  border: 0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.tour-modal-close:hover {
+  background: #e2e4e7;
+  color: #17181a;
+}
+.tour-modal-close svg {
+  width: 14px;
+  height: 14px;
+}
+.tour-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.tour-modal-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.tour-modal-form label > span {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tour-modal-form input[type="text"],
+.tour-modal-form input[type="number"],
+.tour-modal-form input[type="date"] {
+  width: 100%;
+  padding: 8px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fafbfb;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.tour-modal-form input:focus {
+  border-color: var(--red);
+  background: #fff;
+}
+.tour-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 10px;
+}
+.tour-modal-input-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.tour-modal-input-icon svg {
+  position: absolute;
+  left: 9px;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  pointer-events: none;
+}
+.tour-modal-input-icon input {
+  padding-left: 28px !important;
+}
+.tour-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.tour-modal-del-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 11px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #fee2e2;
+  color: #dc1b2a;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.tour-modal-del-btn:hover {
+  background: #fee2e2;
+}
+.tour-modal-del-btn.confirm {
+  background: #dc1b2a;
+  color: #fff;
+  border-color: #dc1b2a;
+  animation: pulseWarning 0.8s infinite alternate;
+}
+@keyframes pulseWarning {
+  from { opacity: 0.9; }
+  to { opacity: 1; }
+}
+.tour-modal-del-btn svg {
+  width: 13px;
+  height: 13px;
+}
+.tour-modal-cancel-btn {
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: #f1f3f4;
+  border: 1px solid #dfe2e5;
+  color: #495057;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.tour-modal-cancel-btn:hover {
+  background: #e2e4e7;
+}
+.tour-modal-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  font-size: 0.72rem;
+}
+.tour-modal-submit-btn svg {
+  width: 13px;
+  height: 13px;
+}
+
+
 
 
