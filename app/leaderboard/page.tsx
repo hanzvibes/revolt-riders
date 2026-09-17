@@ -32,11 +32,6 @@ export default function LeaderboardPage() {
 
   const loadLeaderboard = useCallback(async () => {
     if (authLoading) return;
-    if (!user) {
-      setLoading(false);
-      setRiders([]);
-      return;
-    }
 
     try {
       setLoading(true);
@@ -83,7 +78,7 @@ export default function LeaderboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, user, fetchWithCache]);
+  }, [authLoading, fetchWithCache]);
 
   useEffect(() => {
     void loadLeaderboard();

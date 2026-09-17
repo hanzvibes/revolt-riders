@@ -51,11 +51,6 @@ export default function MemberPage() {
 
   const loadMembers = useCallback(async () => {
     if (authLoading) return;
-    if (!user) {
-      setLoading(false);
-      setMembers([]);
-      return;
-    }
 
     try {
       setLoading(true);
@@ -153,7 +148,7 @@ export default function MemberPage() {
     } finally {
       setLoading(false);
     }
-  }, [authLoading, user, fetchWithCache]);
+  }, [authLoading, fetchWithCache]);
 
   useEffect(() => {
     void loadMembers();
@@ -213,7 +208,7 @@ export default function MemberPage() {
       const [rideLogsRes, attendanceRes] = await Promise.all([
         supabase
           .from("ride_logs")
-          .select("id,event_id,distance_km,created_at,status")
+          .select("id,event_id,title,distance_km,created_at,status")
           .eq("member_external_id", member.member_external_id)
           .eq("status", "approved")
           .order("created_at", { ascending: false }),
@@ -227,6 +222,7 @@ export default function MemberPage() {
       type RideLogItem = {
         id: string;
         event_id: string | null;
+        title?: string | null;
         distance_km: number | string | null;
         created_at: string;
         status: string;
@@ -260,9 +256,11 @@ export default function MemberPage() {
 
       // Approved ride logs
       for (const ride of rides) {
-        const title = ride.event_id
-          ? eventTitleMap.get(ride.event_id) || "Agenda Riding"
-          : "Ride Mandiri";
+        const title =
+          ride.title ||
+          (ride.event_id
+            ? eventTitleMap.get(ride.event_id) || "Agenda Riding"
+            : "Ride Mandiri");
         items.push({
           id: `ride-${ride.id}`,
           no: counter++,
