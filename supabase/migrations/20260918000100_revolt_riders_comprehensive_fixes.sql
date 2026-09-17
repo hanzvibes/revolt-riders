@@ -336,3 +336,12 @@ end; $$;
 
 revoke all on function public.get_riding_leaderboard() from public;
 grant execute on function public.get_riding_leaderboard() to anon, authenticated;
+
+-- 7. Announcements / Buletin: Public read permissions for published announcements
+alter table public.announcements enable row level security;
+drop policy if exists "Public can view published announcements" on public.announcements;
+create policy "Public can view published announcements" on public.announcements
+  for select to anon, authenticated
+  using (is_published = true);
+
+grant select on public.announcements to anon, authenticated;
