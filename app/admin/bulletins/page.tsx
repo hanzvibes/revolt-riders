@@ -141,7 +141,7 @@ export default function ManageBulletinsPage() {
 
   if (accessLoading || loading)
     return (
-      <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+      <AppShell active="Kelola Bulletin" title="Manajemen Buletin">
         <div className="page-wrap">
           <p>Memeriksa akses dan bulletin…</p>
         </div>
@@ -149,7 +149,7 @@ export default function ManageBulletinsPage() {
     );
   if (account?.status !== "active" || !canManage(account?.role))
     return (
-      <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+      <AppShell active="Kelola Bulletin" title="Manajemen Buletin">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert />
@@ -167,11 +167,11 @@ export default function ManageBulletinsPage() {
     );
 
   return (
-    <AppShell active="Kelola Bulletin" title="Kelola Bulletin">
+    <AppShell active="Kelola Bulletin" title="Manajemen Buletin">
       <div className="page-wrap admin-native-page">
         <div className="page-intro native-page-head">
           <div>
-            <em>COMMUNITY UPDATE</em>
+            <em>Informasi komunitas</em>
             <h2>Kelola bulletin</h2>
             <p>Tulis dan atur pengumuman komunitas.</p>
           </div>
@@ -179,7 +179,7 @@ export default function ManageBulletinsPage() {
         <section className="card bulletin-management">
           <div className="section-title">
             <span>
-              <em>ARSIP BULLETIN</em>
+              <em>Arsip buletin</em>
               <h3>Pengumuman tersimpan</h3>
             </span>
             <b>{items.length}</b>
