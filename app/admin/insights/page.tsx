@@ -100,14 +100,14 @@ export default function AdminInsightsPage() {
 
   if (loading) {
     return (
-      <AppShell active="Analytics" title="Analytics">
+      <AppShell active="Analytics" title="Analitik & Audit">
         <PageSkeleton title="Memuat Analytics & Audit Trail..." />
       </AppShell>
     );
   }
   if (!allowed) {
     return (
-      <AppShell active="Analytics" title="Analytics">
+      <AppShell active="Analytics" title="Analitik & Audit">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert />
@@ -123,12 +123,12 @@ export default function AdminInsightsPage() {
   }
 
   return (
-    <AppShell active="Analytics" title="Analytics">
+    <AppShell active="Analytics" title="Analitik & Audit">
       <div className="page-wrap">
         <div className="page-intro">
           <div>
-            <em>PRODUCTION INSIGHTS</em>
-            <h2>Analytics & Audit Trail</h2>
+            <em>Ringkasan sistem</em>
+            <h2>Analitik & audit trail</h2>
             <p>Ringkasan aktivitas komunitas dan perubahan penting yang tercatat otomatis.</p>
           </div>
         </div>
@@ -169,7 +169,7 @@ export default function AdminInsightsPage() {
         <section className="card audit-panel" style={{ marginTop: "20px" }}>
           <div className="section-title">
             <span>
-              <em>AUDIT TRAIL</em>
+              <em>Audit trail</em>
               <h3>100 aktivitas terbaru</h3>
             </span>
             <Activity />
