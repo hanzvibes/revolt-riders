@@ -49,68 +49,6 @@ type GalleryItem = {
   events?: ConnectedEvent | null;
 };
 
-const DEFAULT_GALLERY: GalleryItem[] = [
-  {
-    id: "g-1",
-    title: "Kopdar Akbar & Silaturahmi",
-    description: "Pertemuan rutin dan silaturahmi keluarga besar Revolt Riders di Situbondo.",
-    image_url: "/bold-riders-situbondo.jpg",
-    location: "Situbondo Kota",
-    ride_date: "2026-03-01",
-  },
-  {
-    id: "g-2",
-    title: "Touring Silaturahmi Jalur Timur",
-    description: "Perjalanan touring menyusuri pesisir timur Jawa bersama rekan komunitas.",
-    image_url: "/frtn.jpg",
-    location: "Banyuwangi - Buleleng",
-    ride_date: "2026-02-15",
-  },
-  {
-    id: "g-3",
-    title: "Rolling Thunder & Aksi Sosial",
-    description: "Kegiatan bakti sosial dan kepedulian bersama komunitas roda dua.",
-    image_url: "/revolt-riders-logo.jpg",
-    location: "Besuki - Bondowoso",
-    ride_date: "2026-01-20",
-  },
-];
-
-const STANDARD_ACTIVITIES = [
-  {
-    id: "std-1",
-    badge: "ROUTINE",
-    title: "SUNDAY MORNING RIDE",
-    subtitle: "Situbondo & Rute Sekitarnya · Kumpul Santai Akhir Pekan",
-    statusPill: "WEEKLY",
-    isActive: false,
-  },
-  {
-    id: "std-2",
-    badge: "MANDATORY",
-    title: "MONTHLY GATHERING",
-    subtitle: "Basecamp Revolt Riders · Evaluasi & Silaturahmi Bulanan",
-    statusPill: "ACTIVE",
-    isActive: true,
-  },
-  {
-    id: "std-3",
-    badge: "ANNUAL",
-    title: "ANNIVERSARY RIDE",
-    subtitle: "Perayaan Hari Jadi Resmi Komunitas Revolt Riders",
-    statusPill: "DEC 22",
-    isActive: false,
-  },
-  {
-    id: "std-4",
-    badge: "SOCIAL",
-    title: "CHARITY & SOCIAL ACT",
-    subtitle: "Bakti Sosial dan Kepedulian Lingkungan di Situbondo",
-    statusPill: "ON GOING",
-    isActive: false,
-  },
-];
-
 function getEventStatusBadge(startAt: string, status: string) {
   if (status === "completed") return { label: "SELESAI", active: false };
   const eventDate = new Date(startAt);
@@ -135,9 +73,9 @@ export default function PublicLandingPage() {
   const [totalKm, setTotalKm] = useState(19177);
   const [totalRides, setTotalRides] = useState(194);
 
-  // Agenda & Gallery State
+  // Agenda & Gallery State (Pure database-driven, 0 hardcoded dummy)
   const [publicEvents, setPublicEvents] = useState<EventRecord[]>([]);
-  const [gallery, setGallery] = useState<GalleryItem[]>(DEFAULT_GALLERY);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
 
   // Form State
   const [fullName, setFullName] = useState("");
@@ -183,10 +121,10 @@ export default function PublicLandingPage() {
         .select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status")
         .in("status", ["published", "completed"])
         .order("start_at", { ascending: true })
-        .limit(6);
+        .limit(8);
 
-      if (!error && data) {
-        setPublicEvents(data as EventRecord[]);
+      if (!error) {
+        setPublicEvents((data ?? []) as EventRecord[]);
       }
     } catch (err) {
       console.warn("Public landing events fetch notice:", err);
@@ -202,10 +140,10 @@ export default function PublicLandingPage() {
         .select("id,title,description,image_url,location,ride_date,event_id,events:event_id(id,title,type,slug,location_name,start_at)")
         .eq("is_public", true)
         .order("ride_date", { ascending: false })
-        .limit(3);
+        .limit(6);
 
-      if (!error && data && data.length > 0) {
-        setGallery(data as GalleryItem[]);
+      if (!error) {
+        setGallery((data ?? []) as GalleryItem[]);
       }
     } catch (err) {
       console.warn("Public landing gallery fetch notice:", err);
@@ -648,48 +586,55 @@ export default function PublicLandingPage() {
           </div>
 
           <div className="gallery-grid-modular">
-            {gallery.map((item, idx) => (
-              <article
-                className={`gallery-card ${idx === 0 ? "gallery-card-large" : ""}`}
-                key={item.id}
-              >
-                <Image
-                  src={item.image_url}
-                  alt={item.title}
-                  fill
-                  className="gallery-card-img"
-                  sizes="(max-width: 768px) 100vw, 480px"
-                />
-                <div className="gallery-card-bg" />
-                <div className="gallery-card-content">
-                  <div className="gallery-card-meta">
-                    {item.location && (
-                      <span>
-                        <MapPin size={12} style={{ display: "inline", marginRight: "4px", color: "var(--brand-red)" }} />
-                        {item.location}
-                      </span>
-                    )}
-                    {item.ride_date && (
-                      <span>
-                        <CalendarDays size={12} style={{ display: "inline", marginRight: "4px" }} />
-                        {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.ride_date))}
-                      </span>
+            {gallery.length > 0 ? (
+              gallery.map((item, idx) => (
+                <article
+                  className={`gallery-card ${idx === 0 ? "gallery-card-large" : ""}`}
+                  key={item.id}
+                >
+                  <Image
+                    src={item.image_url}
+                    alt={item.title}
+                    fill
+                    className="gallery-card-img"
+                    sizes="(max-width: 768px) 100vw, 480px"
+                  />
+                  <div className="gallery-card-bg" />
+                  <div className="gallery-card-content">
+                    <div className="gallery-card-meta">
+                      {item.location && (
+                        <span>
+                          <MapPin size={12} style={{ display: "inline", marginRight: "4px", color: "var(--brand-red)" }} />
+                          {item.location}
+                        </span>
+                      )}
+                      {item.ride_date && (
+                        <span>
+                          <CalendarDays size={12} style={{ display: "inline", marginRight: "4px" }} />
+                          {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.ride_date))}
+                        </span>
+                      )}
+                    </div>
+                    <h3>{item.title}</h3>
+                    {item.description && <p>{item.description}</p>}
+
+                    {item.events && (
+                      <div className="gallery-linked-agenda">
+                        <Link href={`/agenda#${item.events.slug}`} className="gallery-agenda-badge">
+                          <CalendarDays size={11} />
+                          <span>AGENDA: {item.events.title}</span>
+                        </Link>
+                      </div>
                     )}
                   </div>
-                  <h3>{item.title}</h3>
-                  {item.description && <p>{item.description}</p>}
-
-                  {item.events && (
-                    <div className="gallery-linked-agenda">
-                      <Link href={`/agenda#${item.events.slug}`} className="gallery-agenda-badge">
-                        <CalendarDays size={11} />
-                        <span>AGENDA: {item.events.title}</span>
-                      </Link>
-                    </div>
-                  )}
-                </div>
-              </article>
-            ))}
+                </article>
+              ))
+            ) : (
+              <div className="landing-empty-state" style={{ gridColumn: "1 / -1", minHeight: 180 }}>
+                <CalendarDays size={28} />
+                <p>Belum ada dokumentasi perjalanan yang dipublikasikan.</p>
+              </div>
+            )}
 
             {/* Graphic Badge Card */}
             <div className="gallery-card gallery-graphic-card">
@@ -723,55 +668,43 @@ export default function PublicLandingPage() {
         </div>
 
         <div className="activities-list">
-          {/* Live DB Events from database */}
-          {publicEvents.map((evt) => {
-            const d = formatShortDate(evt.start_at);
-            const statusBadge = getEventStatusBadge(evt.start_at, evt.status);
-            return (
-              <div className="activity-row" key={evt.id}>
-                <div className="activity-badge-col">
-                  <span className="activity-type-tag">{evt.type.toUpperCase()}</span>
+          {publicEvents.length > 0 ? (
+            publicEvents.map((evt) => {
+              const d = formatShortDate(evt.start_at);
+              const statusBadge = getEventStatusBadge(evt.start_at, evt.status);
+              return (
+                <div className="activity-row" key={evt.id}>
+                  <div className="activity-badge-col">
+                    <span className="activity-type-tag">{evt.type.toUpperCase()}</span>
+                  </div>
+                  <div className="activity-info-col">
+                    <Link href={`/agenda#${evt.slug}`} style={{ textDecoration: "none" }}>
+                      <h4>{evt.title}</h4>
+                    </Link>
+                    <p>
+                      {d.day} {d.month} · {evt.location_name || "Situbondo"}
+                      {evt.description ? ` · ${evt.description}` : ""}
+                    </p>
+                  </div>
+                  <div className="activity-status-col">
+                    <span className={`activity-status-pill ${statusBadge.active ? "active" : ""}`}>
+                      {statusBadge.label}
+                    </span>
+                    {evt.location_url && (
+                      <a href={evt.location_url} target="_blank" rel="noreferrer" className="activity-map-link">
+                        Peta ↗
+                      </a>
+                    )}
+                  </div>
                 </div>
-                <div className="activity-info-col">
-                  <Link href={`/agenda#${evt.slug}`} style={{ textDecoration: "none" }}>
-                    <h4>{evt.title}</h4>
-                  </Link>
-                  <p>
-                    {d.day} {d.month} · {evt.location_name || "Situbondo"}
-                    {evt.description ? ` · ${evt.description}` : ""}
-                  </p>
-                </div>
-                <div className="activity-status-col">
-                  <span className={`activity-status-pill ${statusBadge.active ? "active" : ""}`}>
-                    {statusBadge.label}
-                  </span>
-                  {evt.location_url && (
-                    <a href={evt.location_url} target="_blank" rel="noreferrer" className="activity-map-link">
-                      Peta ↗
-                    </a>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Fallback routine activities if DB events are fewer than 4 */}
-          {STANDARD_ACTIVITIES.slice(0, Math.max(0, 4 - publicEvents.length)).map((std) => (
-            <div className="activity-row" key={std.id}>
-              <div className="activity-badge-col">
-                <span className="activity-type-tag">{std.badge}</span>
-              </div>
-              <div className="activity-info-col">
-                <h4>{std.title}</h4>
-                <p>{std.subtitle}</p>
-              </div>
-              <div className="activity-status-col">
-                <span className={`activity-status-pill ${std.isActive ? "active" : ""}`}>
-                  {std.statusPill}
-                </span>
-              </div>
+              );
+            })
+          ) : (
+            <div className="landing-empty-state">
+              <CalendarDays size={28} />
+              <p>Belum ada agenda kegiatan yang dijadwalkan.</p>
             </div>
-          ))}
+          )}
         </div>
       </section>
 

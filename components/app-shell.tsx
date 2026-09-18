@@ -102,15 +102,16 @@ export function AppShell({ active, title, children }: { active: string; title: s
     admin: isAdminActive,
   });
 
-  // Auto-expand section when navigating into it
-  useEffect(() => {
+  const [prevActive, setPrevActive] = useState(active);
+  if (prevActive !== active) {
+    setPrevActive(active);
     setOpenSections((prev) => ({
       ...prev,
       ...(isKomunitasActive ? { komunitas: true } : {}),
       ...(isOperationalActive ? { operational: true } : {}),
       ...(isAdminActive ? { admin: true } : {}),
     }));
-  }, [isKomunitasActive, isOperationalActive, isAdminActive]);
+  }
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));

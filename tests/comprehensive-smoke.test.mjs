@@ -204,10 +204,10 @@ test("AppShell implements streamlined navigation with collapsible operational pa
   assert.match(shellContent, /\["Bulletin", "\/bulletin", Bell\]/);
   assert.match(shellContent, /\["Check-in", "\/check-in", ScanLine\]/);
 
-  // Collapsible panel pengurus
-  assert.match(shellContent, /<details className="sidebar-tools" open={operationalActive}>/);
-  assert.match(shellContent, /<span>Panel Pengurus<\/span>/);
-  assert.match(shellContent, /<ChevronDown \/>/);
+  // Accordion group navigation
+  assert.match(shellContent, /sidebar-accordion-group/);
+  assert.match(shellContent, /<span className="accordion-title">Operasional<\/span>/);
+  assert.match(shellContent, /<ChevronDown className="accordion-chevron" \/>/);
 });
 
 // ==============================================================================

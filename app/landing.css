@@ -1731,6 +1731,33 @@
   color: #ffffff;
 }
 
+/* Landing Section Empty States */
+.landing-empty-state {
+  padding: 44px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  color: var(--brand-muted);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.landing-empty-state svg {
+  color: var(--brand-dim);
+  opacity: 0.65;
+}
+
+.landing-empty-state p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--brand-muted);
+  font-family: var(--font-body);
+}
+
 /* ------------------------------------------------------------------------------
    16. MOBILE PERFORMANCE & HARDWARE ACCELERATION
    ------------------------------------------------------------------------------ */
