@@ -3773,3 +3773,514 @@ html {
 
 
 
+
+
+/* ==========================================================================
+   DASHBOARD PREMIUM CALM OVERRIDES
+   Calm, editorial dashboard styling. Keep accent red intentional and sparse.
+   ========================================================================== */
+
+.dashboard-premium {
+  gap: 24px;
+  align-items: start;
+}
+
+.dashboard-premium .left-column,
+.dashboard-premium .right-column {
+  gap: 18px;
+}
+
+.dashboard-premium .hero {
+  min-height: 205px !important;
+  padding: 28px 30px !important;
+  border: 1px solid #2a2d30 !important;
+  border-radius: 20px !important;
+  background: #181a1c !important;
+  box-shadow: 0 12px 32px rgba(17, 19, 21, 0.12) !important;
+}
+
+.dashboard-premium .hero-content {
+  gap: 9px;
+  max-width: 560px;
+}
+
+.dashboard-premium .hero-eyebrow {
+  gap: 10px;
+}
+
+.dashboard-premium .hero-tag {
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ef4b57;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: none;
+}
+
+.dashboard-premium .hero-eyebrow em {
+  color: #8f959a;
+  font-size: 0.64rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.dashboard-premium .hero h2 {
+  max-width: 520px;
+  margin: 2px 0 3px !important;
+  font-size: clamp(1.65rem, 3vw, 2.25rem) !important;
+  font-weight: 780 !important;
+  line-height: 1.06 !important;
+  letter-spacing: -0.045em !important;
+}
+
+.dashboard-premium .hero-meta {
+  gap: 16px;
+  color: #b8bdc1;
+}
+
+.dashboard-premium .hero-meta p,
+.dashboard-premium .hero-desc {
+  color: #aeb4b8 !important;
+  font-size: 0.72rem !important;
+}
+
+.dashboard-premium .hero-meta p svg,
+.dashboard-premium .hero-desc svg {
+  color: #737a80 !important;
+}
+
+.dashboard-premium .hero-cta {
+  min-height: 40px;
+  margin-top: 10px !important;
+  border: 1px solid #f0f1f2;
+  border-radius: 10px;
+  background: #f7f7f7;
+  color: #17191b;
+  padding: 0 14px;
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: none;
+  letter-spacing: 0;
+  box-shadow: none;
+}
+
+.dashboard-premium .hero-cta:hover {
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.dashboard-premium .hero-date-badge {
+  width: 92px;
+  min-height: 110px;
+  padding: 14px 10px;
+  border: 1px solid #303438;
+  border-radius: 15px;
+  background: #202326;
+  box-shadow: none;
+}
+
+.dashboard-premium .hero-badge-month {
+  color: #aeb3b7;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.dashboard-premium .hero-badge-day {
+  margin: 5px 0 7px;
+  font-size: 2rem;
+  font-weight: 760;
+  letter-spacing: -0.045em;
+}
+
+.dashboard-premium .hero-badge-status {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #ef727b;
+  font-size: 0.54rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.dashboard-premium .dashboard-quick-actions {
+  gap: 10px;
+}
+
+.dashboard-premium .quick-action-btn {
+  min-height: 72px;
+  border: 1px solid #e5e7e9;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
+  padding: 13px 14px;
+  transition: border-color 0.16s ease, transform 0.16s ease, background 0.16s ease;
+}
+
+.dashboard-premium .quick-action-btn:hover {
+  border-color: #cfd3d6;
+  background: #fcfcfc;
+  transform: translateY(-1px);
+}
+
+.dashboard-premium .quick-action-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #f2f3f4;
+  color: #373b3e;
+}
+
+.dashboard-premium .quick-action-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.dashboard-premium .quick-action-title {
+  color: #202326;
+  font-size: 0.72rem;
+  font-weight: 760;
+}
+
+.dashboard-premium .quick-action-desc {
+  margin-top: 2px;
+  color: #8a9095;
+  font-size: 0.58rem;
+}
+
+.dashboard-premium .stats {
+  gap: 10px;
+}
+
+.dashboard-premium .stats article {
+  min-height: 92px;
+  border: 1px solid #e5e7e9;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
+  padding: 16px;
+}
+
+.dashboard-premium .stats article > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #f3f4f5;
+  color: #565c61;
+}
+
+.dashboard-premium .stats article span > small:first-child {
+  color: #858b90;
+  font-size: 0.54rem;
+  font-weight: 750;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.dashboard-premium .stats article b {
+  margin: 3px 0 1px;
+  color: #1e2123;
+  font-size: 1.05rem;
+  font-weight: 780;
+  letter-spacing: -0.035em;
+}
+
+.dashboard-premium .stats article span > small:last-child {
+  color: #a0a5a9;
+  font-size: 0.54rem;
+}
+
+.dashboard-premium .card,
+.dashboard-premium .bullet-card,
+.dashboard-premium .rider-status-card {
+  border-color: #e5e7e9;
+  box-shadow: none;
+}
+
+.dashboard-premium .agenda-card,
+.dashboard-premium .support {
+  border-radius: 16px;
+  background: #fff;
+}
+
+.dashboard-premium .section-title em {
+  color: #8b9196;
+  font-size: 0.56rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.dashboard-premium .section-title h3 {
+  margin-top: 3px;
+  font-weight: 760;
+  letter-spacing: -0.025em;
+}
+
+.dashboard-premium .section-title > a {
+  color: #6d7378;
+  font-size: 0.6rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dashboard-premium .agenda-card .event {
+  border-top-color: #eef0f1;
+}
+
+.dashboard-premium .agenda-card .event time {
+  border: 1px solid #e5e7e9;
+  border-radius: 10px;
+  background: #fafafa;
+  color: #26292c;
+}
+
+.dashboard-premium .agenda-card .event time b {
+  font-weight: 780;
+}
+
+.dashboard-premium .event-info em {
+  color: #81878c;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.dashboard-premium .event-soon-pill {
+  padding: 2px 6px;
+  border: 1px solid #f2d4d7;
+  border-radius: 999px;
+  background: #fff8f8;
+  color: #c63844;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.dashboard-premium .event-info h4 {
+  font-weight: 760;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-premium .rider-status-card {
+  border: 1px solid #e5e7e9;
+  border-radius: 16px;
+  background: #fff;
+  color: #222527;
+  padding: 18px;
+}
+
+.dashboard-premium .rider-status-avatar {
+  background: #202326;
+  color: #fff;
+  border: 0;
+  box-shadow: none;
+}
+
+.dashboard-premium .rider-status-name {
+  color: #202326;
+  font-weight: 780;
+}
+
+.dashboard-premium .member-id-tag {
+  border-color: #e1e4e6;
+  background: #f5f6f7;
+  color: #666d72;
+}
+
+.dashboard-premium .rider-status-metrics {
+  gap: 8px;
+  border-color: #eceeef;
+}
+
+.dashboard-premium .rider-status-metric {
+  border-radius: 10px;
+  background: #f7f8f8;
+}
+
+.dashboard-premium .rider-status-metric small {
+  color: #8c9297;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dashboard-premium .rider-status-metric b {
+  color: #232628;
+  font-weight: 760;
+}
+
+.dashboard-premium .rider-status-actions .dark-action {
+  min-height: 40px;
+  border-radius: 10px;
+  background: #202326;
+  font-size: 0.64rem;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.dashboard-premium .bullet-card {
+  border: 1px solid #e5e7e9;
+  border-radius: 16px;
+  padding: 17px 18px;
+  background: #fff;
+}
+
+.dashboard-premium .bullet-card:hover {
+  border-color: #cfd3d6;
+  transform: translateY(-1px);
+}
+
+.dashboard-premium .bullet-badge {
+  color: #b23640;
+  font-size: 0.56rem;
+  font-weight: 720;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.dashboard-premium .bullet-card h3 {
+  margin-top: 4px;
+  font-size: 0.9rem;
+  font-weight: 760;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-premium .bullet-card p {
+  color: #777e83;
+  line-height: 1.5;
+}
+
+.dashboard-premium .support-grid figure {
+  border-color: #eceeef;
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .dashboard-premium {
+    gap: 14px;
+  }
+
+  .dashboard-premium .left-column,
+  .dashboard-premium .right-column {
+    gap: 14px;
+  }
+
+  .dashboard-premium .mobile-rider-card {
+    margin-bottom: 0;
+  }
+
+  .dashboard-premium .rider-status-card {
+    padding: 14px;
+    border-radius: 14px;
+  }
+
+  .dashboard-premium .hero {
+    min-height: 168px !important;
+    padding: 18px !important;
+    border-radius: 16px !important;
+  }
+
+  .dashboard-premium .hero-content {
+    max-width: none;
+    padding-right: 72px;
+  }
+
+  .dashboard-premium .hero h2 {
+    max-width: none;
+    font-size: clamp(1.25rem, 6vw, 1.55rem) !important;
+  }
+
+  .dashboard-premium .hero-meta {
+    display: grid;
+    gap: 5px;
+  }
+
+  .dashboard-premium .hero-date-badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 60px;
+    min-height: 76px;
+    padding: 9px 6px;
+    border-radius: 12px;
+  }
+
+  .dashboard-premium .hero-badge-day {
+    margin: 3px 0 4px;
+    font-size: 1.5rem;
+  }
+
+  .dashboard-premium .hero-badge-status {
+    font-size: 0.48rem;
+  }
+
+  .dashboard-premium .dashboard-quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-premium .quick-action-btn {
+    min-height: 68px;
+    padding: 11px 12px;
+  }
+
+  .dashboard-premium .stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .dashboard-premium .stats article {
+    min-width: 0;
+    min-height: 102px;
+    align-items: flex-start;
+    padding: 12px;
+  }
+
+  .dashboard-premium .stats article > svg {
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+  }
+
+  .dashboard-premium .stats article b {
+    font-size: clamp(0.78rem, 3.3vw, 0.94rem);
+    overflow-wrap: anywhere;
+  }
+
+  .dashboard-premium .stats article span > small:last-child {
+    display: none;
+  }
+
+  .dashboard-premium .agenda-card,
+  .dashboard-premium .support,
+  .dashboard-premium .bullet-card {
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .dashboard-premium .hero {
+    padding: 16px !important;
+  }
+
+  .dashboard-premium .hero-content {
+    padding-right: 62px;
+  }
+
+  .dashboard-premium .hero-date-badge {
+    top: 14px;
+    right: 14px;
+    width: 56px;
+  }
+
+  .dashboard-premium .stats article {
+    padding: 10px;
+  }
+
+  .dashboard-premium .quick-action-desc {
+    font-size: 0.54rem;
+  }
+}
