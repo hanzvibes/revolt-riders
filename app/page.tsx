@@ -39,7 +39,7 @@ type GalleryItem = {
 const DEFAULT_GALLERY: GalleryItem[] = [
   {
     id: "g-1",
-    title: "Kopdar Akbar & Silaturahmi Situbondo",
+    title: "Kopdar Akbar & Silaturahmi",
     description: "Pertemuan rutin mempererat solidaritas antar anggota roda dua.",
     image_url: "/bold-riders-situbondo.jpg",
     location: "Situbondo Kota",
@@ -109,7 +109,7 @@ export default function PublicLandingPage() {
           if (count && active) setTotalMembers(count);
         }
 
-        // 2. Fetch public events (limit 2 for compact view)
+        // 2. Fetch public events (limit 2)
         const { data: eventsData } = await supabase
           .from("events")
           .select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status")
@@ -121,7 +121,7 @@ export default function PublicLandingPage() {
           setPublicEvents(eventsData as EventRecord[]);
         }
 
-        // 3. Fetch gallery (limit 3 for clean curated grid)
+        // 3. Fetch gallery (limit 3)
         const { data: galleryData, error: galErr } = await supabase
           .from("club_gallery")
           .select("id,title,description,image_url,location,ride_date")
@@ -231,11 +231,11 @@ export default function PublicLandingPage() {
 
   return (
     <div className="landing-page">
-      {/* 1. Header / Navigation (Clean & Streamlined) */}
+      {/* 1. Header / Navigation */}
       <header className="landing-header">
         <div className="landing-nav-container">
           <Link href="/" className="landing-brand">
-            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={40} height={40} priority />
+            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={42} height={42} priority />
             <div className="landing-brand-text">
               <strong>REVOLT RIDERS</strong>
               <small>SITUBONDO · EAST JAVA</small>
@@ -243,27 +243,15 @@ export default function PublicLandingPage() {
           </Link>
 
           <ul className="landing-nav-links">
+            <li><a href="#stats">Statistik</a></li>
             <li><a href="#agenda">Agenda</a></li>
             <li><a href="#gallery">Galeri</a></li>
             <li><a href="#profil">Profil & Aliansi</a></li>
-            <li>
-              <button
-                type="button"
-                style={{ background: "none", border: 0, padding: 0, font: "inherit", color: "inherit", cursor: "pointer" }}
-                onClick={() => {
-                  setFormSuccess(false);
-                  setFormError("");
-                  setIsJoinModalOpen(true);
-                }}
-              >
-                Join With Us
-              </button>
-            </li>
           </ul>
 
           <div className="landing-nav-actions">
             <Link href={user ? "/dashboard" : "/login"} className="btn-nav-portal">
-              <LogIn size={14} />
+              <LogIn size={15} />
               <span>{user ? "Portal Member" : "Masuk Member"}</span>
             </Link>
 
@@ -276,7 +264,7 @@ export default function PublicLandingPage() {
                 setIsJoinModalOpen(true);
               }}
             >
-              <UserPlus size={14} />
+              <UserPlus size={15} />
               <span>Join With Us</span>
             </button>
           </div>
@@ -285,93 +273,77 @@ export default function PublicLandingPage() {
 
       {/* Main Content */}
       <main className="landing-main">
-        {/* 2. Hero: High-Performance Carbon Card with Reveal Animation */}
+        {/* 2. Hero: 2-Column Balanced Carbon Card */}
         <motion.section
-          className="hero landing-hero-card"
-          initial={{ opacity: 0, y: 18 }}
+          className="landing-hero-card"
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <Image
             src="/revolt-riders-logo.jpg"
             alt=""
-            width={185}
-            height={185}
-            className="hero-mark"
+            width={280}
+            height={280}
+            className="landing-hero-mark"
             aria-hidden="true"
           />
 
           <div className="landing-hero-content">
-            <motion.span
-              className="landing-hero-eyebrow"
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.15, duration: 0.4 }}
-            >
+            <span className="landing-hero-badge">
               <Sparkles size={12} />
               KOMUNITAS MOTOR RESMI · SITUBONDO
-            </motion.span>
+            </span>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.22, duration: 0.45 }}
-            >
+            <h1>
               <em>SATU ASPAL.</em>
               SATU PERSAUDARAAN.
-            </motion.h1>
+            </h1>
 
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.45 }}
-            >
+            <p>
               Wadah persaudaraan roda dua di Situbondo yang menjunjung tinggi kebersamaan, etika berkendara santun, dan aksi sosial tanpa membedakan kasta kendaraan.
-            </motion.p>
+            </p>
 
-            <motion.div
-              className="landing-hero-actions"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.38, duration: 0.45 }}
-            >
+            <div className="landing-hero-actions">
               <button
                 type="button"
-                className="primary-action"
+                className="btn-hero-primary"
                 onClick={() => {
                   setFormSuccess(false);
                   setFormError("");
                   setIsJoinModalOpen(true);
                 }}
               >
-                <UserPlus size={15} />
+                <UserPlus size={16} />
                 <span>GABUNG BERSAMA KAMI</span>
               </button>
 
-              <Link href={user ? "/dashboard" : "/login"} className="dark-action">
-                <LogIn size={15} />
+              <Link href={user ? "/dashboard" : "/login"} className="btn-hero-secondary">
+                <LogIn size={16} />
                 <span>PORTAL ANGGOTA</span>
               </Link>
-            </motion.div>
+            </div>
           </div>
 
-          {/* Speedometer Dial */}
-          <motion.div
-            className="dial"
-            aria-hidden="true"
-            initial={{ scale: 0.88, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.25, duration: 0.5, ease: "easeOut" }}
-          >
-            <small>SPEED OF BROTHERHOOD</small>
-            <b>360°</b>
-            <span>SOLIDARITAS</span>
-          </motion.div>
+          {/* Right Column: Speedometer Gauge */}
+          <div className="landing-hero-gauge-wrap">
+            <motion.div
+              className="landing-speedo-gauge"
+              aria-hidden="true"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
+            >
+              <small>SPEED OF BROTHERHOOD</small>
+              <b>360°</b>
+              <span>SOLIDARITAS</span>
+            </motion.div>
+          </div>
         </motion.section>
 
-        {/* 3. Club Live Statistics Grid (Glanceable Metric Tiles) */}
+        {/* 3. Live Statistics Grid */}
         <motion.section
-          className="stats landing-stats"
+          className="landing-stats"
           id="stats"
           aria-label="Statistik Komunitas"
           initial={{ opacity: 0, y: 14 }}
@@ -380,7 +352,9 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <article className="landing-stat-tile">
-            <UsersRound className="landing-stat-icon" size={20} />
+            <div className="landing-stat-icon-wrap">
+              <UsersRound size={22} />
+            </div>
             <div className="landing-stat-info">
               <span className="landing-stat-label">MEMBER AKTIF</span>
               <b className="landing-stat-val">{totalMembers}</b>
@@ -389,7 +363,9 @@ export default function PublicLandingPage() {
           </article>
 
           <article className="landing-stat-tile">
-            <Gauge className="landing-stat-icon" size={20} />
+            <div className="landing-stat-icon-wrap">
+              <Gauge size={22} />
+            </div>
             <div className="landing-stat-info">
               <span className="landing-stat-label">TOTAL JARAK TEMPUH</span>
               <b className="landing-stat-val">{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKm)} KM</b>
@@ -398,7 +374,9 @@ export default function PublicLandingPage() {
           </article>
 
           <article className="landing-stat-tile">
-            <Route className="landing-stat-icon" size={20} />
+            <div className="landing-stat-icon-wrap">
+              <Route size={22} />
+            </div>
             <div className="landing-stat-info">
               <span className="landing-stat-label">SOWAN & TOURING</span>
               <b className="landing-stat-val">{totalRides}+</b>
@@ -417,11 +395,9 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <div className="landing-section-head-title">
-              <em>AGENDA TERBUKA</em>
-              <h2>Kopdar & Jadwal Terdekat</h2>
-            </div>
-            <p>Terbuka bagi calon anggota & rekan riders.</p>
+            <em>AGENDA TERBUKA</em>
+            <h2>Kopdar & Jadwal Terdekat</h2>
+            <p>Jadwal sowan, touring, dan kegiatan publik terbuka untuk dihadiri calon anggota & rekan riders.</p>
           </div>
 
           {publicEvents.length === 0 ? (
@@ -442,7 +418,7 @@ export default function PublicLandingPage() {
                     </time>
 
                     <div className="landing-agenda-info">
-                      <em>{evt.type}</em>
+                      <span className="landing-agenda-badge">{evt.type}</span>
                       <h3>{evt.title}</h3>
                       <p>{evt.description || "Agenda resmi komunitas motor Revolt Riders Situbondo."}</p>
 
@@ -475,11 +451,9 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <div className="landing-section-head-title">
-              <em>DOKUMENTASI TOURING</em>
-              <h2>Momen Perjalanan</h2>
-            </div>
-            <p>Dokumentasi kebersamaan sowan & touring resmi.</p>
+            <em>DOKUMENTASI TOURING</em>
+            <h2>Momen Perjalanan</h2>
+            <p>Dokumentasi kebersamaan sowan & touring resmi menyusuri aspal nusantara.</p>
           </div>
 
           <div className="landing-gallery-grid">
@@ -514,7 +488,7 @@ export default function PublicLandingPage() {
           </div>
         </motion.section>
 
-        {/* 6. Profil & Aliansi Resmi (Unified Elegant Card) */}
+        {/* 6. Profil & Aliansi Resmi (Unified Card) */}
         <motion.section
           className="landing-section"
           id="profil"
@@ -524,34 +498,33 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <div className="landing-section-head-title">
-              <em>IDENTITAS RESMI</em>
-              <h2>Profil & Aliansi Komunitas</h2>
-            </div>
+            <em>IDENTITAS RESMI</em>
+            <h2>Profil & Aliansi Komunitas</h2>
+            <p>Prinsip dasar kebersamaan dan kemitraan resmi komunitas Revolt Riders.</p>
           </div>
 
           <div className="landing-profil-card">
             <div className="landing-profil-left">
               <h3>Satu Aspal Tanpa Sekat</h3>
               <p>
-                Revolt Riders Situbondo berdiri di atas prinsip persaudaraan tulus, menjunjung tinggi keselamatan berkendara santun, serta saling menghargai sesama pengguna jalan.
+                Revolt Riders Situbondo berdiri di atas prinsip persaudaraan tulus. Tidak membedakan tipe atau pabrikan motor—semua pengendara beretika santun dan berjiwa sosial disambut hangat sebagai saudara.
               </p>
 
               <div className="landing-chips-grid">
                 <div className="landing-chip">
-                  <HeartHandshake size={15} />
+                  <HeartHandshake size={16} />
                   <span>Solidaritas Tulus</span>
                 </div>
                 <div className="landing-chip">
-                  <ShieldCheck size={15} />
+                  <ShieldCheck size={16} />
                   <span>Safety First Mindset</span>
                 </div>
                 <div className="landing-chip">
-                  <Compass size={15} />
+                  <Compass size={16} />
                   <span>Eksplorasi Sowan</span>
                 </div>
                 <div className="landing-chip">
-                  <Sparkles size={15} />
+                  <Sparkles size={16} />
                   <span>Terbuka Semua Merk</span>
                 </div>
               </div>
@@ -590,7 +563,7 @@ export default function PublicLandingPage() {
           </div>
         </motion.section>
 
-        {/* 7. Instagram Showcase Banner */}
+        {/* 7. Instagram Showcase */}
         <motion.section
           className="landing-section"
           initial={{ opacity: 0, y: 14 }}
@@ -601,7 +574,7 @@ export default function PublicLandingPage() {
           <div className="landing-instagram-card">
             <div className="landing-instagram-left">
               <div className="landing-instagram-icon">
-                <InstagramIcon size={20} />
+                <InstagramIcon size={22} />
               </div>
               <div className="landing-instagram-text">
                 <h3>Ikuti Dokumentasi di Instagram</h3>
@@ -626,12 +599,12 @@ export default function PublicLandingPage() {
       <footer className="landing-footer">
         <div className="landing-footer-container">
           <div className="landing-footer-brand">
-            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={28} height={28} />
+            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={30} height={30} />
             <span>REVOLT RIDERS SITUBONDO</span>
           </div>
 
           <div className="landing-footer-copy">
-            © {new Date().getFullYear()} Revolt Riders. Brotherhood Tanpa Batas.
+            © {new Date().getFullYear()} Revolt Riders Situbondo. Satu Aspal, Satu Persaudaraan.
           </div>
 
           <div className="landing-footer-links">
@@ -661,17 +634,17 @@ export default function PublicLandingPage() {
         <div className="join-modal-body">
           {formSuccess ? (
             <div className="join-success-card">
-              <CheckCircle2 size={50} />
+              <CheckCircle2 size={52} />
               <h3>Pendaftaran Berhasil Dikirim!</h3>
               <p>
-                Terima kasih, <b>{fullName}</b>! Formulir Anda telah tersimpan dengan status <b>Pending</b>. Pengurus
-                Revolt Riders akan segera meninjau formulir dan mengirimkan instruksi konfirmasi via WhatsApp ke nomor{" "}
-                <b>{whatsapp}</b>.
+                Terima kasih, <b>{fullName}</b>! Formulir pendaftaran Anda telah tersimpan dengan status <b>Pending</b>.
+                Pengurus Revolt Riders akan segera meninjau formulir dan mengirimkan instruksi konfirmasi via WhatsApp ke
+                nomor <b>{whatsapp}</b>.
               </p>
               <button
                 type="button"
-                className="primary-action"
-                style={{ width: "100%", maxWidth: 240 }}
+                className="btn-hero-primary"
+                style={{ width: "100%", maxWidth: 240, justifyContent: "center" }}
                 onClick={resetForm}
               >
                 Selesai
@@ -680,7 +653,7 @@ export default function PublicLandingPage() {
           ) : (
             <>
               <p className="join-modal-intro">
-                Lengkapi formulir di bawah ini untuk peninjauan pengurus. Data disimpan aman sebagai Join Request.
+                Lengkapi formulir di bawah ini untuk peninjauan pengurus. Data Anda disimpan aman sebagai Join Request.
               </p>
 
               <form className="join-form-stack" onSubmit={handleSubmitJoin}>
@@ -804,8 +777,7 @@ export default function PublicLandingPage() {
 
                 <button
                   type="submit"
-                  className="primary-action"
-                  style={{ width: "100%", marginTop: 6 }}
+                  className="btn-join-submit"
                   disabled={formSubmitting}
                 >
                   {formSubmitting ? "Mengirim Pendaftaran…" : "KIRIM PENDAFTARAN"}
