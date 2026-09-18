@@ -206,7 +206,7 @@ function CheckInContent() {
           <div className="form-heading">
             <ScanLine />
             <span>
-              <em>KEHADIRAN AGENDA</em>
+              <em>Presensi agenda</em>
               <h2>Check-in Member</h2>
               <p>
                 Scan QR dari pengurus dengan kamera HP atau masukkan kode agenda
