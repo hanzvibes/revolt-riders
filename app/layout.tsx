@@ -1,3 +1,4 @@
+// Vercel deployment trigger: 2026-09-19
 import { PwaRegister } from "@/components/pwa-register";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
