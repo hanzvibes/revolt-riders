@@ -22,7 +22,6 @@ import {
   Shield,
   User,
   UserPlus,
-  Users,
   Wrench,
   X,
 } from "lucide-react";
@@ -732,6 +731,11 @@ export default function PublicLandingPage() {
           <div className="stat-item">
             <div className="stat-number">{totalRides}+</div>
             <div className="stat-tag">RIDES COMPLETED</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-number">{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKm)} KM</div>
+            <div className="stat-tag">TOTAL DISTANCE</div>
           </div>
 
           <div className="stat-item">

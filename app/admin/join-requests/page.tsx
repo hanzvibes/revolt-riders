@@ -22,6 +22,7 @@ import {
   UserPlus,
   UserX,
   UsersRound,
+  X,
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -45,16 +46,38 @@ type JoinRequest = {
   created_at: string;
 };
 
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
+
 export default function AdminJoinRequestsPage() {
   const { account, loading: authLoading } = useMemberAccess();
   const isStaff = Boolean(account && ["admin", "superadmin", "road_captain"].includes(account.role));
 
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"all" | "pending" | "accepted" | "confirmed" | "active" | "archived">("pending");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => {
+      setToast(null);
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [toast]);
+
+  const showToast = (text: string, type: "success" | "error" = "success") => {
+    setToast({ text, type });
+  };
 
   // Modals state
   const [detailItem, setDetailItem] = useState<JoinRequest | null>(null);
@@ -64,7 +87,6 @@ export default function AdminJoinRequestsPage() {
   const [suggestedMemberId, setSuggestedMemberId] = useState("RR-028");
   const [customMemberId, setCustomMemberId] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
 
   // Load Data
   const loadRequests = useCallback(async () => {
@@ -158,8 +180,6 @@ export default function AdminJoinRequestsPage() {
   // Actions
   const handleAccept = async (item: JoinRequest) => {
     setActionLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const supabase = getSupabaseBrowserClient();
@@ -170,7 +190,7 @@ export default function AdminJoinRequestsPage() {
 
       if (rpcErr) throw rpcErr;
 
-      setSuccess(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`);
+      showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
       void loadRequests();
     } catch (err) {
       // Fallback direct update
@@ -189,10 +209,10 @@ export default function AdminJoinRequestsPage() {
 
         if (updErr) throw updErr;
 
-        setSuccess(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`);
+        showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
         void loadRequests();
       } catch (innerErr) {
-        setError(innerErr instanceof Error ? innerErr.message : "Gagal menyetujui pendaftaran.");
+        showToast(innerErr instanceof Error ? innerErr.message : "Gagal menyetujui pendaftaran.", "error");
       }
     } finally {
       setActionLoading(false);
@@ -202,8 +222,6 @@ export default function AdminJoinRequestsPage() {
   const handleReject = async () => {
     if (!rejectItem) return;
     setActionLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const supabase = getSupabaseBrowserClient();
@@ -215,7 +233,7 @@ export default function AdminJoinRequestsPage() {
 
       if (rpcErr) throw rpcErr;
 
-      setSuccess(`Pendaftaran ${rejectItem.full_name} telah ditolak.`);
+      showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
       setRejectItem(null);
       setRejectReason("");
       void loadRequests();
@@ -235,12 +253,12 @@ export default function AdminJoinRequestsPage() {
 
         if (updErr) throw updErr;
 
-        setSuccess(`Pendaftaran ${rejectItem.full_name} telah ditolak.`);
+        showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
         setRejectItem(null);
         setRejectReason("");
         void loadRequests();
       } catch (innerErr) {
-        setError(innerErr instanceof Error ? innerErr.message : "Gagal menolak pendaftaran.");
+        showToast(innerErr instanceof Error ? innerErr.message : "Gagal menolak pendaftaran.", "error");
       }
     } finally {
       setActionLoading(false);
@@ -252,13 +270,11 @@ export default function AdminJoinRequestsPage() {
     const memberIdToAssign = (customMemberId || suggestedMemberId).trim().toUpperCase();
 
     if (!memberIdToAssign.match(/^RR-\d{3,}$/)) {
-      setError("Format ID RR harus RR-XXX (contoh: RR-028)");
+      showToast("Format ID RR harus RR-XXX (contoh: RR-028)", "error");
       return;
     }
 
     setActionLoading(true);
-    setError("");
-    setSuccess("");
 
     try {
       const supabase = getSupabaseBrowserClient();
@@ -270,7 +286,7 @@ export default function AdminJoinRequestsPage() {
 
       if (rpcErr) throw rpcErr;
 
-      setSuccess(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`);
+      showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
       setActivateItem(null);
       void loadRequests();
     } catch (err) {
@@ -305,11 +321,11 @@ export default function AdminJoinRequestsPage() {
 
         if (updErr) throw updErr;
 
-        setSuccess(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`);
+        showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
         setActivateItem(null);
         void loadRequests();
       } catch (innerErr) {
-        setError(innerErr instanceof Error ? innerErr.message : "Gagal mengaktivasi member.");
+        showToast(innerErr instanceof Error ? innerErr.message : "Gagal mengaktivasi member.", "error");
       }
     } finally {
       setActionLoading(false);
@@ -337,24 +353,23 @@ export default function AdminJoinRequestsPage() {
     if (!item.confirmation_token) return;
     const url = `${window.location.origin}/join/confirm/${item.confirmation_token}`;
     navigator.clipboard.writeText(url);
-    setCopiedId(item.id);
-    setTimeout(() => setCopiedId(null), 2500);
+    showToast(`Link konfirmasi untuk ${item.full_name} berhasil disalin ke clipboard!`, "success");
   };
 
   const getStatusBadge = (status: JoinRequest["status"]) => {
     switch (status) {
       case "pending":
-        return <span style={{ background: "#fef3c7", color: "#92400e", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Pending</span>;
+        return <span className="join-badge join-badge-pending">Pending</span>;
       case "accepted":
-        return <span style={{ background: "#eff6ff", color: "#1e40af", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Accepted</span>;
+        return <span className="join-badge join-badge-accepted">Accepted</span>;
       case "confirmed":
-        return <span style={{ background: "#dcfce7", color: "#166534", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Confirmed</span>;
+        return <span className="join-badge join-badge-confirmed">Confirmed</span>;
       case "active":
-        return <span style={{ background: "#fae8ff", color: "#86198f", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Active</span>;
+        return <span className="join-badge join-badge-active">Active</span>;
       case "rejected":
-        return <span style={{ background: "#fee2e2", color: "#991b1b", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Rejected</span>;
+        return <span className="join-badge join-badge-rejected">Rejected</span>;
       case "expired":
-        return <span style={{ background: "#f1f5f9", color: "#64748b", padding: "4px 8px", borderRadius: 9999, fontSize: "0.68rem", fontWeight: 800 }}>Expired</span>;
+        return <span className="join-badge join-badge-expired">Expired</span>;
     }
   };
 
@@ -399,224 +414,431 @@ export default function AdminJoinRequestsPage() {
           </button>
         </section>
 
-        {/* Notifications */}
-        {error && <p className="error-message">{error}</p>}
-        {success && <p className="success-message"><CheckCircle2 size={17} />{success}</p>}
-
-        {/* Status Filter Tabs */}
-        <div className="agenda-tabs" role="tablist" aria-label="Filter status pendaftaran" style={{ marginBottom: 20 }}>
+        {/* 1. Status Filter Tabs (Segmented & Responsive) */}
+        <div className="admin-member-tabs" role="tablist" aria-label="Filter status pendaftaran">
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "pending"}
-            className={tab === "pending" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "pending" ? "active" : ""}`}
             onClick={() => setTab("pending")}
           >
             <Clock size={15} />
-            Pending <b>{counts.pending}</b>
+            <span>Pending</span>
+            <span className="admin-member-tab-badge">{counts.pending}</span>
           </button>
 
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "accepted"}
-            className={tab === "accepted" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "accepted" ? "active" : ""}`}
             onClick={() => setTab("accepted")}
           >
             <Check size={15} />
-            Accepted <b>{counts.accepted}</b>
+            <span>Accepted</span>
+            <span className="admin-member-tab-badge">{counts.accepted}</span>
           </button>
 
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "confirmed"}
-            className={tab === "confirmed" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "confirmed" ? "active" : ""}`}
             onClick={() => setTab("confirmed")}
           >
             <UserCheck size={15} />
-            Confirmed <b>{counts.confirmed}</b>
+            <span>Confirmed</span>
+            <span className="admin-member-tab-badge">{counts.confirmed}</span>
           </button>
 
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "active"}
-            className={tab === "active" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "active" ? "active" : ""}`}
             onClick={() => setTab("active")}
           >
             <ShieldCheck size={15} />
-            Active <b>{counts.active}</b>
+            <span>Active</span>
+            <span className="admin-member-tab-badge">{counts.active}</span>
           </button>
 
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "archived"}
-            className={tab === "archived" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "archived" ? "active" : ""}`}
             onClick={() => setTab("archived")}
           >
             <UserX size={15} />
-            Arsip <b>{counts.archived}</b>
+            <span>Arsip</span>
+            <span className="admin-member-tab-badge">{counts.archived}</span>
           </button>
 
           <button
+            type="button"
             role="tab"
             aria-selected={tab === "all"}
-            className={tab === "all" ? "active" : ""}
+            className={`admin-member-tab-btn ${tab === "all" ? "active" : ""}`}
             onClick={() => setTab("all")}
           >
             <UsersRound size={15} />
-            Semua <b>{counts.all}</b>
+            <span>Semua</span>
+            <span className="admin-member-tab-badge">{counts.all}</span>
           </button>
         </div>
 
-        {/* Search Bar */}
-        <div className="search-box" style={{ maxWidth: "100%", marginBottom: 20 }}>
-          <Search size={18} />
+        {/* 2. Search Bar Toolbar */}
+        <div className="admin-member-search-wrap">
+          <Search className="search-icon" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Cari berdasarkan nama, domisili, nomor WhatsApp, atau akun Instagram…"
+            placeholder="Cari berdasarkan nama, domisili kota, nomor WhatsApp, atau akun Instagram…"
           />
+          {search && (
+            <button
+              type="button"
+              className="admin-member-search-clear"
+              onClick={() => setSearch("")}
+              aria-label="Hapus kata kunci pencarian"
+              title="Hapus pencarian"
+            >
+              <X size={13} />
+            </button>
+          )}
         </div>
 
-        {/* Main List Table / Cards */}
-        {loading ? (
-          <p className="system-message">Memuat data pendaftar…</p>
-        ) : filteredRequests.length === 0 ? (
-          <section className="empty-state card">
-            <UserPlus size={44} style={{ color: "var(--red)", margin: "0 auto 12px" }} />
-            <h2>Tidak Ada Data Pendaftaran</h2>
-            <p>
-              {search
-                ? "Tidak ada pendaftar yang cocok dengan kata kunci pencarian Anda."
-                : tab === "pending"
-                ? "Bagus! Saat ini tidak ada pendaftaran baru yang menunggu verifikasi."
-                : "Belum ada data pendaftar pada kategori status ini."}
-            </p>
-          </section>
-        ) : (
-          <div style={{ display: "grid", gap: 12 }}>
-            {filteredRequests.map((item) => (
-              <article
-                key={item.id}
-                className="card"
-                style={{
-                  padding: "16px 20px",
-                  display: "grid",
-                  gridTemplateColumns: "minmax(200px, 1.3fr) minmax(140px, 1fr) minmax(130px, 0.9fr) auto",
-                  gap: 14,
-                  alignItems: "center",
-                }}
-              >
-                {/* 1. Name & Info */}
-                <div>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                    <strong style={{ fontSize: "0.95rem", color: "#0f172a" }}>{item.full_name}</strong>
+        {/* 3. Main List: Desktop / Tablet Table (>= 768px) */}
+        <div className="admin-member-table-card">
+          <div className="admin-member-table-wrap">
+            <table className="admin-member-table">
+              <thead>
+                <tr>
+                  <th>Calon Member</th>
+                  <th>Domisili & Instagram</th>
+                  <th>WhatsApp & Pendaftaran</th>
+                  <th>Status Verifikasi</th>
+                  <th style={{ textAlign: "right" }}>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredRequests.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} style={{ textAlign: "center", padding: "40px 16px" }}>
+                      <UserPlus size={40} style={{ color: "var(--red)", margin: "0 auto 10px" }} />
+                      <div style={{ fontWeight: 800, fontSize: "0.88rem", color: "var(--ink)" }}>
+                        Tidak Ada Data Pendaftaran
+                      </div>
+                      <div style={{ fontSize: "0.72rem", color: "#64748b", marginTop: 4 }}>
+                        {search
+                          ? "Tidak ada calon member yang cocok dengan kata kunci pencarian Anda."
+                          : tab === "pending"
+                          ? "Bagus! Saat ini tidak ada pendaftaran baru yang menunggu verifikasi."
+                          : "Belum ada data pendaftar pada kategori status ini."}
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRequests.map((item) => (
+                    <tr key={item.id}>
+                      {/* 1. Calon Member */}
+                      <td>
+                        <div className="admin-table-rider-cell">
+                          <div className="member-avatar" style={{ width: 34, height: 34, fontSize: "0.68rem" }}>
+                            {getInitials(item.full_name)}
+                          </div>
+                          <div className="admin-table-rider-names">
+                            <span className="admin-table-rider-name" title={item.full_name}>
+                              {item.full_name}
+                            </span>
+                            <span className="admin-table-rider-sub">
+                              TTL: {item.birth_place},{" "}
+                              {item.birth_date
+                                ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.birth_date))
+                                : "—"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* 2. Domisili & IG */}
+                      <td>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: "0.72rem" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 700, color: "#1e293b" }}>
+                            <MapPin size={13} style={{ color: "var(--red)", flexShrink: 0 }} />
+                            {item.city}
+                          </span>
+                          <a
+                            href={`https://instagram.com/${item.instagram.replace(/^@/, "")}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              color: "#e1306c",
+                              fontWeight: 700,
+                              textDecoration: "none",
+                            }}
+                          >
+                            <InstagramIcon size={12} />
+                            <span>@{item.instagram.replace(/^@/, "")}</span>
+                          </a>
+                        </div>
+                      </td>
+
+                      {/* 3. WhatsApp & Daftar */}
+                      <td>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: "0.72rem" }}>
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 800, color: "#334155" }}>
+                            <Phone size={12} style={{ color: "#16a34a", flexShrink: 0 }} />
+                            {item.whatsapp}
+                          </span>
+                          <span style={{ color: "#94a3b8", fontSize: "0.68rem" }}>
+                            Daftar: {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.created_at))}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* 4. Status Verifikasi */}
+                      <td>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                            {getStatusBadge(item.status)}
+                            {item.assigned_member_id && (
+                              <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
+                                {item.assigned_member_id}
+                              </span>
+                            )}
+                          </div>
+
+                          {item.status === "accepted" && item.confirmation_token && (
+                            <button
+                              type="button"
+                              onClick={() => copyConfirmationLink(item)}
+                              className="join-action-copy"
+                              title="Salin tautan konfirmasi pendaftar"
+                            >
+                              <Copy size={11} />
+                              <span>Salin Link</span>
+                            </button>
+                          )}
+
+                          {item.status === "confirmed" && (
+                            <span style={{ fontSize: "0.66rem", color: "#166534", fontWeight: 800 }}>
+                              ✓ Komitmen Terkonfirmasi
+                            </span>
+                          )}
+
+                          {item.status === "rejected" && item.rejection_reason && (
+                            <span style={{ fontSize: "0.65rem", color: "#dc2626", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.rejection_reason}>
+                              Alasan: {item.rejection_reason}
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      {/* 5. Aksi */}
+                      <td style={{ textAlign: "right" }}>
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, justifyContent: "flex-end" }}>
+                          {/* WhatsApp Quick Chat */}
+                          <a
+                            href={getWhatsAppLink(item)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="join-action-btn join-action-wa"
+                            title="Hubungi via WhatsApp"
+                          >
+                            <MessageCircle size={13} />
+                            <span>WA</span>
+                          </a>
+
+                          {/* Accept (if pending) */}
+                          {item.status === "pending" && (
+                            <button
+                              type="button"
+                              onClick={() => void handleAccept(item)}
+                              disabled={actionLoading}
+                              className="join-action-btn join-action-accept"
+                              title="Setujui pendaftaran calon member"
+                            >
+                              <Check size={13} />
+                              <span>Setujui</span>
+                            </button>
+                          )}
+
+                          {/* Activate (if confirmed or accepted) */}
+                          {(item.status === "confirmed" || item.status === "accepted") && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setActivateItem(item);
+                                setCustomMemberId(suggestedMemberId);
+                              }}
+                              disabled={actionLoading}
+                              className="join-action-btn join-action-activate"
+                              title="Terbitkan nomor ID RR resmi"
+                            >
+                              <Sparkles size={13} />
+                              <span>Aktivasi</span>
+                            </button>
+                          )}
+
+                          {/* Reject (if pending or accepted) */}
+                          {(item.status === "pending" || item.status === "accepted") && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setRejectItem(item);
+                                setRejectReason("");
+                              }}
+                              disabled={actionLoading}
+                              className="join-action-btn join-action-reject"
+                              title="Tolak permohonan pendaftaran"
+                            >
+                              Tolak
+                            </button>
+                          )}
+
+                          {/* Detail */}
+                          <button
+                            type="button"
+                            onClick={() => setDetailItem(item)}
+                            className="join-action-btn join-action-detail"
+                            title="Lihat detail lengkap calon member"
+                          >
+                            <Eye size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* 4. Mobile View: Clean & Uniform Cards (< 768px) */}
+        <div className="admin-join-cards-mobile">
+          {filteredRequests.length === 0 ? (
+            <section className="empty-state card">
+              <UserPlus size={40} style={{ color: "var(--red)", margin: "0 auto 10px" }} />
+              <h3>Tidak Ada Data Pendaftaran</h3>
+              <p>
+                {search
+                  ? "Tidak ada calon member yang cocok dengan kata kunci pencarian Anda."
+                  : tab === "pending"
+                  ? "Bagus! Saat ini tidak ada pendaftaran baru yang menunggu verifikasi."
+                  : "Belum ada data pendaftar pada kategori status ini."}
+              </p>
+            </section>
+          ) : (
+            filteredRequests.map((item) => (
+              <article key={item.id} className="admin-join-card">
+                {/* Head: Avatar, Name, Status Badge, ID */}
+                <div className="admin-join-card-head">
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                    <div className="member-avatar" style={{ width: 38, height: 38, fontSize: "0.72rem", flexShrink: 0 }}>
+                      {getInitials(item.full_name)}
+                    </div>
+                    <div className="admin-join-card-name-group">
+                      <span className="admin-join-card-name">{item.full_name}</span>
+                      <span className="admin-join-card-sub">
+                        Daftar: {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.created_at))}
+                      </span>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
                     {getStatusBadge(item.status)}
                     {item.assigned_member_id && (
-                      <span style={{ background: "#171819", color: "#fff", padding: "2px 7px", borderRadius: 6, fontSize: "0.65rem", fontWeight: 900 }}>
+                      <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
                         {item.assigned_member_id}
                       </span>
                     )}
                   </div>
-                  <div style={{ fontSize: "0.74rem", color: "#64748b", display: "flex", flexWrap: "wrap", gap: 12 }}>
-                    <span><MapPin size={13} style={{ verticalAlign: "-2px", color: "var(--red)" }} /> {item.city}</span>
-                    <span><InstagramIcon size={13} style={{ verticalAlign: "-2px" }} /> @{item.instagram}</span>
-                  </div>
                 </div>
 
-                {/* 2. Contact & Dates */}
-                <div style={{ fontSize: "0.74rem" }}>
-                  <div style={{ color: "#334155", fontWeight: 700, marginBottom: 3 }}>
-                    <Phone size={13} style={{ verticalAlign: "-2px", color: "#16a34a" }} /> {item.whatsapp}
+                {/* Body: Info Rows */}
+                <div className="admin-join-card-body">
+                  <div className="admin-join-card-info-row">
+                    <MapPin size={13} style={{ color: "var(--red)", flexShrink: 0 }} />
+                    <span>Domisili: <b>{item.city}</b> (TTL: {item.birth_place},{" "}
+                      {item.birth_date ? new Intl.DateTimeFormat("id-ID", { dateStyle: "short" }).format(new Date(item.birth_date)) : "-"}
+                    )</span>
                   </div>
-                  <div style={{ color: "#94a3b8", fontSize: "0.68rem" }}>
-                    Daftar: {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.created_at))}
-                  </div>
-                </div>
 
-                {/* 3. Action Links / Copy Token */}
-                <div>
+                  <div className="admin-join-card-info-row" style={{ justifyContent: "space-between" }}>
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
+                      <Phone size={13} style={{ color: "#16a34a", flexShrink: 0 }} />
+                      <b>{item.whatsapp}</b>
+                    </span>
+                    <a
+                      href={`https://instagram.com/${item.instagram.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "#e1306c", fontWeight: 750, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
+                    >
+                      <InstagramIcon size={12} />
+                      <span>@{item.instagram.replace(/^@/, "")}</span>
+                    </a>
+                  </div>
+
                   {item.status === "accepted" && item.confirmation_token && (
-                    <div style={{ display: "flex", gap: 6 }}>
+                    <div style={{ paddingTop: 4, borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Tautan Konfirmasi:</span>
                       <button
                         type="button"
                         onClick={() => copyConfirmationLink(item)}
-                        style={{
-                          background: "#f1f5f9",
-                          border: "1px solid #cbd5e1",
-                          borderRadius: 7,
-                          padding: "6px 9px",
-                          fontSize: "0.68rem",
-                          fontWeight: 750,
-                          cursor: "pointer",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 4,
-                        }}
+                        className="join-action-copy"
                       >
-                        {copiedId === item.id ? <Check size={13} style={{ color: "#16a34a" }} /> : <Copy size={13} />}
-                        <span>{copiedId === item.id ? "Disalin!" : "Link Konfirmasi"}</span>
+                        <Copy size={11} />
+                        <span>Salin Link</span>
                       </button>
                     </div>
                   )}
 
                   {item.status === "confirmed" && (
-                    <span style={{ fontSize: "0.72rem", color: "#16a34a", fontWeight: 800 }}>
-                      ✓ Siap Aktivasi Member
-                    </span>
+                    <div style={{ fontSize: "0.68rem", color: "#166534", fontWeight: 800 }}>
+                      ✓ Calon telah konfirmasi kesiapan bergabung
+                    </div>
+                  )}
+
+                  {item.status === "rejected" && item.rejection_reason && (
+                    <div style={{ fontSize: "0.68rem", color: "#dc2626" }}>
+                      Alasan: {item.rejection_reason}
+                    </div>
                   )}
                 </div>
 
-                {/* 4. Action Buttons */}
-                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
-                  {/* WhatsApp Direct Button */}
+                {/* Footer: Action Buttons */}
+                <div className="admin-join-card-actions">
                   <a
                     href={getWhatsAppLink(item)}
                     target="_blank"
                     rel="noreferrer"
-                    style={{
-                      background: "#22c55e",
-                      color: "#fff",
-                      border: 0,
-                      borderRadius: 8,
-                      padding: "8px 12px",
-                      fontSize: "0.72rem",
-                      fontWeight: 800,
-                      textDecoration: "none",
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                    }}
-                    title="Hubungi via WhatsApp"
+                    className="join-action-btn join-action-wa"
+                    style={{ flex: 1 }}
                   >
-                    <MessageCircle size={15} />
+                    <MessageCircle size={14} />
                     <span>WhatsApp</span>
                   </a>
 
-                  {/* Accept (if pending) */}
                   {item.status === "pending" && (
                     <button
                       type="button"
-                      onClick={() => handleAccept(item)}
+                      onClick={() => void handleAccept(item)}
                       disabled={actionLoading}
-                      style={{
-                        background: "#2563eb",
-                        color: "#fff",
-                        border: 0,
-                        borderRadius: 8,
-                        padding: "8px 12px",
-                        fontSize: "0.72rem",
-                        fontWeight: 800,
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 5,
-                      }}
+                      className="join-action-btn join-action-accept"
+                      style={{ flex: 1.2 }}
                     >
                       <Check size={14} />
                       <span>Setujui</span>
                     </button>
                   )}
 
-                  {/* Activate (if confirmed or accepted) */}
                   {(item.status === "confirmed" || item.status === "accepted") && (
                     <button
                       type="button"
@@ -625,26 +847,14 @@ export default function AdminJoinRequestsPage() {
                         setCustomMemberId(suggestedMemberId);
                       }}
                       disabled={actionLoading}
-                      style={{
-                        background: "var(--red)",
-                        color: "#fff",
-                        border: 0,
-                        borderRadius: 8,
-                        padding: "8px 12px",
-                        fontSize: "0.72rem",
-                        fontWeight: 800,
-                        cursor: "pointer",
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 5,
-                      }}
+                      className="join-action-btn join-action-activate"
+                      style={{ flex: 1.2 }}
                     >
                       <Sparkles size={14} />
                       <span>Aktivasi</span>
                     </button>
                   )}
 
-                  {/* Reject (if pending or accepted) */}
                   {(item.status === "pending" || item.status === "accepted") && (
                     <button
                       type="button"
@@ -653,159 +863,253 @@ export default function AdminJoinRequestsPage() {
                         setRejectReason("");
                       }}
                       disabled={actionLoading}
-                      style={{
-                        background: "#fff",
-                        color: "#dc2626",
-                        border: "1px solid #fca5a5",
-                        borderRadius: 8,
-                        padding: "8px 10px",
-                        fontSize: "0.72rem",
-                        fontWeight: 800,
-                        cursor: "pointer",
-                      }}
+                      className="join-action-btn join-action-reject"
                     >
                       Tolak
                     </button>
                   )}
 
-                  {/* View Details */}
                   <button
                     type="button"
                     onClick={() => setDetailItem(item)}
-                    style={{
-                      background: "#f1f5f9",
-                      color: "#475569",
-                      border: 0,
-                      borderRadius: 8,
-                      padding: "8px 10px",
-                      fontSize: "0.72rem",
-                      cursor: "pointer",
-                    }}
-                    title="Lihat Detail"
+                    className="join-action-btn join-action-detail"
+                    aria-label="Lihat detail lengkap"
                   >
                     <Eye size={15} />
                   </button>
                 </div>
               </article>
-            ))}
-          </div>
+            ))
+          )}
+        </div>
+
+        {/* Floating Toast Notification (Zero push) */}
+        {toast && (
+          <aside
+            className={`admin-floating-toast toast-${toast.type}`}
+            role="status"
+            aria-live="polite"
+          >
+            {toast.type === "success" ? (
+              <CheckCircle2 className="toast-icon" size={17} />
+            ) : (
+              <ShieldAlert className="toast-icon" size={17} />
+            )}
+            <span>{toast.text}</span>
+            <button
+              type="button"
+              className="admin-floating-toast-close"
+              onClick={() => setToast(null)}
+              aria-label="Tutup notifikasi"
+            >
+              <X size={15} />
+            </button>
+          </aside>
         )}
       </div>
 
-      {/* Detail Modal */}
+      {/* Detail Modal with Integrated Actions */}
       {detailItem && (
         <ModalSheet
           open={Boolean(detailItem)}
           onClose={() => setDetailItem(null)}
           eyebrow="DETAIL CALON MEMBER"
-          title="Informasi Pendaftaran"
+          title="Informasi Lengkap Pendaftaran"
         >
-          <div style={{ fontSize: "0.82rem", lineHeight: 1.6 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-              <h3 style={{ margin: 0, fontSize: "1.15rem", color: "#0f172a" }}>{detailItem.full_name}</h3>
-              {getStatusBadge(detailItem.status)}
+          <div className="join-detail-container">
+            {/* Hero Head */}
+            <div className="join-detail-hero">
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div className="member-avatar" style={{ width: 44, height: 44, fontSize: "0.85rem" }}>
+                  {getInitials(detailItem.full_name)}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: "1.1rem", color: "#0f172a" }}>{detailItem.full_name}</h3>
+                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                    {getStatusBadge(detailItem.status)}
+                    {detailItem.assigned_member_id && (
+                      <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
+                        {detailItem.assigned_member_id}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <dl style={{ display: "grid", gridTemplateColumns: "130px 1fr", gap: "10px 14px", margin: "16px 0" }}>
-              <dt style={{ color: "#64748b", fontWeight: 700 }}>Tempat, Tgl Lahir:</dt>
-              <dd style={{ margin: 0, color: "#0f172a", fontWeight: 750 }}>
-                {detailItem.birth_place},{" "}
-                {detailItem.birth_date
-                  ? new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(detailItem.birth_date))
-                  : "-"}
-              </dd>
+            {/* Sections 2-column grid */}
+            <div className="join-detail-sections">
+              {/* Box 1: Identitas Pribadi */}
+              <div className="join-detail-box">
+                <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "var(--ink)", paddingBottom: 4, borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 5 }}>
+                  <UsersRound size={13} style={{ color: "var(--red)" }} />
+                  <span>IDENTITAS PRIBADI</span>
+                </div>
 
-              <dt style={{ color: "#64748b", fontWeight: 700 }}>Domisili / Kota:</dt>
-              <dd style={{ margin: 0, color: "#0f172a" }}>{detailItem.city}</dd>
+                <div className="join-detail-row">
+                  <span className="join-detail-label">Tempat, Tanggal Lahir</span>
+                  <span className="join-detail-val">
+                    {detailItem.birth_place},{" "}
+                    {detailItem.birth_date
+                      ? new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(detailItem.birth_date))
+                      : "—"}
+                  </span>
+                </div>
 
-              <dt style={{ color: "#64748b", fontWeight: 700 }}>Nomor WhatsApp:</dt>
-              <dd style={{ margin: 0, color: "#0f172a", fontWeight: 750 }}>
-                {detailItem.whatsapp}{" "}
-                <a
-                  href={getWhatsAppLink(detailItem)}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "#16a34a", marginLeft: 8, fontWeight: 800 }}
-                >
-                  Buka Chat ↗
-                </a>
-              </dd>
+                <div className="join-detail-row">
+                  <span className="join-detail-label">Domisili / Kota</span>
+                  <span className="join-detail-val">{detailItem.city}</span>
+                </div>
 
-              <dt style={{ color: "#64748b", fontWeight: 700 }}>Instagram:</dt>
-              <dd style={{ margin: 0 }}>
-                <a
-                  href={`https://instagram.com/${detailItem.instagram}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{ color: "#e1306c", fontWeight: 800 }}
-                >
-                  @{detailItem.instagram} ↗
-                </a>
-              </dd>
+                <div className="join-detail-row">
+                  <span className="join-detail-label">Nomor WhatsApp</span>
+                  <span className="join-detail-val" style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    {detailItem.whatsapp}
+                    <a
+                      href={getWhatsAppLink(detailItem)}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "#16a34a", fontWeight: 800, fontSize: "0.72rem", textDecoration: "none" }}
+                    >
+                      Chat WA ↗
+                    </a>
+                  </span>
+                </div>
 
-              <dt style={{ color: "#64748b", fontWeight: 700 }}>Waktu Daftar:</dt>
-              <dd style={{ margin: 0, color: "#64748b" }}>
-                {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(
-                  new Date(detailItem.created_at)
-                )}{" "}
-                WIB
-              </dd>
+                <div className="join-detail-row">
+                  <span className="join-detail-label">Akun Instagram</span>
+                  <span className="join-detail-val">
+                    <a
+                      href={`https://instagram.com/${detailItem.instagram.replace(/^@/, "")}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{ color: "#e1306c", fontWeight: 800, textDecoration: "none" }}
+                    >
+                      @{detailItem.instagram.replace(/^@/, "")} ↗
+                    </a>
+                  </span>
+                </div>
+              </div>
 
-              {detailItem.accepted_at && (
-                <>
-                  <dt style={{ color: "#64748b", fontWeight: 700 }}>Disetujui Pada:</dt>
-                  <dd style={{ margin: 0, color: "#1e40af" }}>
-                    {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(
-                      new Date(detailItem.accepted_at)
-                    )}{" "}
-                    WIB
-                  </dd>
-                </>
-              )}
+              {/* Box 2: Riwayat Pendaftaran */}
+              <div className="join-detail-box">
+                <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "var(--ink)", paddingBottom: 4, borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 5 }}>
+                  <Clock size={13} style={{ color: "var(--red)" }} />
+                  <span>RIWAYAT STATUS SELEKSI</span>
+                </div>
 
-              {detailItem.confirmed_at && (
-                <>
-                  <dt style={{ color: "#64748b", fontWeight: 700 }}>Dikonfirmasi Pada:</dt>
-                  <dd style={{ margin: 0, color: "#166534" }}>
-                    {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(
-                      new Date(detailItem.confirmed_at)
-                    )}{" "}
-                    WIB
-                  </dd>
-                </>
-              )}
+                <div className="join-detail-row">
+                  <span className="join-detail-label">Waktu Registrasi Masuk</span>
+                  <span className="join-detail-val" style={{ color: "#475569" }}>
+                    {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.created_at))} WIB
+                  </span>
+                </div>
 
-              {detailItem.assigned_member_id && (
-                <>
-                  <dt style={{ color: "#64748b", fontWeight: 700 }}>ID RR Diberikan:</dt>
-                  <dd style={{ margin: 0, color: "var(--red)", fontWeight: 900 }}>{detailItem.assigned_member_id}</dd>
-                </>
-              )}
+                {detailItem.accepted_at && (
+                  <div className="join-detail-row">
+                    <span className="join-detail-label">Disetujui Pengurus Pada</span>
+                    <span className="join-detail-val" style={{ color: "#1e40af" }}>
+                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.accepted_at))} WIB
+                    </span>
+                  </div>
+                )}
 
-              {detailItem.rejection_reason && (
-                <>
-                  <dt style={{ color: "#64748b", fontWeight: 700 }}>Alasan Penolakan:</dt>
-                  <dd style={{ margin: 0, color: "#dc2626" }}>{detailItem.rejection_reason}</dd>
-                </>
-              )}
-            </dl>
+                {detailItem.confirmed_at && (
+                  <div className="join-detail-row">
+                    <span className="join-detail-label">Konfirmasi Komitmen Calon</span>
+                    <span className="join-detail-val" style={{ color: "#166534" }}>
+                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.confirmed_at))} WIB
+                    </span>
+                  </div>
+                )}
 
-            <div style={{ display: "flex", gap: 8, marginTop: 24, justifyContent: "flex-end" }}>
+                {detailItem.activated_at && (
+                  <div className="join-detail-row">
+                    <span className="join-detail-label">Diresmikan Sebagai Member</span>
+                    <span className="join-detail-val" style={{ color: "#86198f" }}>
+                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.activated_at))} WIB
+                    </span>
+                  </div>
+                )}
+
+                {detailItem.rejection_reason && (
+                  <div className="join-detail-row">
+                    <span className="join-detail-label" style={{ color: "#dc2626" }}>Alasan Penolakan</span>
+                    <span className="join-detail-val" style={{ color: "#b91c1c" }}>
+                      {detailItem.rejection_reason}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Direct Action Footer inside Modal */}
+            <div className="join-detail-modal-footer">
               <button
                 type="button"
                 onClick={() => setDetailItem(null)}
-                style={{
-                  background: "#f1f5f9",
-                  border: 0,
-                  borderRadius: 8,
-                  padding: "9px 18px",
-                  fontSize: "0.78rem",
-                  fontWeight: 750,
-                  cursor: "pointer",
-                }}
+                className="join-action-btn join-action-detail"
               >
                 Tutup
               </button>
+
+              <a
+                href={getWhatsAppLink(detailItem)}
+                target="_blank"
+                rel="noreferrer"
+                className="join-action-btn join-action-wa"
+              >
+                <MessageCircle size={14} />
+                <span>Chat WhatsApp</span>
+              </a>
+
+              {(detailItem.status === "pending" || detailItem.status === "accepted") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = detailItem;
+                    setDetailItem(null);
+                    setRejectItem(target);
+                    setRejectReason("");
+                  }}
+                  disabled={actionLoading}
+                  className="join-action-btn join-action-reject"
+                >
+                  Tolak
+                </button>
+              )}
+
+              {detailItem.status === "pending" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleAccept(detailItem);
+                    setDetailItem(null);
+                  }}
+                  disabled={actionLoading}
+                  className="join-action-btn join-action-accept"
+                >
+                  <Check size={14} />
+                  <span>Setujui Pendaftaran</span>
+                </button>
+              )}
+
+              {(detailItem.status === "confirmed" || detailItem.status === "accepted") && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const target = detailItem;
+                    setDetailItem(null);
+                    setActivateItem(target);
+                    setCustomMemberId(suggestedMemberId);
+                  }}
+                  disabled={actionLoading}
+                  className="join-action-btn join-action-activate"
+                >
+                  <Sparkles size={14} />
+                  <span>Aktivasi Member Resmi</span>
+                </button>
+              )}
             </div>
           </div>
         </ModalSheet>

@@ -1000,7 +1000,7 @@
 
 @media (min-width: 768px) {
   .stats-strip {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 }
 
