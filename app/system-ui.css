@@ -1315,3 +1315,243 @@
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Dashboard density pass: keep the information-rich mobile view compact. */
+.app-shell .dashboard-premium {
+  gap: 16px;
+}
+
+.app-shell .dashboard-premium .left-column,
+.app-shell .dashboard-premium .right-column {
+  gap: 14px;
+}
+
+.app-shell .dashboard-premium .quick-action-btn {
+  min-height: 62px;
+  padding: 10px 12px;
+}
+
+.app-shell .dashboard-premium .quick-action-icon {
+  width: 34px;
+  height: 34px;
+}
+
+.app-shell .dashboard-premium .stats article {
+  min-height: 76px;
+  padding: 12px 13px;
+}
+
+.app-shell .dashboard-premium .agenda-card,
+.app-shell .dashboard-premium .support {
+  padding: 17px;
+}
+
+.app-shell .dashboard-premium .section-title {
+  margin-bottom: 11px;
+}
+
+.app-shell .dashboard-premium .inline-empty {
+  padding: 16px 4px 12px;
+  gap: 12px;
+}
+
+.app-shell .dashboard-premium .inline-empty > svg {
+  width: 26px;
+  height: 26px;
+}
+
+.app-shell .dashboard-premium .bullet-card {
+  padding: 14px 16px;
+}
+
+.app-shell .dashboard-premium .support {
+  padding-bottom: 14px;
+}
+
+.app-shell .dashboard-premium .support-grid {
+  gap: 8px;
+}
+
+.app-shell .dashboard-premium .support-logo {
+  height: 76px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-grid.dashboard-premium {
+    padding: 10px 11px calc(108px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-premium .left-column,
+  .app-shell .dashboard-premium .right-column {
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-premium .right-column {
+    margin-top: 10px;
+  }
+
+  .app-shell .dashboard-premium .hero {
+    min-height: 148px !important;
+    padding: 15px 16px !important;
+  }
+
+  .app-shell .dashboard-premium .hero-content {
+    gap: 6px;
+  }
+
+  .app-shell .dashboard-premium .hero-cta {
+    min-height: 34px;
+    margin-top: 5px !important;
+    padding-inline: 11px;
+  }
+
+  .app-shell .dashboard-premium .hero-date-badge {
+    top: 13px;
+    right: 13px;
+    width: 56px;
+    min-height: 68px;
+    padding: 7px 5px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-quick-actions {
+    gap: 7px;
+  }
+
+  .app-shell .dashboard-premium .quick-action-btn {
+    min-height: 58px;
+    gap: 9px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .app-shell .dashboard-premium .quick-action-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+  }
+
+  .app-shell .dashboard-premium .quick-action-title {
+    font-size: .7rem;
+  }
+
+  .app-shell .dashboard-premium .quick-action-desc {
+    margin-top: 1px;
+    font-size: .55rem;
+  }
+
+  .app-shell .dashboard-premium .stats {
+    gap: 7px;
+  }
+
+  .app-shell .dashboard-premium .stats article {
+    min-height: 74px;
+    padding: 9px 10px;
+    gap: 5px;
+    justify-content: center;
+  }
+
+  .app-shell .dashboard-premium .stats article > svg {
+    width: 25px;
+    height: 25px;
+    padding: 5px;
+  }
+
+  .app-shell .dashboard-premium .stats article b {
+    margin: 1px 0 0;
+    font-size: clamp(.78rem, 3.3vw, .92rem);
+    line-height: 1.1;
+  }
+
+  .app-shell .dashboard-premium .stats article span > small:first-child {
+    font-size: .5rem;
+    line-height: 1.05;
+  }
+
+  .app-shell .dashboard-premium .agenda-card,
+  .app-shell .dashboard-premium .support {
+    padding: 14px;
+  }
+
+  .app-shell .dashboard-premium .section-title {
+    margin-bottom: 9px;
+  }
+
+  .app-shell .dashboard-premium .section-title h3 {
+    margin-top: 2px;
+    font-size: 1rem;
+  }
+
+  .app-shell .dashboard-premium .section-title em {
+    font-size: .52rem;
+  }
+
+  .app-shell .dashboard-premium .inline-empty {
+    padding: 13px 2px 6px;
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-premium .inline-empty > svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .app-shell .dashboard-premium .inline-empty b {
+    font-size: .72rem;
+  }
+
+  .app-shell .dashboard-premium .inline-empty small {
+    margin-top: 2px;
+    font-size: .57rem;
+    line-height: 1.35;
+  }
+
+  .app-shell .dashboard-premium .bullet-card {
+    padding: 12px 14px;
+    gap: 3px;
+  }
+
+  .app-shell .dashboard-premium .bullet-card h3 {
+    margin-top: 2px;
+    font-size: .84rem;
+  }
+
+  .app-shell .dashboard-premium .bullet-card p {
+    -webkit-line-clamp: 1;
+    font-size: .63rem;
+    line-height: 1.35;
+  }
+
+  .app-shell .dashboard-premium .support {
+    padding-bottom: 12px;
+  }
+
+  .app-shell .dashboard-premium .support-grid {
+    gap: 7px;
+  }
+
+  .app-shell .dashboard-premium .support-logo {
+    height: 72px;
+  }
+
+  .app-shell .dashboard-premium .support figcaption {
+    margin-top: 4px;
+    font-size: .54rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-premium .quick-action-btn {
+    min-height: 56px;
+    padding: 7px 9px;
+  }
+
+  .app-shell .dashboard-premium .stats article {
+    min-height: 70px;
+    padding: 8px;
+  }
+
+  .app-shell .dashboard-premium .support-logo {
+    height: 66px;
+  }
+}
