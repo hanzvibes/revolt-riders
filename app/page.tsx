@@ -10,16 +10,21 @@ import { motion } from "framer-motion";
 import {
   CalendarDays,
   CheckCircle2,
-  Gauge,
-  HeartHandshake,
+  ChevronDown,
+  Flag,
+  Globe,
+  Handshake,
+  Link2,
   LogIn,
   MapPin,
+  Menu,
   Phone,
-  Route,
+  Shield,
   User,
   UserPlus,
-  UsersRound,
+  Users,
   Wrench,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -38,7 +43,7 @@ const DEFAULT_GALLERY: GalleryItem[] = [
   {
     id: "g-1",
     title: "Kopdar Akbar & Silaturahmi",
-    description: "Pertemuan rutin dan silaturahmi keluarga besar Revolt Riders.",
+    description: "Pertemuan rutin dan silaturahmi keluarga besar Revolt Riders di Situbondo.",
     image_url: "/bold-riders-situbondo.jpg",
     location: "Situbondo Kota",
     ride_date: "2026-03-01",
@@ -64,6 +69,8 @@ const DEFAULT_GALLERY: GalleryItem[] = [
 export default function PublicLandingPage() {
   const { user } = useDataCache();
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   // Live Stats State
   const [totalMembers, setTotalMembers] = useState(27);
@@ -86,6 +93,15 @@ export default function PublicLandingPage() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
 
+  // Scroll listener for Navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Load Public Data
   useEffect(() => {
     let active = true;
@@ -107,13 +123,13 @@ export default function PublicLandingPage() {
           if (count && active) setTotalMembers(count);
         }
 
-        // 2. Fetch public events (limit 2)
+        // 2. Fetch public events (limit 4)
         const { data: eventsData } = await supabase
           .from("events")
           .select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status")
           .eq("status", "published")
           .order("start_at", { ascending: true })
-          .limit(2);
+          .limit(4);
 
         if (eventsData && active) {
           setPublicEvents(eventsData as EventRecord[]);
@@ -227,231 +243,361 @@ export default function PublicLandingPage() {
     setIsJoinModalOpen(false);
   };
 
+  const currentYear = new Date().getFullYear();
+  const yearsBrotherhood = Math.max(currentYear - 2022, 1);
+
   return (
-    <div className="landing-page">
-      {/* 1. Header / Navigation */}
-      <header className="landing-header">
-        <div className="landing-nav-container">
-          <Link href="/" className="landing-brand">
-            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={40} height={40} priority />
-            <div className="landing-brand-text">
-              <strong>REVOLT RIDERS</strong>
-              <small>SITUBONDO · EAST JAVA</small>
-            </div>
+    <div className="landing-page selection:bg-white selection:text-black">
+      {/* Global Noise Overlay */}
+      <div className="noise-overlay" aria-hidden="true" />
+
+      {/* 1. Navigation Bar */}
+      <nav className={`dark-navbar ${isScrolled ? "scrolled" : ""}`}>
+        <Link href="/" className="dark-nav-brand">
+          <Image
+            src="/revolt-riders-logo.jpg"
+            alt="Revolt Riders Logo"
+            width={40}
+            height={40}
+            className="dark-nav-logo"
+            priority
+          />
+          <div>
+            <span className="dark-brand-title">REVOLT RIDERS</span>
+            <span className="dark-brand-badge">SITUBONDO · EAST JAVA</span>
+          </div>
+        </Link>
+
+        {/* Desktop Links */}
+        <ul className="dark-nav-links">
+          <li><a href="#about" className="dark-nav-link">ABOUT</a></li>
+          <li><a href="#brotherhood" className="dark-nav-link">BROTHERHOOD</a></li>
+          <li><a href="#values" className="dark-nav-link">CORE VALUES</a></li>
+          <li><a href="#gallery" className="dark-nav-link">GALLERY</a></li>
+          <li><a href="#events" className="dark-nav-link">ACTIVITIES</a></li>
+        </ul>
+
+        {/* Desktop Actions */}
+        <div className="dark-nav-actions">
+          <Link href={user ? "/dashboard" : "/login"} className="btn-nav-portal">
+            <LogIn size={14} />
+            <span>{user ? "PORTAL MEMBER" : "MASUK MEMBER"}</span>
           </Link>
 
-          <ul className="landing-nav-links">
-            <li><a href="#stats">Statistik</a></li>
-            <li><a href="#agenda">Agenda</a></li>
-            <li><a href="#gallery">Galeri</a></li>
-            <li><a href="#profil">Tentang Kami</a></li>
-          </ul>
+          <button
+            type="button"
+            className="btn-nav-join"
+            onClick={() => {
+              setFormSuccess(false);
+              setFormError("");
+              setIsJoinModalOpen(true);
+            }}
+          >
+            <UserPlus size={14} />
+            <span>JOIN US</span>
+          </button>
+        </div>
 
-          <div className="landing-nav-actions">
-            <Link href={user ? "/dashboard" : "/login"} className="btn-nav-portal">
-              <LogIn size={15} />
-              <span>{user ? "Portal Member" : "Masuk Member"}</span>
-            </Link>
+        {/* Mobile Toggle Button */}
+        <button
+          type="button"
+          className="dark-mobile-btn"
+          aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        >
+          {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
+        </button>
+      </nav>
+
+      {/* Mobile Drawer */}
+      <div className={`dark-mobile-drawer ${isMobileMenuOpen ? "open" : ""}`}>
+        <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>ABOUT</a>
+        <a href="#brotherhood" onClick={() => setIsMobileMenuOpen(false)}>BROTHERHOOD</a>
+        <a href="#values" onClick={() => setIsMobileMenuOpen(false)}>CORE VALUES</a>
+        <a href="#gallery" onClick={() => setIsMobileMenuOpen(false)}>GALLERY</a>
+        <a href="#events" onClick={() => setIsMobileMenuOpen(false)}>ACTIVITIES</a>
+
+        <Link
+          href={user ? "/dashboard" : "/login"}
+          onClick={() => setIsMobileMenuOpen(false)}
+          style={{ marginTop: "16px", color: "var(--brand-light)" }}
+        >
+          {user ? "PORTAL MEMBER" : "MASUK MEMBER"}
+        </Link>
+
+        <button
+          type="button"
+          className="btn-hero-primary"
+          style={{ marginTop: "12px", width: "100%", maxWidth: "260px", justifyContent: "center" }}
+          onClick={() => {
+            setIsMobileMenuOpen(false);
+            setFormSuccess(false);
+            setFormError("");
+            setIsJoinModalOpen(true);
+          }}
+        >
+          JOIN US
+        </button>
+      </div>
+
+      {/* 2. Hero Section */}
+      <header className="industrial-hero">
+        <Image
+          src="/revolt-riders-logo.jpg"
+          alt=""
+          width={600}
+          height={600}
+          className="industrial-hero-watermark"
+          aria-hidden="true"
+          priority
+        />
+
+        <motion.div
+          className="hero-inner"
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="hero-pretitle">REVOLT RIDERS SITUBONDO</p>
+          <h1 className="hero-title">
+            YOUR MOTORCYCLE,<br />
+            <span className="hero-title-gradient">YOURSELF EXPRESSION</span>
+          </h1>
+
+          <p className="hero-desc">
+            Bukan sekadar kendaraan. Ini adalah medium untuk menunjukkan karakter, kreativitas, dan identitas pengendara di atas aspal.
+          </p>
+
+          <div className="hero-actions">
+            <a href="#about" className="btn-hero-primary">
+              EXPLORE REVOLT RIDERS
+            </a>
 
             <button
               type="button"
-              className="btn-nav-join"
+              className="btn-hero-secondary"
               onClick={() => {
                 setFormSuccess(false);
                 setFormError("");
                 setIsJoinModalOpen(true);
               }}
             >
-              <UserPlus size={15} />
-              <span>Daftar Anggota</span>
+              JOIN THE RIDE
             </button>
+
+            <Link href={user ? "/dashboard" : "/login"} className="btn-hero-portal">
+              <LogIn size={15} />
+              <span>PORTAL MEMBER</span>
+            </Link>
           </div>
+        </motion.div>
+
+        <div className="hero-scroll-indicator" aria-hidden="true">
+          <ChevronDown size={20} />
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="landing-main">
-        {/* 2. Hero: Clean Spacious Carbon Card (No 360 circle, No Kicker) */}
-        <motion.section
-          className="landing-hero-card"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <Image
-            src="/revolt-riders-logo.jpg"
-            alt=""
-            width={320}
-            height={320}
-            className="landing-hero-mark"
-            aria-hidden="true"
-          />
+      {/* 3. About Revolt Riders Section */}
+      <section id="about" className="industrial-section">
+        <div className="about-watermark text-outline" aria-hidden="true">
+          SINCE 2022
+        </div>
 
-          <div className="landing-hero-content">
-            <h1>
-              <em>REVOLT RIDERS</em>
-              MOTOR CUSTOM SITUBONDO
-            </h1>
-
-            <p>
-              Revolt Riders adalah wadah bagi para pecinta motor custom di Kabupaten Situbondo. Didirikan pada 22 Desember 2022, komunitas ini beroperasi dengan prinsip mandiri, terbuka, dan sosial untuk membangun kepedulian tanpa berafiliasi dengan kepentingan politik atau mencari keuntungan, serta mempererat persaudaraan di antara seluruh anggotanya dan komunitas motor lainnya di Situbondo.
+        <div className="about-grid">
+          <motion.div
+            className="about-left"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.55 }}
+          >
+            <h2>
+              ESTABLISHED IN<br />SITUBONDO, 2022.
+            </h2>
+            <div className="about-line" />
+            <p className="about-quote">
+              Wadah independen bagi para pecinta motor custom. Beroperasi dengan prinsip mandiri, terbuka, dan sosial.
             </p>
+          </motion.div>
 
-            <div className="landing-hero-actions">
-              <button
-                type="button"
-                className="btn-hero-primary"
-                onClick={() => {
-                  setFormSuccess(false);
-                  setFormError("");
-                  setIsJoinModalOpen(true);
-                }}
+          <motion.div
+            className="about-right"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.55, delay: 0.1 }}
+          >
+            <div className="about-paragraphs">
+              <p>
+                <strong>Revolt Riders</strong> lahir dari semangat yang sama di jalanan Kabupaten Situbondo. Kami bukan sekadar kumpulan motor, melainkan entitas yang bertujuan membangun kepedulian di antara para penyuka motor custom.
+              </p>
+              <p>
+                Kami berdiri independen. Tanpa afiliasi politik, tanpa mencari keuntungan komersial. Fokus kami murni pada kultur custom, etika berkendara, dan persaudaraan sejati.
+              </p>
+            </div>
+
+            <div className="about-highlight-card">
+              <span className="about-card-badge">EST. 22 DESEMBER 2022</span>
+              <h3 className="about-card-title">GOTONG ROYONG & PERSAUDARAAN</h3>
+              <p className="about-card-desc">
+                Berlandaskan asas mandiri, terbuka, dan sosial demi mempererat persaudaraan antar-pengguna roda dua di Situbondo.
+              </p>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* 4. Brotherhood / Our Spirit */}
+      <section id="brotherhood" className="brotherhood-section">
+        <motion.div
+          className="brotherhood-inner"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.55 }}
+        >
+          <h2>
+            BUILT BY MOTORCYCLES.<br />
+            <span>CONNECTED BY BROTHERHOOD.</span>
+          </h2>
+          <p>
+            Menjadi bagian dari komunitas bikers bukan hanya tentang mesin yang kita kendarai. Ini tentang solidaritas di jalan, rasa saling menghargai sesama pengendara, dan tangan yang selalu siap membantu saat dibutuhkan.
+          </p>
+        </motion.div>
+      </section>
+
+      {/* 5. Our Foundation & Core Values */}
+      <section id="values" className="industrial-section alt-bg">
+        <div className="section-head-center">
+          <span className="section-tag">OUR FOUNDATION</span>
+          <h2 className="section-title">CORE VALUES</h2>
+        </div>
+
+        <div className="values-grid">
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="value-icon-box">
+              <Handshake size={24} />
+            </div>
+            <h4>BROTHERHOOD</h4>
+            <p>Persaudaraan tanpa batas, di atas dan di luar aspal.</p>
+          </motion.article>
+
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.08 }}
+          >
+            <div className="value-icon-box">
+              <Link2 size={24} />
+            </div>
+            <h4>SOLIDARITY</h4>
+            <p>Saling mendukung dan bergerak sebagai satu kesatuan yang solid.</p>
+          </motion.article>
+
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.16 }}
+          >
+            <div className="value-icon-box">
+              <Flag size={24} />
+            </div>
+            <h4>INDEPENDENCE</h4>
+            <p>Mandiri, bebas dari kepentingan politik & tujuan komersial.</p>
+          </motion.article>
+
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.24 }}
+          >
+            <div className="value-icon-box">
+              <Shield size={24} />
+            </div>
+            <h4>RESPECT</h4>
+            <p>Saling menghargai antar anggota dan seluruh pengguna jalan raya.</p>
+          </motion.article>
+
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.32 }}
+          >
+            <div className="value-icon-box">
+              <Wrench size={24} />
+            </div>
+            <h4>CUSTOM CULTURE</h4>
+            <p>Merayakan kreativitas seni rancang bangun motor custom.</p>
+          </motion.article>
+
+          <motion.article
+            className="value-card"
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.4 }}
+          >
+            <div className="value-icon-box">
+              <Globe size={24} />
+            </div>
+            <h4>SOCIAL RESPONSIBILITY</h4>
+            <p>Memberikan kontribusi dan dampak positif bagi masyarakat sekitar.</p>
+          </motion.article>
+        </div>
+      </section>
+
+      {/* 6. Gallery / Ride Stories */}
+      <section id="gallery" className="industrial-section">
+        <div className="gallery-container">
+          <div className="gallery-head-row">
+            <div>
+              <span className="section-tag">VISUAL ARCHIVE</span>
+              <h2 className="section-title">RIDE STORIES</h2>
+            </div>
+            <a href="#instagram" className="dark-nav-link" style={{ fontSize: "0.85rem" }}>
+              LIHAT INSTAGRAM ↗
+            </a>
+          </div>
+
+          <div className="gallery-grid-modular">
+            {gallery.map((item, idx) => (
+              <article
+                className={`gallery-card ${idx === 0 ? "gallery-card-large" : ""}`}
+                key={item.id}
               >
-                <UserPlus size={16} />
-                <span>GABUNG KOMUNITAS</span>
-              </button>
-
-              <Link href={user ? "/dashboard" : "/login"} className="btn-hero-secondary">
-                <LogIn size={16} />
-                <span>PORTAL ANGGOTA</span>
-              </Link>
-            </div>
-          </div>
-        </motion.section>
-
-        {/* 3. Live Statistics Grid */}
-        <motion.section
-          className="landing-stats"
-          id="stats"
-          aria-label="Statistik Komunitas"
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-        >
-          <article className="landing-stat-tile">
-            <div className="landing-stat-icon-wrap">
-              <UsersRound size={22} />
-            </div>
-            <div className="landing-stat-info">
-              <span className="landing-stat-label">ANGGOTA AKTIF</span>
-              <b className="landing-stat-val">{totalMembers}</b>
-              <small className="landing-stat-desc">Anggota resmi terdaftar</small>
-            </div>
-          </article>
-
-          <article className="landing-stat-tile">
-            <div className="landing-stat-icon-wrap">
-              <Gauge size={22} />
-            </div>
-            <div className="landing-stat-info">
-              <span className="landing-stat-label">TOTAL JARAK TEMPUH</span>
-              <b className="landing-stat-val">{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKm)} KM</b>
-              <small className="landing-stat-desc">Total jarak tempuh resmi</small>
-            </div>
-          </article>
-
-          <article className="landing-stat-tile">
-            <div className="landing-stat-icon-wrap">
-              <Route size={22} />
-            </div>
-            <div className="landing-stat-info">
-              <span className="landing-stat-label">SOWAN & TOURING</span>
-              <b className="landing-stat-val">{totalRides}+ Kali</b>
-              <small className="landing-stat-desc">Kegiatan resmi terlaksana</small>
-            </div>
-          </article>
-        </motion.section>
-
-        {/* 4. Agenda Section (No Kicker) */}
-        <motion.section
-          className="landing-section"
-          id="agenda"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-        >
-          <div className="landing-section-head">
-            <h2>Jadwal Kegiatan & Kopdar Mendatang</h2>
-            <p>Agenda resmi pertemuan rutin, touring, dan silaturahmi komunitas Revolt Riders.</p>
-          </div>
-
-          {publicEvents.length === 0 ? (
-            <div className="landing-agenda-empty">
-              <CalendarDays size={32} />
-              <h3>Belum Ada Agenda Mendatang</h3>
-              <p>Jadwal kegiatan berikutnya akan diumumkan melalui laman ini dan akun resmi Instagram kami.</p>
-            </div>
-          ) : (
-            <div className="landing-agenda-list">
-              {publicEvents.map((evt) => {
-                const d = formatShortDate(evt.start_at);
-                return (
-                  <article className="landing-agenda-card" key={evt.id}>
-                    <time>
-                      <b>{d.day}</b>
-                      <small>{d.month}</small>
-                    </time>
-
-                    <div className="landing-agenda-info">
-                      <span className="landing-agenda-badge">{evt.type}</span>
-                      <h3>{evt.title}</h3>
-                      <p>{evt.description || "Agenda resmi silaturahmi Revolt Riders Situbondo."}</p>
-
-                      <div className="landing-agenda-meta">
-                        <span>
-                          <MapPin size={12} style={{ color: "var(--red)" }} />
-                          {evt.location_name || "Situbondo"}
-                        </span>
-                        {evt.location_url && (
-                          <a href={evt.location_url} target="_blank" rel="noreferrer">
-                            Lihat Peta ↗
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
-        </motion.section>
-
-        {/* 5. Galeri Pilihan (No Kicker) */}
-        <motion.section
-          className="landing-section"
-          id="gallery"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-        >
-          <div className="landing-section-head">
-            <h2>Dokumentasi Perjalanan</h2>
-            <p>Dokumentasi perjalanan, silaturahmi, dan kebersamaan di berbagai rute nusantara.</p>
-          </div>
-
-          <div className="landing-gallery-grid">
-            {gallery.map((item) => (
-              <article className="landing-gallery-card" key={item.id}>
-                <div className="landing-gallery-media">
-                  <Image
-                    src={item.image_url}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 360px"
-                  />
-                </div>
-                <div className="landing-gallery-body">
-                  <div className="landing-gallery-meta">
-                    <span>
-                      <MapPin size={11} style={{ color: "var(--red)" }} />
-                      {item.location || "Situbondo"}
-                    </span>
+                <Image
+                  src={item.image_url}
+                  alt={item.title}
+                  fill
+                  className="gallery-card-img"
+                  sizes="(max-width: 768px) 100vw, 480px"
+                />
+                <div className="gallery-card-bg" />
+                <div className="gallery-card-content">
+                  <div className="gallery-card-meta">
+                    {item.location && (
+                      <span>
+                        <MapPin size={12} style={{ display: "inline", marginRight: "4px", color: "var(--brand-red)" }} />
+                        {item.location}
+                      </span>
+                    )}
                     {item.ride_date && (
                       <span>
-                        <CalendarDays size={11} />
+                        <CalendarDays size={12} style={{ display: "inline", marginRight: "4px" }} />
                         {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.ride_date))}
                       </span>
                     )}
@@ -461,174 +607,366 @@ export default function PublicLandingPage() {
                 </div>
               </article>
             ))}
-          </div>
-        </motion.section>
 
-        {/* 6. Profil & Storytelling (Visual Storytelling, Highlight & Minimalist Values) */}
-        <motion.section
-          className="landing-section"
-          id="profil"
-          initial={{ opacity: 0, y: 16 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-        >
-          <div className="landing-section-head">
-            <h2>Tentang Revolt Riders</h2>
-            <p>Sejarah singkat, landasan nilai persaudaraan, dan komitmen komunitas kami di Situbondo.</p>
-          </div>
-
-          {/* Special Highlight: EST. 22.12.2022 & Minimalist Values */}
-          <div className="story-manifesto-card">
-            <div className="story-origin-badge">
-              <span className="story-est">EST. 22.12.2022</span>
-              <span className="story-dot">/</span>
-              <span className="story-loc">SITUBONDO, EAST JAVA</span>
-            </div>
-
-            <div className="story-values-bar">
-              <span className="story-values-line">MANDIRI • TERBUKA • SOSIAL</span>
-              <span className="story-values-line accent">SOLIDARITAS • PERSAUDARAAN</span>
+            {/* Graphic Badge Card */}
+            <div className="gallery-card gallery-graphic-card">
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt="Revolt Riders Crest"
+                width={80}
+                height={80}
+              />
+              <span className="section-tag" style={{ color: "#fff", marginBottom: 0 }}>
+                REVOLT RIDERS SITUBONDO
+              </span>
+              <small style={{ color: "var(--brand-muted)", fontSize: "0.72rem" }}>
+                EST. 22 DESEMBER 2022
+              </small>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Storytelling Visual Blocks */}
-          <div className="story-grid">
-            {/* Block 1: Motor Custom & Prinsip Independen */}
-            <article className="story-card">
-              <div className="story-card-icon" aria-hidden="true">
-                <Wrench size={22} />
-              </div>
-              <h3>Komunitas Motor Custom Situbondo</h3>
-              <div className="story-points">
-                <div className="story-point-item">
-                  <strong>Wadah Pengembangan Hobi</strong>
+      {/* 7. Events & Activities */}
+      <section id="events" className="industrial-section alt-bg">
+        <div className="section-head-center">
+          <span className="section-tag">AGENDA</span>
+          <h2 className="section-title">ACTIVITIES</h2>
+        </div>
+
+        <div className="activities-list">
+          {/* Live DB Events (if any) */}
+          {publicEvents.map((evt) => {
+            const d = formatShortDate(evt.start_at);
+            return (
+              <div className="activity-row" key={evt.id}>
+                <div className="activity-badge-col">
+                  <span className="activity-type-tag">{evt.type.toUpperCase()}</span>
+                </div>
+                <div className="activity-info-col">
+                  <h4>{evt.title}</h4>
                   <p>
-                    Didirikan pada 22 Desember 2022 sebagai ruang silaturahmi bersama bagi para penikmat dan penggiat motor custom di Kabupaten Situbondo.
+                    {d.day} {d.month} · {evt.location_name || "Situbondo"}
                   </p>
                 </div>
-                <div className="story-point-item">
-                  <strong>Mandiri, Terbuka & Sosial</strong>
-                  <p>
-                    Berlandaskan persaudaraan murni tanpa afiliasi politik dan tidak berorientasi profit. Bergerak bersama dengan semangat gotong-royong demi merangkul sesama pengendara roda dua.
-                  </p>
+                <div className="activity-status-col">
+                  <span className="activity-status-pill active">UPCOMING</span>
+                  {evt.location_url && (
+                    <a href={evt.location_url} target="_blank" rel="noreferrer" className="activity-map-link">
+                      Peta ↗
+                    </a>
+                  )}
                 </div>
               </div>
-            </article>
+            );
+          })}
 
-            {/* Block 2: Solidaritas Bikers yang Abadi */}
-            <article className="story-card">
-              <div className="story-card-icon" aria-hidden="true">
-                <HeartHandshake size={22} />
-              </div>
-              <h3>Solidaritas Bikers yang Abadi</h3>
-              <div className="story-points">
-                <div className="story-point-item">
-                  <strong>Nilai Persaudaraan Abadi</strong>
-                  <p>
-                    Menjadi bagian dari komunitas adalah komitmen untuk menjunjung tinggi solidaritas tulus yang kokoh serta tak lekang oleh waktu dalam setiap perjalanan.
-                  </p>
-                </div>
-                <div className="story-point-item">
-                  <strong>Inklusif dan Terbuka</strong>
-                  <p>
-                    Menjangkau generasi muda hingga kalangan profesional, baik yang sudah berkeluarga maupun lajang, dalam semangat saling menghormati.
-                  </p>
-                </div>
-              </div>
-            </article>
-          </div>
-
-          {/* Official Partners Banner */}
-          <div className="story-partners-strip">
-            <div className="story-partners-title">
-              <strong>Kemitraan & Rekanan Resmi</strong>
-              <small>Mempererat persaudaraan antar komunitas motor di Situbondo</small>
+          {/* Standard Activities from template */}
+          <div className="activity-row">
+            <div className="activity-badge-col">
+              <span className="activity-type-tag">ROUTINE</span>
             </div>
-
-            <div className="story-partners-logos">
-              <figure className="story-partner-logo">
-                <Image
-                  src="/bold-riders-situbondo.jpg"
-                  alt="Bold Riders Situbondo"
-                  fill
-                  sizes="140px"
-                />
-              </figure>
-              <figure className="story-partner-logo">
-                <Image
-                  src="/frtn.jpg"
-                  alt="FRTN"
-                  fill
-                  sizes="140px"
-                />
-              </figure>
+            <div className="activity-info-col">
+              <h4>SUNDAY MORNING RIDE</h4>
+              <p>Situbondo & Rute Sekitarnya · Kumpul Santai Akhir Pekan</p>
+            </div>
+            <div className="activity-status-col">
+              <span className="activity-status-pill">WEEKLY</span>
             </div>
           </div>
-        </motion.section>
 
-        {/* 7. Instagram Showcase (Minimalist Monochrome SVG) */}
-        <motion.section
-          className="landing-section"
-          initial={{ opacity: 0, y: 14 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.45, ease: "easeOut" }}
-        >
-          <div className="landing-instagram-card">
-            <div className="landing-instagram-left">
-              <div className="landing-instagram-icon" aria-hidden="true">
-                <InstagramIcon size={22} />
-              </div>
-              <div className="landing-instagram-text">
-                <h3>Dokumentasi Resmi di Instagram</h3>
-                <p>Ikuti dokumentasi kegiatan, video perjalanan, dan informasi terbaru melalui akun resmi @revoltriders_</p>
-              </div>
+          <div className="activity-row">
+            <div className="activity-badge-col">
+              <span className="activity-type-tag">MANDATORY</span>
             </div>
-
-            <a
-              href="https://www.instagram.com/revoltriders_"
-              target="_blank"
-              rel="noreferrer"
-              className="btn-instagram-follow"
-            >
-              <InstagramIcon size={15} />
-              <span>Ikuti @revoltriders_ ↗</span>
-            </a>
-          </div>
-        </motion.section>
-      </main>
-
-      {/* 8. Footer */}
-      <footer className="landing-footer">
-        <div className="landing-footer-container">
-          <div className="landing-footer-brand">
-            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={30} height={30} />
-            <span>REVOLT RIDERS SITUBONDO</span>
+            <div className="activity-info-col">
+              <h4>MONTHLY GATHERING</h4>
+              <p>Basecamp Revolt Riders · Evaluasi & Silaturahmi Bulanan</p>
+            </div>
+            <div className="activity-status-col">
+              <span className="activity-status-pill active">ACTIVE</span>
+            </div>
           </div>
 
-          <div className="landing-footer-copy">
-            © {new Date().getFullYear()} Revolt Riders Situbondo · Satu Aspal, Satu Persaudaraan.
+          <div className="activity-row">
+            <div className="activity-badge-col">
+              <span className="activity-type-tag">ANNUAL</span>
+            </div>
+            <div className="activity-info-col">
+              <h4>ANNIVERSARY RIDE</h4>
+              <p>Perayaan Hari Jadi Resmi Komunitas Revolt Riders</p>
+            </div>
+            <div className="activity-status-col">
+              <span className="activity-status-pill">DEC 22</span>
+            </div>
           </div>
 
-          <div className="landing-footer-links">
-            <Link href={user ? "/dashboard" : "/login"}>Portal Member</Link>
-            <a href="https://www.instagram.com/revoltriders_" target="_blank" rel="noreferrer">Instagram</a>
+          <div className="activity-row">
+            <div className="activity-badge-col">
+              <span className="activity-type-tag">SOCIAL</span>
+            </div>
+            <div className="activity-info-col">
+              <h4>CHARITY & SOCIAL ACT</h4>
+              <p>Bakti Sosial dan Kepedulian Lingkungan di Situbondo</p>
+            </div>
+            <div className="activity-status-col">
+              <span className="activity-status-pill">ON GOING</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. Live Statistics Strip */}
+      <section id="stats" className="industrial-section">
+        <div className="stats-strip">
+          <div className="stat-item">
+            <div className="stat-number">2022</div>
+            <div className="stat-tag">ESTABLISHED</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-number">{totalMembers}+</div>
+            <div className="stat-tag">MEMBERS</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-number">{totalRides}+</div>
+            <div className="stat-tag">RIDES COMPLETED</div>
+          </div>
+
+          <div className="stat-item">
+            <div className="stat-number">{yearsBrotherhood}</div>
+            <div className="stat-tag">YEARS BROTHERHOOD</div>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. Join Callout */}
+      <section id="join" className="join-callout">
+        <Image
+          src="/revolt-riders-logo.jpg"
+          alt=""
+          width={750}
+          height={750}
+          className="join-watermark"
+          aria-hidden="true"
+        />
+
+        <div className="join-inner">
+          <h2>
+            RIDE TOGETHER.<br />
+            GROW TOGETHER.
+          </h2>
+          <p>
+            Punya motor custom dan berdomisili di Kabupaten Situbondo? Jadilah bagian dari pergerakan dan persaudaraan kami.
+          </p>
+
+          <div className="hero-actions">
             <button
               type="button"
+              className="btn-hero-primary"
               onClick={() => {
                 setFormSuccess(false);
                 setFormError("");
                 setIsJoinModalOpen(true);
               }}
             >
-              Gabung RR
+              JOIN REVOLT RIDERS
             </button>
+            <a href="#about" className="btn-hero-secondary">
+              KNOW THE COMMUNITY
+            </a>
           </div>
+        </div>
+      </section>
+
+      {/* 10. Official Instagram Showcase */}
+      <section id="instagram" className="industrial-section">
+        <div className="instagram-container">
+          <span className="section-tag">OFFICIAL INSTAGRAM</span>
+          <a
+            href="https://instagram.com/revoltriders_"
+            target="_blank"
+            rel="noreferrer"
+            className="instagram-handle"
+          >
+            @REVOLTRIDERS_
+          </a>
+
+          <div className="instagram-grid">
+            <a
+              href="https://instagram.com/revoltriders_"
+              target="_blank"
+              rel="noreferrer"
+              className="instagram-card"
+            >
+              <Image
+                src="/bold-riders-situbondo.jpg"
+                alt="Instagram Post"
+                fill
+                sizes="(max-width: 768px) 50vw, 260px"
+              />
+              <div className="instagram-overlay">
+                <InstagramIcon size={24} />
+              </div>
+            </a>
+
+            <a
+              href="https://instagram.com/revoltriders_"
+              target="_blank"
+              rel="noreferrer"
+              className="instagram-card"
+            >
+              <Image
+                src="/frtn.jpg"
+                alt="Instagram Post"
+                fill
+                sizes="(max-width: 768px) 50vw, 260px"
+              />
+              <div className="instagram-overlay">
+                <InstagramIcon size={24} />
+              </div>
+            </a>
+
+            <a
+              href="https://instagram.com/revoltriders_"
+              target="_blank"
+              rel="noreferrer"
+              className="instagram-card"
+            >
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt="Instagram Post"
+                fill
+                sizes="(max-width: 768px) 50vw, 260px"
+              />
+              <div className="instagram-overlay">
+                <InstagramIcon size={24} />
+              </div>
+            </a>
+
+            <a
+              href="https://instagram.com/revoltriders_"
+              target="_blank"
+              rel="noreferrer"
+              className="instagram-card"
+            >
+              <Image
+                src="/bold-riders-situbondo.jpg"
+                alt="Instagram Post"
+                fill
+                sizes="(max-width: 768px) 50vw, 260px"
+              />
+              <div className="instagram-overlay">
+                <InstagramIcon size={24} />
+              </div>
+            </a>
+          </div>
+
+          <a
+            href="https://instagram.com/revoltriders_"
+            target="_blank"
+            rel="noreferrer"
+            className="instagram-footer-link"
+          >
+            FOLLOW OUR JOURNEY ↗
+          </a>
+        </div>
+      </section>
+
+      {/* 11. Official Partners Strip */}
+      <div className="partners-strip">
+        <span className="partners-title">Kemitraan & Rekanan Resmi Komunitas</span>
+        <div className="partners-logos">
+          <div className="partner-logo-item">
+            <Image
+              src="/bold-riders-situbondo.jpg"
+              alt="Bold Riders Situbondo"
+              fill
+              sizes="120px"
+              style={{ objectFit: "contain" }}
+            />
+          </div>
+          <div className="partner-logo-item">
+            <Image
+              src="/frtn.jpg"
+              alt="FRTN"
+              fill
+              sizes="120px"
+              style={{ objectFit: "contain" }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* 12. Closing Statement */}
+      <section className="closing-section">
+        <div className="closing-title text-outline">
+          YOUR MOTORCYCLE.<br />
+          YOURSELF EXPRESSION.<br />
+          <span>YOUR ROAD.</span>
+        </div>
+      </section>
+
+      {/* 13. Footer */}
+      <footer className="industrial-footer">
+        <div className="footer-main-grid">
+          <div className="footer-brand-col">
+            <Image
+              src="/revolt-riders-logo.jpg"
+              alt="Revolt Riders Logo"
+              width={56}
+              height={56}
+            />
+            <p className="footer-brand-desc">
+              Wadah independen pecinta motor custom di Kabupaten Situbondo. Dibangun atas dasar persaudaraan, kreativitas, dan solidaritas.
+            </p>
+            <div className="footer-socials">
+              <a
+                href="https://instagram.com/revoltriders_"
+                target="_blank"
+                rel="noreferrer"
+                className="footer-social-link"
+                aria-label="Instagram"
+              >
+                <InstagramIcon size={18} />
+              </a>
+            </div>
+          </div>
+
+          <div className="footer-col">
+            <h4>EXPLORE</h4>
+            <ul>
+              <li><a href="#">Home</a></li>
+              <li><a href="#about">About Us</a></li>
+              <li><a href="#values">Core Values</a></li>
+              <li><a href="#gallery">Gallery</a></li>
+              <li><a href="#events">Activities</a></li>
+              <li><Link href={user ? "/dashboard" : "/login"}>Portal Member</Link></li>
+            </ul>
+          </div>
+
+          <div className="footer-col">
+            <h4>BASE</h4>
+            <ul>
+              <li>Situbondo, East Java</li>
+              <li>Indonesia</li>
+              <li style={{ marginTop: "8px" }}>
+                <a href="mailto:info@revoltriders.id" style={{ color: "#fff" }}>
+                  info@revoltriders.id
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="footer-bottom-bar">
+          <p>© {currentYear} Revolt Riders Situbondo. All rights reserved.</p>
+          <p>EST. DEC 22, 2022</p>
         </div>
       </footer>
 
-      {/* 9. Join With Us Native Modal Sheet */}
+      {/* 14. Join With Us Modal Sheet */}
       <ModalSheet
         open={isJoinModalOpen}
         onClose={() => setIsJoinModalOpen(false)}
