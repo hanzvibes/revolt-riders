@@ -252,7 +252,7 @@ export default function DashboardPage() {
 
           <div className="rider-status-metrics">
             <div className="rider-status-metric">
-              <small>Total Jarak</small>
+              <small>Jarak riding</small>
               <b>
                 {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(
                   currentMember?.total_km ?? 0,
@@ -261,14 +261,14 @@ export default function DashboardPage() {
               </b>
             </div>
             <div className="rider-status-metric">
-              <small>Touring / Sowan</small>
+              <small>Kegiatan terverifikasi</small>
               <b>{currentMember?.touring_count ?? 0} Agenda</b>
             </div>
           </div>
 
           <div className="rider-status-actions">
             <a className="dark-action" href="/profil">
-              BUKA PROFIL SAYA
+              Lihat profil
             </a>
           </div>
         </section>
@@ -277,21 +277,21 @@ export default function DashboardPage() {
     return (
       <section className="profile card">
         <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={92} height={92} priority />
-        <em>PORTAL ANGGOTA</em>
-        <h3>Akses member internal</h3>
+        <em>Portal member</em>
+        <h3>Masuk ke member hub</h3>
         <p>
           Masuk ke akun untuk mencatat kilometer riding, check-in QR saat kopdar, dan melihat saldo kas komunitas.
         </p>
         <a className="dark-action" href="/login">
-          MASUK KE AKUN
+          Masuk
         </a>
       </section>
     );
   };
 
   return (
-    <AppShell active="Home" title="Member Hub">
-      <div className="dashboard-grid">
+    <AppShell active="Home" title="Dashboard">
+      <div className="dashboard-grid dashboard-premium">
         {/* Left Primary Column */}
         <div className="left-column">
           {/* Mobile-only Rider Card placed at top */}
@@ -303,27 +303,27 @@ export default function DashboardPage() {
           <section className="hero">
             <div className="hero-content">
               <div className="hero-eyebrow">
-                <span className="hero-tag">{nextEvent ? (nextEvent.type || "AGENDA").toUpperCase() : "PORTAL RESMI"}</span>
-                <em>{nextEvent ? "AGENDA TERDEKAT" : "REVOLT RIDERS SITUBONDO"}</em>
+                <span className="hero-tag">{nextEvent ? (nextEvent.type || "Agenda") : "Revolt Riders"}</span>
+                <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
               </div>
-              <h2>{nextEvent?.title ?? <>SATU ASPAL.<br />SATU PERSAUDARAAN.</>}</h2>
+              <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
               {nextEvent ? (
                 <div className="hero-meta">
                   <p><MapPin />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
                   <p><CalendarDays />{formatEventDate(nextEvent.start_at)}</p>
                 </div>
               ) : (
-                <p className="hero-desc"><ShieldCheck />Platform digital resmi komunitas Revolt Riders Situbondo</p>
+                <p className="hero-desc"><ShieldCheck />Satu aspal, satu persaudaraan.</p>
               )}
               <a className="primary-action hero-cta" href="/agenda">
-                LIHAT AGENDA <ChevronRight />
+                Buka agenda <ChevronRight />
               </a>
             </div>
             {nextEvent ? (
               <div className="hero-date-badge">
                 <small className="hero-badge-month">{formatShortDate(nextEvent.start_at).month}</small>
                 <b className="hero-badge-day">{formatShortDate(nextEvent.start_at).day}</b>
-                <span className="hero-badge-status">UPCOMING</span>
+                <span className="hero-badge-status">Terdekat</span>
               </div>
             ) : (
               <div className="hero-date-badge fallback-badge">
@@ -341,7 +341,7 @@ export default function DashboardPage() {
               </div>
               <div className="quick-action-info">
                 <span className="quick-action-title">Check-in</span>
-                <span className="quick-action-desc">Presensi acara</span>
+                <span className="quick-action-desc">Agenda & kopdar</span>
               </div>
             </a>
             <a className="quick-action-btn" href="/riding">
@@ -350,7 +350,7 @@ export default function DashboardPage() {
               </div>
               <div className="quick-action-info">
                 <span className="quick-action-title">Catat KM</span>
-                <span className="quick-action-desc">Input ride log</span>
+                <span className="quick-action-desc">Tambah ride log</span>
               </div>
             </a>
             <a className="quick-action-btn" href="/member">
@@ -359,7 +359,7 @@ export default function DashboardPage() {
               </div>
               <div className="quick-action-info">
                 <span className="quick-action-title">Direktori</span>
-                <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} Anggota` : "Member Club"}</span>
+                <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} member` : "Member club"}</span>
               </div>
             </a>
             <a className="quick-action-btn" href="/leaderboard">
@@ -367,8 +367,8 @@ export default function DashboardPage() {
                 <Trophy />
               </div>
               <div className="quick-action-info">
-                <span className="quick-action-title">Klasemen</span>
-                <span className="quick-action-desc">Leaderboard KM</span>
+                <span className="quick-action-title">Leaderboard</span>
+                <span className="quick-action-desc">Kilometer riding</span>
               </div>
             </a>
           </div>
@@ -378,25 +378,25 @@ export default function DashboardPage() {
             <article>
               <UsersRound />
               <span>
-                <small>MEMBER TERDAFTAR</small>
-                <b>{totalRidersCount} Riders</b>
-                <small>Anggota resmi aktif</small>
+                <small>Member resmi</small>
+                <b>{totalRidersCount} member</b>
+                <small>Terdaftar di komunitas</small>
               </span>
             </article>
             <article>
               <Gauge />
               <span>
-                <small>TOTAL KM CLUB</small>
+                <small>Total kilometer</small>
                 <b>
                   {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM
                 </b>
-                <small>Akumulasi jarak tempuh</small>
+                <small>Akumulasi ride terverifikasi</small>
               </span>
             </article>
             <article>
               <CircleDollarSign />
               <span>
-                <small>SALDO KAS</small>
+                <small>Saldo kas</small>
                 <b>
                   {stats ? (
                     new Intl.NumberFormat("id-ID", {
@@ -412,7 +412,7 @@ export default function DashboardPage() {
                   )}
                 </b>
                 <small>
-                  {user ? "Kas operasional" : <a href="/login">Masuk untuk melihat</a>}
+                  {user ? "Kas komunitas" : <a href="/login">Masuk untuk melihat</a>}
                 </small>
               </span>
             </article>
@@ -422,8 +422,8 @@ export default function DashboardPage() {
           <section className="card agenda-card">
             <div className="section-title">
               <span>
-                <em>AGENDA RESMI</em>
-                <h3>Agenda terdekat</h3>
+                <em>Agenda</em>
+                <h3>Jadwal terdekat</h3>
               </span>
               <a href="/agenda">
                 Lihat semua <ChevronRight />
@@ -453,7 +453,7 @@ export default function DashboardPage() {
                   <div className="event-info">
                     <div className="event-header-row">
                       <em>{event.type.toUpperCase()}</em>
-                      {idx === 0 && <span className="event-soon-pill">SEGERA</span>}
+                      {idx === 0 && <span className="event-soon-pill">Terdekat</span>}
                     </div>
                     <h4>{event.title}</h4>
                     <p><CalendarDays size={13} style={{ verticalAlign: "middle", marginRight: 4 }} />{formatEventDate(event.start_at)}</p>
@@ -476,7 +476,7 @@ export default function DashboardPage() {
           {announcements[0] ? (
             <a className="bullet-card" href="/bulletin">
               <div className="bullet-header">
-                <span className="bullet-badge">PENGUMUMAN RESMI</span>
+                <span className="bullet-badge">Buletin resmi</span>
                 <ChevronRight size={15} />
               </div>
               <h3>{announcements[0].title}</h3>
@@ -485,7 +485,7 @@ export default function DashboardPage() {
           ) : (
             <a className="bullet-card" href="/bulletin">
               <div className="bullet-header">
-                <span className="bullet-badge">PENGUMUMAN RESMI</span>
+                <span className="bullet-badge">Buletin resmi</span>
                 <ChevronRight size={15} />
               </div>
               <h3>Belum ada pengumuman baru</h3>
@@ -497,8 +497,8 @@ export default function DashboardPage() {
           <section className="support card">
             <div className="section-title">
               <span>
-                <em>OFFICIAL SUPPORT</em>
-                <h3>Support Revolt Riders</h3>
+                <em>Partner komunitas</em>
+                <h3>Support & partner</h3>
               </span>
             </div>
             <div className="support-grid">
