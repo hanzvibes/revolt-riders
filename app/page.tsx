@@ -974,7 +974,7 @@ export default function PublicLandingPage() {
       <ModalSheet
         open={isJoinModalOpen}
         onClose={() => setIsJoinModalOpen(false)}
-        eyebrow=""
+        eyebrow="MEMBERSHIP REGISTRATION"
         title="Pendaftaran Anggota Revolt Riders"
       >
         <div className="join-modal-body">
