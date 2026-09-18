@@ -1,4 +1,3 @@
-// Vercel deployment trigger: 2026-09-19
 import { PwaRegister } from "@/components/pwa-register";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
@@ -10,7 +9,7 @@ import "./landing.css";
 import "./system-ui.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://revolt-riders.com"),
+  metadataBase: new URL("https://www.revoltriders.my.id"),
   title: { default: "Revolt Riders · Satu Aspal, Satu Persaudaraan", template: "%s · Revolt Riders" },
   description: "Official portal komunitas motor Revolt Riders Situbondo. Wadah persaudaraan, touring, dan kegiatan sosial.",
   applicationName: "Revolt Riders",
@@ -20,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Revolt Riders · Satu Aspal, Satu Persaudaraan",
     description: "Official portal komunitas motor Revolt Riders Situbondo. Wadah persaudaraan, touring, dan kegiatan sosial.",
-    url: "https://revolt-riders.com",
+    url: "https://www.revoltriders.my.id",
     siteName: "Revolt Riders",
     images: [
       {
