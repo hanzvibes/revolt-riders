@@ -449,6 +449,22 @@
   color: var(--rr-ink);
 }
 
+.app-shell .section-title > button.primary-action,
+.app-shell .section-title > a.primary-action {
+  background: var(--rr-red);
+  color: #fff;
+}
+
+.app-shell .section-title > button.primary-action:hover,
+.app-shell .section-title > a.primary-action:hover {
+  background: #c91826;
+  color: #fff;
+}
+
+.app-shell .primary-action svg {
+  color: currentColor;
+}
+
 /* Buttons + actions */
 .app-shell .primary-action,
 .app-shell .dark-action,
