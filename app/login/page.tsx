@@ -11,7 +11,7 @@ import { Suspense, useEffect, useState, type FormEvent } from "react";
 const APP_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ??
   process.env.NEXT_PUBLIC_APP_URL ??
-  "https://revolt-riders.vercel.app"
+  "https://www.revoltriders.my.id"
 ).replace(/\/+$/, "");
 
 function LoginContent() {
