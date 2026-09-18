@@ -341,7 +341,7 @@ export default function ManageMembersPage() {
 
   if (loading)
     return (
-      <AppShell active="Kelola Member" title="Kelola Member">
+      <AppShell active="Kelola Member" title="Manajemen Member">
         <PageSkeleton title="Memuat Direktori Member..." />
       </AppShell>
     );
@@ -352,7 +352,7 @@ export default function ManageMembersPage() {
     !["admin", "superadmin"].includes(account.role)
   )
     return (
-      <AppShell active="Kelola Member" title="Kelola Member">
+      <AppShell active="Kelola Member" title="Manajemen Member">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert size={44} style={{ color: "var(--red)", margin: "0 auto 12px" }} />
@@ -369,12 +369,12 @@ export default function ManageMembersPage() {
     );
 
   return (
-    <AppShell active="Kelola Member" title="Kelola Member">
+    <AppShell active="Kelola Member" title="Manajemen Member">
       <div className="page-wrap">
         {/* Header section */}
         <div className="page-intro native-page-head">
           <div>
-            <em>MEMBER DIRECTORY</em>
+            <em>Direktori member</em>
             <h2>Kelola Member ({members.length} Riders)</h2>
             <p>Atur data anggota resmi, nomor registrasi RR, dan akses akun aplikasi.</p>
           </div>
