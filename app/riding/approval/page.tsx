@@ -96,7 +96,7 @@ export default function RideApprovalPage() {
       <div className="page-wrap">
         <div className="page-intro">
           <div>
-            <em>RIDE APPROVAL</em>
+            <em>Validasi riding</em>
             <h2>Menunggu Validasi</h2>
             <p>Setujui data odometer & tujuan riding yang valid. Ride yang disetujui akan otomatis menambah akumulasi kilometer member.</p>
           </div>
@@ -105,7 +105,7 @@ export default function RideApprovalPage() {
         {message && <p className="success-message"><Check/>{message}</p>}
         <section className="card ride-approval">
           <div className="section-title">
-            <span><em>PENDING</em><h3>Ride Log Masuk</h3></span>
+            <span><em>Menunggu</em><h3>Ride Log Masuk</h3></span>
             <b>{rides.length}</b>
           </div>
           {rides.length === 0 ? (
