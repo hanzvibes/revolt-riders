@@ -40,23 +40,23 @@ const DEFAULT_GALLERY: GalleryItem[] = [
   {
     id: "g-1",
     title: "Kopdar Akbar & Silaturahmi",
-    description: "Pertemuan rutin mempererat solidaritas antar anggota roda dua.",
+    description: "Kumpul rutin santai bareng keluarga besar Revolt Riders.",
     image_url: "/bold-riders-situbondo.jpg",
     location: "Situbondo Kota",
     ride_date: "2026-03-01",
   },
   {
     id: "g-2",
-    title: "Touring Persaudaraan Jalur Timur",
-    description: "Sowan dan touring resmi menyusuri keindahan aspal timur Jawa.",
+    title: "Touring Silaturahmi Jalur Timur",
+    description: "Riding santai nyusuri aspal pesisir timur Jawa bareng saudara aspal.",
     image_url: "/frtn.jpg",
     location: "Banyuwangi - Buleleng",
     ride_date: "2026-02-15",
   },
   {
     id: "g-3",
-    title: "Rolling Thunder & Bakti Sosial",
-    description: "Aksi kepedulian sosial santun bersama rekan komunitas riders.",
+    title: "Rolling Thunder & Aksi Sosial",
+    description: "Bagi-bagi senyum dan kepedulian bareng rekan komunitas roda dua.",
     image_url: "/revolt-riders-logo.jpg",
     location: "Besuki - Bondowoso",
     ride_date: "2026-01-20",
@@ -148,7 +148,7 @@ export default function PublicLandingPage() {
     e.preventDefault();
     setFormError("");
     if (!agreement) {
-      setFormError("Anda harus menyetujui pernyataan & ketentuan komunitas.");
+      setFormError("Centang persetujuan dulu ya biar kita sama-sama enak.");
       return;
     }
     setFormSubmitting(true);
@@ -190,7 +190,7 @@ export default function PublicLandingPage() {
 
         if (insErr) {
           if (insErr.message.includes("whatsapp") || insErr.message.includes("unique")) {
-            throw new Error("Nomor WhatsApp ini sudah memiliki pendaftaran yang sedang diproses.");
+            throw new Error("Nomor WhatsApp ini udah pernah daftar dan lagi diproses nih.");
           }
           throw insErr;
         }
@@ -202,13 +202,13 @@ export default function PublicLandingPage() {
           (err as { message?: string })?.message ||
           "";
         if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
-          setFormError("Sistem pendaftaran sedang disinkronkan ke database. Silakan hubungi pengurus atau coba beberapa saat lagi.");
+          setFormError("Sistem pendaftaran lagi disinkronkan. Hubungi pengurus atau coba beberapa saat lagi ya.");
         } else if (rawMsg.includes("whatsapp") || rawMsg.includes("unique")) {
-          setFormError("Nomor WhatsApp ini sudah memiliki pendaftaran yang sedang diproses.");
+          setFormError("Nomor WhatsApp ini udah pernah daftar dan lagi diproses.");
         } else if (rawMsg) {
           setFormError(rawMsg);
         } else {
-          setFormError("Pendaftaran gagal dikirim. Silakan periksa kembali data Anda.");
+          setFormError("Gagal ngirim pendaftaran. Cek lagi data kamu ya!");
         }
       }
     } finally {
@@ -235,7 +235,7 @@ export default function PublicLandingPage() {
       <header className="landing-header">
         <div className="landing-nav-container">
           <Link href="/" className="landing-brand">
-            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={42} height={42} priority />
+            <Image src="/revolt-riders-logo.jpg" alt="Logo Revolt Riders" width={40} height={40} priority />
             <div className="landing-brand-text">
               <strong>REVOLT RIDERS</strong>
               <small>SITUBONDO · EAST JAVA</small>
@@ -246,7 +246,7 @@ export default function PublicLandingPage() {
             <li><a href="#stats">Statistik</a></li>
             <li><a href="#agenda">Agenda</a></li>
             <li><a href="#gallery">Galeri</a></li>
-            <li><a href="#profil">Profil & Aliansi</a></li>
+            <li><a href="#profil">Tentang Kami</a></li>
           </ul>
 
           <div className="landing-nav-actions">
@@ -265,7 +265,7 @@ export default function PublicLandingPage() {
               }}
             >
               <UserPlus size={15} />
-              <span>Join With Us</span>
+              <span>Gabung RR</span>
             </button>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function PublicLandingPage() {
 
       {/* Main Content */}
       <main className="landing-main">
-        {/* 2. Hero: 2-Column Balanced Carbon Card */}
+        {/* 2. Hero: Clean Spacious Carbon Card (No 360 circle, No Kicker) */}
         <motion.section
           className="landing-hero-card"
           initial={{ opacity: 0, y: 16 }}
@@ -283,25 +283,20 @@ export default function PublicLandingPage() {
           <Image
             src="/revolt-riders-logo.jpg"
             alt=""
-            width={280}
-            height={280}
+            width={320}
+            height={320}
             className="landing-hero-mark"
             aria-hidden="true"
           />
 
           <div className="landing-hero-content">
-            <span className="landing-hero-badge">
-              <Sparkles size={12} />
-              KOMUNITAS MOTOR RESMI · SITUBONDO
-            </span>
-
             <h1>
               <em>SATU ASPAL.</em>
               SATU PERSAUDARAAN.
             </h1>
 
             <p>
-              Wadah persaudaraan roda dua di Situbondo yang menjunjung tinggi kebersamaan, etika berkendara santun, dan aksi sosial tanpa membedakan kasta kendaraan.
+              Komunitas motor di Situbondo buat siapa aja yang hobi riding dan silaturahmi. Mau motor matic, bebek, sport, atau klasik—semua asik, saling sapa, dan saling jaga di jalan.
             </p>
 
             <div className="landing-hero-actions">
@@ -315,7 +310,7 @@ export default function PublicLandingPage() {
                 }}
               >
                 <UserPlus size={16} />
-                <span>GABUNG BERSAMA KAMI</span>
+                <span>GABUNG BARENG KAMI</span>
               </button>
 
               <Link href={user ? "/dashboard" : "/login"} className="btn-hero-secondary">
@@ -323,21 +318,6 @@ export default function PublicLandingPage() {
                 <span>PORTAL ANGGOTA</span>
               </Link>
             </div>
-          </div>
-
-          {/* Right Column: Speedometer Gauge */}
-          <div className="landing-hero-gauge-wrap">
-            <motion.div
-              className="landing-speedo-gauge"
-              aria-hidden="true"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5, ease: "easeOut" }}
-            >
-              <small>SPEED OF BROTHERHOOD</small>
-              <b>360°</b>
-              <span>SOLIDARITAS</span>
-            </motion.div>
           </div>
         </motion.section>
 
@@ -358,7 +338,7 @@ export default function PublicLandingPage() {
             <div className="landing-stat-info">
               <span className="landing-stat-label">MEMBER AKTIF</span>
               <b className="landing-stat-val">{totalMembers}</b>
-              <small className="landing-stat-desc">Anggota resmi terverifikasi</small>
+              <small className="landing-stat-desc">Riders resmi terdaftar</small>
             </div>
           </article>
 
@@ -369,7 +349,7 @@ export default function PublicLandingPage() {
             <div className="landing-stat-info">
               <span className="landing-stat-label">TOTAL JARAK TEMPUH</span>
               <b className="landing-stat-val">{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKm)} KM</b>
-              <small className="landing-stat-desc">Akumulasi odometer touring</small>
+              <small className="landing-stat-desc">Kilometer yang udah ditempuh</small>
             </div>
           </article>
 
@@ -379,13 +359,13 @@ export default function PublicLandingPage() {
             </div>
             <div className="landing-stat-info">
               <span className="landing-stat-label">SOWAN & TOURING</span>
-              <b className="landing-stat-val">{totalRides}+</b>
-              <small className="landing-stat-desc">Kegiatan resmi terlaksana</small>
+              <b className="landing-stat-val">{totalRides}+ Kali</b>
+              <small className="landing-stat-desc">Rolling & agenda terlaksana</small>
             </div>
           </article>
         </motion.section>
 
-        {/* 4. Agenda Terbuka (Max 2 Cards) */}
+        {/* 4. Agenda Section (No Kicker) */}
         <motion.section
           className="landing-section"
           id="agenda"
@@ -395,16 +375,15 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <em>AGENDA TERBUKA</em>
-            <h2>Kopdar & Jadwal Terdekat</h2>
-            <p>Jadwal sowan, touring, dan kegiatan publik terbuka untuk dihadiri calon anggota & rekan riders.</p>
+            <h2>Jadwal Riding & Kopdar Terdekat</h2>
+            <p>Agenda kumpul dan sowan yang bisa kamu ikutin. Gas bareng yuk!</p>
           </div>
 
           {publicEvents.length === 0 ? (
             <div className="landing-agenda-empty">
               <CalendarDays size={32} />
-              <h3>Belum Ada Agenda Publik Mendatang</h3>
-              <p>Agenda touring dan kopdar selanjutnya akan diumumkan di sini & Instagram resmi.</p>
+              <h3>Belum Ada Jadwal Kumpul Baru</h3>
+              <p>Jadwal riding atau kopdar berikutnya bakal diumumin di sini sama di Instagram kita ya.</p>
             </div>
           ) : (
             <div className="landing-agenda-list">
@@ -420,7 +399,7 @@ export default function PublicLandingPage() {
                     <div className="landing-agenda-info">
                       <span className="landing-agenda-badge">{evt.type}</span>
                       <h3>{evt.title}</h3>
-                      <p>{evt.description || "Agenda resmi komunitas motor Revolt Riders Situbondo."}</p>
+                      <p>{evt.description || "Agenda resmi kumpul santai bareng Revolt Riders Situbondo."}</p>
 
                       <div className="landing-agenda-meta">
                         <span>
@@ -429,7 +408,7 @@ export default function PublicLandingPage() {
                         </span>
                         {evt.location_url && (
                           <a href={evt.location_url} target="_blank" rel="noreferrer">
-                            Peta Lokasi ↗
+                            Cek Maps ↗
                           </a>
                         )}
                       </div>
@@ -441,7 +420,7 @@ export default function PublicLandingPage() {
           )}
         </motion.section>
 
-        {/* 5. Galeri Pilihan (Max 3 Curated Photos) */}
+        {/* 5. Galeri Pilihan (No Kicker) */}
         <motion.section
           className="landing-section"
           id="gallery"
@@ -451,9 +430,8 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <em>DOKUMENTASI TOURING</em>
-            <h2>Momen Perjalanan</h2>
-            <p>Dokumentasi kebersamaan sowan & touring resmi menyusuri aspal nusantara.</p>
+            <h2>Momen Seru di Jalan</h2>
+            <p>Cuplikan keseruan pas sowan dan touring bareng nyusuri aspal nusantara.</p>
           </div>
 
           <div className="landing-gallery-grid">
@@ -488,7 +466,7 @@ export default function PublicLandingPage() {
           </div>
         </motion.section>
 
-        {/* 6. Profil & Aliansi Resmi (Unified Card) */}
+        {/* 6. Profil & Aliansi Resmi (No Kicker) */}
         <motion.section
           className="landing-section"
           id="profil"
@@ -498,41 +476,40 @@ export default function PublicLandingPage() {
           transition={{ duration: 0.45, ease: "easeOut" }}
         >
           <div className="landing-section-head">
-            <em>IDENTITAS RESMI</em>
-            <h2>Profil & Aliansi Komunitas</h2>
-            <p>Prinsip dasar kebersamaan dan kemitraan resmi komunitas Revolt Riders.</p>
+            <h2>Tentang Revolt Riders</h2>
+            <p>Komunitas santai tanpa sekat pabrikan atau kapasitas mesin.</p>
           </div>
 
           <div className="landing-profil-card">
             <div className="landing-profil-left">
-              <h3>Satu Aspal Tanpa Sekat</h3>
+              <h3>Satu Aspal, Gak Pake Sekat</h3>
               <p>
-                Revolt Riders Situbondo berdiri di atas prinsip persaudaraan tulus. Tidak membedakan tipe atau pabrikan motor—semua pengendara beretika santun dan berjiwa sosial disambut hangat sebagai saudara.
+                Di Revolt Riders, kita gak peduli motormu merk apa atau berapa cc. Selama kamu santun di jalan raya, suka riding bareng, dan punya rasa saling menghargai, kamu adalah keluarga kami.
               </p>
 
               <div className="landing-chips-grid">
                 <div className="landing-chip">
                   <HeartHandshake size={16} />
-                  <span>Solidaritas Tulus</span>
+                  <span>Solid & Saling Jaga</span>
                 </div>
                 <div className="landing-chip">
                   <ShieldCheck size={16} />
-                  <span>Safety First Mindset</span>
+                  <span>Tertib & Santun di Jalan</span>
                 </div>
                 <div className="landing-chip">
                   <Compass size={16} />
-                  <span>Eksplorasi Sowan</span>
+                  <span>Doyan Sowan & Touring</span>
                 </div>
                 <div className="landing-chip">
                   <Sparkles size={16} />
-                  <span>Terbuka Semua Merk</span>
+                  <span>Bebas Semua Jenis Motor</span>
                 </div>
               </div>
             </div>
 
             <div className="landing-profil-right">
               <div className="landing-profil-right-title">
-                <em>KEMITRAAN RESMI</em>
+                <strong>Partner & Rekanan</strong>
                 <small>Situbondo · East Java</small>
               </div>
 
@@ -563,7 +540,7 @@ export default function PublicLandingPage() {
           </div>
         </motion.section>
 
-        {/* 7. Instagram Showcase */}
+        {/* 7. Instagram Showcase (Minimalist Monochrome SVG) */}
         <motion.section
           className="landing-section"
           initial={{ opacity: 0, y: 14 }}
@@ -573,12 +550,12 @@ export default function PublicLandingPage() {
         >
           <div className="landing-instagram-card">
             <div className="landing-instagram-left">
-              <div className="landing-instagram-icon">
+              <div className="landing-instagram-icon" aria-hidden="true">
                 <InstagramIcon size={22} />
               </div>
               <div className="landing-instagram-text">
-                <h3>Ikuti Dokumentasi di Instagram</h3>
-                <p>Update kegiatan, video reels perjalanan, dan pengumuman resmi di @revoltriders_</p>
+                <h3>Ngintip Keseruan Kita di Instagram</h3>
+                <p>Pantau dokumentasi riding, video reels, sama update tongkrongan di @revoltriders_</p>
               </div>
             </div>
 
@@ -589,7 +566,7 @@ export default function PublicLandingPage() {
               className="btn-instagram-follow"
             >
               <InstagramIcon size={15} />
-              <span>Follow @revoltriders_</span>
+              <span>Follow @revoltriders_ ↗</span>
             </a>
           </div>
         </motion.section>
@@ -604,7 +581,7 @@ export default function PublicLandingPage() {
           </div>
 
           <div className="landing-footer-copy">
-            © {new Date().getFullYear()} Revolt Riders Situbondo. Satu Aspal, Satu Persaudaraan.
+            © {new Date().getFullYear()} Revolt Riders Situbondo · Satu Aspal, Satu Persaudaraan.
           </div>
 
           <div className="landing-footer-links">
@@ -618,7 +595,7 @@ export default function PublicLandingPage() {
                 setIsJoinModalOpen(true);
               }}
             >
-              Join With Us
+              Gabung RR
             </button>
           </div>
         </div>
@@ -628,32 +605,31 @@ export default function PublicLandingPage() {
       <ModalSheet
         open={isJoinModalOpen}
         onClose={() => setIsJoinModalOpen(false)}
-        eyebrow="PENDAFTARAN ANGGOTA BARU"
-        title="Join With Revolt Riders"
+        eyebrow=""
+        title="Gabung Bareng Revolt Riders"
       >
         <div className="join-modal-body">
           {formSuccess ? (
             <div className="join-success-card">
               <CheckCircle2 size={52} />
-              <h3>Pendaftaran Berhasil Dikirim!</h3>
+              <h3>Mantap, Pendaftaran Masuk!</h3>
               <p>
-                Terima kasih, <b>{fullName}</b>! Formulir pendaftaran Anda telah tersimpan dengan status <b>Pending</b>.
-                Pengurus Revolt Riders akan segera meninjau formulir dan mengirimkan instruksi konfirmasi via WhatsApp ke
-                nomor <b>{whatsapp}</b>.
+                Makasih udah daftar, <b>{fullName}</b>! Formulir kamu udah kita terima. Tunggu chat santai dari pengurus
+                Revolt Riders di WhatsApp <b>{whatsapp}</b> ya!
               </p>
               <button
                 type="button"
                 className="btn-hero-primary"
-                style={{ width: "100%", maxWidth: 240, justifyContent: "center" }}
+                style={{ width: "100%", maxWidth: 220, justifyContent: "center" }}
                 onClick={resetForm}
               >
-                Selesai
+                Oke, Siap!
               </button>
             </div>
           ) : (
             <>
               <p className="join-modal-intro">
-                Lengkapi formulir di bawah ini untuk peninjauan pengurus. Data Anda disimpan aman sebagai Join Request.
+                Isi data singkat kamu di bawah buat kenalan ya. Nanti pengurus bakal nyapa kamu langsung lewat WhatsApp.
               </p>
 
               <form className="join-form-stack" onSubmit={handleSubmitJoin}>
@@ -741,7 +717,7 @@ export default function PublicLandingPage() {
                 <div className="join-field-group">
                   <label className="join-field-label">
                     <span>Nomor WhatsApp Aktif</span>
-                    <small>Untuk konfirmasi pengurus</small>
+                    <small>Buat dihubungin pengurus</small>
                   </label>
                   <div className="join-input-wrap">
                     <Phone />
@@ -765,7 +741,7 @@ export default function PublicLandingPage() {
                     required
                   />
                   <label htmlFor="agreement-check">
-                    Saya menyatakan data ini benar dan bersedia mematuhi kode etik, nilai persaudaraan, dan standar keselamatan berkendara Revolt Riders.
+                    Gue nyatain data ini bener dan siap riding santun serta patuh kode etik Revolt Riders.
                   </label>
                 </div>
 
