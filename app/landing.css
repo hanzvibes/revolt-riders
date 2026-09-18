@@ -59,7 +59,7 @@
   margin: 0;
 }
 
-/* Subtle Film Grain / Asphalt Noise Overlay */
+/* Subtle Film Grain / Asphalt Noise Overlay (Desktop only for 60fps mobile performance) */
 .noise-overlay {
   position: fixed;
   top: 0;
@@ -70,6 +70,12 @@
   z-index: 999;
   opacity: 0.025;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 900px) {
+  .noise-overlay {
+    display: none !important;
+  }
 }
 
 /* Outline Text Utility */
@@ -98,17 +104,26 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: padding 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+  transform: translateZ(0);
 }
 
 .dark-navbar.scrolled {
-  background-color: rgba(10, 10, 10, 0.88);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background-color: rgba(10, 10, 10, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   padding-top: 14px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--brand-border);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+}
+
+@media (max-width: 768px) {
+  .dark-navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.96);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+  }
 }
 
 .dark-nav-brand {
@@ -342,7 +357,6 @@
   user-select: none;
   border-radius: 50%;
   object-fit: contain;
-  filter: grayscale(100%) contrast(150%);
 }
 
 .hero-inner {
@@ -488,10 +502,10 @@
 
 @keyframes bounceSlow {
   0%, 100% {
-    transform: translate(-50%, 0);
+    transform: translate3d(-50%, 0, 0);
   }
   50% {
-    transform: translate(-50%, 8px);
+    transform: translate3d(-50%, 8px, 0);
   }
 }
 
@@ -811,13 +825,19 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.6s ease, filter 0.6s ease;
-  filter: grayscale(80%) brightness(0.7);
+  opacity: 0.85;
+  transform: translateZ(0);
 }
 
-.gallery-card:hover .gallery-card-img {
-  transform: scale(1.05);
-  filter: grayscale(0%) brightness(1);
+@media (hover: hover) {
+  .gallery-card-img {
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: grayscale(80%) brightness(0.7);
+  }
+  .gallery-card:hover .gallery-card-img {
+    transform: scale(1.04);
+    filter: grayscale(0%) brightness(1);
+  }
 }
 
 .gallery-card-content {
@@ -1136,13 +1156,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.65;
-  transition: transform 0.5s ease, opacity 0.5s ease;
-}
-
-.instagram-card:hover img {
-  transform: scale(1.08);
-  opacity: 0.95;
+  opacity: 0.75;
+  transform: translateZ(0);
 }
 
 .instagram-overlay {
@@ -1153,13 +1168,28 @@
   align-items: center;
   justify-content: center;
   opacity: 0;
-  transition: opacity 0.3s ease;
   z-index: 2;
   color: #fff;
 }
 
-.instagram-card:hover .instagram-overlay {
-  opacity: 1;
+@media (hover: hover) {
+  .instagram-card img {
+    opacity: 0.65;
+    transition: transform 0.4s ease, opacity 0.4s ease;
+  }
+
+  .instagram-card:hover img {
+    transform: scale(1.06);
+    opacity: 0.95;
+  }
+
+  .instagram-overlay {
+    transition: opacity 0.3s ease;
+  }
+
+  .instagram-card:hover .instagram-overlay {
+    opacity: 1;
+  }
 }
 
 .instagram-footer-link {
@@ -1240,12 +1270,17 @@
   width: 110px;
   height: 48px;
   position: relative;
-  filter: grayscale(100%) brightness(0.65);
-  transition: filter 0.3s ease;
+  filter: grayscale(100%) brightness(0.7);
+  transform: translateZ(0);
 }
 
-.partner-logo-item:hover {
-  filter: grayscale(0%) brightness(1);
+@media (hover: hover) {
+  .partner-logo-item {
+    transition: filter 0.3s ease;
+  }
+  .partner-logo-item:hover {
+    filter: grayscale(0%) brightness(1);
+  }
 }
 
 /* ------------------------------------------------------------------------------
@@ -1652,4 +1687,35 @@
 .join-success-card p b {
   color: #ffffff;
 }
+
+/* ------------------------------------------------------------------------------
+   16. MOBILE PERFORMANCE & HARDWARE ACCELERATION
+   ------------------------------------------------------------------------------ */
+.hero-inner,
+.about-left,
+.about-right,
+.brotherhood-inner,
+.values-grid,
+.value-card,
+.gallery-card,
+.activity-row,
+.join-inner,
+.closing-title {
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 

@@ -92,11 +92,25 @@ export default function PublicLandingPage() {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState(false);
 
-  // Scroll listener for Navbar
+  // Scroll listener for Navbar (throttled with RAF to eliminate mobile scroll jank)
   useEffect(() => {
+    let ticking = false;
+    let lastScrolled = false;
+
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrolled = window.scrollY > 40;
+          if (scrolled !== lastScrolled) {
+            lastScrolled = scrolled;
+            setIsScrolled(scrolled);
+          }
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
+
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -405,10 +419,10 @@ export default function PublicLandingPage() {
         <div className="about-grid">
           <motion.div
             className="about-left"
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.55 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-20px" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           >
             <h2>
               ESTABLISHED IN<br />SITUBONDO, 2022.
@@ -421,10 +435,10 @@ export default function PublicLandingPage() {
 
           <motion.div
             className="about-right"
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.55, delay: 0.1 }}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-20px" }}
+            transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="about-paragraphs">
               <p>
@@ -450,10 +464,10 @@ export default function PublicLandingPage() {
       <section id="brotherhood" className="brotherhood-section">
         <motion.div
           className="brotherhood-inner"
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-40px" }}
-          transition={{ duration: 0.55 }}
+          viewport={{ once: true, margin: "-20px" }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           <h2>
             BUILT BY MOTORCYCLES.<br />
@@ -472,91 +486,61 @@ export default function PublicLandingPage() {
           <h2 className="section-title">CORE VALUES</h2>
         </div>
 
-        <div className="values-grid">
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-          >
+        <motion.div
+          className="values-grid"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-20px" }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <article className="value-card">
             <div className="value-icon-box">
               <Handshake size={24} />
             </div>
             <h4>BROTHERHOOD</h4>
             <p>Persaudaraan tanpa batas, di atas dan di luar aspal.</p>
-          </motion.article>
+          </article>
 
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.08 }}
-          >
+          <article className="value-card">
             <div className="value-icon-box">
               <Link2 size={24} />
             </div>
             <h4>SOLIDARITY</h4>
             <p>Saling mendukung dan bergerak sebagai satu kesatuan yang solid.</p>
-          </motion.article>
+          </article>
 
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.16 }}
-          >
+          <article className="value-card">
             <div className="value-icon-box">
               <Flag size={24} />
             </div>
             <h4>INDEPENDENCE</h4>
             <p>Mandiri, bebas dari kepentingan politik & tujuan komersial.</p>
-          </motion.article>
+          </article>
 
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.24 }}
-          >
+          <article className="value-card">
             <div className="value-icon-box">
               <Shield size={24} />
             </div>
             <h4>RESPECT</h4>
             <p>Saling menghargai antar anggota dan seluruh pengguna jalan raya.</p>
-          </motion.article>
+          </article>
 
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.32 }}
-          >
+          <article className="value-card">
             <div className="value-icon-box">
               <Wrench size={24} />
             </div>
             <h4>CUSTOM CULTURE</h4>
             <p>Merayakan kreativitas seni rancang bangun motor custom.</p>
-          </motion.article>
+          </article>
 
-          <motion.article
-            className="value-card"
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.4 }}
-          >
+          <article className="value-card">
             <div className="value-icon-box">
               <Globe size={24} />
             </div>
             <h4>SOCIAL RESPONSIBILITY</h4>
             <p>Memberikan kontribusi dan dampak positif bagi masyarakat sekitar.</p>
-          </motion.article>
-        </div>
+          </article>
+        </motion.div>
       </section>
 
       {/* 6. Gallery / Ride Stories */}
