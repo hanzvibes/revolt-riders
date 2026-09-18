@@ -27,7 +27,16 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+
+type ConnectedEvent = {
+  id: string;
+  title: string;
+  type: string;
+  slug: string;
+  location_name?: string | null;
+  start_at?: string | null;
+};
 
 type GalleryItem = {
   id: string;
@@ -36,6 +45,8 @@ type GalleryItem = {
   image_url: string;
   location: string | null;
   ride_date: string | null;
+  event_id?: string | null;
+  events?: ConnectedEvent | null;
 };
 
 const DEFAULT_GALLERY: GalleryItem[] = [
@@ -64,6 +75,54 @@ const DEFAULT_GALLERY: GalleryItem[] = [
     ride_date: "2026-01-20",
   },
 ];
+
+const STANDARD_ACTIVITIES = [
+  {
+    id: "std-1",
+    badge: "ROUTINE",
+    title: "SUNDAY MORNING RIDE",
+    subtitle: "Situbondo & Rute Sekitarnya · Kumpul Santai Akhir Pekan",
+    statusPill: "WEEKLY",
+    isActive: false,
+  },
+  {
+    id: "std-2",
+    badge: "MANDATORY",
+    title: "MONTHLY GATHERING",
+    subtitle: "Basecamp Revolt Riders · Evaluasi & Silaturahmi Bulanan",
+    statusPill: "ACTIVE",
+    isActive: true,
+  },
+  {
+    id: "std-3",
+    badge: "ANNUAL",
+    title: "ANNIVERSARY RIDE",
+    subtitle: "Perayaan Hari Jadi Resmi Komunitas Revolt Riders",
+    statusPill: "DEC 22",
+    isActive: false,
+  },
+  {
+    id: "std-4",
+    badge: "SOCIAL",
+    title: "CHARITY & SOCIAL ACT",
+    subtitle: "Bakti Sosial dan Kepedulian Lingkungan di Situbondo",
+    statusPill: "ON GOING",
+    isActive: false,
+  },
+];
+
+function getEventStatusBadge(startAt: string, status: string) {
+  if (status === "completed") return { label: "SELESAI", active: false };
+  const eventDate = new Date(startAt);
+  const now = new Date();
+  const isToday =
+    eventDate.getFullYear() === now.getFullYear() &&
+    eventDate.getMonth() === now.getMonth() &&
+    eventDate.getDate() === now.getDate();
+  if (isToday) return { label: "HARI INI", active: true };
+  if (eventDate.getTime() > now.getTime()) return { label: "UPCOMING", active: true };
+  return { label: "BERLALU", active: false };
+}
 
 export default function PublicLandingPage() {
   const { user } = useDataCache();
@@ -115,60 +174,92 @@ export default function PublicLandingPage() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Load Public Data
-  useEffect(() => {
-    let active = true;
+  // Fetch Public Events (Live Database)
+  const fetchEvents = useCallback(async () => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from("events")
+        .select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status")
+        .in("status", ["published", "completed"])
+        .order("start_at", { ascending: true })
+        .limit(6);
 
-    async function loadData() {
-      try {
-        const supabase = getSupabaseBrowserClient();
-
-        // 1. Fetch public stats
-        const { data: statsData, error: statsErr } = await supabase.rpc("get_public_club_stats");
-        if (!statsErr && statsData?.[0]) {
-          if (active) {
-            setTotalMembers(Number(statsData[0].total_members) || 27);
-            setTotalRides(Number(statsData[0].total_rides) || 194);
-            setTotalKm(Number(statsData[0].total_km) || 19177);
-          }
-        } else {
-          const { count } = await supabase.from("member_profiles").select("member_external_id", { count: "exact", head: true });
-          if (count && active) setTotalMembers(count);
-        }
-
-        // 2. Fetch public events (limit 4)
-        const { data: eventsData } = await supabase
-          .from("events")
-          .select("id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status")
-          .eq("status", "published")
-          .order("start_at", { ascending: true })
-          .limit(4);
-
-        if (eventsData && active) {
-          setPublicEvents(eventsData as EventRecord[]);
-        }
-
-        // 3. Fetch gallery (limit 3)
-        const { data: galleryData, error: galErr } = await supabase
-          .from("club_gallery")
-          .select("id,title,description,image_url,location,ride_date")
-          .eq("is_public", true)
-          .order("ride_date", { ascending: false })
-          .limit(3);
-
-        if (!galErr && galleryData && galleryData.length > 0 && active) {
-          setGallery(galleryData as GalleryItem[]);
-        }
-      } catch (err) {
-        console.warn("Public landing data notice:", err);
+      if (!error && data) {
+        setPublicEvents(data as EventRecord[]);
       }
+    } catch (err) {
+      console.warn("Public landing events fetch notice:", err);
     }
-
-    void loadData();
-    return () => {
-      active = false;
-    };
   }, []);
+
+  // Fetch Public Gallery / Ride Stories (Live Database with joined Agenda)
+  const fetchGallery = useCallback(async () => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from("club_gallery")
+        .select("id,title,description,image_url,location,ride_date,event_id,events:event_id(id,title,type,slug,location_name,start_at)")
+        .eq("is_public", true)
+        .order("ride_date", { ascending: false })
+        .limit(3);
+
+      if (!error && data && data.length > 0) {
+        setGallery(data as GalleryItem[]);
+      }
+    } catch (err) {
+      console.warn("Public landing gallery fetch notice:", err);
+    }
+  }, []);
+
+  // Fetch Club Stats
+  const fetchStats = useCallback(async () => {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data: statsData, error: statsErr } = await supabase.rpc("get_public_club_stats");
+      if (!statsErr && statsData?.[0]) {
+        setTotalMembers(Number(statsData[0].total_members) || 27);
+        setTotalRides(Number(statsData[0].total_rides) || 194);
+        setTotalKm(Number(statsData[0].total_km) || 19177);
+      } else {
+        const { count } = await supabase.from("member_profiles").select("member_external_id", { count: "exact", head: true });
+        if (count) setTotalMembers(count);
+      }
+    } catch (err) {
+      console.warn("Public stats fetch notice:", err);
+    }
+  }, []);
+
+  // Initial Load & Real-Time Sync
+  useEffect(() => {
+    void fetchStats();
+    void fetchEvents();
+    void fetchGallery();
+
+    const supabase = getSupabaseBrowserClient();
+    const channel = supabase
+      .channel("landing-realtime-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "events" },
+        () => {
+          void fetchEvents();
+          void fetchGallery();
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "club_gallery" },
+        () => {
+          void fetchGallery();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [fetchStats, fetchEvents, fetchGallery]);
 
   // Form Submission
   const handleSubmitJoin = async (e: FormEvent) => {
@@ -587,6 +678,15 @@ export default function PublicLandingPage() {
                   </div>
                   <h3>{item.title}</h3>
                   {item.description && <p>{item.description}</p>}
+
+                  {item.events && (
+                    <div className="gallery-linked-agenda">
+                      <Link href={`/agenda#${item.events.slug}`} className="gallery-agenda-badge">
+                        <CalendarDays size={11} />
+                        <span>AGENDA: {item.events.title}</span>
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </article>
             ))}
@@ -612,28 +712,39 @@ export default function PublicLandingPage() {
 
       {/* 7. Events & Activities */}
       <section id="events" className="industrial-section alt-bg">
-        <div className="section-head-center">
-          <span className="section-tag">AGENDA</span>
-          <h2 className="section-title">ACTIVITIES</h2>
+        <div className="activities-head-row">
+          <div>
+            <span className="section-tag">AGENDA</span>
+            <h2 className="section-title" style={{ marginBottom: 0 }}>ACTIVITIES</h2>
+          </div>
+          <Link href="/agenda" className="dark-nav-link" style={{ fontSize: "0.85rem" }}>
+            LIHAT SEMUA AGENDA ↗
+          </Link>
         </div>
 
         <div className="activities-list">
-          {/* Live DB Events (if any) */}
+          {/* Live DB Events from database */}
           {publicEvents.map((evt) => {
             const d = formatShortDate(evt.start_at);
+            const statusBadge = getEventStatusBadge(evt.start_at, evt.status);
             return (
               <div className="activity-row" key={evt.id}>
                 <div className="activity-badge-col">
                   <span className="activity-type-tag">{evt.type.toUpperCase()}</span>
                 </div>
                 <div className="activity-info-col">
-                  <h4>{evt.title}</h4>
+                  <Link href={`/agenda#${evt.slug}`} style={{ textDecoration: "none" }}>
+                    <h4>{evt.title}</h4>
+                  </Link>
                   <p>
                     {d.day} {d.month} · {evt.location_name || "Situbondo"}
+                    {evt.description ? ` · ${evt.description}` : ""}
                   </p>
                 </div>
                 <div className="activity-status-col">
-                  <span className="activity-status-pill active">UPCOMING</span>
+                  <span className={`activity-status-pill ${statusBadge.active ? "active" : ""}`}>
+                    {statusBadge.label}
+                  </span>
                   {evt.location_url && (
                     <a href={evt.location_url} target="_blank" rel="noreferrer" className="activity-map-link">
                       Peta ↗
@@ -644,58 +755,23 @@ export default function PublicLandingPage() {
             );
           })}
 
-          {/* Standard Activities from template */}
-          <div className="activity-row">
-            <div className="activity-badge-col">
-              <span className="activity-type-tag">ROUTINE</span>
+          {/* Fallback routine activities if DB events are fewer than 4 */}
+          {STANDARD_ACTIVITIES.slice(0, Math.max(0, 4 - publicEvents.length)).map((std) => (
+            <div className="activity-row" key={std.id}>
+              <div className="activity-badge-col">
+                <span className="activity-type-tag">{std.badge}</span>
+              </div>
+              <div className="activity-info-col">
+                <h4>{std.title}</h4>
+                <p>{std.subtitle}</p>
+              </div>
+              <div className="activity-status-col">
+                <span className={`activity-status-pill ${std.isActive ? "active" : ""}`}>
+                  {std.statusPill}
+                </span>
+              </div>
             </div>
-            <div className="activity-info-col">
-              <h4>SUNDAY MORNING RIDE</h4>
-              <p>Situbondo & Rute Sekitarnya · Kumpul Santai Akhir Pekan</p>
-            </div>
-            <div className="activity-status-col">
-              <span className="activity-status-pill">WEEKLY</span>
-            </div>
-          </div>
-
-          <div className="activity-row">
-            <div className="activity-badge-col">
-              <span className="activity-type-tag">MANDATORY</span>
-            </div>
-            <div className="activity-info-col">
-              <h4>MONTHLY GATHERING</h4>
-              <p>Basecamp Revolt Riders · Evaluasi & Silaturahmi Bulanan</p>
-            </div>
-            <div className="activity-status-col">
-              <span className="activity-status-pill active">ACTIVE</span>
-            </div>
-          </div>
-
-          <div className="activity-row">
-            <div className="activity-badge-col">
-              <span className="activity-type-tag">ANNUAL</span>
-            </div>
-            <div className="activity-info-col">
-              <h4>ANNIVERSARY RIDE</h4>
-              <p>Perayaan Hari Jadi Resmi Komunitas Revolt Riders</p>
-            </div>
-            <div className="activity-status-col">
-              <span className="activity-status-pill">DEC 22</span>
-            </div>
-          </div>
-
-          <div className="activity-row">
-            <div className="activity-badge-col">
-              <span className="activity-type-tag">SOCIAL</span>
-            </div>
-            <div className="activity-info-col">
-              <h4>CHARITY & SOCIAL ACT</h4>
-              <p>Bakti Sosial dan Kepedulian Lingkungan di Situbondo</p>
-            </div>
-            <div className="activity-status-col">
-              <span className="activity-status-pill">ON GOING</span>
-            </div>
-          </div>
+          ))}
         </div>
       </section>
 

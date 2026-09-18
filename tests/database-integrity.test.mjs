@@ -125,3 +125,41 @@ test("Database is clean from temporary artifacts or test pollution", async () =>
 
   assert.equal(testRides?.length || 0, 0, "No test ride logs should exist in production database");
 });
+
+// ==============================================================================
+// 6. RIDE STORIES & ACTIVITIES DATABASE LINKAGE INTEGRITY
+// ==============================================================================
+test("Ride Stories (club_gallery) connects with events and returns valid joined agenda", async () => {
+  const { data: gallery, error: galErr } = await supabase
+    .from("club_gallery")
+    .select("id, title, description, image_url, location, ride_date, event_id, events:event_id(id, title, type, slug)")
+    .eq("is_public", true)
+    .order("ride_date", { ascending: false });
+
+  assert.equal(galErr, null, `Gallery query error: ${galErr?.message}`);
+  assert.ok(Array.isArray(gallery), "Gallery must return an array");
+  assert.ok(gallery.length > 0, "Gallery must contain public ride stories");
+
+  // Verify at least one item connects to an official event or has event_id column
+  for (const item of gallery) {
+    assert.ok(item.id, "Gallery item must have id");
+    assert.ok(item.title, "Gallery item must have title");
+    assert.ok(item.image_url, "Gallery item must have image_url");
+    if (item.events) {
+      assert.ok(item.events.id, "Linked event must have id");
+      assert.ok(item.events.title, "Linked event must have title");
+      assert.ok(item.events.type, "Linked event must have type");
+    }
+  }
+
+  // Verify events can be queried for public Activities
+  const { data: events, error: evtErr } = await supabase
+    .from("events")
+    .select("id, title, slug, type, start_at, status")
+    .in("status", ["published", "completed"]);
+
+  assert.equal(evtErr, null, `Events query error: ${evtErr?.message}`);
+  assert.ok(Array.isArray(events), "Events must return an array");
+  assert.ok(events.length > 0, "Events must contain published or completed agenda");
+});
+

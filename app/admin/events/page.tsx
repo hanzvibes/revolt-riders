@@ -93,6 +93,18 @@ export default function AdminEventsPage() {
   }, [account]);
   useEffect(() => {
     if (!accessLoading) void load();
+    const supabase = getSupabaseBrowserClient();
+    const channel = supabase
+      .channel("admin-events-live")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "events" },
+        () => void load()
+      )
+      .subscribe();
+    return () => {
+      void supabase.removeChannel(channel);
+    };
   }, [accessLoading, load]);
   const reset = () => {
     setEditing(null);
