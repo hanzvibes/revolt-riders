@@ -229,34 +229,108 @@ export default function DashboardPage() {
     return "RR";
   }, [currentMember, user]);
 
+  const renderRiderCard = () => {
+    if (user && !authLoading) {
+      return (
+        <section className="rider-status-card">
+          <div className="rider-status-header">
+            <div className="rider-status-avatar">{userInitials}</div>
+            <div className="rider-status-meta">
+              <span className="rider-status-name">
+                {currentMember?.nickname || currentMember?.full_name || account?.member_external_id || "Rider Revolt"}
+              </span>
+              <div className="rider-status-sub">
+                <span className="member-id-tag">
+                  {account?.member_external_id || "MEMBER"}
+                </span>
+                <span className={`member-role-badge ${getRoleClass(currentMember?.club_role || account?.role || "member")}`}>
+                  {currentMember?.club_role || account?.role || "Member"}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="rider-status-metrics">
+            <div className="rider-status-metric">
+              <small>Total Jarak</small>
+              <b>
+                {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(
+                  currentMember?.total_km ?? 0,
+                )}{" "}
+                KM
+              </b>
+            </div>
+            <div className="rider-status-metric">
+              <small>Touring / Sowan</small>
+              <b>{currentMember?.touring_count ?? 0} Agenda</b>
+            </div>
+          </div>
+
+          <div className="rider-status-actions">
+            <a className="dark-action" href="/profil">
+              BUKA PROFIL SAYA
+            </a>
+          </div>
+        </section>
+      );
+    }
+    return (
+      <section className="profile card">
+        <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={92} height={92} priority />
+        <em>PORTAL ANGGOTA</em>
+        <h3>Akses member internal</h3>
+        <p>
+          Masuk ke akun untuk mencatat kilometer riding, check-in QR saat kopdar, dan melihat saldo kas komunitas.
+        </p>
+        <a className="dark-action" href="/login">
+          MASUK KE AKUN
+        </a>
+      </section>
+    );
+  };
+
   return (
     <AppShell active="Home" title="Member Hub">
       <div className="dashboard-grid">
         {/* Left Primary Column */}
         <div className="left-column">
-          {/* Hero Section */}
+          {/* Mobile-only Rider Card placed at top */}
+          <div className="mobile-rider-card">
+            {renderRiderCard()}
+          </div>
+
+          {/* Modern Event Spotlight Hero */}
           <section className="hero">
-            <img className="hero-mark" src="/revolt-riders-logo.jpg" alt="" aria-hidden="true" />
-            <div>
-              <em>{nextEvent ? "AGENDA BERIKUTNYA" : "REVOLT RIDERS SITUBONDO"}</em>
+            <div className="hero-content">
+              <div className="hero-eyebrow">
+                <span className="hero-tag">{nextEvent ? (nextEvent.type || "AGENDA").toUpperCase() : "PORTAL RESMI"}</span>
+                <em>{nextEvent ? "AGENDA TERDEKAT" : "REVOLT RIDERS SITUBONDO"}</em>
+              </div>
               <h2>{nextEvent?.title ?? <>SATU ASPAL.<br />SATU PERSAUDARAAN.</>}</h2>
               {nextEvent ? (
-                <>
+                <div className="hero-meta">
                   <p><MapPin />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
                   <p><CalendarDays />{formatEventDate(nextEvent.start_at)}</p>
-                </>
+                </div>
               ) : (
-                <p><ShieldCheck />Platform digital resmi komunitas Revolt Riders Situbondo</p>
+                <p className="hero-desc"><ShieldCheck />Platform digital resmi komunitas Revolt Riders Situbondo</p>
               )}
-              <a className="primary-action" href="/agenda">
+              <a className="primary-action hero-cta" href="/agenda">
                 LIHAT AGENDA <ChevronRight />
               </a>
             </div>
-            <div className="dial">
-              <small>REVOLT</small>
-              <b>{nextEvent ? formatShortDate(nextEvent.start_at).day : "RR"}</b>
-              <span>{nextEvent ? formatShortDate(nextEvent.start_at).month : "2026"}</span>
-            </div>
+            {nextEvent ? (
+              <div className="hero-date-badge">
+                <small className="hero-badge-month">{formatShortDate(nextEvent.start_at).month}</small>
+                <b className="hero-badge-day">{formatShortDate(nextEvent.start_at).day}</b>
+                <span className="hero-badge-status">UPCOMING</span>
+              </div>
+            ) : (
+              <div className="hero-date-badge fallback-badge">
+                <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={44} height={44} className="hero-badge-logo" />
+                <span className="hero-badge-year">2026</span>
+              </div>
+            )}
           </section>
 
           {/* Quick Actions Bar */}
@@ -285,7 +359,7 @@ export default function DashboardPage() {
               </div>
               <div className="quick-action-info">
                 <span className="quick-action-title">Direktori</span>
-                <span className="quick-action-desc">27 Anggota</span>
+                <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} Anggota` : "Member Club"}</span>
               </div>
             </a>
             <a className="quick-action-btn" href="/leaderboard">
@@ -299,7 +373,7 @@ export default function DashboardPage() {
             </a>
           </div>
 
-          {/* Premium Club Stats */}
+          {/* Premium Compact Stats */}
           <section className="stats">
             <article>
               <UsersRound />
@@ -368,7 +442,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {events.map((event) => {
+            {events.map((event, idx) => {
               const d = formatShortDate(event.start_at);
               return (
                 <a className="event" href={`/agenda#${event.slug}`} key={event.id}>
@@ -376,12 +450,15 @@ export default function DashboardPage() {
                     <b>{d.day}</b>
                     <small>{d.month}</small>
                   </time>
-                  <div>
-                    <em>{event.type.toUpperCase()}</em>
+                  <div className="event-info">
+                    <div className="event-header-row">
+                      <em>{event.type.toUpperCase()}</em>
+                      {idx === 0 && <span className="event-soon-pill">SEGERA</span>}
+                    </div>
                     <h4>{event.title}</h4>
-                    <p>{formatEventDate(event.start_at)}</p>
+                    <p><CalendarDays size={13} style={{ verticalAlign: "middle", marginRight: 4 }} />{formatEventDate(event.start_at)}</p>
                   </div>
-                  <ChevronRight />
+                  <ChevronRight className="event-arrow" />
                 </a>
               );
             })}
@@ -390,80 +467,29 @@ export default function DashboardPage() {
 
         {/* Right Sidebar Column */}
         <div className="right-column">
-          {/* Member Personal Status Card */}
-          {user && !authLoading ? (
-            <section className="rider-status-card">
-              <div className="rider-status-header">
-                <div className="rider-status-avatar">{userInitials}</div>
-                <div className="rider-status-meta">
-                  <span className="rider-status-name">
-                    {currentMember?.nickname || currentMember?.full_name || account?.member_external_id || "Rider Revolt"}
-                  </span>
-                  <div className="rider-status-sub">
-                    <span className="member-id-tag">
-                      {account?.member_external_id || "MEMBER"}
-                    </span>
-                    <span className={`member-role-badge ${getRoleClass(currentMember?.club_role || account?.role || "member")}`}>
-                      {currentMember?.club_role || account?.role || "Member"}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rider-status-metrics">
-                <div className="rider-status-metric">
-                  <small>Total Jarak</small>
-                  <b>
-                    {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(
-                      currentMember?.total_km ?? 0,
-                    )}{" "}
-                    KM
-                  </b>
-                </div>
-                <div className="rider-status-metric">
-                  <small>Touring / Sowan</small>
-                  <b>{currentMember?.touring_count ?? 0} Agenda</b>
-                </div>
-              </div>
-
-              <div className="rider-status-actions">
-                <a className="dark-action" href="/profil">
-                  BUKA PROFIL SAYA
-                </a>
-              </div>
-            </section>
-          ) : (
-            <section className="profile card">
-              <img src="/revolt-riders-logo.jpg" alt="Revolt Riders" />
-              <em>PORTAL ANGGOTA</em>
-              <h3>Akses member internal</h3>
-              <p>
-                Masuk ke akun untuk mencatat kilometer riding, check-in QR saat kopdar, dan melihat saldo kas komunitas.
-              </p>
-              <a className="dark-action" href="/login">
-                MASUK KE AKUN
-              </a>
-            </section>
-          )}
+          {/* Desktop-only Member Personal Status Card */}
+          <div className="desktop-rider-card">
+            {renderRiderCard()}
+          </div>
 
           {/* Bulletin Pengumuman */}
           {announcements[0] ? (
-            <a className="bullet" href="/bulletin">
-              <div>
-                <em>PENGUMUMAN RESMI</em>
-                <h3>{announcements[0].title}</h3>
-                <p>{announcements[0].body}</p>
+            <a className="bullet-card" href="/bulletin">
+              <div className="bullet-header">
+                <span className="bullet-badge">PENGUMUMAN RESMI</span>
+                <ChevronRight size={15} />
               </div>
-              <ChevronRight />
+              <h3>{announcements[0].title}</h3>
+              <p>{announcements[0].body}</p>
             </a>
           ) : (
-            <a className="bullet" href="/bulletin">
-              <div>
-                <em>PENGUMUMAN RESMI</em>
-                <h3>Belum ada pengumuman baru</h3>
-                <p>Informasi resmi komunitas akan tampil di sini.</p>
+            <a className="bullet-card" href="/bulletin">
+              <div className="bullet-header">
+                <span className="bullet-badge">PENGUMUMAN RESMI</span>
+                <ChevronRight size={15} />
               </div>
-              <ChevronRight />
+              <h3>Belum ada pengumuman baru</h3>
+              <p>Informasi resmi komunitas akan tampil di sini.</p>
             </a>
           )}
 

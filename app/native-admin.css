@@ -1979,11 +1979,36 @@
 }
 @media (max-width: 640px) {
   .stats {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
   }
   .stats article {
-    padding: 9px 12px;
+    padding: 10px 8px;
+    gap: 6px;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .stats article > svg {
+    width: 24px;
+    height: 24px;
+    padding: 4px;
+  }
+  .stats article b {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .stats article small {
+    display: none;
+  }
+  .stats article span small:first-child {
+    display: block;
+    font-size: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
@@ -3434,6 +3459,313 @@ html {
     width: 15px;
     height: 15px;
   }
+}
+
+/* ==========================================================================
+   DASHBOARD UI/UX AUDIT REFACTOR
+   ========================================================================== */
+
+/* Mobile vs Desktop Rider Status Card Toggle */
+.mobile-rider-card {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .mobile-rider-card {
+    display: block;
+    margin-bottom: 2px;
+  }
+  .desktop-rider-card {
+    display: none;
+  }
+}
+
+/* Modern Event Spotlight Hero (Replaces clunky 260px dial) */
+.hero {
+  min-height: 175px !important;
+  border-radius: 16px !important;
+  background: linear-gradient(135deg, #141618 0%, #22252a 100%) !important;
+  border: 1px solid #2d3136 !important;
+  color: #fff !important;
+  padding: 22px 26px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 16px !important;
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.22) !important;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 500px;
+  z-index: 2;
+}
+
+.hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.hero-tag {
+  background: var(--red);
+  color: #fff;
+  font-size: 0.54rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.hero-eyebrow em {
+  color: #9ea3a8;
+  font-style: normal;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.hero h2 {
+  font-size: clamp(1.2rem, 2.2vw, 1.65rem) !important;
+  font-weight: 900 !important;
+  line-height: 1.18 !important;
+  letter-spacing: -0.02em !important;
+  font-style: normal !important;
+  color: #fff !important;
+  margin: 2px 0 4px !important;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.72rem;
+  color: #c2c6ca;
+}
+
+.hero-meta p {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 !important;
+  font-size: 0.72rem !important;
+  color: #c2c6ca !important;
+}
+
+.hero-meta p svg,
+.hero-desc svg {
+  width: 15px !important;
+  height: 15px !important;
+  color: var(--red) !important;
+  flex-shrink: 0;
+}
+
+.hero-desc {
+  font-size: 0.72rem !important;
+  color: #b0b5b9 !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 !important;
+}
+
+.hero-cta {
+  align-self: flex-start;
+  margin-top: 6px !important;
+}
+
+/* Modern Date Badge */
+.hero-date-badge {
+  flex-shrink: 0;
+  width: 86px;
+  background: #17191b;
+  border: 1px solid #33383d;
+  border-radius: 12px;
+  padding: 12px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  text-align: center;
+}
+
+.hero-badge-month {
+  font-size: 0.62rem;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.hero-badge-day {
+  font-size: 2.1rem;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  margin: 4px 0;
+  letter-spacing: -0.03em;
+}
+
+.hero-badge-status {
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(229, 29, 42, 0.16);
+  color: #ff6b75;
+  border: 1px solid rgba(229, 29, 42, 0.32);
+}
+
+.fallback-badge {
+  padding: 14px 10px;
+}
+
+.fallback-badge .hero-badge-logo {
+  border-radius: 50%;
+  border: 1px solid #383c41;
+  margin-bottom: 6px;
+}
+
+.fallback-badge .hero-badge-year {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: 0.1em;
+}
+
+@media (max-width: 720px) {
+  .hero {
+    min-height: 155px !important;
+    padding: 16px 16px !important;
+    gap: 12px !important;
+  }
+  .hero h2 {
+    font-size: 1.15rem !important;
+  }
+  .hero-date-badge {
+    width: 74px;
+    padding: 10px 6px;
+  }
+  .hero-badge-day {
+    font-size: 1.7rem;
+  }
+  .hero-meta {
+    font-size: 0.68rem;
+    gap: 8px;
+  }
+}
+
+/* Event List Enhancements in Agenda Card */
+.event-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.event-header-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.event-soon-pill {
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #fff0f1;
+  color: var(--red);
+  border: 1px solid #fbd6d9;
+}
+
+.event-arrow {
+  width: 17px;
+  height: 17px;
+  color: #94989c;
+  flex-shrink: 0;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.agenda-card .event:hover .event-arrow {
+  transform: translateX(2px);
+  color: var(--red);
+}
+
+/* Modern Bulletin Card */
+.bullet-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-left: 3.5px solid var(--red);
+  border-radius: 12px;
+  padding: 15px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-decoration: none;
+  color: var(--ink);
+  box-shadow: var(--shadow);
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.bullet-card:hover {
+  transform: translateY(-1px);
+  border-color: #d0d3d6;
+  border-left-color: var(--red);
+}
+
+.bullet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bullet-badge {
+  font-size: 0.56rem;
+  font-weight: 900;
+  color: var(--red);
+  letter-spacing: 0.12em;
+}
+
+.bullet-header svg {
+  width: 15px;
+  height: 15px;
+  color: #94989c;
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+
+.bullet-card:hover .bullet-header svg {
+  transform: translateX(2px);
+  color: var(--red);
+}
+
+.bullet-card h3 {
+  font-size: 0.88rem;
+  font-weight: 800;
+  margin: 2px 0 0;
+  line-height: 1.25;
+  color: var(--ink);
+}
+
+.bullet-card p {
+  font-size: 0.68rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 
