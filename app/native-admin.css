@@ -66,7 +66,7 @@
   animation: sheet-rise-native 0.24s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .native-sheet[data-state="closed"] {
-  animation: sheet-fall-native 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+  animation: none;
 }
 .native-sheet-handle {
   display: block;
@@ -788,16 +788,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-@keyframes sheet-fall-native {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(100%);
   }
 }
 @media (max-width: 1024px) {
