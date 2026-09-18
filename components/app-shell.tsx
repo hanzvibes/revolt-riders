@@ -39,8 +39,8 @@ const utamaItems: readonly NavItem[] = [
   ["Home", "/dashboard", Home],
   ["Agenda", "/agenda", CalendarDays],
   ["Catat Riding", "/riding", Bike],
-  ["Member", "/member", UsersRound],
-  ["Profil", "/profil", UserRound],
+  ["Direktori Member", "/member", UsersRound],
+  ["Profil Saya", "/profil", UserRound],
 ];
 
 const bottomItems: readonly NavItem[] = [
@@ -54,34 +54,52 @@ const bottomItems: readonly NavItem[] = [
 const komunitasItems: readonly NavItem[] = [
   ["Leaderboard", "/leaderboard", Trophy],
   ["Kas Revolt", "/kas", CircleDollarSign],
-  ["Bulletin", "/bulletin", Bell],
+  ["Buletin", "/bulletin", Bell],
   ["Check-in", "/check-in", ScanLine],
-  ["History", "/history", History],
+  ["Riwayat Agenda", "/history", History],
 ];
 
 const operationalItems: readonly NavItem[] = [
-  ["Join Requests", "/admin/join-requests", UserPlus],
-  ["Validasi Ride", "/riding/approval", ShieldCheck],
-  ["Kehadiran", "/admin/attendance", ClipboardCheck],
+  ["Pendaftaran Member", "/admin/join-requests", UserPlus],
+  ["Validasi Riding", "/riding/approval", ShieldCheck],
+  ["Rekap Kehadiran", "/admin/attendance", ClipboardCheck],
 ];
 
 const adminItems: readonly NavItem[] = [
-  ["Pusat Admin", "/admin", Settings],
-  ["Kelola Member", "/admin/members", UserCog],
-  ["Kelola Agenda", "/admin/events", CalendarCog],
-  ["Kelola Bulletin", "/admin/bulletins", Megaphone],
-  ["Analytics", "/admin/insights", Activity],
-  ["Import CSV", "/admin/import", FileSpreadsheet],
+  ["Dashboard Admin", "/admin", Settings],
+  ["Manajemen Member", "/admin/members", UserCog],
+  ["Manajemen Agenda", "/admin/events", CalendarCog],
+  ["Manajemen Buletin", "/admin/bulletins", Megaphone],
+  ["Analitik & Audit", "/admin/insights", Activity],
+  ["Import Data", "/admin/import", FileSpreadsheet],
 ];
 
 const hasRole = (role: AppRole | undefined, roles: AppRole[]) => Boolean(role && roles.includes(role));
 
-const isItemActive = (label: string, currentActive: string) => {
-  if (label === currentActive) return true;
-  if (label === "Catat Riding" && currentActive === "Riding") return true;
-  if (label === "Pusat Admin" && currentActive === "Admin") return true;
-  return false;
+const activeAliases: Record<string, readonly string[]> = {
+  "Home": ["Home"],
+  "Agenda": ["Agenda"],
+  "Catat Riding": ["Riding", "Catat Riding"],
+  "Direktori Member": ["Member", "Direktori Member"],
+  "Profil Saya": ["Profil", "Profil Saya"],
+  "Leaderboard": ["Leaderboard"],
+  "Kas Revolt": ["Kas Revolt"],
+  "Buletin": ["Bulletin", "Buletin"],
+  "Check-in": ["Check-in"],
+  "Riwayat Agenda": ["History", "Riwayat Agenda"],
+  "Pendaftaran Member": ["Join Requests", "Pendaftaran Member"],
+  "Validasi Riding": ["Validasi Ride", "Validasi Riding"],
+  "Rekap Kehadiran": ["Kehadiran", "Rekap Kehadiran"],
+  "Dashboard Admin": ["Admin", "Pusat Admin", "Dashboard Admin"],
+  "Manajemen Member": ["Kelola Member", "Manajemen Member"],
+  "Manajemen Agenda": ["Kelola Agenda", "Manajemen Agenda"],
+  "Manajemen Buletin": ["Kelola Bulletin", "Manajemen Buletin"],
+  "Analitik & Audit": ["Analytics", "Analitik & Audit"],
+  "Import Data": ["Import CSV", "Import Data"],
 };
+
+const isItemActive = (label: string, currentActive: string) =>
+  (activeAliases[label] ?? [label]).includes(currentActive);
 
 export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -102,16 +120,14 @@ export function AppShell({ active, title, children }: { active: string; title: s
     admin: isAdminActive,
   });
 
-  const [prevActive, setPrevActive] = useState(active);
-  if (prevActive !== active) {
-    setPrevActive(active);
+  useEffect(() => {
     setOpenSections((prev) => ({
       ...prev,
       ...(isKomunitasActive ? { komunitas: true } : {}),
       ...(isOperationalActive ? { operational: true } : {}),
       ...(isAdminActive ? { admin: true } : {}),
     }));
-  }
+  }, [active, isAdminActive, isKomunitasActive, isOperationalActive]);
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -141,7 +157,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
     : !user
     ? "Masuk"
     : account?.status === "active"
-    ? "Profil"
+    ? "Akun"
     : account?.status === "inactive"
     ? "Nonaktif"
     : "Verifikasi";
@@ -154,12 +170,13 @@ export function AppShell({ active, title, children }: { active: string; title: s
           <Link
             className={isCurrent ? "active" : ""}
             href={href}
+            aria-current={isCurrent ? "page" : undefined}
             key={label}
             onClick={() => setOpen(false)}
           >
             <Icon />
             <span style={{ flex: 1 }}>{label}</span>
-            {label === "Join Requests" && pendingJoinCount > 0 && (
+            {label === "Pendaftaran Member" && pendingJoinCount > 0 && (
               <b className="sidebar-badge-pill">{pendingJoinCount}</b>
             )}
           </Link>
@@ -170,7 +187,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
   return (
     <main className="app-shell">
-      <aside className={open ? "open" : ""}>
+      <aside className={open ? "open" : ""} aria-label="Navigasi aplikasi">
         <Link className="brand" href="/" aria-label="Revolt Riders home">
           <Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority />
           <strong>
@@ -182,8 +199,8 @@ export function AppShell({ active, title, children }: { active: string; title: s
         </button>
 
         {/* 1. Menu Utama (Pinned di atas) */}
-        <p className="navlabel" style={{ marginTop: "10px" }}>
-          MENU UTAMA
+        <p className="navlabel">
+          UTAMA
         </p>
         {renderNavLinks(utamaItems)}
 
@@ -232,7 +249,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
                 aria-expanded={openSections.admin}
               >
                 <Settings />
-                <span className="accordion-title">Kelola Admin</span>
+                <span className="accordion-title">Administrasi</span>
                 <ChevronDown className="accordion-chevron" />
               </button>
               {openSections.admin && renderNavLinks(adminItems, true)}
@@ -241,7 +258,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
         </div>
 
         {/* 3. Bottom Mini Profile Card & Motto */}
-        <div style={{ marginTop: "auto", display: "flex", flexDirection: "column" }}>
+        <div className="sidebar-footer">
           {user ? (
             <div className="sidebar-user-card">
               <div className="sidebar-user-avatar">
@@ -291,7 +308,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
             </div>
           )}
 
-          <div className="motto" style={{ marginTop: "10px" }}>
+          <div className="motto">
             <Route />
             <span>
               <b>Ride safe.</b>
@@ -309,16 +326,15 @@ export function AppShell({ active, title, children }: { active: string; title: s
             <Menu />
           </button>
           <div>
-            <small>REVOLT RIDERS · SITUBONDO</small>
+            <small>REVOLT RIDERS · MEMBER HUB</small>
             <h1>{title}</h1>
           </div>
           <div className="tools">
-            <span className="live-dot">● LIVE</span>
             <Link
               href="/notifications"
               className="header-bell-btn"
-              title="Notifikasi Revolt"
-              aria-label="Notifikasi"
+              title="Pengaturan notifikasi"
+              aria-label="Pengaturan notifikasi"
             >
               <Bell size={16} />
             </Link>
@@ -333,9 +349,14 @@ export function AppShell({ active, title, children }: { active: string; title: s
         {children}
       </section>
 
-      <nav className="bottom">
+      <nav className="bottom" aria-label="Navigasi utama">
         {bottomItems.map(([label, href, Icon]) => (
-          <Link key={label} className={isItemActive(label, active) ? "active" : ""} href={href}>
+          <Link
+            key={label}
+            className={isItemActive(label, active) ? "active" : ""}
+            href={href}
+            aria-current={isItemActive(label, active) ? "page" : undefined}
+          >
             <Icon />
             <small>{label}</small>
           </Link>

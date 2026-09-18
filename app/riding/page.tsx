@@ -341,7 +341,7 @@ export default function RidingPage() {
             <div className="form-heading">
               <Bike />
               <span>
-                <em>INPUT ODOMETER</em>
+                <em>Catat riding</em>
                 <h2>Catat Riding Baru</h2>
                 <p>
                   Pilih agenda club atau catat touring mandiri. Odometer awal dan akhir akan menghitung jarak kilometer secara otomatis.
@@ -457,7 +457,7 @@ export default function RidingPage() {
         <section className="card">
           <div className="section-title">
             <span>
-              <em>LOG BOOK</em>
+              <em>Riwayat riding</em>
               <h3>Riwayat Riding Saya</h3>
             </span>
             <span style={{ fontSize: "0.75rem", color: "var(--muted)", fontWeight: 700 }}>

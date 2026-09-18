@@ -6,6 +6,7 @@ import "./checkin-qr.css";
 import "./form-density.css";
 import "./native-admin.css";
 import "./landing.css";
+import "./system-ui.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://revolt-riders.com"),
