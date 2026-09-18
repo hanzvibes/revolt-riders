@@ -10,18 +10,16 @@ import { motion } from "framer-motion";
 import {
   CalendarDays,
   CheckCircle2,
-  Compass,
   Gauge,
   HeartHandshake,
   LogIn,
   MapPin,
   Phone,
   Route,
-  ShieldCheck,
-  Sparkles,
   User,
   UserPlus,
   UsersRound,
+  Wrench,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -296,7 +294,7 @@ export default function PublicLandingPage() {
             </h1>
 
             <p>
-              Komunitas motor di Situbondo buat siapa aja yang hobi riding dan silaturahmi. Mau motor matic, bebek, sport, atau klasik—semua asik, saling sapa, dan saling jaga di jalan.
+              Wadah pecinta motor custom di Kabupaten Situbondo. Berdiri mandiri, terbuka, dan sosial—menjunjung tinggi persaudaraan abadi, gotong-royong, serta etika santun di jalan raya.
             </p>
 
             <div className="landing-hero-actions">
@@ -466,7 +464,7 @@ export default function PublicLandingPage() {
           </div>
         </motion.section>
 
-        {/* 6. Profil & Aliansi Resmi (No Kicker) */}
+        {/* 6. Profil & Storytelling (Visual Storytelling, Highlight & Minimalist Values) */}
         <motion.section
           className="landing-section"
           id="profil"
@@ -477,65 +475,94 @@ export default function PublicLandingPage() {
         >
           <div className="landing-section-head">
             <h2>Tentang Revolt Riders</h2>
-            <p>Komunitas santai tanpa sekat pabrikan atau kapasitas mesin.</p>
+            <p>Kisah singkat, fondasi persaudaraan, dan semangat gotong-royong kami di Situbondo.</p>
           </div>
 
-          <div className="landing-profil-card">
-            <div className="landing-profil-left">
-              <h3>Satu Aspal, Gak Pake Sekat</h3>
-              <p>
-                Di Revolt Riders, kita gak peduli motormu merk apa atau berapa cc. Selama kamu santun di jalan raya, suka riding bareng, dan punya rasa saling menghargai, kamu adalah keluarga kami.
-              </p>
-
-              <div className="landing-chips-grid">
-                <div className="landing-chip">
-                  <HeartHandshake size={16} />
-                  <span>Solid & Saling Jaga</span>
-                </div>
-                <div className="landing-chip">
-                  <ShieldCheck size={16} />
-                  <span>Tertib & Santun di Jalan</span>
-                </div>
-                <div className="landing-chip">
-                  <Compass size={16} />
-                  <span>Doyan Sowan & Touring</span>
-                </div>
-                <div className="landing-chip">
-                  <Sparkles size={16} />
-                  <span>Bebas Semua Jenis Motor</span>
-                </div>
-              </div>
+          {/* Special Highlight: EST. 22.12.2022 & Minimalist Values */}
+          <div className="story-manifesto-card">
+            <div className="story-origin-badge">
+              <span className="story-est">EST. 22.12.2022</span>
+              <span className="story-dot">/</span>
+              <span className="story-loc">SITUBONDO, EAST JAVA</span>
             </div>
 
-            <div className="landing-profil-right">
-              <div className="landing-profil-right-title">
-                <strong>Partner & Rekanan</strong>
-                <small>Situbondo · East Java</small>
-              </div>
+            <div className="story-values-bar">
+              <span className="story-values-line">MANDIRI • TERBUKA • SOSIAL</span>
+              <span className="story-values-line accent">SOLIDARITAS • PERSAUDARAAN</span>
+            </div>
+          </div>
 
-              <div className="landing-partner-row">
-                <div className="landing-partner-item">
-                  <Image
-                    src="/bold-riders-situbondo.jpg"
-                    alt="Bold Riders Situbondo"
-                    fill
-                    sizes="(max-width: 600px) 100vw, 180px"
-                  />
+          {/* Storytelling Visual Blocks */}
+          <div className="story-grid">
+            {/* Block 1: Motor Custom & Prinsip Independen */}
+            <article className="story-card">
+              <div className="story-card-icon" aria-hidden="true">
+                <Wrench size={22} />
+              </div>
+              <h3>Rumah Motor Custom Situbondo</h3>
+              <div className="story-points">
+                <div className="story-point-item">
+                  <strong>Wadah Kreasi & Hobi</strong>
+                  <p>
+                    Didirikan pada 22 Desember 2022 sebagai ruang kumpul bersama bagi para penikmat dan penggiat motor custom di Kabupaten Situbondo.
+                  </p>
                 </div>
-                <div className="landing-partner-item">
-                  <Image
-                    src="/frtn.jpg"
-                    alt="FRTN"
-                    fill
-                    sizes="(max-width: 600px) 100vw, 180px"
-                  />
+                <div className="story-point-item">
+                  <strong>Mandiri, Terbuka & Sosial</strong>
+                  <p>
+                    Murni persaudaraan tanpa afiliasi politik dan tidak mencari keuntungan. Bergerak bersama dengan semangat gotong-royong demi merangkul sesama roda dua.
+                  </p>
                 </div>
               </div>
+            </article>
 
-              <div className="landing-partner-captions">
-                <span>Bold Riders Situbondo</span>
-                <span>FRTN Situbondo</span>
+            {/* Block 2: Solidaritas Bikers yang Abadi */}
+            <article className="story-card">
+              <div className="story-card-icon" aria-hidden="true">
+                <HeartHandshake size={22} />
               </div>
+              <h3>Solidaritas Bikers yang Abadi</h3>
+              <div className="story-points">
+                <div className="story-point-item">
+                  <strong>Lebih Dari Sekadar Hobi</strong>
+                  <p>
+                    Bagi kami, menjadi bikers adalah tentang menjunjung tinggi solidaritas tulus yang sangat kuat dan tak lekang oleh waktu di setiap perjalanan.
+                  </p>
+                </div>
+                <div className="story-point-item">
+                  <strong>Merangkul Semua Kalangan</strong>
+                  <p>
+                    Dari anak muda hingga kaum profesional, baik yang sudah berkeluarga maupun masih lajang—semua melebur dalam rasa saling menghargai.
+                  </p>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          {/* Official Partners Banner */}
+          <div className="story-partners-strip">
+            <div className="story-partners-title">
+              <strong>Kemitraan & Rekanan Resmi</strong>
+              <small>Mempererat persaudaraan antar komunitas motor di Situbondo</small>
+            </div>
+
+            <div className="story-partners-logos">
+              <figure className="story-partner-logo">
+                <Image
+                  src="/bold-riders-situbondo.jpg"
+                  alt="Bold Riders Situbondo"
+                  fill
+                  sizes="140px"
+                />
+              </figure>
+              <figure className="story-partner-logo">
+                <Image
+                  src="/frtn.jpg"
+                  alt="FRTN"
+                  fill
+                  sizes="140px"
+                />
+              </figure>
             </div>
           </div>
         </motion.section>

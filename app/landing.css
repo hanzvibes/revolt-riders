@@ -3,7 +3,9 @@
    - No kicker/eyebrow text
    - Clean spacious Hero without 360 circle
    - Minimalist monochrome Instagram SVG
-   - Casual, natural, and inviting biker wording
+   - Visual storytelling for Custom Bikes & Brotherhood
+   - Highlight: EST. 22.12.2022 SITUBONDO, EAST JAVA
+   - Minimalist Values: MANDIRI • TERBUKA • SOSIAL / SOLIDARITAS • PERSAUDARAAN
    - Multi-layered soft elevation shadows & clean borders
    ============================================================================== */
 
@@ -199,7 +201,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 620px;
+  max-width: 640px;
   margin-bottom: 2px;
 }
 
@@ -220,7 +222,7 @@
 }
 
 /* ------------------------------------------------------------------------------
-   3. HERO: CLEAN SPACIOUS CARBON CARD (NO 360 CIRCLE, NO KICKER)
+   3. HERO: CLEAN SPACIOUS CARBON CARD
    ------------------------------------------------------------------------------ */
 .landing-hero-card {
   border-radius: var(--radius-xl);
@@ -275,7 +277,7 @@
   color: #b8bcbf;
   line-height: 1.65;
   margin: 0 0 28px;
-  max-width: 540px;
+  max-width: 560px;
 }
 
 .landing-hero-actions {
@@ -634,98 +636,180 @@
 }
 
 /* ------------------------------------------------------------------------------
-   7. PROFIL & ALIANSI RESMI
+   7. PROFIL & STORYTELLING: HIGHLIGHT EST. 22.12.2022 & CORE VALUES
    ------------------------------------------------------------------------------ */
-.landing-profil-card {
-  background: var(--surface);
-  border: 1px solid var(--line);
+.story-manifesto-card {
+  background: linear-gradient(135deg, #111315 0%, #1e2024 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-xl);
-  padding: 28px 30px;
-  box-shadow: var(--shadow-card);
-  display: grid;
-  grid-template-columns: 1.2fr 0.95fr;
-  gap: 28px;
-  align-items: center;
-}
-
-.landing-profil-left h3 {
-  font-size: 1.15rem;
-  font-weight: 900;
-  letter-spacing: -0.03em;
-  margin: 0 0 10px;
-  color: var(--ink);
-}
-
-.landing-profil-left p {
-  font-size: 0.78rem;
-  color: #4b5563;
-  line-height: 1.65;
-  margin: 0 0 20px;
-}
-
-.landing-chips-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 9px;
-}
-
-.landing-chip {
-  background: #f9fafb;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  padding: 10px 13px;
+  padding: 24px 28px;
+  color: #fff;
+  box-shadow: var(--shadow-hero);
   display: flex;
   align-items: center;
-  gap: 9px;
-}
-
-.landing-chip svg {
-  color: var(--red);
-  flex: none;
-}
-
-.landing-chip span {
-  font-size: 0.71rem;
-  font-weight: 800;
-  color: var(--ink);
-}
-
-.landing-profil-right {
-  display: flex;
-  flex-direction: column;
-  gap: 13px;
-  background: #f9fafb;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  padding: 18px;
-}
-
-.landing-profil-right-title {
-  display: flex;
   justify-content: space-between;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
 }
 
-.landing-profil-right-title strong {
-  font-size: 0.78rem;
-  font-weight: 850;
-  color: var(--ink);
-}
-
-.landing-profil-right-title small {
-  font-size: 0.64rem;
-  color: var(--muted);
-  font-weight: 750;
-}
-
-.landing-partner-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+.story-origin-badge {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
-.landing-partner-item {
-  height: 80px;
+.story-est {
+  font-size: 1.15rem;
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  font-style: italic;
+  color: #ffffff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.story-dot {
+  color: var(--red);
+  font-weight: 900;
+  font-size: 1.1rem;
+}
+
+.story-loc {
+  font-size: 0.82rem;
+  font-weight: 850;
+  letter-spacing: 0.16em;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.story-values-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.story-values-line {
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #e5e7eb;
+}
+
+.story-values-line.accent {
+  color: var(--red);
+  font-size: 0.84rem;
+}
+
+.story-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.story-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.story-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hover);
+  border-color: #cbd5e1;
+}
+
+.story-card-icon {
+  width: 44px;
+  height: 44px;
+  background: #f3f4f6;
+  border-radius: 12px;
+  color: var(--red);
+  display: grid;
+  place-items: center;
+  margin-bottom: 14px;
+  flex: none;
+}
+
+.story-card h3 {
+  font-size: 1.05rem;
+  font-weight: 850;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+
+.story-points {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.story-point-item {
+  background: #f9fafb;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.story-point-item strong {
+  display: block;
+  font-size: 0.74rem;
+  font-weight: 850;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.story-point-item p {
+  font-size: 0.72rem;
+  color: #4b5563;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.story-partners-strip {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  padding: 18px 22px;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.story-partners-title strong {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 850;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.story-partners-title small {
+  font-size: 0.68rem;
+  color: var(--muted);
+}
+
+.story-partners-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.story-partner-logo {
+  margin: 0;
+  width: 140px;
+  height: 58px;
   border-radius: 9px;
   overflow: hidden;
   background: #060606;
@@ -733,20 +817,10 @@
   position: relative;
 }
 
-.landing-partner-item img {
+.story-partner-logo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.landing-partner-captions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  font-size: 0.62rem;
-  color: #6b7280;
-  font-weight: 750;
-  text-align: center;
 }
 
 /* ------------------------------------------------------------------------------
@@ -770,7 +844,6 @@
   gap: 15px;
 }
 
-/* Clean minimal monochrome SVG container */
 .landing-instagram-icon {
   width: 44px;
   height: 44px;
@@ -1067,9 +1140,11 @@
   .landing-hero-actions {
     justify-content: center;
   }
-  .landing-profil-card {
+  .story-grid {
     grid-template-columns: 1fr;
-    gap: 20px;
+  }
+  .story-values-bar {
+    align-items: flex-start;
   }
 }
 
@@ -1100,8 +1175,23 @@
   .landing-gallery-grid {
     grid-template-columns: 1fr;
   }
-  .landing-chips-grid {
-    grid-template-columns: 1fr;
+  .story-manifesto-card {
+    padding: 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .story-partners-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .story-partners-logos {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .story-partner-logo {
+    width: 100%;
   }
   .landing-instagram-card {
     flex-direction: column;
