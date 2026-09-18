@@ -352,11 +352,11 @@ export default function MemberPage() {
   };
 
   return (
-    <AppShell active="Member" title="Member">
+    <AppShell active="Member" title="Direktori Member">
       <div className="page-wrap">
         <div className="page-intro native-page-head">
           <div>
-            <em>DIREKTORI RESMI</em>
+            <em>Direktori member</em>
             <h2>Member Revolt</h2>
             <p>
               Data member resmi Revolt Riders yang tersinkron langsung ke Supabase.
