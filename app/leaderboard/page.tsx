@@ -141,7 +141,7 @@ export default function LeaderboardPage() {
       <div className="page-wrap">
         <div className="page-intro native-page-head">
           <div>
-            <em>RIDING · KLASEMEN</em>
+            <em>Riding</em>
             <h2>Leaderboard Kilometer</h2>
             <p>
               Riwayat resmi kilometer riding yang telah tervalidasi oleh Road
@@ -231,7 +231,7 @@ export default function LeaderboardPage() {
                     <Trophy />
                   </div>
                   <div className="my-standing-info">
-                    <em>POSISI KAMU</em>
+                    <em>Posisi kamu</em>
                     <h3>
                       {myRider.full_name} ({myRider.member_external_id})
                     </h3>
