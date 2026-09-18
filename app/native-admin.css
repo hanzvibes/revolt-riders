@@ -3062,6 +3062,338 @@ html {
   flex-wrap: wrap;
 }
 
+/* ==========================================================================
+   REFACTORED SIDE NAVIGATION DRAWER & ACCORDION
+   ========================================================================== */
+
+.sidebar-accordion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.sidebar-accordion {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-accordion-header {
+  border: 0;
+  background: transparent;
+  color: #94989b;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 10px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+}
+
+.sidebar-accordion-header:hover {
+  background: #202225;
+  color: #f1f5f9;
+}
+
+.sidebar-accordion-header.has-active {
+  color: #fff;
+}
+
+.sidebar-accordion-header.has-active svg:first-child {
+  color: var(--red);
+}
+
+.sidebar-accordion-header svg:first-child {
+  width: 17px;
+  height: 17px;
+  flex-shrink: 0;
+  color: #787d82;
+  transition: color 0.18s ease;
+}
+
+.sidebar-accordion-header .accordion-title {
+  flex: 1;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-accordion-header .accordion-chevron {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: #6c7176;
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1), color 0.18s ease;
+}
+
+.sidebar-accordion.open .sidebar-accordion-header .accordion-chevron {
+  transform: rotate(180deg);
+  color: #f1f5f9;
+}
+
+.sidebar-badge-pill {
+  background: var(--red);
+  color: #fff;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 0.62rem;
+  font-weight: 900;
+  line-height: 1.3;
+  letter-spacing: 0;
+  box-shadow: 0 0 10px rgba(229, 29, 42, 0.45);
+  flex-shrink: 0;
+}
+
+.sidebar-subnav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 3px 0 6px 14px;
+  padding-left: 10px;
+  border-left: 1.5px solid #2d3034;
+  animation: sidebarSubnavFadeIn 0.2s ease-out;
+}
+
+@keyframes sidebarSubnavFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sidebar-subnav a {
+  color: #8c9196 !important;
+  border-radius: 8px !important;
+  min-height: 36px !important;
+  font-size: 0.76rem !important;
+  padding: 0 10px !important;
+  gap: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  transition: all 0.15s ease !important;
+}
+
+.sidebar-subnav a:hover {
+  background: #222427 !important;
+  color: #fff !important;
+}
+
+.sidebar-subnav a.active {
+  background: var(--red) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+}
+
+.sidebar-subnav a svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Bottom Mini User Profile Card */
+.sidebar-user-card {
+  background: linear-gradient(145deg, #1c1e20 0%, #151617 100%);
+  border: 1px solid #2d3034;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  flex-shrink: 0;
+}
+
+.sidebar-user-avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #25282b;
+  border: 1.5px solid var(--red);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.sidebar-user-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-user-id {
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: #f3f4f6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.sidebar-role-pill {
+  font-size: 0.52rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  display: inline-block;
+  width: fit-content;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.role-superadmin {
+  background: rgba(220, 38, 38, 0.2);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.35);
+}
+
+.role-admin {
+  background: rgba(99, 102, 241, 0.2);
+  color: #c7d2fe;
+  border: 1px solid rgba(129, 140, 248, 0.35);
+}
+
+.role-road_captain {
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+}
+
+.role-treasurer {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+}
+
+.role-member {
+  background: #27272a;
+  color: #d4d4d8;
+  border: 1px solid #3f3f46;
+}
+
+.sidebar-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-user-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: #25282b;
+  color: #9ca3af;
+  display: grid;
+  place-items: center;
+  border: 1px solid #34383c;
+  transition: all 0.16s ease;
+  text-decoration: none;
+}
+
+.sidebar-user-btn:hover {
+  background: var(--red);
+  color: #fff;
+  border-color: var(--red);
+}
+
+.sidebar-guest-card {
+  background: #1c1e20;
+  border: 1px solid #2d3034;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.sidebar-guest-text b {
+  display: block;
+  font-size: 0.72rem;
+  color: #fff;
+}
+
+.sidebar-guest-text small {
+  display: block;
+  font-size: 0.58rem;
+  color: #8b9298;
+}
+
+.sidebar-login-btn {
+  background: var(--red);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.sidebar-login-btn:hover {
+  opacity: 0.9;
+}
+
+/* Header Bell Button */
+.header-bell-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #374151;
+  display: grid;
+  place-items: center;
+  transition: all 0.15s ease;
+  position: relative;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.header-bell-btn:hover {
+  border-color: var(--red);
+  color: var(--red);
+  background: #fff5f5;
+}
+
+.header-bell-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+@media (max-width: 720px) {
+  .header-bell-btn {
+    width: 35px;
+    height: 35px;
+  }
+  .header-bell-btn svg {
+    width: 15px;
+    height: 15px;
+  }
+}
+
 
 
 
