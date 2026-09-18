@@ -20,6 +20,7 @@ export function ModalSheet({
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef<number | null>(null);
+  const dragOffsetRef = useRef(0);
 
   useEffect(() => {
     if (!open) return;
@@ -30,6 +31,7 @@ export function ModalSheet({
           setClosing(true);
           window.setTimeout(() => {
             setClosing(false);
+            dragOffsetRef.current = 0;
             setDragOffset(0);
             setIsDragging(false);
             onClose();
@@ -52,6 +54,7 @@ export function ModalSheet({
     setClosing(true);
     window.setTimeout(() => {
       setClosing(false);
+      dragOffsetRef.current = 0;
       setDragOffset(0);
       setIsDragging(false);
       onClose();
@@ -59,43 +62,45 @@ export function ModalSheet({
   };
 
   const finishDrag = () => {
+    const finalOffset = dragOffsetRef.current;
     setIsDragging(false);
     dragStart.current = null;
-    if (dragOffset > 60) {
+
+    if (finalOffset > 60) {
       requestClose();
-    } else {
-      setDragOffset(0);
+      return;
     }
+
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
   };
 
   const getSheetStyle = () => {
     if (closing) {
       return {
-        transform: "translateY(100%)",
+        transform: "translate3d(0, calc(100% + 24px), 0)",
         transition: "transform 0.22s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-in",
         opacity: 0,
       };
     }
     if (isDragging) {
       return {
-        transform: `translateY(${dragOffset}px)`,
+        transform: `translate3d(0, ${dragOffset}px, 0)`,
         transition: "none",
       };
     }
-    if (dragOffset === 0) {
-      return {
-        transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-      };
-    }
-    return undefined;
+    return {
+      transform: "translate3d(0, 0, 0)",
+      transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+    };
   };
 
   return (
     <div
       className="native-sheet-backdrop"
       data-state={closing ? "closed" : "open"}
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) requestClose();
+      onPointerDown={(event) => {
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
       <section
@@ -104,25 +109,35 @@ export function ModalSheet({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        onMouseDown={(event) => event.stopPropagation()}
+        onPointerDown={(event) => event.stopPropagation()}
         style={getSheetStyle()}
       >
         <button
           className="native-sheet-handle"
           type="button"
           aria-label="Geser ke bawah untuk menutup"
-          onTouchStart={(event) => {
-            dragStart.current = event.touches[0]?.clientY ?? null;
+          onPointerDown={(event) => {
+            if (closing || (event.pointerType === "mouse" && event.button !== 0)) return;
+            dragStart.current = event.clientY;
+            dragOffsetRef.current = dragOffset;
+            event.currentTarget.setPointerCapture(event.pointerId);
             setIsDragging(true);
           }}
-          onTouchMove={(event) => {
-            if (dragStart.current !== null) {
-              const delta = Math.max(0, event.touches[0].clientY - dragStart.current);
-              setDragOffset(delta);
+          onPointerMove={(event) => {
+            if (dragStart.current === null || !event.currentTarget.hasPointerCapture(event.pointerId)) {
+              return;
             }
+            const delta = Math.max(0, event.clientY - dragStart.current);
+            dragOffsetRef.current = delta;
+            setDragOffset(delta);
           }}
-          onTouchEnd={finishDrag}
-          onTouchCancel={finishDrag}
+          onPointerUp={(event) => {
+            if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+              event.currentTarget.releasePointerCapture(event.pointerId);
+            }
+            finishDrag();
+          }}
+          onPointerCancel={finishDrag}
         />
         <header>
           <span>
