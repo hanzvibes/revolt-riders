@@ -101,7 +101,14 @@ export default function AdminJoinRequestsPage() {
         setCustomMemberId(nextId);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal memuat data pendaftaran.");
+      const rawMsg = (err as { message?: string })?.message || "";
+      if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
+        setError("Tabel join_requests belum dibuat di Supabase. Silakan jalankan file migrasi 20260918000300_add_join_requests_and_public_landing.sql di SQL Editor Supabase.");
+      } else if (rawMsg) {
+        setError(rawMsg);
+      } else {
+        setError("Gagal memuat data pendaftaran.");
+      }
     } finally {
       setLoading(false);
     }

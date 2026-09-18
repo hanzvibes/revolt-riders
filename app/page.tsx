@@ -223,9 +223,19 @@ export default function PublicLandingPage() {
 
         setFormSuccess(true);
       } catch (innerErr) {
-        setFormError(
-          innerErr instanceof Error ? innerErr.message : "Pendaftaran gagal dikirim. Silakan periksa kembali data Anda."
-        );
+        const rawMsg =
+          (innerErr as { message?: string })?.message ||
+          (err as { message?: string })?.message ||
+          "";
+        if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
+          setFormError("Sistem pendaftaran sedang disinkronkan ke database (migrasi join_requests). Silakan hubungi pengurus atau coba beberapa saat lagi.");
+        } else if (rawMsg.includes("whatsapp") || rawMsg.includes("unique")) {
+          setFormError("Nomor WhatsApp ini sudah memiliki pendaftaran yang sedang diproses.");
+        } else if (rawMsg) {
+          setFormError(rawMsg);
+        } else {
+          setFormError("Pendaftaran gagal dikirim. Silakan periksa kembali data Anda.");
+        }
       }
     } finally {
       setFormSubmitting(false);

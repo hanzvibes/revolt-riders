@@ -70,7 +70,14 @@ export default function CandidateConfirmationPage({
           setRequest(data as JoinRequestData);
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Gagal memuat data pendaftaran.");
+        const rawMsg = (err as { message?: string })?.message || "";
+        if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
+          setError("Sistem pendaftaran sedang disinkronkan ke database (migrasi join_requests). Silakan hubungi pengurus.");
+        } else if (rawMsg) {
+          setError(rawMsg);
+        } else {
+          setError("Gagal memuat data pendaftaran.");
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -124,12 +131,14 @@ export default function CandidateConfirmationPage({
         setSuccessMsg("Terima kasih! Konfirmasi komitmen Anda telah diterima.");
         setRequest((prev) => (prev ? { ...prev, status: "confirmed" } : null));
       } catch (fallbackErr) {
-        setError(
-          fallbackErr instanceof Error ? fallbackErr.message : "Gagal mengonfirmasi komitmen. Silakan coba lagi."
-        );
+        const rawMsg =
+          (fallbackErr as { message?: string })?.message ||
+          (err as { message?: string })?.message ||
+          "Gagal mengonfirmasi komitmen. Silakan coba lagi.";
+        setError(rawMsg);
+      } finally {
+        setConfirming(false);
       }
-    } finally {
-      setConfirming(false);
     }
   };
 

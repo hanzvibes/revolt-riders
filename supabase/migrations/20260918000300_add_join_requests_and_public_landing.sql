@@ -106,6 +106,14 @@ create policy "Staff can view and manage join requests" on public.join_requests
 
 grant select, insert, update on public.join_requests to authenticated;
 
+-- Public can submit join requests (for direct fallback insert)
+drop policy if exists "Public can submit join request" on public.join_requests;
+create policy "Public can submit join request" on public.join_requests
+  for insert to anon, authenticated
+  with check (true);
+
+grant insert on public.join_requests to anon;
+
 -- Public can query by confirmation_token for candidate confirmation
 drop policy if exists "Public can view join request by token" on public.join_requests;
 create policy "Public can view join request by token" on public.join_requests
@@ -193,8 +201,8 @@ begin
     raise exception 'Nomor WhatsApp ini sudah memiliki pendaftaran yang sedang diproses. Silakan hubungi admin via WhatsApp jika butuh bantuan.';
   end if;
 
-  -- Generate confirmation token for later
-  v_token := encode(extensions.gen_random_bytes(24), 'hex');
+  -- Generate confirmation token for later (using native gen_random_uuid)
+  v_token := replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '');
 
   insert into public.join_requests (
     full_name, birth_place, birth_date, city,
@@ -249,7 +257,7 @@ begin
     raise exception 'Hanya pendaftaran berstatus Pending yang dapat disetujui';
   end if;
 
-  v_token := coalesce(v_rec.confirmation_token, encode(extensions.gen_random_bytes(24), 'hex'));
+  v_token := coalesce(v_rec.confirmation_token, replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', ''));
 
   update public.join_requests
   set status = 'accepted',
