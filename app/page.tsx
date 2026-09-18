@@ -289,12 +289,12 @@ export default function PublicLandingPage() {
 
           <div className="landing-hero-content">
             <h1>
-              <em>SATU ASPAL.</em>
-              SATU PERSAUDARAAN.
+              <em>REVOLT RIDERS</em>
+              MOTOR CUSTOM SITUBONDO
             </h1>
 
             <p>
-              Wadah pecinta motor custom di Kabupaten Situbondo. Berdiri mandiri, terbuka, dan sosial—menjunjung tinggi persaudaraan abadi, gotong-royong, serta etika santun di jalan raya.
+              Revolt Riders adalah wadah bagi para pecinta motor custom di Kabupaten Situbondo. Didirikan pada 22 Desember 2022, komunitas ini beroperasi dengan prinsip mandiri, terbuka, dan sosial untuk membangun kepedulian tanpa berafiliasi dengan kepentingan politik atau mencari keuntungan, serta mempererat persaudaraan di antara seluruh anggotanya dan komunitas motor lainnya di Situbondo.
             </p>
 
             <div className="landing-hero-actions">
