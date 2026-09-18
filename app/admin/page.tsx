@@ -573,7 +573,7 @@ export default function AdminPage() {
 
   if (authLoading || (loading && !account))
     return (
-      <AppShell active="Admin" title="Admin">
+      <AppShell active="Admin" title="Dashboard Admin">
         <div className="page-wrap">
           <p>Memeriksa izin…</p>
         </div>
@@ -586,7 +586,7 @@ export default function AdminPage() {
 
   )
     return (
-      <AppShell active="Admin" title="Admin">
+      <AppShell active="Admin" title="Dashboard Admin">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert />
@@ -603,7 +603,7 @@ export default function AdminPage() {
     );
 
   return (
-    <AppShell active="Admin" title="Admin">
+    <AppShell active="Admin" title="Dashboard Admin">
       <div className="page-wrap admin-grid">
         {/* Executive KPI Strip */}
         <section className="admin-kpi-strip" aria-label="Ringkasan Operasional">
@@ -762,7 +762,7 @@ export default function AdminPage() {
         <section className="card event-management admin-wide">
           <div className="section-title">
             <span>
-              <em>STATUS AGENDA</em>
+              <em>Status agenda</em>
               <h3>Kelola agenda terbit</h3>
             </span>
             <CalendarPlus />
@@ -894,7 +894,7 @@ export default function AdminPage() {
           <div className="form-heading">
             <Users />
             <span>
-              <em>UNDANGAN MASSAL</em>
+              <em>Undangan massal</em>
               <h2>Siapkan semua link personal</h2>
               <p>
                 Satu link unik dibuat untuk setiap member aktif dan diunduh
@@ -961,7 +961,7 @@ export default function AdminPage() {
         <section className="card rsvp-panel admin-wide">
           <div className="section-title">
             <span>
-              <em>RSVP LIVE</em>
+              <em>RSVP</em>
               <h3>Respons undangan</h3>
             </span>
             <span className="live-status">● LIVE</span>
@@ -1084,7 +1084,7 @@ export default function AdminPage() {
           <div className="form-heading">
             <ScanLine />
             <span>
-              <em>ATTENDANCE</em>
+              <em>Kehadiran</em>
               <h2>Buat kode check-in</h2>
               <p>
                 Kode aktif satu jam sebelum dibuat hingga 12 jam berikutnya.
