@@ -136,6 +136,7 @@ export default function AdminPage() {
   const [invitation, setInvitation] = useState("");
   const [checkinCode, setCheckinCode] = useState("");
   const [checkinExpiresAt, setCheckinExpiresAt] = useState("");
+  const [checkinUrl, setCheckinUrl] = useState("");
   const [bulkLinks, setBulkLinks] = useState<BulkLink[]>([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -427,6 +428,7 @@ export default function AdminPage() {
     setError("");
     setCheckinCode("");
     setCheckinExpiresAt("");
+    setCheckinUrl("");
     const raw = `RR-${secureToken().slice(0, 12).toUpperCase()}`;
     const codeHash = await sha256(raw);
     const supabase = getSupabaseBrowserClient();
@@ -443,7 +445,9 @@ export default function AdminPage() {
     if (insertError) setError(insertError.message);
     else {
       setCheckinCode(raw);
-      setCheckinExpiresAt(new Date(now + 12 * 60 * 60 * 1000).toISOString());
+      setCheckinExpiresAt(activeUntil);
+      const origin = typeof window !== "undefined" ? window.location.origin : "";
+      setCheckinUrl(`${origin}/check-in?code=${encodeURIComponent(raw)}`);
     }
   };
 
@@ -1111,6 +1115,7 @@ export default function AdminPage() {
           {checkinCode && checkinExpiresAt && (
             <CheckinQr
               code={checkinCode}
+              qrUrl={checkinUrl}
               eventTitle={
                 events.find((event) => event.id === checkinEvent)?.title ||
                 "Agenda Revolt Riders"

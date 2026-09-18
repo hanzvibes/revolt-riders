@@ -5,23 +5,30 @@ import { Copy, Download, Expand, QrCode, Share2, X } from "lucide-react";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
-type CheckinQrProps = { code: string; eventTitle: string; activeUntil: string };
+type CheckinQrProps = {
+  code: string;
+  eventTitle: string;
+  activeUntil: string;
+  qrUrl?: string;
+};
 
-export function CheckinQr({ code, eventTitle, activeUntil }: CheckinQrProps) {
+export function CheckinQr({ code, eventTitle, activeUntil, qrUrl }: CheckinQrProps) {
   const [image, setImage] = useState("");
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const payload = qrUrl || code;
+
   useEffect(() => {
     let live = true;
-    void QRCode.toDataURL(code, {
+    void QRCode.toDataURL(payload, {
       width: 720,
       margin: 2,
       errorCorrectionLevel: "H",
       color: { dark: "#141517", light: "#ffffff" },
     }).then((dataUrl) => { if (live) setImage(dataUrl); });
     return () => { live = false; };
-  }, [code]);
+  }, [payload]);
 
   const copyCode = async () => {
     await navigator.clipboard.writeText(code);
@@ -38,8 +45,19 @@ export function CheckinQr({ code, eventTitle, activeUntil }: CheckinQrProps) {
   };
 
   const share = async () => {
-    if (navigator.share) await navigator.share({ title: `Check-in ${eventTitle}`, text: `Kode check-in Revolt Riders: ${code}` });
-    else await copyCode();
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `Check-in ${eventTitle}`,
+          text: `Scan atau buka tautan untuk check-in ${eventTitle} (Kode: ${code})`,
+          url: qrUrl || undefined,
+        });
+      } catch {
+        await copyCode();
+      }
+    } else {
+      await copyCode();
+    }
   };
 
   const expiry = new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Jakarta" }).format(new Date(activeUntil));

@@ -5,11 +5,14 @@ import type { User } from "@supabase/supabase-js";
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useEffect, useState, type FormEvent } from "react";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
+
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +26,9 @@ export default function LoginPage() {
     void getSupabaseBrowserClient()
       .auth.getUser()
       .then(({ data }: { data: { user: User | null } }) => {
-        if (data.user) setMessage(`Sudah masuk sebagai ${data.user.email ?? "member"}.`);
+        if (data.user) {
+          setMessage(`Sudah masuk sebagai ${data.user.email ?? "member"}.`);
+        }
       });
   }, []);
 
@@ -38,7 +43,8 @@ export default function LoginPage() {
       if (mode === "login") {
         const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
         if (signInError) throw signInError;
-        router.replace("/profil");
+        const destination = redirectParam && redirectParam.startsWith("/") ? redirectParam : "/profil";
+        router.replace(destination);
         router.refresh();
       } else {
         const cleanId = memberId.trim().toUpperCase();
@@ -248,5 +254,21 @@ export default function LoginPage() {
         </p>
       </section>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="auth-page">
+          <section className="auth-card">
+            <p>Memuat halaman masuk…</p>
+          </section>
+        </main>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
