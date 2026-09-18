@@ -257,7 +257,7 @@ export default function AdminEventsPage() {
   };
   if (accessLoading || loading)
     return (
-      <AppShell active="Kelola Agenda" title="Kelola Agenda">
+      <AppShell active="Kelola Agenda" title="Manajemen Agenda">
         <div className="page-wrap">
           <p>Memeriksa agenda…</p>
         </div>
@@ -265,7 +265,7 @@ export default function AdminEventsPage() {
     );
   if (account?.status !== "active" || !canManage(account?.role))
     return (
-      <AppShell active="Kelola Agenda" title="Kelola Agenda">
+      <AppShell active="Kelola Agenda" title="Manajemen Agenda">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert />
@@ -276,11 +276,11 @@ export default function AdminEventsPage() {
       </AppShell>
     );
   return (
-    <AppShell active="Kelola Agenda" title="Kelola Agenda">
+    <AppShell active="Kelola Agenda" title="Manajemen Agenda">
       <div className="page-wrap admin-native-page">
         <div className="page-intro native-page-head">
           <div>
-            <em>EVENT LIFECYCLE</em>
+            <em>Siklus agenda</em>
             <h2>Kelola agenda</h2>
             <p>Draft, terbitkan, dan pantau respons agenda.</p>
           </div>
@@ -295,7 +295,7 @@ export default function AdminEventsPage() {
         <section className="card event-management">
           <div className="ledger-head">
             <div>
-              <em>SEMUA AGENDA</em>
+              <em>Semua agenda</em>
               <h3>Daftar agenda</h3>
             </div>
             <b>{visible.length} agenda</b>
