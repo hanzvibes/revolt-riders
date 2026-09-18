@@ -378,7 +378,7 @@ export default function CashPage() {
       <div className="page-wrap cash-page">
         <div className="page-intro">
           <div>
-            <em>FINANCE CENTER</em>
+            <em>Keuangan</em>
             <h2>Kas Revolt</h2>
             <p>
               Pantau saldo, arus masuk, pengeluaran, dan transaksi komunitas
@@ -405,7 +405,7 @@ export default function CashPage() {
               <article className="finance-balance">
                 <span>
                   <WalletCards />
-                  <em>SALDO KAS TERKINI</em>
+                  <em>Saldo kas</em>
                 </span>
                 <b>{rupiah(Number(summary?.total_balance ?? 0))}</b>
                 <small>Diperbarui dari seluruh transaksi tercatat</small>
@@ -415,7 +415,7 @@ export default function CashPage() {
                   <ArrowDownLeft />
                 </i>
                 <span>
-                  <small>PEMASUKAN BULAN INI</small>
+                  <small>Pemasukan bulan ini</small>
                   <b>
                     {compactRupiah(Number(summary?.income_this_month ?? 0))}
                   </b>
@@ -427,7 +427,7 @@ export default function CashPage() {
                   <ArrowUpRight />
                 </i>
                 <span>
-                  <small>PENGELUARAN BULAN INI</small>
+                  <small>Pengeluaran bulan ini</small>
                   <b>
                     {compactRupiah(Number(summary?.expense_this_month ?? 0))}
                   </b>
@@ -438,7 +438,7 @@ export default function CashPage() {
             <section className="card dues-card">
               <div className="section-title">
                 <span>
-                  <em>IURAN MEMBER</em>
+                  <em>Iuran member</em>
                   <h3>
                     {staff ? "Rekap iuran tercatat" : "Riwayat iuran kamu"}
                   </h3>
@@ -483,7 +483,7 @@ export default function CashPage() {
             <ModalSheet
               open={formOpen}
               onClose={() => setFormOpen(false)}
-              eyebrow="TRANSAKSI BARU"
+              eyebrow="Transaksi baru"
               title="Catat transaksi kas"
             >
               <form
@@ -567,7 +567,7 @@ export default function CashPage() {
                 <div className="card finance-ledger">
                   <div className="ledger-head">
                     <div>
-                      <em>BUKU KAS</em>
+                      <em>Buku kas</em>
                       <h3>Riwayat transaksi</h3>
                     </div>
                     <span>
@@ -675,7 +675,7 @@ export default function CashPage() {
                   <section className="card flow-card">
                     <div className="section-title">
                       <span>
-                        <em>ARUS KAS</em>
+                        <em>Arus kas</em>
                         <h3>Ringkasan filter</h3>
                       </span>
                     </div>
@@ -697,7 +697,7 @@ export default function CashPage() {
                   <section className="card category-card">
                     <div className="section-title">
                       <span>
-                        <em>PENGELUARAN</em>
+                        <em>Pengeluaran</em>
                         <h3>Kategori terbesar</h3>
                       </span>
                     </div>
