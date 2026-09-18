@@ -8,6 +8,12 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState, type FormEvent } from "react";
 
+const APP_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.NEXT_PUBLIC_APP_URL ??
+  "https://revolt-riders.vercel.app"
+).replace(/\/+$/, "");
+
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -52,7 +58,7 @@ function LoginContent() {
           email: email.trim().toLowerCase(),
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/login`,
+            emailRedirectTo: `${APP_URL}/login`,
             data: { member_external_id: cleanId },
           },
         });
