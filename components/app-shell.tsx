@@ -170,6 +170,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
           <Link
             className={isCurrent ? "active" : ""}
             href={href}
+            aria-current={isCurrent ? "page" : undefined}
             key={label}
             onClick={() => setOpen(false)}
           >
@@ -186,7 +187,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
   return (
     <main className="app-shell">
-      <aside className={open ? "open" : ""}>
+      <aside className={open ? "open" : ""} aria-label="Navigasi aplikasi">
         <Link className="brand" href="/" aria-label="Revolt Riders home">
           <Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority />
           <strong>
@@ -329,12 +330,11 @@ export function AppShell({ active, title, children }: { active: string; title: s
             <h1>{title}</h1>
           </div>
           <div className="tools">
-            
             <Link
               href="/notifications"
               className="header-bell-btn"
-              title="Notifikasi Revolt"
-              aria-label="Notifikasi"
+              title="Pengaturan notifikasi"
+              aria-label="Pengaturan notifikasi"
             >
               <Bell size={16} />
             </Link>
@@ -349,9 +349,14 @@ export function AppShell({ active, title, children }: { active: string; title: s
         {children}
       </section>
 
-      <nav className="bottom">
+      <nav className="bottom" aria-label="Navigasi utama">
         {bottomItems.map(([label, href, Icon]) => (
-          <Link key={label} className={isItemActive(label, active) ? "active" : ""} href={href}>
+          <Link
+            key={label}
+            className={isItemActive(label, active) ? "active" : ""}
+            href={href}
+            aria-current={isItemActive(label, active) ? "page" : undefined}
+          >
             <Icon />
             <small>{label}</small>
           </Link>
