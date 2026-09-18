@@ -259,7 +259,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <AppShell active="Profil" title="Profil">
+      <AppShell active="Profil" title="Profil Saya">
         <PageSkeleton title="Memuat Kartu Anggota..." />
       </AppShell>
     );
@@ -267,7 +267,7 @@ export default function ProfilePage() {
 
   if (!email) {
     return (
-      <AppShell active="Profil" title="Profil">
+      <AppShell active="Profil" title="Profil Saya">
         <div className="page-wrap">
           <section className="empty-state card">
             <UserRound />
@@ -284,7 +284,7 @@ export default function ProfilePage() {
 
   if (!account) {
     return (
-      <AppShell active="Profil" title="Profil">
+      <AppShell active="Profil" title="Profil Saya">
         <div className="page-wrap">
           <section className="empty-state card">
             <ShieldAlert />
@@ -302,7 +302,7 @@ export default function ProfilePage() {
   const approvedRidesCount = rides.filter((r) => r.status === "approved").length;
 
   return (
-    <AppShell active="Profil" title="Profil">
+    <AppShell active="Profil" title="Profil Saya">
       <div className="page-wrap">
         {/* ================================================================ */}
         {/* DIGITAL MEMBERSHIP CARD (IDENTITY CARD) */}
@@ -633,7 +633,7 @@ export default function ProfilePage() {
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}
           >
             <span>
-              <em>RIDING & SOWAN</em>
+              <em>Riding & sowan</em>
               <h3>Riwayat Touring / Sowan ({rides.length})</h3>
             </span>
             <button
@@ -823,7 +823,7 @@ export default function ProfilePage() {
         <section className="profile-edit card" style={{ marginBottom: "22px" }}>
           <div className="section-title">
             <span>
-              <em>DATA PRIBADI</em>
+              <em>Data pribadi</em>
               <h3>Lengkapi Profil & Kendaraan</h3>
             </span>
             <Save />
@@ -873,7 +873,7 @@ export default function ProfilePage() {
         <section className="card" style={{ marginBottom: "24px" }}>
           <div className="section-title">
             <span>
-              <em>AGENDA CLUB</em>
+              <em>Agenda club</em>
               <h3>Respons RSVP Undangan</h3>
             </span>
             <CalendarDays />
