@@ -5503,3 +5503,26 @@
     font-size: .82rem !important;
   }
 }
+
+
+/* Remove decorative red kicker text system-wide */
+.app-shell .page-intro > div > em,
+.app-shell .section-title em,
+.app-shell .form-heading em,
+.app-shell .ledger-head em,
+.app-shell .dashboard-premium .dashboard-panel-heading em,
+.app-shell .unified-hero-eyebrow > span,
+.app-shell .member-directory-eyebrow > span,
+.app-shell .leaderboard-hero-eyebrow > span,
+.app-shell .riding-stat-chart-head small {
+  display: none !important;
+}
+
+.app-shell .page-intro h2,
+.app-shell .section-title h3,
+.app-shell .ledger-head h3,
+.app-shell .form-heading h2,
+.app-shell .form-heading h3,
+.app-shell .dashboard-premium .dashboard-panel-heading h3 {
+  margin-top: 0 !important;
+}
