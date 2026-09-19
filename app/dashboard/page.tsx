@@ -38,27 +38,6 @@ type LoggedInMember = {
   touring_count: number;
 };
 
-const getRoleClass = (role: string | null) => {
-  const r = (role ?? "").toUpperCase().trim();
-  if (r === "PRESIDENT") return "badge-president";
-  if (r === "FOUNDER") return "badge-founder";
-  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-  if (r === "NEGOSIATOR") return "badge-negosiator";
-  if (r === "CAPROS") return "badge-capros";
-  if (r === "PROSPEK") return "badge-prospek";
-  if (r === "VIRGIN") return "badge-virgin";
-  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-  if (r.includes("CAPTAIN")) return "badge-rc";
-  if (
-    r.includes("ADMIN") ||
-    r.includes("KETUA") ||
-    r.includes("SEKRETARIS") ||
-    r.includes("BENDAHARA")
-  )
-    return "badge-admin";
-  return "";
-};
-
 export default function DashboardPage() {
   const { user, account, loading: authLoading, fetchWithCache } = useDataCache();
   const [events, setEvents] = useState<EventRecord[]>([]);
@@ -230,148 +209,141 @@ export default function DashboardPage() {
     return "RR";
   }, [currentMember, user]);
 
-  const renderRiderCard = () => {
-    if (user && !authLoading) {
-      return (
-        <section className="rider-status-card">
-          <div className="rider-status-header">
-            <div className="rider-status-avatar">{userInitials}</div>
-            <div className="rider-status-meta">
-              <span className="rider-status-name">
-                {currentMember?.nickname || currentMember?.full_name || account?.member_external_id || "Rider Revolt"}
-              </span>
-              <div className="rider-status-sub">
-                <span className="member-id-tag">
-                  {account?.member_external_id || "MEMBER"}
-                </span>
-                <span className={`member-role-badge ${getRoleClass(currentMember?.club_role || account?.role || "member")}`}>
-                  {currentMember?.club_role || account?.role || "Member"}
-                </span>
-              </div>
-            </div>
-          </div>
+  const memberName =
+    currentMember?.nickname ||
+    currentMember?.full_name ||
+    account?.member_external_id ||
+    (user ? "Rider Revolt" : "Guest Rider");
+  const memberId = account?.member_external_id || "MEMBER";
+  const memberRole = currentMember?.club_role || account?.role || "Member";
+  const hasActiveMember = Boolean(user && !authLoading);
 
-          <div className="rider-status-metrics">
-            <div className="rider-status-metric">
-              <small>Jarak riding</small>
-              <b>
-                {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(
-                  currentMember?.total_km ?? 0,
-                )}{" "}
-                KM
-              </b>
-            </div>
-            <div className="rider-status-metric">
-              <small>Kegiatan terverifikasi</small>
-              <b>{currentMember?.touring_count ?? 0} Agenda</b>
-            </div>
-          </div>
-
-          <div className="rider-status-actions">
-            <Link className="dark-action" href="/profil">
-              Lihat profil
-            </Link>
-          </div>
-        </section>
-      );
-    }
-    return (
-      <section className="profile card">
-        <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={92} height={92} priority />
-        <em>Portal member</em>
-        <h3>Masuk ke member hub</h3>
-        <p>
-          Masuk ke akun untuk mencatat kilometer riding, check-in QR saat kopdar, dan melihat saldo kas komunitas.
-        </p>
-        <Link className="dark-action" href="/login">
-          Masuk
-        </Link>
-      </section>
-    );
-  };
 
   return (
     <AppShell active="Home" title="Dashboard">
       <div className="dashboard-grid dashboard-premium">
-        {/* Left Primary Column */}
-        <div className="left-column">
-          {/* Mobile-only Rider Card placed at top */}
-          <div className="mobile-rider-card">
-            {renderRiderCard()}
+        <section className="unified-dashboard-hero" aria-labelledby="dashboard-hero-title">
+          <div className="unified-hero-top">
+            <div className="unified-member">
+              <div className="unified-member-avatar" aria-hidden="true">{userInitials}</div>
+              <div className="unified-member-copy">
+                <small>{hasActiveMember ? "Member aktif" : "Portal member"}</small>
+                <strong>{memberName}</strong>
+                <div className="unified-member-chips">
+                  <span>{hasActiveMember ? memberId : "REVOLT RIDERS"}</span>
+                  <span>{hasActiveMember ? memberRole : "SITUBONDO"}</span>
+                </div>
+              </div>
+            </div>
+
+            {nextEvent ? (
+              <div className="unified-hero-badge unified-event-badge" aria-label="Tanggal agenda terdekat">
+                <small>{formatShortDate(nextEvent.start_at).month}</small>
+                <b>{formatShortDate(nextEvent.start_at).day}</b>
+                <span>Terdekat</span>
+              </div>
+            ) : (
+              <div className="unified-hero-badge unified-crest-badge">
+                <Image
+                  src="/revolt-riders-logo.jpg"
+                  alt="Logo Revolt Riders"
+                  width={58}
+                  height={58}
+                  className="unified-crest-logo"
+                  priority
+                />
+                <span>2026</span>
+              </div>
+            )}
           </div>
 
-          {/* Modern Event Spotlight Hero */}
-          <section className="hero">
-            <div className="hero-frame" style={{ width: "100%" }}>
-  <div className="hero-content">
-                <div className="hero-eyebrow">
-                  <span className="hero-tag">{nextEvent ? (nextEvent.type || "Agenda") : "Revolt Riders"}</span>
-                  <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
-                </div>
-                <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
-                {nextEvent ? (
-                  <div className="hero-meta">
-                    <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
-                    <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
-                  </div>
-                ) : (
-                  <p className="hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
-                )}
-                <Link className="primary-action hero-cta" href="/agenda">
-                  Buka agenda <ChevronRight aria-hidden="true" />
-                </Link>
+          <div className="unified-hero-main">
+            <div className="unified-hero-copy">
+              <div className="unified-hero-eyebrow">
+                <span>REVOLT RIDERS</span>
+                <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
               </div>
+              <h2 id="dashboard-hero-title">{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
               {nextEvent ? (
-                <div className="hero-date-badge">
-                  <small className="hero-badge-month">{formatShortDate(nextEvent.start_at).month}</small>
-                  <b className="hero-badge-day">{formatShortDate(nextEvent.start_at).day}</b>
-                  <span className="hero-badge-status">Terdekat</span>
+                <div className="unified-hero-meta">
+                  <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
+                  <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
                 </div>
               ) : (
-                <div className="hero-date-badge fallback-badge">
-                  <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={44} height={44} className="hero-badge-logo" />
-                  <span className="hero-badge-year">2026</span>
-                </div>
+                <p className="unified-hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
               )}
-              <div className="hero-summary" aria-label="Ringkasan komunitas">
-                <div className="hero-summary-item">
-                  <UsersRound aria-hidden="true" />
-                  <span>
-                    <small>Member resmi</small>
-                    <b>{totalRidersCount} member</b>
-                  </span>
-                </div>
-                <div className="hero-summary-item">
-                  <Gauge aria-hidden="true" />
-                  <span>
-                    <small>Total kilometer</small>
-                    <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
-                  </span>
-                </div>
-                <div className="hero-summary-item">
-                  <CircleDollarSign aria-hidden="true" />
-                  <span>
-                    <small>Saldo kas</small>
-                    <b>
-                      {stats ? (
-                        new Intl.NumberFormat("id-ID", {
+              <div className="unified-hero-actions">
+                <Link className="unified-primary-action" href="/agenda">
+                  Buka agenda <ChevronRight aria-hidden="true" />
+                </Link>
+                <Link className="unified-secondary-action" href={hasActiveMember ? "/profil" : "/login"}>
+                  {hasActiveMember ? "Lihat profil" : "Masuk member"}
+                </Link>
+              </div>
+            </div>
+            <div className="unified-hero-watermark" aria-hidden="true">RR</div>
+          </div>
+
+          <div className="unified-hero-data">
+            <div className="unified-personal-stats" aria-label="Statistik member">
+              <div className="unified-personal-stat">
+                <Bike aria-hidden="true" />
+                <span>
+                  <small>Jarak riding</small>
+                  <b>
+                    {hasActiveMember
+                      ? `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(currentMember?.total_km ?? 0)} KM`
+                      : "Privat"}
+                  </b>
+                </span>
+              </div>
+              <div className="unified-personal-stat">
+                <CalendarDays aria-hidden="true" />
+                <span>
+                  <small>Kegiatan terverifikasi</small>
+                  <b>{hasActiveMember ? `${currentMember?.touring_count ?? 0} Agenda` : "Privat"}</b>
+                </span>
+              </div>
+            </div>
+
+            <div className="unified-community-stats" aria-label="Ringkasan komunitas">
+              <div className="unified-community-stat">
+                <UsersRound aria-hidden="true" />
+                <span>
+                  <small>Member resmi</small>
+                  <b>{totalRidersCount} member</b>
+                </span>
+              </div>
+              <div className="unified-community-stat">
+                <Gauge aria-hidden="true" />
+                <span>
+                  <small>Total kilometer</small>
+                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
+                </span>
+              </div>
+              <div className="unified-community-stat">
+                <CircleDollarSign aria-hidden="true" />
+                <span>
+                  <small>Saldo kas</small>
+                  <b>
+                    {stats
+                      ? new Intl.NumberFormat("id-ID", {
                           style: "currency",
                           currency: "IDR",
                           notation: "compact",
                           maximumFractionDigits: 1,
                         }).format(Number(stats.cash_balance))
-                      ) : user ? (
-                        "Rp 0"
-                      ) : (
-                        "Privat"
-                      )}
-                    </b>
-                  </span>
-                </div>
+                      : user
+                        ? "Rp 0"
+                        : "Privat"}
+                  </b>
+                </span>
               </div>
             </div>
-          </section>
+          </div>
+        </section>
 
+        <div className="left-column">
           {/* Quick Actions */}
           <section className="dashboard-actions-panel" aria-labelledby="dashboard-actions-title">
             <div className="dashboard-panel-heading">
@@ -474,11 +446,6 @@ export default function DashboardPage() {
 
         {/* Right Sidebar Column */}
         <div className="right-column">
-          {/* Desktop-only Member Personal Status Card */}
-          <div className="desktop-rider-card">
-            {renderRiderCard()}
-          </div>
-
           {/* Bulletin Pengumuman */}
           {announcements[0] ? (
             <a className="bullet-card" href="/bulletin">
