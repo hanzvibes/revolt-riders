@@ -301,6 +301,65 @@ export default function ProfilePage() {
   }
 
   const approvedRidesCount = rides.filter((r) => r.status === "approved").length;
+  const attendedAgendaCount = rsvpActivities.filter((rsvp) => rsvp.status === "attending").length;
+  const joinDate = profile?.join_date ? new Date(profile.join_date) : null;
+  const joinYear =
+    joinDate && !Number.isNaN(joinDate.getTime()) ? joinDate.getFullYear() : null;
+
+  const kmMilestones = [500, 1000, 2500, 5000, 10000, 25000];
+  const previousKmMilestone =
+    [...kmMilestones].reverse().find((milestone) => totalKm >= milestone) ?? 0;
+  const nextKmMilestone =
+    kmMilestones.find((milestone) => totalKm < milestone) ?? null;
+  const milestoneProgress = nextKmMilestone
+    ? Math.min(
+        100,
+        Math.max(
+          0,
+          ((totalKm - previousKmMilestone) /
+            (nextKmMilestone - previousKmMilestone)) *
+            100,
+        ),
+      )
+    : 100;
+
+  const passportBadges = [
+    {
+      key: "verified",
+      label: "Verified",
+      detail: "Member resmi",
+      unlocked: account.status === "active",
+      Icon: ShieldCheck,
+    },
+    {
+      key: "road-1k",
+      label: "Road 1K",
+      detail: "1.000 KM resmi",
+      unlocked: totalKm >= 1000,
+      Icon: Route,
+    },
+    {
+      key: "five-rides",
+      label: "5 Rides",
+      detail: "5 ride disetujui",
+      unlocked: approvedRidesCount >= 5,
+      Icon: Bike,
+    },
+    {
+      key: "five-agenda",
+      label: "5 Agenda",
+      detail: "5 agenda dihadiri",
+      unlocked: attendedAgendaCount >= 5,
+      Icon: CalendarDays,
+    },
+    {
+      key: "road-5k",
+      label: "Road 5K",
+      detail: "5.000 KM resmi",
+      unlocked: totalKm >= 5000,
+      Icon: Trophy,
+    },
+  ];
 
   return (
     <AppShell active="Profil" title="Profil Saya">
@@ -309,7 +368,7 @@ export default function ProfilePage() {
         {/* DIGITAL MEMBERSHIP CARD (IDENTITY CARD) */}
         {/* ================================================================ */}
         <section
-          className="digital-id-card"
+          className="digital-id-card member-passport-card"
           style={{
             position: "relative",
             borderRadius: "22px",
@@ -322,6 +381,17 @@ export default function ProfilePage() {
             marginBottom: "24px",
           }}
         >
+          <div className="member-passport-head">
+            <span>
+              <small>DIGITAL MEMBER PASSPORT</small>
+              <strong>REVOLT RIDERS</strong>
+            </span>
+            <span className="member-passport-verified">
+              <ShieldCheck aria-hidden="true" />
+              VERIFIED
+            </span>
+          </div>
+
           {/* Subtle watermark background logo */}
           <div
             style={{
@@ -479,7 +549,7 @@ export default function ProfilePage() {
               {profile?.join_date && (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
                   <Calendar size={13} color="var(--red)" />
-                  Bergabung {profile.join_date}
+                  Bergabung {new Intl.DateTimeFormat("id-ID", { month: "short", year: "numeric" }).format(new Date(profile.join_date))}
                 </span>
               )}
             </div>
@@ -529,6 +599,72 @@ export default function ProfilePage() {
               </b>
             </div>
           </div>
+
+          <section className="member-passport-progress" aria-label="Progress member">
+            <div className="member-passport-progress-head">
+              <span>
+                <small>ROAD PROGRESS</small>
+                <strong>
+                  {nextKmMilestone
+                    ? `${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM milestone`
+                    : "Milestone tertinggi tercapai"}
+                </strong>
+              </span>
+              <b>
+                {nextKmMilestone
+                  ? `${Math.round(milestoneProgress)}%`
+                  : "MAX"}
+              </b>
+            </div>
+            <div
+              className="member-passport-progress-track"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(milestoneProgress)}
+              aria-label="Progress menuju milestone kilometer berikutnya"
+            >
+              <i style={{ width: `${milestoneProgress}%` }} />
+            </div>
+            <div className="member-passport-progress-meta">
+              <span>
+                <Route aria-hidden="true" />
+                <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)} KM</b>
+                <small>terverifikasi</small>
+              </span>
+              <span>
+                <Calendar aria-hidden="true" />
+                <b>{joinYear ? `Since ${joinYear}` : "Member resmi"}</b>
+                <small>{account.member_external_id}</small>
+              </span>
+            </div>
+          </section>
+
+          <section className="member-passport-achievements" aria-label="Milestone passport">
+            <div className="member-passport-achievements-head">
+              <span>
+                <small>PASSPORT STAMPS</small>
+                <strong>Milestone Member</strong>
+              </span>
+              <b>{passportBadges.filter((badge) => badge.unlocked).length}/{passportBadges.length}</b>
+            </div>
+            <div className="member-passport-badges">
+              {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
+                <article
+                  key={key}
+                  className={unlocked ? "is-unlocked" : "is-locked"}
+                  aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
+                >
+                  <i><Icon aria-hidden="true" /></i>
+                  <span>
+                    <b>{label}</b>
+                    <small>{badgeDetail}</small>
+                  </span>
+                  {unlocked && <Check aria-hidden="true" />}
+                </article>
+              ))}
+            </div>
+          </section>
 
           {/* Quick Shortcuts Strip */}
           <nav className="profile-quick-shortcuts" aria-label="Akses cepat member">
