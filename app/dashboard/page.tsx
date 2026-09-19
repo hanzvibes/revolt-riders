@@ -302,70 +302,72 @@ export default function DashboardPage() {
 
           {/* Modern Event Spotlight Hero */}
           <section className="hero">
-            <div className="hero-content">
-              <div className="hero-eyebrow">
-                <span className="hero-tag">{nextEvent ? (nextEvent.type || "Agenda") : "Revolt Riders"}</span>
-                <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
+            <div className="hero-frame" style={{ width: "100%" }}>
+  <div className="hero-content">
+                <div className="hero-eyebrow">
+                  <span className="hero-tag">{nextEvent ? (nextEvent.type || "Agenda") : "Revolt Riders"}</span>
+                  <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
+                </div>
+                <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
+                {nextEvent ? (
+                  <div className="hero-meta">
+                    <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
+                    <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
+                  </div>
+                ) : (
+                  <p className="hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
+                )}
+                <Link className="primary-action hero-cta" href="/agenda">
+                  Buka agenda <ChevronRight aria-hidden="true" />
+                </Link>
               </div>
-              <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
               {nextEvent ? (
-                <div className="hero-meta">
-                  <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
-                  <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
+                <div className="hero-date-badge">
+                  <small className="hero-badge-month">{formatShortDate(nextEvent.start_at).month}</small>
+                  <b className="hero-badge-day">{formatShortDate(nextEvent.start_at).day}</b>
+                  <span className="hero-badge-status">Terdekat</span>
                 </div>
               ) : (
-                <p className="hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
+                <div className="hero-date-badge fallback-badge">
+                  <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={44} height={44} className="hero-badge-logo" />
+                  <span className="hero-badge-year">2026</span>
+                </div>
               )}
-              <Link className="primary-action hero-cta" href="/agenda">
-                Buka agenda <ChevronRight aria-hidden="true" />
-              </Link>
-            </div>
-            {nextEvent ? (
-              <div className="hero-date-badge">
-                <small className="hero-badge-month">{formatShortDate(nextEvent.start_at).month}</small>
-                <b className="hero-badge-day">{formatShortDate(nextEvent.start_at).day}</b>
-                <span className="hero-badge-status">Terdekat</span>
-              </div>
-            ) : (
-              <div className="hero-date-badge fallback-badge">
-                <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={44} height={44} className="hero-badge-logo" />
-                <span className="hero-badge-year">2026</span>
-              </div>
-            )}
-            <div className="hero-summary" aria-label="Ringkasan komunitas">
-              <div className="hero-summary-item">
-                <UsersRound aria-hidden="true" />
-                <span>
-                  <small>Member resmi</small>
-                  <b>{totalRidersCount} member</b>
-                </span>
-              </div>
-              <div className="hero-summary-item">
-                <Gauge aria-hidden="true" />
-                <span>
-                  <small>Total kilometer</small>
-                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
-                </span>
-              </div>
-              <div className="hero-summary-item">
-                <CircleDollarSign aria-hidden="true" />
-                <span>
-                  <small>Saldo kas</small>
-                  <b>
-                    {stats ? (
-                      new Intl.NumberFormat("id-ID", {
-                        style: "currency",
-                        currency: "IDR",
-                        notation: "compact",
-                        maximumFractionDigits: 1,
-                      }).format(Number(stats.cash_balance))
-                    ) : user ? (
-                      "Rp 0"
-                    ) : (
-                      "Privat"
-                    )}
-                  </b>
-                </span>
+              <div className="hero-summary" aria-label="Ringkasan komunitas">
+                <div className="hero-summary-item">
+                  <UsersRound aria-hidden="true" />
+                  <span>
+                    <small>Member resmi</small>
+                    <b>{totalRidersCount} member</b>
+                  </span>
+                </div>
+                <div className="hero-summary-item">
+                  <Gauge aria-hidden="true" />
+                  <span>
+                    <small>Total kilometer</small>
+                    <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
+                  </span>
+                </div>
+                <div className="hero-summary-item">
+                  <CircleDollarSign aria-hidden="true" />
+                  <span>
+                    <small>Saldo kas</small>
+                    <b>
+                      {stats ? (
+                        new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          notation: "compact",
+                          maximumFractionDigits: 1,
+                        }).format(Number(stats.cash_balance))
+                      ) : user ? (
+                        "Rp 0"
+                      ) : (
+                        "Privat"
+                      )}
+                    </b>
+                  </span>
+                </div>
               </div>
             </div>
           </section>
