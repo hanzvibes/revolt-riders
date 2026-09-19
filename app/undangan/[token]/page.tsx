@@ -32,10 +32,20 @@ type Attendee = {
   rsvp_status: "attending" | "maybe";
 };
 
-const formatEventTime = (value: string) =>
+const formatEventDate = (value: string) =>
   new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "full",
-    timeStyle: "short",
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(value));
+
+const formatEventClock = (value: string) =>
+  new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
     timeZone: "Asia/Jakarta",
   })
     .format(new Date(value))
@@ -176,7 +186,8 @@ export default function InvitationPage() {
                   </span>
                   <span>
                     <small>Tanggal & waktu</small>
-                    <strong>{formatEventTime(data.start_at)}</strong>
+                    <strong>{formatEventDate(data.start_at)}</strong>
+                    <em>{formatEventClock(data.start_at)}</em>
                   </span>
                 </div>
 
