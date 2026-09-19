@@ -6840,3 +6840,40 @@
     transition: none !important;
   }
 }
+
+
+/* Admin role selector density: keep account roles compact and readable */
+.app-shell .role-panel .role-list select {
+  width: 118px;
+  max-width: 118px;
+  min-height: 36px;
+  padding: 0 30px 0 10px;
+  border: 1px solid #dfe2e4;
+  border-radius: 9px;
+  background-color: #fff;
+  color: #2f3437;
+  font-size: .8125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.2;
+  text-transform: capitalize;
+}
+
+.app-shell .role-panel .role-list select option {
+  font-size: .8125rem;
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .app-shell .role-panel .role-list select {
+    width: 112px;
+    max-width: 112px;
+    min-height: 36px;
+    padding-left: 9px;
+    font-size: .8125rem !important;
+    font-weight: 600 !important;
+  }
+
+  .app-shell .role-panel .role-list article {
+    min-height: 56px;
+  }
+}
