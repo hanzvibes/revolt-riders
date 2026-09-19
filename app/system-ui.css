@@ -3484,3 +3484,83 @@
     padding: 8px 7px;
   }
 }
+
+
+/* Align unified hero metrics across tablet and desktop */
+@media (min-width: 721px) {
+  .app-shell .unified-hero-data {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #2a2f32;
+    border-radius: 12px;
+    background: #191c1f;
+  }
+
+  .app-shell .unified-personal-stats,
+  .app-shell .unified-community-stats {
+    display: contents;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    min-height: 62px;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+  }
+
+  .app-shell .unified-personal-stat + .unified-personal-stat,
+  .app-shell .unified-community-stat + .unified-community-stat {
+    border-left: 0;
+  }
+
+  .app-shell .unified-personal-stat:not(:first-child),
+  .app-shell .unified-community-stat {
+    border-left: 1px solid #2a2f32;
+  }
+
+  .app-shell .unified-personal-stat > svg,
+  .app-shell .unified-community-stat > svg {
+    width: 27px;
+    height: 27px;
+    flex: 0 0 27px;
+    padding: 6px;
+  }
+
+  .app-shell .unified-personal-stat span,
+  .app-shell .unified-community-stat span {
+    gap: 3px;
+  }
+
+  .app-shell .unified-personal-stat small,
+  .app-shell .unified-community-stat small {
+    font-size: .39rem;
+    letter-spacing: .035em;
+  }
+
+  .app-shell .unified-personal-stat b,
+  .app-shell .unified-community-stat b {
+    font-size: clamp(.72rem, 1.45vw, .82rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .unified-hero-data {
+    gap: 5px;
+  }
+
+  .app-shell .unified-personal-stats,
+  .app-shell .unified-community-stats {
+    border-radius: 10px;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    min-height: 54px;
+    align-items: center;
+  }
+}
