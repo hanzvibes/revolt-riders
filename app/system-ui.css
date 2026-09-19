@@ -3564,3 +3564,197 @@
     align-items: center;
   }
 }
+
+
+/* Final unified hero rhythm normalization */
+.app-shell .unified-dashboard-hero {
+  display: grid;
+  grid-template-rows: auto auto auto;
+  row-gap: 0;
+  padding: 18px 20px 16px !important;
+}
+
+.app-shell .unified-hero-top {
+  min-height: 0 !important;
+  margin: 0;
+  padding: 0 0 14px !important;
+  gap: 12px !important;
+}
+
+.app-shell .unified-member {
+  gap: 10px !important;
+}
+
+.app-shell .unified-member-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0;
+}
+
+.app-shell .unified-member-copy > small {
+  margin: 0 0 3px !important;
+  line-height: 1 !important;
+}
+
+.app-shell .unified-member-copy > strong {
+  margin: 0;
+  line-height: 1.08 !important;
+}
+
+.app-shell .unified-member-chips {
+  margin: 7px 0 0 !important;
+}
+
+.app-shell .unified-hero-main {
+  min-height: 0 !important;
+  margin: 0;
+  padding: 18px 0 16px !important;
+  align-items: center;
+}
+
+.app-shell .unified-hero-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.app-shell .unified-hero-eyebrow {
+  margin: 0 0 8px !important;
+  gap: 8px !important;
+  line-height: 1;
+}
+
+.app-shell .unified-hero-eyebrow span,
+.app-shell .unified-hero-eyebrow em {
+  line-height: 1 !important;
+}
+
+.app-shell .unified-hero-copy h2 {
+  margin: 0 !important;
+  line-height: .98 !important;
+}
+
+.app-shell .unified-hero-desc {
+  margin: 11px 0 0 !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell .unified-hero-meta {
+  margin: 11px 0 0 !important;
+}
+
+.app-shell .unified-hero-meta p {
+  margin: 0 !important;
+  line-height: 1.35 !important;
+}
+
+.app-shell .unified-hero-actions {
+  margin: 15px 0 0 !important;
+  gap: 8px !important;
+  align-items: center;
+}
+
+.app-shell .unified-primary-action,
+.app-shell .unified-secondary-action {
+  margin: 0 !important;
+  line-height: 1 !important;
+}
+
+.app-shell .unified-hero-data {
+  margin: 0 !important;
+}
+
+.app-shell .unified-personal-stat,
+.app-shell .unified-community-stat {
+  min-height: 62px;
+  align-items: center !important;
+  padding-block: 10px !important;
+}
+
+.app-shell .unified-personal-stat span,
+.app-shell .unified-community-stat span {
+  justify-content: center;
+  gap: 4px !important;
+}
+
+.app-shell .unified-personal-stat small,
+.app-shell .unified-community-stat small {
+  margin: 0;
+  line-height: 1 !important;
+}
+
+.app-shell .unified-personal-stat b,
+.app-shell .unified-community-stat b {
+  margin: 0;
+  line-height: 1.05 !important;
+}
+
+@media (min-width: 721px) {
+  .app-shell .unified-hero-data {
+    margin-top: 0 !important;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    padding: 10px 12px !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .unified-dashboard-hero {
+    padding: 13px !important;
+  }
+
+  .app-shell .unified-hero-top {
+    padding-bottom: 11px !important;
+    gap: 9px !important;
+  }
+
+  .app-shell .unified-member {
+    gap: 8px !important;
+  }
+
+  .app-shell .unified-member-copy > small {
+    margin-bottom: 2px !important;
+  }
+
+  .app-shell .unified-member-chips {
+    margin-top: 5px !important;
+  }
+
+  .app-shell .unified-hero-main {
+    padding: 14px 0 13px !important;
+  }
+
+  .app-shell .unified-hero-eyebrow {
+    margin-bottom: 7px !important;
+  }
+
+  .app-shell .unified-hero-desc,
+  .app-shell .unified-hero-meta {
+    margin-top: 9px !important;
+  }
+
+  .app-shell .unified-hero-actions {
+    margin-top: 11px !important;
+    gap: 6px !important;
+  }
+
+  .app-shell .unified-hero-data {
+    gap: 5px !important;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    min-height: 52px;
+    padding: 8px 7px !important;
+  }
+
+  .app-shell .unified-personal-stat span,
+  .app-shell .unified-community-stat span {
+    gap: 3px !important;
+  }
+}
