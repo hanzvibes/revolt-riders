@@ -373,17 +373,6 @@ export default function MemberPage() {
               </div>
             </div>
 
-            <div className="member-directory-crest" aria-hidden="true">
-              <Image
-                src="/revolt-riders-logo.jpg"
-                alt=""
-                width={44}
-                height={44}
-                className="member-directory-crest-logo"
-                priority
-              />
-              <span>RR</span>
-            </div>
           </div>
 
           <div className="member-directory-hero-main">
