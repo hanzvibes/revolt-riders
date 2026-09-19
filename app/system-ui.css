@@ -2624,3 +2624,586 @@
     min-width: 50px;
   }
 }
+
+
+/* ==========================================================================
+   UNIFIED DASHBOARD HERO — BOLD REVOLT RIDERS
+   ========================================================================== */
+
+.app-shell .dashboard-grid.dashboard-premium > .unified-dashboard-hero {
+  grid-column: 1 / -1;
+}
+
+.app-shell .unified-dashboard-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 22px;
+  border: 1px solid #2b2f33;
+  border-radius: 24px;
+  background: #121416;
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(14, 16, 18, .14);
+}
+
+.app-shell .unified-dashboard-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: var(--rr-red);
+}
+
+.app-shell .unified-hero-top {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #292d30;
+}
+
+.app-shell .unified-member {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 13px;
+}
+
+.app-shell .unified-member-avatar {
+  display: grid;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  place-items: center;
+  border: 1px solid #353a3e;
+  border-radius: 50%;
+  background: #1d2023;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 900;
+  letter-spacing: -.03em;
+  box-shadow: inset 0 0 0 3px rgba(220, 27, 42, .08);
+}
+
+.app-shell .unified-member-copy {
+  min-width: 0;
+}
+
+.app-shell .unified-member-copy > small {
+  display: block;
+  margin-bottom: 3px;
+  color: #787f84;
+  font-size: .5rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.app-shell .unified-member-copy > strong {
+  display: block;
+  max-width: 420px;
+  overflow: hidden;
+  color: #f8f8f8;
+  font-size: 1rem;
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .unified-member-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.app-shell .unified-member-chips span {
+  display: inline-flex;
+  min-height: 23px;
+  align-items: center;
+  border: 1px solid #34393d;
+  border-radius: 7px;
+  background: #191c1f;
+  color: #aeb3b7;
+  padding: 0 8px;
+  font-size: .49rem;
+  font-weight: 850;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.app-shell .unified-member-chips span:last-child {
+  border-color: rgba(220, 27, 42, .32);
+  color: #ff5964;
+}
+
+.app-shell .unified-hero-badge {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-shell .unified-crest-badge {
+  width: 76px;
+  min-height: 88px;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid #30353a;
+  border-radius: 16px;
+  background: #1a1d20;
+}
+
+.app-shell .unified-crest-logo {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.app-shell .unified-crest-badge > span {
+  color: #ff4c58;
+  font-size: .62rem;
+  font-weight: 900;
+  letter-spacing: .12em;
+}
+
+.app-shell .unified-event-badge {
+  width: 76px;
+  min-height: 88px;
+  flex-direction: column;
+  border: 1px solid #30353a;
+  border-radius: 16px;
+  background: #1a1d20;
+}
+
+.app-shell .unified-event-badge small {
+  color: #ff5661;
+  font-size: .52rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.app-shell .unified-event-badge b {
+  margin: 3px 0;
+  color: #fff;
+  font-size: 2rem;
+  line-height: .95;
+}
+
+.app-shell .unified-event-badge span {
+  color: #82898e;
+  font-size: .46rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.app-shell .unified-hero-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 190px;
+  align-items: center;
+  padding: 24px 0 22px;
+}
+
+.app-shell .unified-hero-copy {
+  position: relative;
+  z-index: 2;
+  max-width: 760px;
+}
+
+.app-shell .unified-hero-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.app-shell .unified-hero-eyebrow span {
+  color: #ff4c58;
+  font-size: .57rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+}
+
+.app-shell .unified-hero-eyebrow em {
+  color: #777e83;
+  font-size: .58rem;
+  font-style: normal;
+  font-weight: 750;
+}
+
+.app-shell .unified-hero-copy h2 {
+  max-width: 760px;
+  margin: 0;
+  color: #fff;
+  font-size: clamp(2.15rem, 4.2vw, 3.75rem);
+  font-weight: 900;
+  line-height: .94;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+}
+
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta {
+  margin-top: 13px;
+}
+
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #a4aaae;
+  font-size: .66rem;
+  font-weight: 650;
+}
+
+.app-shell .unified-hero-desc {
+  margin-bottom: 0;
+}
+
+.app-shell .unified-hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.app-shell .unified-hero-meta p {
+  margin: 0;
+}
+
+.app-shell .unified-hero-desc svg,
+.app-shell .unified-hero-meta svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: #656d72;
+}
+
+.app-shell .unified-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.app-shell .unified-primary-action,
+.app-shell .unified-secondary-action {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 10px;
+  padding: 0 14px;
+  font-size: .61rem;
+  font-weight: 850;
+  transition: background .16s ease, border-color .16s ease, transform .16s ease;
+}
+
+.app-shell .unified-primary-action {
+  background: var(--rr-red);
+  color: #fff;
+}
+
+.app-shell .unified-primary-action:hover {
+  background: #c91826;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.app-shell .unified-primary-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-shell .unified-secondary-action {
+  border: 1px solid #363b3f;
+  background: #1a1d20;
+  color: #c2c6c9;
+}
+
+.app-shell .unified-secondary-action:hover {
+  border-color: #4a5055;
+  background: #202427;
+  color: #fff;
+}
+
+.app-shell .unified-hero-watermark {
+  position: absolute;
+  right: 2%;
+  top: 50%;
+  z-index: 0;
+  transform: translateY(-50%);
+  color: #1a1d1f;
+  font-size: clamp(8rem, 15vw, 14rem);
+  font-weight: 950;
+  line-height: .8;
+  letter-spacing: -.09em;
+  user-select: none;
+  pointer-events: none;
+}
+
+.app-shell .unified-hero-data {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(250px, .8fr) minmax(0, 1.35fr);
+  gap: 10px;
+}
+
+.app-shell .unified-personal-stats,
+.app-shell .unified-community-stats {
+  display: grid;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #2b3033;
+  border-radius: 13px;
+  background: #191c1f;
+}
+
+.app-shell .unified-personal-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell .unified-community-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.app-shell .unified-personal-stat,
+.app-shell .unified-community-stat {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 13px;
+}
+
+.app-shell .unified-personal-stat + .unified-personal-stat,
+.app-shell .unified-community-stat + .unified-community-stat {
+  border-left: 1px solid #2b3033;
+}
+
+.app-shell .unified-personal-stat > svg,
+.app-shell .unified-community-stat > svg {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+  padding: 7px;
+  border-radius: 8px;
+  background: #24282b;
+  color: #ff4f5b;
+}
+
+.app-shell .unified-personal-stat span,
+.app-shell .unified-community-stat span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.app-shell .unified-personal-stat small,
+.app-shell .unified-community-stat small {
+  color: #7f868b;
+  font-size: .45rem;
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.app-shell .unified-personal-stat b,
+.app-shell .unified-community-stat b {
+  min-width: 0;
+  overflow: hidden;
+  color: #f5f6f6;
+  font-size: .86rem;
+  font-weight: 850;
+  line-height: 1.1;
+  letter-spacing: -.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 1050px) {
+  .app-shell .unified-hero-data {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .unified-dashboard-hero {
+    padding: 15px;
+    border-radius: 18px;
+  }
+
+  .app-shell .unified-hero-top {
+    gap: 10px;
+    padding-bottom: 13px;
+  }
+
+  .app-shell .unified-member {
+    gap: 9px;
+  }
+
+  .app-shell .unified-member-avatar {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    font-size: .76rem;
+  }
+
+  .app-shell .unified-member-copy > small {
+    font-size: .43rem;
+  }
+
+  .app-shell .unified-member-copy > strong {
+    max-width: 58vw;
+    font-size: .82rem;
+  }
+
+  .app-shell .unified-member-chips {
+    gap: 4px;
+    margin-top: 5px;
+  }
+
+  .app-shell .unified-member-chips span {
+    min-height: 20px;
+    padding: 0 6px;
+    font-size: .42rem;
+  }
+
+  .app-shell .unified-crest-badge,
+  .app-shell .unified-event-badge {
+    width: 58px;
+    min-height: 68px;
+    border-radius: 12px;
+  }
+
+  .app-shell .unified-crest-logo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .unified-crest-badge > span {
+    font-size: .5rem;
+  }
+
+  .app-shell .unified-event-badge b {
+    font-size: 1.45rem;
+  }
+
+  .app-shell .unified-hero-main {
+    min-height: 0;
+    padding: 18px 0 17px;
+  }
+
+  .app-shell .unified-hero-eyebrow {
+    margin-bottom: 8px;
+  }
+
+  .app-shell .unified-hero-eyebrow span {
+    font-size: .48rem;
+  }
+
+  .app-shell .unified-hero-eyebrow em {
+    font-size: .49rem;
+  }
+
+  .app-shell .unified-hero-copy h2 {
+    max-width: 88%;
+    font-size: clamp(1.55rem, 7vw, 2.05rem);
+    line-height: .97;
+  }
+
+  .app-shell .unified-hero-desc,
+  .app-shell .unified-hero-meta p {
+    font-size: .57rem;
+  }
+
+  .app-shell .unified-hero-actions {
+    gap: 6px;
+    margin-top: 13px;
+  }
+
+  .app-shell .unified-primary-action,
+  .app-shell .unified-secondary-action {
+    min-height: 35px;
+    padding: 0 11px;
+    border-radius: 9px;
+    font-size: .54rem;
+  }
+
+  .app-shell .unified-hero-watermark {
+    right: -3%;
+    font-size: 7.5rem;
+  }
+
+  .app-shell .unified-hero-data {
+    gap: 7px;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    gap: 6px;
+    padding: 9px 8px;
+  }
+
+  .app-shell .unified-personal-stat > svg,
+  .app-shell .unified-community-stat > svg {
+    width: 23px;
+    height: 23px;
+    flex-basis: 23px;
+    padding: 5px;
+    border-radius: 7px;
+  }
+
+  .app-shell .unified-personal-stat small,
+  .app-shell .unified-community-stat small {
+    font-size: .38rem;
+    letter-spacing: .025em;
+  }
+
+  .app-shell .unified-personal-stat b,
+  .app-shell .unified-community-stat b {
+    font-size: clamp(.63rem, 2.8vw, .75rem);
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .unified-dashboard-hero {
+    padding: 13px;
+  }
+
+  .app-shell .unified-member-copy > strong {
+    max-width: 54vw;
+  }
+
+  .app-shell .unified-community-stat {
+    padding: 8px 6px;
+  }
+
+  .app-shell .unified-community-stat > svg {
+    width: 21px;
+    height: 21px;
+    flex-basis: 21px;
+    padding: 4px;
+  }
+
+  .app-shell .unified-community-stat small {
+    font-size: .35rem;
+  }
+
+  .app-shell .unified-community-stat b {
+    font-size: .63rem;
+  }
+}
