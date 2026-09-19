@@ -218,7 +218,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
               <span className="accordion-title">Komunitas</span>
               <ChevronDown className="accordion-chevron" />
             </button>
-            {openSections.komunitas && renderNavLinks(komunitasItems, true)}
+            {renderNavLinks(komunitasItems, true)}
           </div>
 
           {/* Operasional Lapangan (Khusus Road Captain, Admin, Superadmin) */}
@@ -235,7 +235,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
                 {pendingJoinCount > 0 && <b className="sidebar-badge-pill">{pendingJoinCount}</b>}
                 <ChevronDown className="accordion-chevron" />
               </button>
-              {openSections.operational && renderNavLinks(operationalItems, true)}
+              {renderNavLinks(operationalItems, true)}
             </div>
           )}
 
@@ -252,7 +252,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
                 <span className="accordion-title">Administrasi</span>
                 <ChevronDown className="accordion-chevron" />
               </button>
-              {openSections.admin && renderNavLinks(adminItems, true)}
+              {renderNavLinks(adminItems, true)}
             </div>
           )}
         </div>
@@ -318,7 +318,13 @@ export function AppShell({ active, title, children }: { active: string; title: s
         </div>
       </aside>
 
-      {open && <button className="shade" onClick={() => setOpen(false)} aria-label="Tutup menu" />}
+      <button
+        className={`shade${open ? " open" : ""}`}
+        onClick={() => setOpen(false)}
+        aria-label="Tutup menu"
+        aria-hidden={!open}
+        tabIndex={open ? 0 : -1}
+      />
 
       <section className="content">
         <header>
