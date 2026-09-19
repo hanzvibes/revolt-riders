@@ -299,11 +299,12 @@ export default function DashboardPage() {
             {renderRiderCard()}
           </div>
 
-          {/* Modern Event Spotlight Hero */}
-          <section className="hero">
+          {/* Editorial member hub / event spotlight hero */}
+          <section className={`hero ${nextEvent ? "hero-has-event" : "hero-community"}`}>
             <div className="hero-content">
               <div className="hero-eyebrow">
                 <span className="hero-tag">{nextEvent ? (nextEvent.type || "Agenda") : "Revolt Riders"}</span>
+                <span className="hero-eyebrow-line" aria-hidden="true" />
                 <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
               </div>
               <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
@@ -315,9 +316,14 @@ export default function DashboardPage() {
               ) : (
                 <p className="hero-desc"><ShieldCheck />Satu aspal, satu persaudaraan.</p>
               )}
-              <a className="primary-action hero-cta" href="/agenda">
-                Buka agenda <ChevronRight />
-              </a>
+              <div className="hero-footer">
+                <a className="primary-action hero-cta" href="/agenda">
+                  Lihat agenda <ChevronRight />
+                </a>
+                {!nextEvent && (
+                  <span className="hero-community-meta">Situbondo · Est. 2022</span>
+                )}
+              </div>
             </div>
             {nextEvent ? (
               <div className="hero-date-badge">
@@ -326,9 +332,16 @@ export default function DashboardPage() {
                 <span className="hero-badge-status">Terdekat</span>
               </div>
             ) : (
-              <div className="hero-date-badge fallback-badge">
-                <Image src="/revolt-riders-logo.jpg" alt="Revolt Riders" width={44} height={44} className="hero-badge-logo" />
-                <span className="hero-badge-year">2026</span>
+              <div className="hero-crest" aria-hidden="true">
+                <Image
+                  src="/revolt-riders-logo.jpg"
+                  alt=""
+                  width={156}
+                  height={156}
+                  className="hero-crest-image"
+                  priority
+                />
+                <span>RR</span>
               </div>
             )}
           </section>
