@@ -2404,3 +2404,56 @@
     font-size: clamp(.62rem, 2.7vw, .74rem);
   }
 }
+
+
+/* Robust hero frame: isolates internal dashboard layout from legacy .hero flex rules. */
+.app-shell .dashboard-premium .hero {
+  display: block !important;
+}
+
+.app-shell .dashboard-premium .hero-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 22px;
+  row-gap: 18px;
+  min-width: 0;
+}
+
+.app-shell .dashboard-premium .hero-frame > .hero-content {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+}
+
+.app-shell .dashboard-premium .hero-frame > .hero-date-badge {
+  position: static;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: center;
+}
+
+.app-shell .dashboard-premium .hero-frame > .hero-summary {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-premium .hero-frame {
+    column-gap: 10px;
+    row-gap: 13px;
+  }
+
+  .app-shell .dashboard-premium .hero-frame > .hero-content {
+    max-width: none;
+    padding-right: 0;
+  }
+
+  .app-shell .dashboard-premium .hero-frame > .hero-date-badge {
+    position: static;
+    top: auto;
+    right: auto;
+  }
+}
