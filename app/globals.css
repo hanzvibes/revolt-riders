@@ -872,3 +872,20 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
     animation-iteration-count: 1 !important;
   }
 }
+
+
+/* Invitation event date/time formatting */
+.invitation-event-item-v2 > span:last-child em {
+  margin-top: 1px;
+  color: #c8cdd1;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+@media (max-width: 640px) {
+  .invitation-event-item-v2 > span:last-child em {
+    font-size: .68rem;
+  }
+}
