@@ -4783,3 +4783,13 @@
     padding: 5px;
   }
 }
+
+
+/* Member hero without corner crest */
+.app-shell .member-directory-hero-top {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.app-shell .member-directory-brand {
+  justify-self: start;
+}
