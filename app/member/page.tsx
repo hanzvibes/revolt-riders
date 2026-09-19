@@ -373,6 +373,18 @@ export default function MemberPage() {
               </div>
             </div>
 
+            <button
+              type="button"
+              className="member-directory-refresh member-directory-refresh-top"
+              onClick={() => {
+                invalidateCache("member_profiles_list");
+                void loadMembers();
+              }}
+              disabled={loading}
+            >
+              <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" />
+              <span>{loading ? "Memuat data" : "Refresh data"}</span>
+            </button>
           </div>
 
           <div className="member-directory-hero-main">
@@ -396,18 +408,6 @@ export default function MemberPage() {
                 Data member resmi, kilometer riding, dan aktivitas terverifikasi
                 dalam satu direktori internal.
               </p>
-              <button
-                type="button"
-                className="member-directory-refresh"
-                onClick={() => {
-                  invalidateCache("member_profiles_list");
-                  void loadMembers();
-                }}
-                disabled={loading}
-              >
-                <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" />
-                <span>{loading ? "Memuat data" : "Refresh data"}</span>
-              </button>
             </div>
 
             <div className="member-directory-watermark" aria-hidden="true">
