@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { ModalSheet } from "@/components/modal-sheet";
 import {
   RideLogEditModal,
@@ -407,19 +408,14 @@ export default function MemberPage() {
                 <Users />
                 <span>
                   <small>Total Member</small>
-                  <b>{members.length} Riders</b>
+                  <b><CountUpNumber value={members.length} suffix=" Riders" /></b>
                 </span>
               </article>
               <article className="member-stat-chip">
                 <Gauge />
                 <span>
                   <small>Total Kilometer</small>
-                  <b>
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(totalKmCombined)}{" "}
-                    KM
-                  </b>
+                  <b><CountUpNumber value={totalKmCombined} suffix=" KM" /></b>
                 </span>
               </article>
             </div>
@@ -562,10 +558,11 @@ export default function MemberPage() {
                 <span>
                   <small>Total Kilometer</small>
                   <b>
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 1,
-                    }).format(selectedMember.total_km)}{" "}
-                    KM
+                    <CountUpNumber
+                      value={selectedMember.total_km}
+                      maximumFractionDigits={1}
+                      suffix=" KM"
+                    />
                   </b>
                 </span>
               </div>
@@ -573,7 +570,7 @@ export default function MemberPage() {
                 <Compass />
                 <span>
                   <small>Riwayat Sowan / Agenda</small>
-                  <b>{touringRecords.length} Agenda</b>
+                  <b><CountUpNumber value={touringRecords.length} suffix=" Agenda" /></b>
                 </span>
               </div>
             </div>
