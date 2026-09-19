@@ -5405,3 +5405,101 @@
     font-size: .57rem;
   }
 }
+
+
+/* Member directory hero typography scale-up */
+.app-shell .member-directory-brand small {
+  font-size: .56rem !important;
+  letter-spacing: .075em;
+}
+
+.app-shell .member-directory-brand strong {
+  font-size: 1.08rem !important;
+  line-height: 1.05 !important;
+}
+
+.app-shell .member-directory-brand span {
+  margin-top: 6px;
+  font-size: .62rem !important;
+}
+
+.app-shell .member-directory-eyebrow span {
+  font-size: .64rem !important;
+}
+
+.app-shell .member-directory-eyebrow em {
+  font-size: .64rem !important;
+}
+
+.app-shell .member-directory-hero-copy h2 {
+  font-size: clamp(2.15rem, 3.5vw, 3.25rem) !important;
+}
+
+.app-shell .member-directory-hero-copy p {
+  max-width: 610px;
+  font-size: .74rem !important;
+  line-height: 1.5;
+}
+
+.app-shell .member-directory-refresh {
+  font-size: .64rem !important;
+}
+
+.app-shell .member-directory-hero-stats small {
+  font-size: .48rem !important;
+  letter-spacing: .045em;
+}
+
+.app-shell .member-directory-hero-stats b {
+  font-size: clamp(.88rem, 1.6vw, 1.02rem) !important;
+}
+
+.app-shell .member-directory-hero-stats > div {
+  min-height: 68px;
+  gap: 10px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .member-directory-brand small {
+    font-size: .48rem !important;
+  }
+
+  .app-shell .member-directory-brand strong {
+    font-size: .92rem !important;
+  }
+
+  .app-shell .member-directory-brand span {
+    font-size: .54rem !important;
+  }
+
+  .app-shell .member-directory-eyebrow span,
+  .app-shell .member-directory-eyebrow em {
+    font-size: .56rem !important;
+  }
+
+  .app-shell .member-directory-hero-copy h2 {
+    font-size: clamp(1.72rem, 7vw, 2.12rem) !important;
+  }
+
+  .app-shell .member-directory-hero-copy p {
+    max-width: 95%;
+    font-size: .66rem !important;
+  }
+
+  .app-shell .member-directory-refresh,
+  .app-shell .member-directory-refresh-top {
+    font-size: .56rem !important;
+  }
+
+  .app-shell .member-directory-hero-stats > div {
+    min-height: 58px;
+  }
+
+  .app-shell .member-directory-hero-stats small {
+    font-size: .44rem !important;
+  }
+
+  .app-shell .member-directory-hero-stats b {
+    font-size: .82rem !important;
+  }
+}
