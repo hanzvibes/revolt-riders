@@ -19,7 +19,7 @@
   color: var(--ink);
   padding: 0 15px;
   font-size: 0.63rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.025em;
 }
 .outline-action:hover {
@@ -105,7 +105,7 @@
   color: var(--red);
   font-size: 0.56rem;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.15em;
 }
 .native-sheet > header h2 {
@@ -248,7 +248,7 @@
   color: var(--red);
   font-size: 0.55rem;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.14em;
 }
 .admin-launch-card h2 {
@@ -648,7 +648,7 @@
   flex: 1;
   min-height: 44px;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 800;
   justify-content: center;
   margin: 0;
 }
@@ -657,7 +657,7 @@
   min-width: 90px;
   min-height: 44px;
   font-size: 0.72rem;
-  font-weight: 850;
+  font-weight: 800;
   justify-content: center;
   margin: 0;
 }
@@ -958,7 +958,7 @@
   background: linear-gradient(135deg, #1b1d1f, #2e3236);
   color: #fff;
   font-size: 0.65rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.04em;
   flex: none;
   box-shadow: 0 0 0 2px rgba(220, 27, 42, 0.18);
@@ -1143,7 +1143,7 @@
   background: linear-gradient(135deg, #1b1d1f, #2e3236);
   color: #fff;
   font-size: 1rem;
-  font-weight: 900;
+  font-weight: 800;
   flex: none;
   box-shadow: 0 0 0 3px rgba(220, 27, 42, 0.22);
 }
@@ -1162,7 +1162,7 @@
 }
 .member-detail-name {
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.02em;
   margin: 0;
@@ -1208,7 +1208,7 @@
 }
 .member-detail-stat-box b {
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.02em;
 }
@@ -1259,7 +1259,7 @@
 }
 .member-touring-header h4 {
   font-size: 0.88rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   margin: 0;
 }
@@ -1363,7 +1363,7 @@
   display: block;
   font-size: 0.52rem;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.1em;
   color: #f87171;
   text-transform: uppercase;
@@ -1405,7 +1405,7 @@
 }
 .my-standing-rank b {
   font-size: 0.96rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #fff;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -1426,7 +1426,7 @@
 }
 .my-standing-distance b {
   font-size: 0.88rem;
-  font-weight: 900;
+  font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.01em;
   line-height: 1.1;
@@ -1472,7 +1472,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-weight: 900;
+  font-weight: 800;
   margin-bottom: 4px;
 }
 .podium-name {
@@ -1500,7 +1500,7 @@
   padding: 2px 6px;
   border-radius: 10px;
   font-size: 0.60rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 .podium-km svg {
   width: 11px;
@@ -1667,7 +1667,7 @@
   background: #f1f3f4;
   color: #4b5258;
   font-size: 0.60rem;
-  font-weight: 900;
+  font-weight: 800;
   flex: none;
 }
 .leaderboard-row.my-row .leaderboard-rank-num {
@@ -1707,7 +1707,7 @@
 }
 .leaderboard-row-you {
   font-size: 0.48rem;
-  font-weight: 900;
+  font-weight: 800;
   padding: 1px 5px;
   border-radius: 3px;
   background: #fee2e2;
@@ -1739,7 +1739,7 @@
   align-items: center;
   gap: 4px;
   font-size: 0.74rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   flex: none;
   white-space: nowrap;
@@ -1952,7 +1952,7 @@
 }
 .stats article b {
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--ink);
   margin: 1px 0;
@@ -2027,7 +2027,7 @@
   background: linear-gradient(135deg, #1b1d1f, #2e3236);
   color: #fff;
   font-size: 0.85rem;
-  font-weight: 900;
+  font-weight: 800;
   flex: none;
   box-shadow: 0 0 0 2px rgba(220, 27, 42, 0.22);
 }
@@ -2071,7 +2071,7 @@
 }
 .rider-status-metric b {
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   margin-top: 2px;
 }
@@ -2150,7 +2150,7 @@
 }
 .admin-kpi-val {
   font-size: 1.08rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--ink);
   letter-spacing: -0.02em;
   line-height: 1.2;
@@ -2319,7 +2319,7 @@
   display: block;
   font-size: 0.54rem;
   font-style: normal;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--red);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -2529,7 +2529,7 @@ html {
   padding: 0 6px;
   border-radius: 999px;
   font-size: 0.6rem;
-  font-weight: 900;
+  font-weight: 800;
   background: #f1f5f9;
   color: #475569;
 }
@@ -2966,7 +2966,7 @@ html {
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 0.66rem;
-  font-weight: 750;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -3203,7 +3203,7 @@ html {
   padding: 1px 6px;
   border-radius: 9999px;
   font-size: 0.62rem;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.3;
   letter-spacing: 0;
   box-shadow: 0 0 10px rgba(229, 29, 42, 0.45);
@@ -3282,7 +3282,7 @@ html {
   border: 1.5px solid var(--red);
   color: #fff;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 800;
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -3308,7 +3308,7 @@ html {
 
 .sidebar-role-pill {
   font-size: 0.52rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.06em;
   padding: 1px 5px;
   border-radius: 4px;
@@ -3506,7 +3506,7 @@ html {
   background: var(--red);
   color: #fff;
   font-size: 0.54rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.14em;
   padding: 2px 7px;
   border-radius: 4px;
@@ -3522,7 +3522,7 @@ html {
 
 .hero h2 {
   font-size: clamp(1.2rem, 2.2vw, 1.65rem) !important;
-  font-weight: 900 !important;
+  font-weight: 800 !important;
   line-height: 1.18 !important;
   letter-spacing: -0.02em !important;
   font-style: normal !important;
@@ -3588,7 +3588,7 @@ html {
 
 .hero-badge-month {
   font-size: 0.62rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--red);
   letter-spacing: 0.15em;
   text-transform: uppercase;
@@ -3597,7 +3597,7 @@ html {
 
 .hero-badge-day {
   font-size: 2.1rem;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1;
   color: #fff;
   margin: 4px 0;
@@ -3606,7 +3606,7 @@ html {
 
 .hero-badge-status {
   font-size: 0.52rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.08em;
   padding: 2px 6px;
   border-radius: 4px;
@@ -3627,7 +3627,7 @@ html {
 
 .fallback-badge .hero-badge-year {
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--red);
   letter-spacing: 0.1em;
 }
@@ -3670,7 +3670,7 @@ html {
 
 .event-soon-pill {
   font-size: 0.52rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.06em;
   padding: 1px 5px;
   border-radius: 4px;
@@ -3722,7 +3722,7 @@ html {
 
 .bullet-badge {
   font-size: 0.56rem;
-  font-weight: 900;
+  font-weight: 800;
   color: var(--red);
   letter-spacing: 0.12em;
 }
@@ -3812,7 +3812,7 @@ html {
 .dashboard-premium .hero-eyebrow em {
   color: #8f959a;
   font-size: 0.64rem;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -3821,7 +3821,7 @@ html {
   max-width: 520px;
   margin: 2px 0 3px !important;
   font-size: clamp(1.65rem, 3vw, 2.25rem) !important;
-  font-weight: 780 !important;
+  font-weight: 700 !important;
   line-height: 1.06 !important;
   letter-spacing: -0.045em !important;
 }
@@ -3881,7 +3881,7 @@ html {
 .dashboard-premium .hero-badge-day {
   margin: 5px 0 7px;
   font-size: 2rem;
-  font-weight: 760;
+  font-weight: 700;
   letter-spacing: -0.045em;
 }
 
@@ -3892,7 +3892,7 @@ html {
   background: transparent;
   color: #ef727b;
   font-size: 0.54rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -3933,7 +3933,7 @@ html {
 .dashboard-premium .quick-action-title {
   color: #202326;
   font-size: 0.72rem;
-  font-weight: 760;
+  font-weight: 700;
 }
 
 .dashboard-premium .quick-action-desc {
@@ -3967,7 +3967,7 @@ html {
 .dashboard-premium .stats article span > small:first-child {
   color: #858b90;
   font-size: 0.54rem;
-  font-weight: 750;
+  font-weight: 700;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -3976,7 +3976,7 @@ html {
   margin: 3px 0 1px;
   color: #1e2123;
   font-size: 1.05rem;
-  font-weight: 780;
+  font-weight: 700;
   letter-spacing: -0.035em;
 }
 
@@ -4008,7 +4008,7 @@ html {
 
 .dashboard-premium .section-title h3 {
   margin-top: 3px;
-  font-weight: 760;
+  font-weight: 700;
   letter-spacing: -0.025em;
 }
 
@@ -4031,7 +4031,7 @@ html {
 }
 
 .dashboard-premium .agenda-card .event time b {
-  font-weight: 780;
+  font-weight: 700;
 }
 
 .dashboard-premium .event-info em {
@@ -4053,7 +4053,7 @@ html {
 }
 
 .dashboard-premium .event-info h4 {
-  font-weight: 760;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
@@ -4074,7 +4074,7 @@ html {
 
 .dashboard-premium .rider-status-name {
   color: #202326;
-  font-weight: 780;
+  font-weight: 700;
 }
 
 .dashboard-premium .member-id-tag {
@@ -4101,7 +4101,7 @@ html {
 
 .dashboard-premium .rider-status-metric b {
   color: #232628;
-  font-weight: 760;
+  font-weight: 700;
 }
 
 .dashboard-premium .rider-status-actions .dark-action {
@@ -4128,7 +4128,7 @@ html {
 .dashboard-premium .bullet-badge {
   color: #b23640;
   font-size: 0.56rem;
-  font-weight: 720;
+  font-weight: 700;
   letter-spacing: 0.01em;
   text-transform: none;
 }
@@ -4136,7 +4136,7 @@ html {
 .dashboard-premium .bullet-card h3 {
   margin-top: 4px;
   font-size: 0.9rem;
-  font-weight: 760;
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
