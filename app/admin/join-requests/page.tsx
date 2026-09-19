@@ -779,7 +779,7 @@ export default function AdminJoinRequestsPage() {
                       href={`https://instagram.com/${item.instagram.replace(/^@/, "")}`}
                       target="_blank"
                       rel="noreferrer"
-                      style={{ color: "#e1306c", fontWeight: 750, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
+                      style={{ color: "#e1306c", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
                     >
                       <InstagramIcon size={12} />
                       <span>@{item.instagram.replace(/^@/, "")}</span>
@@ -1157,7 +1157,7 @@ export default function AdminJoinRequestsPage() {
                   borderRadius: 8,
                   padding: "9px 18px",
                   fontSize: "0.78rem",
-                  fontWeight: 750,
+                  fontWeight: 700,
                   cursor: "pointer",
                 }}
               >
@@ -1213,7 +1213,7 @@ export default function AdminJoinRequestsPage() {
                     border: "1.5px solid var(--red)",
                     borderRadius: 8,
                     padding: "10px 12px",
-                    fontWeight: 900,
+                    fontWeight: 800,
                     fontSize: "0.95rem",
                     letterSpacing: "0.08em",
                   }}
@@ -1234,7 +1234,7 @@ export default function AdminJoinRequestsPage() {
                   borderRadius: 8,
                   padding: "9px 18px",
                   fontSize: "0.78rem",
-                  fontWeight: 750,
+                  fontWeight: 700,
                   cursor: "pointer",
                 }}
               >
@@ -1251,7 +1251,7 @@ export default function AdminJoinRequestsPage() {
                   borderRadius: 8,
                   padding: "9px 20px",
                   fontSize: "0.78rem",
-                  fontWeight: 850,
+                  fontWeight: 800,
                   cursor: "pointer",
                   display: "inline-flex",
                   alignItems: "center",
