@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
@@ -503,7 +504,7 @@ export default function ProfilePage() {
                 TOTAL KM RESMI
               </small>
               <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)}{" "}
+                <CountUpNumber value={totalKm} maximumFractionDigits={1} />{" "}
                 <span style={{ fontSize: "0.7rem", color: "var(--red)" }}>KM</span>
               </b>
             </div>
@@ -513,7 +514,7 @@ export default function ProfilePage() {
                 RIWAYAT TOURING
               </small>
               <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                {approvedRidesCount}{" "}
+                <CountUpNumber value={approvedRidesCount} />{" "}
                 <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>log</span>
               </b>
             </div>
@@ -523,7 +524,7 @@ export default function ProfilePage() {
                 RESPONS RSVP
               </small>
               <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                {rsvpActivities.length}{" "}
+                <CountUpNumber value={rsvpActivities.length} />{" "}
                 <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>agenda</span>
               </b>
             </div>
