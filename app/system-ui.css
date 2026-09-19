@@ -7016,3 +7016,50 @@
     font-size: 1rem !important;
   }
 }
+
+
+/* Final shared-component typography normalization */
+[data-slot="button"],
+[data-slot="toggle"],
+[data-slot="toggle-group-item"],
+[data-slot="tabs-trigger"],
+[data-slot="pagination-link"],
+[data-slot="command-input"],
+[data-slot="command-item"] {
+  font-size: .8125rem !important;
+}
+
+[data-slot="badge"],
+[data-slot="kbd"] {
+  font-size: .6875rem !important;
+}
+
+.app-shell .native-sheet > header h2,
+.app-shell .tour-modal-header h3 {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+}
+
+/* Custom ModalSheet is also used outside AppShell (e.g. landing/public flows). */
+.native-sheet > header h2 {
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+@media (max-width: 720px) {
+  [data-slot="button"],
+  [data-slot="toggle"],
+  [data-slot="toggle-group-item"],
+  [data-slot="tabs-trigger"],
+  [data-slot="pagination-link"],
+  [data-slot="command-input"],
+  [data-slot="command-item"] {
+    font-size: .8125rem !important;
+  }
+
+  .native-sheet > header h2,
+  .app-shell .tour-modal-header h3 {
+    font-size: 1rem !important;
+  }
+}
