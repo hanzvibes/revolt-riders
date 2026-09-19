@@ -212,7 +212,7 @@ export default function AdminInsightsPage() {
                           background: "#f1f2f3",
                           display: "grid",
                           placeItems: "center",
-                          fontWeight: 900,
+                          fontWeight: 800,
                           fontSize: "0.7rem",
                           color: "var(--red)",
                           flexShrink: 0,
