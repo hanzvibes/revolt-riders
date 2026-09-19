@@ -906,3 +906,21 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
     font-size: .68rem;
   }
 }
+
+
+/* Invitation date/time hierarchy */
+.invitation-event-time-v2 {
+  margin-top: 2px;
+  color: #c9ced2;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 1.25;
+  letter-spacing: .01em;
+}
+
+@media (max-width: 640px) {
+  .invitation-event-time-v2 {
+    font-size: .68rem;
+  }
+}
