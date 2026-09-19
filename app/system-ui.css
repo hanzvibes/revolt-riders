@@ -6054,7 +6054,7 @@
 
 
 /* =========================================================
-   Digital Member Passport v2
+   Digital Member Passport v2 · Light
    ========================================================= */
 .app-shell .member-passport-card {
   position: relative;
@@ -6062,11 +6062,11 @@
   overflow: hidden;
   margin-bottom: 24px;
   padding: 24px;
-  border: 1px solid rgba(255,255,255,.11);
+  border: 1px solid #dfe2e4;
   border-radius: 22px;
-  background: #111315;
-  color: #fff;
-  box-shadow: 0 10px 28px rgba(0,0,0,.22) !important;
+  background: #ffffff;
+  color: #1c1f21;
+  box-shadow: 0 10px 28px rgba(20,22,24,.10) !important;
 }
 
 .app-shell .member-passport-card::before {
@@ -6078,7 +6078,7 @@
   right: 24px;
   height: 2px;
   background: var(--rr-red);
-  opacity: .9;
+  opacity: .95;
 }
 
 .app-shell .member-passport-watermark {
@@ -6088,16 +6088,16 @@
   top: 72px;
   width: 260px;
   height: 260px;
-  opacity: .035;
+  opacity: .045;
   pointer-events: none;
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
 }
 
 .app-shell .member-passport-watermark img {
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: grayscale(1) contrast(1.2);
+  filter: grayscale(1) invert(1) contrast(1.15);
 }
 
 .app-shell .member-passport-head {
@@ -6108,7 +6108,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 8px 0 17px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid #e9ebec;
 }
 
 .app-shell .member-passport-head > span:first-child {
@@ -6123,7 +6123,7 @@
 .app-shell .member-passport-achievements-head small,
 .app-shell .member-passport-name > small,
 .app-shell .member-passport-footer > span small {
-  color: #737a7f;
+  color: #8b9195;
   font-size: var(--rr-type-caption);
   font-weight: 700;
   line-height: 1.1;
@@ -6131,7 +6131,7 @@
 }
 
 .app-shell .member-passport-head strong {
-  color: #fff;
+  color: #1b1e20;
   font-size: var(--rr-type-card);
   font-weight: 800;
   line-height: 1.15;
@@ -6139,7 +6139,7 @@
 }
 
 .app-shell .member-passport-head em {
-  color: #5f666b;
+  color: #9ba0a4;
   font-size: .58rem;
   font-style: normal;
   font-weight: 600;
@@ -6152,10 +6152,10 @@
   flex: none;
   align-items: center;
   gap: 6px;
-  border: 1px solid rgba(255,255,255,.13);
+  border: 1px solid #e2e5e7;
   border-radius: 999px;
-  background: rgba(255,255,255,.045);
-  color: #d9dddf;
+  background: #f7f8f8;
+  color: #51575b;
   padding: 0 10px;
   font-size: var(--rr-type-caption);
   font-weight: 800;
@@ -6183,19 +6183,16 @@
   width: 74px;
   height: 74px;
   place-items: center;
-  border: 1px solid rgba(255,255,255,.16);
+  border: 1px solid #dfe2e4;
   border-radius: 18px;
-  background: #1a1d20;
-  color: #fff;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+  background: #f3f4f5;
+  color: #24282b;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 5px 14px rgba(20,22,24,.08);
   font-size: 1.35rem;
   font-weight: 800;
   letter-spacing: -.035em;
-}
-
-.app-shell .member-passport-avatar::after {
-  content: "";
-  position: absolute;
 }
 
 .app-shell .member-passport-name {
@@ -6205,7 +6202,7 @@
 .app-shell .member-passport-name h2 {
   margin: 4px 0 0;
   overflow-wrap: anywhere;
-  color: #fff;
+  color: #171a1c;
   font-size: clamp(1.55rem,3vw,2.15rem);
   font-weight: 800;
   line-height: 1;
@@ -6214,7 +6211,7 @@
 
 .app-shell .member-passport-name p {
   margin: 6px 0 0;
-  color: #858c91;
+  color: #7d8387;
   font-size: var(--rr-type-body);
   line-height: 1.35;
 }
@@ -6243,22 +6240,29 @@
 }
 
 .app-shell .member-passport-tags code {
-  border: 1px solid rgba(220,27,42,.38);
-  background: rgba(220,27,42,.12);
-  color: #ff6570;
+  border: 1px solid #efc4c8;
+  background: #fff3f4;
+  color: #b61725;
+}
+
+.app-shell .member-passport-tags .member-role-badge {
+  border: 1px solid #dfe2e4 !important;
+  background: #f4f5f6 !important;
+  color: #4f5559 !important;
+  box-shadow: none !important;
 }
 
 .app-shell .member-passport-status {
   gap: 5px;
-  border: 1px solid rgba(255,255,255,.10);
-  background: rgba(255,255,255,.035);
-  color: #adb3b7;
+  border: 1px solid #dce9e0;
+  background: #f3faf5;
+  color: #3f6f50;
 }
 
 .app-shell .member-passport-status svg {
   width: 12px;
   height: 12px;
-  color: #58cf82;
+  color: #249553;
 }
 
 .app-shell .member-passport-meta {
@@ -6266,8 +6270,8 @@
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(3,minmax(0,1fr));
-  border-top: 1px solid rgba(255,255,255,.075);
-  border-bottom: 1px solid rgba(255,255,255,.075);
+  border-top: 1px solid #e9ebec;
+  border-bottom: 1px solid #e9ebec;
 }
 
 .app-shell .member-passport-meta > span {
@@ -6281,7 +6285,7 @@
 }
 
 .app-shell .member-passport-meta > span + span {
-  border-left: 1px solid rgba(255,255,255,.075);
+  border-left: 1px solid #e9ebec;
 }
 
 .app-shell .member-passport-meta svg {
@@ -6290,19 +6294,19 @@
   height: 28px;
   padding: 6px;
   border-radius: 8px;
-  background: rgba(220,27,42,.09);
+  background: #fff0f1;
   color: var(--rr-red);
 }
 
 .app-shell .member-passport-meta small {
-  color: #666e73;
+  color: #999ea2;
   font-size: var(--rr-type-caption);
   font-weight: 600;
 }
 
 .app-shell .member-passport-meta b {
   overflow: hidden;
-  color: #d9dcde;
+  color: #3d4246;
   font-size: var(--rr-type-small);
   font-weight: 700;
   text-overflow: ellipsis;
@@ -6316,9 +6320,9 @@
   grid-template-columns: repeat(3,minmax(0,1fr));
   margin-top: 15px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,.075);
+  border: 1px solid #e3e6e8;
   border-radius: 12px;
-  background: rgba(255,255,255,.025);
+  background: #fafafa;
 }
 
 .app-shell .member-passport-metrics article {
@@ -6327,12 +6331,12 @@
 }
 
 .app-shell .member-passport-metrics article + article {
-  border-left: 1px solid rgba(255,255,255,.075);
+  border-left: 1px solid #e3e6e8;
 }
 
 .app-shell .member-passport-metrics small {
   display: block;
-  color: #676f74;
+  color: #969ca0;
   font-size: var(--rr-type-caption);
   font-weight: 700;
   line-height: 1.2;
@@ -6345,7 +6349,7 @@
   align-items: baseline;
   gap: 5px;
   margin-top: 4px;
-  color: #fff;
+  color: #1d2022;
   font-size: clamp(1.15rem,2vw,1.45rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
@@ -6353,7 +6357,7 @@
 }
 
 .app-shell .member-passport-metrics strong > span {
-  color: #747c81;
+  color: #8d9397;
   font-size: var(--rr-type-caption);
   font-weight: 700;
   letter-spacing: 0;
@@ -6373,9 +6377,9 @@
   min-width: 0;
   margin: 0;
   padding: 14px;
-  border: 1px solid rgba(255,255,255,.075);
+  border: 1px solid #e3e6e8;
   border-radius: 12px;
-  background: rgba(255,255,255,.018);
+  background: #fbfbfb;
 }
 
 .app-shell .member-passport-progress-head,
@@ -6396,7 +6400,7 @@
 
 .app-shell .member-passport-progress-head strong,
 .app-shell .member-passport-achievements-head strong {
-  color: #e8eaeb;
+  color: #303438;
   font-size: var(--rr-type-card);
   font-weight: 700;
   line-height: 1.15;
@@ -6412,7 +6416,7 @@
 }
 
 .app-shell .member-passport-achievements-head > b span {
-  color: #596066;
+  color: #a0a5a8;
   font-size: var(--rr-type-meta);
   font-weight: 700;
 }
@@ -6422,7 +6426,7 @@
   margin-top: 16px;
   overflow: hidden;
   border-radius: 999px;
-  background: rgba(255,255,255,.07);
+  background: #e8eaeb;
 }
 
 .app-shell .member-passport-progress-track > i {
@@ -6441,7 +6445,7 @@
 }
 
 .app-shell .member-passport-progress-scale small {
-  color: #596167;
+  color: #9ba0a4;
   font-size: .56rem;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
@@ -6454,7 +6458,7 @@
   gap: 9px;
   margin-top: 15px;
   padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,.065);
+  border-top: 1px solid #e7e9ea;
 }
 
 .app-shell .member-passport-progress-callout > svg {
@@ -6462,7 +6466,7 @@
   height: 34px;
   padding: 8px;
   border-radius: 9px;
-  background: rgba(220,27,42,.10);
+  background: #fff0f1;
   color: var(--rr-red);
 }
 
@@ -6474,13 +6478,13 @@
 }
 
 .app-shell .member-passport-progress-callout b {
-  color: #eceeef;
+  color: #353a3d;
   font-size: var(--rr-type-small);
   font-weight: 700;
 }
 
 .app-shell .member-passport-progress-callout small {
-  color: #666e73;
+  color: #949a9e;
   font-size: .59rem;
   font-weight: 600;
   line-height: 1.25;
@@ -6502,9 +6506,9 @@
   align-items: center;
   gap: 8px;
   padding: 8px 9px;
-  border: 1px solid rgba(255,255,255,.065);
+  border: 1px solid #e4e7e8;
   border-radius: 10px;
-  background: rgba(255,255,255,.02);
+  background: #ffffff;
   transition:
     transform var(--rr-motion-fast) ease-out,
     border-color var(--rr-motion-fast) ease,
@@ -6517,18 +6521,20 @@
 }
 
 .app-shell .member-passport-badges article.is-unlocked {
-  border-color: rgba(220,27,42,.20);
-  background: rgba(220,27,42,.04);
+  border-color: #efc5c9;
+  background: #fff7f8;
 }
 
 .app-shell .member-passport-badges article.is-unlocked:hover {
   transform: translateY(-1px);
-  border-color: rgba(220,27,42,.36);
+  border-color: #e5a7ad;
+  background: #fff2f3;
 }
 
 .app-shell .member-passport-badges article.is-locked {
-  opacity: .38;
+  opacity: .52;
   filter: grayscale(1);
+  background: #f7f8f8;
 }
 
 .app-shell .member-passport-badges article > i {
@@ -6537,12 +6543,12 @@
   height: 30px;
   place-items: center;
   border-radius: 8px;
-  background: rgba(255,255,255,.045);
-  color: #70787d;
+  background: #f1f3f4;
+  color: #92989c;
 }
 
 .app-shell .member-passport-badges article.is-unlocked > i {
-  background: rgba(220,27,42,.10);
+  background: #fff0f1;
   color: var(--rr-red);
 }
 
@@ -6560,7 +6566,7 @@
 
 .app-shell .member-passport-badges article > span b {
   overflow: hidden;
-  color: #e9ebec;
+  color: #34383b;
   font-size: var(--rr-type-meta);
   font-weight: 700;
   text-overflow: ellipsis;
@@ -6569,7 +6575,7 @@
 
 .app-shell .member-passport-badges article > span small {
   overflow: hidden;
-  color: #666e73;
+  color: #93999d;
   font-size: .56rem;
   font-weight: 600;
   text-overflow: ellipsis;
@@ -6582,7 +6588,7 @@
   right: 7px;
   width: 11px;
   height: 11px;
-  color: #5bd184;
+  color: #249553;
 }
 
 .app-shell .member-passport-footer {
@@ -6594,7 +6600,7 @@
   gap: 18px;
   margin-top: 14px;
   padding-top: 14px;
-  border-top: 1px solid rgba(255,255,255,.075);
+  border-top: 1px solid #e7e9ea;
 }
 
 .app-shell .member-passport-footer > span {
@@ -6605,7 +6611,7 @@
 }
 
 .app-shell .member-passport-footer > span b {
-  color: #d9dcde;
+  color: #4b5155;
   font-size: var(--rr-type-small);
   font-weight: 800;
   letter-spacing: .04em;
@@ -6619,20 +6625,48 @@
 
 .app-shell .member-passport-footer .profile-emboss-action {
   min-height: 39px;
-  border-color: rgba(255,255,255,.08);
-  border-bottom-color: #060708;
+  border: 1px solid #dfe2e4;
+  border-bottom-color: #cfd3d5;
   border-radius: 9px;
-  background: #0b0d0e;
+  background: #f7f8f8;
+  color: #454b4f;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.025),
-    0 2px 0 #050607,
-    0 5px 12px rgba(0,0,0,.22);
+    inset 0 1px 0 rgba(255,255,255,.95),
+    0 2px 0 #d9dcde,
+    0 5px 12px rgba(20,22,24,.07);
+  text-shadow: none;
   font-size: var(--rr-type-caption) !important;
+}
+
+.app-shell .member-passport-footer .profile-emboss-action::before {
+  background: rgba(255,255,255,.42);
 }
 
 .app-shell .member-passport-footer .profile-emboss-action svg {
   width: 14px;
   height: 14px;
+  color: var(--rr-red);
+  filter: none;
+}
+
+.app-shell .member-passport-footer .profile-emboss-action:hover {
+  border-color: #d3d7d9;
+  background: #ffffff;
+  color: #1f2325;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 3px 0 #d8dbdd,
+    0 7px 14px rgba(20,22,24,.08);
+}
+
+.app-shell .member-passport-footer .profile-emboss-action:active {
+  transform: translateY(2px);
+  border-color: #d7dadc;
+  background: #f2f3f4;
+  box-shadow:
+    inset 0 2px 5px rgba(20,22,24,.08),
+    0 1px 0 #d6d9db;
 }
 
 @media (max-width: 900px) {
@@ -6719,12 +6753,12 @@
 
   .app-shell .member-passport-meta > span:nth-child(3) {
     grid-column: 1 / -1;
-    border-top: 1px solid rgba(255,255,255,.075);
+    border-top: 1px solid #e9ebec;
     border-left: 0;
   }
 
   .app-shell .member-passport-meta > span:nth-child(2) {
-    border-left: 1px solid rgba(255,255,255,.075);
+    border-left: 1px solid #e9ebec;
   }
 
   .app-shell .member-passport-metrics article {
