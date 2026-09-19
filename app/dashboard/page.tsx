@@ -336,8 +336,8 @@ export default function DashboardPage() {
                 <Image
                   src="/revolt-riders-logo.jpg"
                   alt=""
-                  width={156}
-                  height={156}
+                  width={260}
+                  height={260}
                   className="hero-crest-image"
                   priority
                 />
