@@ -1653,3 +1653,592 @@
     font-size: clamp(.68rem, 2.9vw, .8rem);
   }
 }
+
+
+/* ==========================================================================
+   PROFESSIONAL DASHBOARD PASS
+   Clear hierarchy, compact metrics, operational utility panel, restrained brand.
+   ========================================================================== */
+
+.app-shell .dashboard-grid.dashboard-premium {
+  align-items: start;
+  gap: 18px;
+  padding-top: 20px;
+}
+
+.app-shell .dashboard-premium .left-column,
+.app-shell .dashboard-premium .right-column {
+  gap: 14px;
+}
+
+.app-shell .dashboard-premium .hero {
+  min-height: 218px !important;
+  padding: 28px 30px !important;
+  border: 1px solid #25282b !important;
+  border-radius: 18px !important;
+  background: #151719 !important;
+  box-shadow: 0 10px 28px rgba(17, 19, 21, .10) !important;
+}
+
+.app-shell .dashboard-premium .hero-content {
+  max-width: 620px;
+  gap: 8px;
+}
+
+.app-shell .dashboard-premium .hero h2 {
+  max-width: 650px;
+  margin: 5px 0 6px !important;
+  font-size: clamp(1.9rem, 3.2vw, 2.75rem) !important;
+  line-height: 1.02 !important;
+  letter-spacing: -.045em !important;
+  text-wrap: balance;
+}
+
+.app-shell .dashboard-premium .hero-tag {
+  color: #ff4d59;
+  font-size: .58rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.app-shell .dashboard-premium .hero-eyebrow em {
+  color: #858b90;
+  font-size: .59rem;
+}
+
+.app-shell .dashboard-premium .hero-meta,
+.app-shell .dashboard-premium .hero-desc {
+  color: #aeb3b7;
+}
+
+.app-shell .dashboard-premium .hero-cta {
+  min-height: 38px;
+  margin-top: 8px !important;
+  border: 0;
+  border-radius: 9px;
+  background: var(--rr-red);
+  color: #fff;
+  padding: 0 14px;
+  box-shadow: none;
+  font-size: .63rem;
+  font-weight: 850;
+}
+
+.app-shell .dashboard-premium .hero-cta:hover {
+  background: #c91826;
+  color: #fff;
+}
+
+.app-shell .dashboard-premium .hero-date-badge {
+  width: 88px;
+  min-height: 104px;
+  border: 1px solid #313538;
+  border-radius: 14px;
+  background: #1e2123;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-premium .hero-badge-month,
+.app-shell .dashboard-premium .hero-badge-status,
+.app-shell .dashboard-premium .hero-badge-year {
+  color: #ff5964;
+}
+
+/* KPI cards */
+.app-shell .dashboard-premium .dashboard-kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article {
+  position: relative;
+  display: block;
+  min-width: 0;
+  min-height: 90px;
+  padding: 15px 16px;
+  border: 1px solid #e2e5e7;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: #eceeef;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article:first-child::before {
+  background: var(--rr-red);
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article > svg {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border: 1px solid #e5e7e9;
+  border-radius: 9px;
+  background: #f5f6f6;
+  color: #555b60;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article:first-child > svg {
+  border-color: #f3d6d9;
+  background: #fff4f5;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article span {
+  display: flex;
+  min-width: 0;
+  padding-right: 34px;
+  flex-direction: column;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article span > small:first-child {
+  color: #7c8388;
+  font-size: .53rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article b {
+  margin: 10px 0 5px;
+  color: #1c1f21;
+  font-size: clamp(1.08rem, 1.8vw, 1.42rem);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: -.04em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.app-shell .dashboard-premium .dashboard-kpis article span > small:last-child {
+  display: block;
+  color: #969ca1;
+  font-size: .54rem;
+  line-height: 1.25;
+}
+
+/* Operational quick-action panel */
+.app-shell .dashboard-premium .dashboard-actions-panel {
+  padding: 15px;
+  border: 1px solid #e2e5e7;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.app-shell .dashboard-premium .dashboard-panel-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 11px;
+}
+
+.app-shell .dashboard-premium .dashboard-panel-heading > span {
+  min-width: 0;
+}
+
+.app-shell .dashboard-premium .dashboard-panel-heading em {
+  display: block;
+  color: var(--rr-red);
+  font-size: .52rem;
+  font-style: normal;
+  font-weight: 850;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.app-shell .dashboard-premium .dashboard-panel-heading h3 {
+  margin: 3px 0 0;
+  color: #202326;
+  font-size: .96rem;
+  font-weight: 820;
+  letter-spacing: -.025em;
+  text-wrap: balance;
+}
+
+.app-shell .dashboard-premium .dashboard-panel-heading > small {
+  flex: none;
+  border-radius: 999px;
+  background: #f1f2f2;
+  color: #747b80;
+  padding: 5px 8px;
+  font-size: .51rem;
+  font-weight: 800;
+}
+
+.app-shell .dashboard-premium .dashboard-quick-actions {
+  gap: 8px;
+  margin: 0;
+}
+
+.app-shell .dashboard-premium .quick-action-btn {
+  min-height: 60px;
+  gap: 9px;
+  padding: 9px 10px;
+  border: 1px solid #e7e9ea;
+  border-radius: 11px;
+  background: #f8f9f9;
+  box-shadow: none;
+  touch-action: manipulation;
+  transition: border-color .16s ease, background .16s ease, transform .16s ease;
+}
+
+.app-shell .dashboard-premium .quick-action-btn:hover {
+  border-color: #cfd3d6;
+  background: #f3f4f4;
+  transform: translateY(-1px);
+}
+
+.app-shell .dashboard-premium .quick-action-btn:focus-visible {
+  outline: 3px solid rgba(220, 27, 42, .18);
+  outline-offset: 2px;
+}
+
+.app-shell .dashboard-premium .quick-action-icon {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e3e5e7;
+  border-radius: 9px;
+  background: #fff;
+  color: #41464a;
+}
+
+.app-shell .dashboard-premium .quick-action-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-shell .dashboard-premium .quick-action-title {
+  color: #25282a;
+  font-size: .69rem;
+  font-weight: 820;
+}
+
+.app-shell .dashboard-premium .quick-action-desc {
+  margin-top: 1px;
+  color: #8b9195;
+  font-size: .54rem;
+}
+
+.app-shell .dashboard-premium .quick-action-arrow {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  flex: none;
+  color: #a1a6aa;
+  transition: transform .16s ease, color .16s ease;
+}
+
+.app-shell .dashboard-premium .quick-action-btn:hover .quick-action-arrow {
+  color: var(--rr-red);
+  transform: translateX(2px);
+}
+
+/* Primary agenda panel */
+.app-shell .dashboard-premium .agenda-card {
+  padding: 18px;
+  border: 1px solid #e2e5e7;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.app-shell .dashboard-premium .agenda-card .section-title {
+  margin-bottom: 9px;
+}
+
+.app-shell .dashboard-premium .agenda-card .section-title em {
+  color: var(--rr-red);
+  font-weight: 820;
+}
+
+.app-shell .dashboard-premium .agenda-card .section-title h3 {
+  font-size: 1.02rem;
+}
+
+.app-shell .dashboard-premium .agenda-card .event {
+  min-height: 70px;
+  padding: 11px 0;
+}
+
+.app-shell .dashboard-premium .agenda-card .event time {
+  width: 47px;
+  height: 50px;
+  border: 1px solid #2b2e31;
+  border-radius: 9px;
+  background: #1b1d1f;
+  color: #fff;
+}
+
+.app-shell .dashboard-premium .agenda-card .event time small {
+  color: #ff5662;
+}
+
+.app-shell .dashboard-premium .inline-empty {
+  margin-top: 3px;
+  padding: 17px 14px;
+  border: 0;
+  border-radius: 11px;
+  background: #f7f8f8;
+}
+
+.app-shell .dashboard-premium .inline-empty > svg {
+  width: 28px;
+  height: 28px;
+  padding: 6px;
+  border-radius: 8px;
+  background: #fff;
+  color: #7a8085;
+}
+
+/* Right rail */
+.app-shell .dashboard-premium .rider-status-card,
+.app-shell .dashboard-premium .bullet-card,
+.app-shell .dashboard-premium .support {
+  border: 1px solid #e2e5e7;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-premium .rider-status-card {
+  position: relative;
+  padding: 16px;
+  overflow: hidden;
+}
+
+.app-shell .dashboard-premium .rider-status-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: var(--rr-red);
+}
+
+.app-shell .dashboard-premium .rider-status-avatar {
+  width: 42px;
+  height: 42px;
+  background: #1d2022;
+  font-size: .8rem;
+}
+
+.app-shell .dashboard-premium .rider-status-metrics {
+  padding: 10px;
+  border: 1px solid #eceeef;
+  border-radius: 10px;
+  background: #f7f8f8;
+}
+
+.app-shell .dashboard-premium .rider-status-metric b {
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .dashboard-premium .rider-status-actions .dark-action {
+  min-height: 38px;
+  border-radius: 9px;
+  background: #1d2022;
+}
+
+.app-shell .dashboard-premium .bullet-card {
+  padding: 14px 15px;
+  border-left: 3px solid var(--rr-red);
+}
+
+.app-shell .dashboard-premium .bullet-card h3 {
+  font-size: .88rem;
+  text-wrap: balance;
+}
+
+.app-shell .dashboard-premium .bullet-card p {
+  color: #747b80;
+  line-height: 1.45;
+}
+
+.app-shell .dashboard-premium .support {
+  padding: 15px;
+}
+
+.app-shell .dashboard-premium .support .section-title {
+  margin-bottom: 10px;
+}
+
+.app-shell .dashboard-premium .support-grid {
+  gap: 7px;
+}
+
+.app-shell .dashboard-premium .support-logo {
+  height: 70px;
+}
+
+@media (min-width: 1051px) {
+  .app-shell .dashboard-grid.dashboard-premium {
+    grid-template-columns: minmax(0, 1.72fr) minmax(292px, .62fr);
+  }
+
+  .app-shell .dashboard-premium .right-column {
+    position: sticky;
+    top: 96px;
+    align-self: start;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-grid.dashboard-premium {
+    padding-top: 10px;
+  }
+
+  .app-shell .dashboard-premium .left-column,
+  .app-shell .dashboard-premium .right-column {
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-premium .hero {
+    min-height: 166px !important;
+    padding: 17px !important;
+    border-radius: 15px !important;
+  }
+
+  .app-shell .dashboard-premium .hero-content {
+    max-width: none;
+    padding-right: 66px;
+  }
+
+  .app-shell .dashboard-premium .hero h2 {
+    font-size: clamp(1.35rem, 6vw, 1.7rem) !important;
+    line-height: 1 !important;
+  }
+
+  .app-shell .dashboard-premium .hero-date-badge {
+    top: 14px;
+    right: 14px;
+    width: 56px;
+    min-height: 72px;
+    padding: 8px 5px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis {
+    gap: 6px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article {
+    min-height: 78px;
+    padding: 10px 9px;
+    border-radius: 11px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article > svg {
+    top: 8px;
+    right: 8px;
+    width: 24px;
+    height: 24px;
+    padding: 5px;
+    border-radius: 7px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article span {
+    padding-right: 20px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article span > small:first-child {
+    font-size: .44rem;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article b {
+    margin: 10px 0 0;
+    font-size: clamp(.74rem, 3.2vw, .9rem);
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article span > small:last-child {
+    display: none;
+  }
+
+  .app-shell .dashboard-premium .dashboard-actions-panel {
+    padding: 12px;
+    border-radius: 13px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-panel-heading {
+    margin-bottom: 9px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-panel-heading h3 {
+    font-size: .9rem;
+  }
+
+  .app-shell .dashboard-premium .dashboard-panel-heading > small {
+    padding: 4px 7px;
+    font-size: .47rem;
+  }
+
+  .app-shell .dashboard-premium .dashboard-quick-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .app-shell .dashboard-premium .quick-action-btn {
+    min-height: 57px;
+    padding: 8px 9px;
+  }
+
+  .app-shell .dashboard-premium .quick-action-arrow {
+    display: none;
+  }
+
+  .app-shell .dashboard-premium .agenda-card,
+  .app-shell .dashboard-premium .support {
+    padding: 14px;
+  }
+
+  .app-shell .dashboard-premium .inline-empty {
+    padding: 14px 11px;
+  }
+
+  .app-shell .dashboard-premium .bullet-card {
+    padding: 12px 13px;
+  }
+
+  .app-shell .dashboard-premium .support-logo {
+    height: 66px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-premium .dashboard-kpis {
+    gap: 5px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article {
+    padding: 9px 8px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article > svg {
+    width: 22px;
+    height: 22px;
+    padding: 4px;
+  }
+
+  .app-shell .dashboard-premium .dashboard-kpis article b {
+    font-size: clamp(.68rem, 3vw, .8rem);
+  }
+
+  .app-shell .dashboard-premium .quick-action-title {
+    font-size: .66rem;
+  }
+
+  .app-shell .dashboard-premium .quick-action-desc {
+    font-size: .51rem;
+  }
+}
