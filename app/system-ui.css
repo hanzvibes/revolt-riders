@@ -5526,3 +5526,294 @@
 .app-shell .dashboard-premium .dashboard-panel-heading h3 {
   margin-top: 0 !important;
 }
+
+
+/* =========================================================
+   Unified typography scale
+   One hierarchy for all authenticated/internal app pages.
+   ========================================================= */
+.app-shell {
+  --rr-type-caption: .625rem;   /* 10px */
+  --rr-type-meta: .6875rem;     /* 11px */
+  --rr-type-small: .75rem;      /* 12px */
+  --rr-type-body: .8125rem;     /* 13px */
+  --rr-type-card: .875rem;      /* 14px */
+  --rr-type-section: 1rem;      /* 16px */
+  --rr-type-metric: 1rem;       /* 16px */
+  --rr-type-page: clamp(1.5rem, 2.8vw, 1.9rem);
+  --rr-type-hero: clamp(2rem, 3.6vw, 3rem);
+  font-size: var(--rr-type-body);
+}
+
+/* App chrome */
+.app-shell .content > header h1 {
+  font-size: var(--rr-type-section) !important;
+}
+
+.app-shell .sidebar-accordion-header,
+.app-shell > aside .sidebar-subnav a,
+.app-shell .bottom a {
+  font-size: var(--rr-type-small) !important;
+}
+
+.app-shell .bottom a small,
+.app-shell .sidebar-badge-pill {
+  font-size: var(--rr-type-caption) !important;
+}
+
+/* Page hierarchy */
+.app-shell .page-intro h2 {
+  font-size: var(--rr-type-page) !important;
+}
+
+.app-shell .page-intro p,
+.app-shell .system-message,
+.app-shell .error-message,
+.app-shell .empty-state p,
+.app-shell .inline-empty p {
+  font-size: var(--rr-type-body) !important;
+}
+
+.app-shell .section-title h3,
+.app-shell .ledger-head h3,
+.app-shell .form-heading h2,
+.app-shell .form-heading h3,
+.app-shell .dashboard-premium .dashboard-panel-heading h3,
+.app-shell .leaderboard-list-header h3,
+.app-shell .member-touring-header h4,
+.app-shell .riding-stat-chart-head h3 {
+  font-size: var(--rr-type-section) !important;
+}
+
+/* Buttons and controls */
+.app-shell .primary-action,
+.app-shell .outline-action,
+.app-shell .dark-action,
+.app-shell .login-link,
+.app-shell .hero-cta,
+.app-shell .member-add-tour-btn,
+.app-shell .tour-modal-del-btn,
+.app-shell .tour-modal-cancel-btn,
+.app-shell .tour-modal-submit-btn,
+.app-shell .native-sheet .sheet-actions .primary-action,
+.app-shell .native-sheet .sheet-actions .outline-action,
+.app-shell .profile-emboss-action,
+.app-shell .member-directory-refresh,
+.app-shell .leaderboard-hero-refresh,
+.app-shell .unified-primary-action,
+.app-shell .unified-secondary-action,
+.app-shell .riding-stat-range button {
+  font-size: var(--rr-type-small) !important;
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea,
+.app-shell .sheet-form input,
+.app-shell .sheet-form select,
+.app-shell .sheet-form textarea,
+.app-shell .manual-checkin form select,
+.app-shell .admin-checkin-card form select,
+.app-shell .rsvp-select select {
+  font-size: var(--rr-type-body) !important;
+}
+
+.app-shell label,
+.app-shell .sheet-form label,
+.app-shell .manual-checkin form label,
+.app-shell .admin-checkin-card form label,
+.app-shell .rsvp-select {
+  font-size: var(--rr-type-small) !important;
+}
+
+/* Generic metadata and labels */
+.app-shell .member-stat-chip small,
+.app-shell .member-detail-stat-box small,
+.app-shell .member-detail-bio-item dt,
+.app-shell .attendance-list small,
+.app-shell .attendance-absent small,
+.app-shell .admin-kpi-label,
+.app-shell .admin-kpi-hint,
+.app-shell .stats article span small:first-child,
+.app-shell .stats article span > small,
+.app-shell .rider-status-metric small,
+.app-shell .leaderboard-list-header span,
+.app-shell .leaderboard-row-id,
+.app-shell .member-id-tag,
+.app-shell .member-touring-count-badge,
+.app-shell .member-touring-table th,
+.app-shell .my-standing-rank small,
+.app-shell .my-standing-distance small,
+.app-shell .podium-id,
+.app-shell .leaderboard-hero-podium-card small,
+.app-shell .leaderboard-hero-rank-label,
+.app-shell .riding-stat-chart-summary small,
+.app-shell .unified-personal-stat small,
+.app-shell .unified-community-stat small,
+.app-shell .member-directory-hero-stats small,
+.app-shell .leaderboard-hero-stats small {
+  font-size: var(--rr-type-meta) !important;
+}
+
+/* Body / supporting copy */
+.app-shell .member-sub,
+.app-shell .member-detail-sub,
+.app-shell .member-detail-bio-item dd,
+.app-shell .member-touring-table,
+.app-shell .attendance-list b,
+.app-shell .attendance-absent b,
+.app-shell .leaderboard-row-km,
+.app-shell .quick-action-desc,
+.app-shell .my-standing-info p,
+.app-shell .admin-launch-card p,
+.app-shell .admin-event-status-list > article > span small,
+.app-shell .riding-stat-empty span {
+  font-size: var(--rr-type-small) !important;
+}
+
+/* Card titles / names */
+.app-shell .member-name,
+.app-shell .member-detail-name,
+.app-shell .leaderboard-row-name,
+.app-shell .quick-action-title,
+.app-shell .my-standing-info h3,
+.app-shell .admin-event-status-list > article > span b,
+.app-shell .podium-name,
+.app-shell .leaderboard-hero-podium-card strong,
+.app-shell .riding-stat-empty strong {
+  font-size: var(--rr-type-card) !important;
+}
+
+/* Metric values */
+.app-shell .member-stat-chip b,
+.app-shell .member-detail-stat-box b,
+.app-shell .stats article b,
+.app-shell .rider-status-metric b,
+.app-shell .admin-kpi-val,
+.app-shell .my-standing-rank b,
+.app-shell .my-standing-distance b,
+.app-shell .podium-km,
+.app-shell .leaderboard-hero-podium-card b,
+.app-shell .riding-stat-chart-summary b,
+.app-shell .unified-personal-stat b,
+.app-shell .unified-community-stat b,
+.app-shell .member-directory-hero-stats b,
+.app-shell .leaderboard-hero-stats b {
+  font-size: var(--rr-type-metric) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Member directory list */
+.app-shell .member-role-badge,
+.app-shell .leaderboard-row-you,
+.app-shell .leaderboard-rank-num {
+  font-size: var(--rr-type-caption) !important;
+}
+
+.app-shell .member-km-tag,
+.app-shell .member-tour-count {
+  font-size: var(--rr-type-meta) !important;
+}
+
+/* Hero typography shared across dashboard, member, leaderboard */
+.app-shell .unified-hero-copy h2,
+.app-shell .member-directory-hero-copy h2,
+.app-shell .leaderboard-hero-copy h2 {
+  font-size: var(--rr-type-hero) !important;
+}
+
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta p,
+.app-shell .member-directory-hero-copy p,
+.app-shell .leaderboard-hero-copy p {
+  font-size: var(--rr-type-body) !important;
+}
+
+.app-shell .unified-hero-eyebrow em,
+.app-shell .member-directory-eyebrow em,
+.app-shell .leaderboard-hero-eyebrow em {
+  font-size: var(--rr-type-meta) !important;
+}
+
+.app-shell .unified-member-copy small,
+.app-shell .member-directory-brand small,
+.app-shell .leaderboard-hero-brand small {
+  font-size: var(--rr-type-caption) !important;
+}
+
+.app-shell .unified-member-copy strong,
+.app-shell .member-directory-brand strong,
+.app-shell .leaderboard-hero-brand strong {
+  font-size: var(--rr-type-section) !important;
+}
+
+.app-shell .unified-member-copy > span,
+.app-shell .member-directory-brand span,
+.app-shell .leaderboard-hero-brand span {
+  font-size: var(--rr-type-meta) !important;
+}
+
+/* Tables */
+.app-shell table {
+  font-size: var(--rr-type-small) !important;
+}
+
+.app-shell th,
+.app-shell .admin-member-table th {
+  font-size: var(--rr-type-meta) !important;
+}
+
+.app-shell td,
+.app-shell .admin-member-table td {
+  font-size: var(--rr-type-small) !important;
+}
+
+/* Native sheets and modals */
+.app-shell .native-sheet > header h2,
+.app-shell .tour-modal-header h3 {
+  font-size: 1.125rem !important;
+}
+
+.app-shell .native-sheet > header em,
+.app-shell .tour-modal-header em,
+.app-shell .tour-modal-form label > span {
+  font-size: var(--rr-type-meta) !important;
+}
+
+/* Admin surfaces */
+.app-shell .admin-launch-card h2 {
+  font-size: var(--rr-type-section) !important;
+}
+
+.app-shell .admin-launch-card em {
+  font-size: var(--rr-type-meta) !important;
+}
+
+/* Mobile keeps the same hierarchy, only hero/page display sizes step down. */
+@media (max-width: 720px) {
+  .app-shell {
+    --rr-type-page: 1.5rem;
+    --rr-type-hero: clamp(1.75rem, 7vw, 2.125rem);
+  }
+
+  .app-shell .page-intro p,
+  .app-shell .system-message,
+  .app-shell .error-message,
+  .app-shell .empty-state p {
+    font-size: var(--rr-type-small) !important;
+  }
+
+  .app-shell .unified-hero-copy h2,
+  .app-shell .member-directory-hero-copy h2,
+  .app-shell .leaderboard-hero-copy h2 {
+    line-height: 1 !important;
+  }
+
+  .app-shell .unified-personal-stat b,
+  .app-shell .unified-community-stat b,
+  .app-shell .member-directory-hero-stats b,
+  .app-shell .leaderboard-hero-stats b,
+  .app-shell .riding-stat-chart-summary b {
+    font-size: .875rem !important;
+  }
+}
