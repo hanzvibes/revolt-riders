@@ -147,7 +147,7 @@ export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
                   activeDot={{ r: 4.5, fill: "#dc1b2a", stroke: "#fff", strokeWidth: 2 }}
                   dot={{ r: 2.5, fill: "#121416", stroke: "#dc1b2a", strokeWidth: 1.5 }}
                   isAnimationActive
-                  animationDuration={750}
+                  animationDuration={1300}
                   animationEasing="ease-out"
                 />
               </AreaChart>
