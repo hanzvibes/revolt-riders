@@ -290,7 +290,8 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
 .invitation-location-action-v2 {
   position: relative;
   z-index: 2;
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   min-height: 40px;
   align-items: center;
   justify-content: center;
@@ -775,9 +776,9 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
   }
 
   .invitation-location-action-v2 {
-    width: 100%;
+    width: fit-content;
     min-height: 42px;
-    margin-top: 8px;
+    margin: 8px auto 0;
   }
 
   .invitation-content-v2 {
