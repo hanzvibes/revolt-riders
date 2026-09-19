@@ -15,7 +15,7 @@ const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
 
 export function CountUpNumber({
   value,
-  duration = 850,
+  duration = 1600,
   maximumFractionDigits = 0,
   prefix = "",
   suffix = "",
