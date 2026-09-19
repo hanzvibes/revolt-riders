@@ -1,4 +1,4 @@
-const CACHE = "revolt-static-v2";
+const CACHE = "revolt-static-v3";
 const PRECACHE = ["/offline", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png"];
 
 self.addEventListener("install", (event) => {
@@ -20,7 +20,26 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  if (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/") || /\.(?:css|js|png|jpg|jpeg|svg|webp|woff2?)$/.test(url.pathname)) {
+  const isCodeAsset =
+    url.pathname.startsWith("/_next/static/") ||
+    /\.(?:css|js)$/.test(url.pathname);
+
+  if (isCodeAsset) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            void caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request)),
+    );
+    return;
+  }
+
+  if (url.pathname.startsWith("/icons/") || /\.(?:png|jpg|jpeg|svg|webp|woff2?)$/.test(url.pathname)) {
     event.respondWith(caches.match(request).then((cached) => cached || fetch(request).then((response) => {
       if (response.ok) { const copy = response.clone(); void caches.open(CACHE).then((cache) => cache.put(request, copy)); }
       return response;
