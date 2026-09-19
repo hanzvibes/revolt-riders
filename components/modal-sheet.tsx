@@ -79,7 +79,7 @@ export function ModalSheet({
     if (closing) {
       return {
         transform: "translate3d(0, calc(100% + 24px), 0)",
-        transition: "transform 0.22s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.2s ease-in",
+        transition: "transform 220ms cubic-bezier(.4, 0, 1, 1), opacity 220ms ease-in",
         opacity: 0,
       };
     }
@@ -91,7 +91,7 @@ export function ModalSheet({
     }
     return {
       transform: "translate3d(0, 0, 0)",
-      transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+      transition: "transform 240ms cubic-bezier(.16, 1, .3, 1)",
     };
   };
 
