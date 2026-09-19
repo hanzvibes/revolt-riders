@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
 import { RidingStatChart } from "@/components/riding-stat-chart";
 import { PageSkeleton } from "@/components/skeleton";
@@ -281,7 +282,7 @@ export default function RidingPage() {
                 Total KM Terverifikasi
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", marginTop: "2px" }}>
-                {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalVerifiedKm)}{" "}
+                <CountUpNumber value={totalVerifiedKm} maximumFractionDigits={1} />{" "}
                 <span style={{ fontSize: "0.85rem", color: "var(--red)" }}>KM</span>
               </div>
             </div>
@@ -291,7 +292,8 @@ export default function RidingPage() {
                 Ride Disetujui
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", marginTop: "2px" }}>
-                {approvedRides.length} <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
+                <CountUpNumber value={approvedRides.length} />{" "}
+                <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
               </div>
             </div>
 
@@ -300,7 +302,8 @@ export default function RidingPage() {
                 Menunggu Validasi
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 900, color: pendingRides.length > 0 ? "#fbbf24" : "#9ca3af", marginTop: "2px" }}>
-                {pendingRides.length} <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
+                <CountUpNumber value={pendingRides.length} />{" "}
+                <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
               </div>
             </div>
           </div>
@@ -324,7 +327,7 @@ export default function RidingPage() {
             >
               <Clock size={15} color="#fbbf24" />
               <span>
-                Ada <b>{pendingRides.length} catatan riding</b> yang sedang menunggu validasi Road Captain / Pengurus sebelum masuk ke Total KM & Leaderboard.
+                Ada <b><CountUpNumber value={pendingRides.length} /> catatan riding</b> yang sedang menunggu validasi Road Captain / Pengurus sebelum masuk ke Total KM & Leaderboard.
               </span>
             </div>
           )}
