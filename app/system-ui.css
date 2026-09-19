@@ -4823,3 +4823,46 @@
     height: 46px;
   }
 }
+
+
+/* Member hero refresh button in top-right header */
+.app-shell .member-directory-hero-top {
+  grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.app-shell .member-directory-refresh-top {
+  justify-self: end;
+  align-self: center;
+  margin-top: 0 !important;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .app-shell .member-directory-hero-top {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+
+  .app-shell .member-directory-refresh-top {
+    min-height: 34px;
+    padding-inline: 10px;
+    font-size: .5rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .member-directory-refresh-top {
+    min-width: 34px;
+    width: 34px;
+    padding: 0;
+  }
+
+  .app-shell .member-directory-refresh-top span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+}
