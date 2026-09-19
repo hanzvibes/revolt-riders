@@ -4191,3 +4191,211 @@
     height: 150px !important;
   }
 }
+
+
+/* Riding hero interactive statistics */
+.app-shell .riding-stat-chart {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+
+.app-shell .riding-stat-chart-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 10px;
+}
+
+.app-shell .riding-stat-chart-head > div:first-child {
+  min-width: 0;
+}
+
+.app-shell .riding-stat-chart-head small {
+  display: block;
+  color: var(--rr-red);
+  font-size: .48rem;
+  font-weight: 900;
+  letter-spacing: .08em;
+  line-height: 1;
+}
+
+.app-shell .riding-stat-chart-head h3 {
+  margin: 4px 0 0;
+  color: #fff;
+  font-size: .9rem;
+  font-weight: 850;
+  letter-spacing: -.025em;
+}
+
+.app-shell .riding-stat-range {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 9px;
+  background: rgba(0,0,0,.28);
+}
+
+.app-shell .riding-stat-range button {
+  min-height: 29px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #7f868b;
+  padding: 0 9px;
+  font: inherit;
+  font-size: .48rem;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.app-shell .riding-stat-range button:hover {
+  color: #fff;
+}
+
+.app-shell .riding-stat-range button.active {
+  background: var(--rr-red);
+  color: #fff;
+  box-shadow: 0 2px 7px rgba(220,27,42,.25);
+}
+
+.app-shell .riding-stat-range button:focus-visible {
+  outline: 2px solid rgba(220,27,42,.32);
+  outline-offset: 2px;
+}
+
+.app-shell .riding-stat-chart-canvas {
+  width: 100%;
+  height: 190px;
+  min-width: 0;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 12px;
+  background: rgba(0,0,0,.22);
+  padding: 9px 6px 3px;
+  overflow: hidden;
+}
+
+.app-shell .riding-stat-chart-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.07);
+  border-radius: 10px;
+  background: rgba(0,0,0,.20);
+}
+
+.app-shell .riding-stat-chart-summary > span {
+  display: flex;
+  min-width: 0;
+  min-height: 46px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 10px;
+}
+
+.app-shell .riding-stat-chart-summary > span + span {
+  border-left: 1px solid rgba(255,255,255,.07);
+}
+
+.app-shell .riding-stat-chart-summary small {
+  color: #777f84;
+  font-size: .42rem;
+  font-weight: 850;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.app-shell .riding-stat-chart-summary b {
+  color: #f4f5f5;
+  font-size: .7rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .riding-stat-empty {
+  display: flex;
+  min-height: 112px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 5px;
+  border: 1px dashed rgba(255,255,255,.10);
+  border-radius: 12px;
+  background: rgba(0,0,0,.16);
+  text-align: center;
+}
+
+.app-shell .riding-stat-empty strong {
+  color: #d9dcde;
+  font-size: .64rem;
+}
+
+.app-shell .riding-stat-empty span {
+  color: #777f84;
+  font-size: .54rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .riding-stat-chart {
+    margin-top: 14px;
+    padding-top: 13px;
+  }
+
+  .app-shell .riding-stat-chart-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .app-shell .riding-stat-range {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app-shell .riding-stat-range button {
+    width: 100%;
+    min-height: 31px;
+    padding: 0 5px;
+  }
+
+  .app-shell .riding-stat-chart-canvas {
+    height: 164px;
+    border-radius: 10px;
+  }
+
+  .app-shell .riding-stat-chart-summary > span {
+    min-height: 43px;
+    padding: 7px 8px;
+  }
+
+  .app-shell .riding-stat-chart-summary small {
+    font-size: .38rem;
+  }
+
+  .app-shell .riding-stat-chart-summary b {
+    font-size: .63rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .riding-stat-chart-canvas {
+    height: 154px;
+  }
+
+  .app-shell .riding-stat-chart-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .riding-stat-chart-summary > span + span {
+    border-left: 0;
+    border-top: 1px solid rgba(255,255,255,.07);
+  }
+}
