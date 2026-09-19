@@ -332,51 +332,42 @@ export default function DashboardPage() {
                 <span className="hero-badge-year">2026</span>
               </div>
             )}
-          </section>
-
-          {/* Professional KPI overview */}
-          <section className="stats dashboard-kpis" aria-label="Ringkasan komunitas">
-            <article>
-              <UsersRound aria-hidden="true" />
-              <span>
-                <small>Member resmi</small>
-                <b>{totalRidersCount} member</b>
-                <small>Terdaftar di komunitas</small>
-              </span>
-            </article>
-            <article>
-              <Gauge aria-hidden="true" />
-              <span>
-                <small>Total kilometer</small>
-                <b>
-                  {new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM
-                </b>
-                <small>Akumulasi ride terverifikasi</small>
-              </span>
-            </article>
-            <article>
-              <CircleDollarSign aria-hidden="true" />
-              <span>
-                <small>Saldo kas</small>
-                <b>
-                  {stats ? (
-                    new Intl.NumberFormat("id-ID", {
-                      style: "currency",
-                      currency: "IDR",
-                      notation: "compact",
-                      maximumFractionDigits: 1,
-                    }).format(Number(stats.cash_balance))
-                  ) : user ? (
-                    "Rp 0"
-                  ) : (
-                    "Privat"
-                  )}
-                </b>
-                <small>
-                  {user ? "Kas komunitas" : <Link href="/login">Masuk untuk melihat</Link>}
-                </small>
-              </span>
-            </article>
+            <div className="hero-summary" aria-label="Ringkasan komunitas">
+              <div className="hero-summary-item">
+                <UsersRound aria-hidden="true" />
+                <span>
+                  <small>Member resmi</small>
+                  <b>{totalRidersCount} member</b>
+                </span>
+              </div>
+              <div className="hero-summary-item">
+                <Gauge aria-hidden="true" />
+                <span>
+                  <small>Total kilometer</small>
+                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
+                </span>
+              </div>
+              <div className="hero-summary-item">
+                <CircleDollarSign aria-hidden="true" />
+                <span>
+                  <small>Saldo kas</small>
+                  <b>
+                    {stats ? (
+                      new Intl.NumberFormat("id-ID", {
+                        style: "currency",
+                        currency: "IDR",
+                        notation: "compact",
+                        maximumFractionDigits: 1,
+                      }).format(Number(stats.cash_balance))
+                    ) : user ? (
+                      "Rp 0"
+                    ) : (
+                      "Privat"
+                    )}
+                  </b>
+                </span>
+              </div>
+            </div>
           </section>
 
           {/* Quick Actions */}
