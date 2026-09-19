@@ -832,9 +832,13 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
     gap: 11px;
   }
 
-  .invitation-extra-v2 select,
   .invitation-extra-v2 textarea {
     font-size: 16px;
+  }
+
+  .invitation-extra-v2 select {
+    font-size: .8125rem;
+    font-weight: 600;
   }
 
   .attendee-preview-v2 {
@@ -1007,4 +1011,20 @@ b {
     animation: none !important;
     transition: none !important;
   }
+}
+
+
+/* Native/custom control typography outside AppShell */
+.invitation-page select,
+.invitation-page select option,
+.native-sheet .sheet-form select,
+.native-sheet .sheet-form select option {
+  font-size: .8125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25;
+}
+
+.invitation-page {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
