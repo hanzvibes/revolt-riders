@@ -530,98 +530,27 @@ export default function ProfilePage() {
           </div>
 
           {/* Quick Shortcuts Strip */}
-          <div
-            style={{
-              display: "flex",
-              gap: "8px",
-              marginTop: "16px",
-              flexWrap: "wrap",
-            }}
-          >
-            <Link
-              href="/riding"
-              style={{
-                flex: "1 1 auto",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "10px",
-                padding: "8px 12px",
-                fontSize: "0.68rem",
-                fontWeight: 800,
-                color: "#fff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-              }}
-            >
-              <Bike size={14} color="var(--red)" />
+          <nav className="profile-quick-shortcuts" aria-label="Akses cepat member">
+            <Link className="profile-emboss-action" href="/riding">
+              <Bike aria-hidden="true" />
               <span>Catat Riding</span>
             </Link>
 
-            <Link
-              href="/agenda"
-              style={{
-                flex: "1 1 auto",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "10px",
-                padding: "8px 12px",
-                fontSize: "0.68rem",
-                fontWeight: 800,
-                color: "#fff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-              }}
-            >
-              <CalendarDays size={14} color="var(--red)" />
+            <Link className="profile-emboss-action" href="/agenda">
+              <CalendarDays aria-hidden="true" />
               <span>Agenda Club</span>
             </Link>
 
-            <Link
-              href="/leaderboard"
-              style={{
-                flex: "1 1 auto",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "10px",
-                padding: "8px 12px",
-                fontSize: "0.68rem",
-                fontWeight: 800,
-                color: "#fff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-              }}
-            >
-              <Trophy size={14} color="var(--red)" />
+            <Link className="profile-emboss-action" href="/leaderboard">
+              <Trophy aria-hidden="true" />
               <span>Leaderboard</span>
             </Link>
 
-            <Link
-              href="/check-in"
-              style={{
-                flex: "1 1 auto",
-                background: "rgba(255, 255, 255, 0.08)",
-                border: "1px solid rgba(255, 255, 255, 0.14)",
-                borderRadius: "10px",
-                padding: "8px 12px",
-                fontSize: "0.68rem",
-                fontWeight: 800,
-                color: "#fff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-              }}
-            >
-              <QrCode size={14} color="var(--red)" />
+            <Link className="profile-emboss-action" href="/check-in">
+              <QrCode aria-hidden="true" />
               <span>Check-in</span>
             </Link>
-          </div>
+          </nav>
         </section>
 
         {/* ================================================================ */}
