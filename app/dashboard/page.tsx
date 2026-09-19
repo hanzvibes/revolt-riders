@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { useDataCache } from "@/context/data-cache-context";
 import type { AnnouncementRecord, EventRecord } from "@/lib/domain";
 import { formatEventDate, formatShortDate } from "@/lib/domain";
@@ -298,9 +299,15 @@ export default function DashboardPage() {
                 <span>
                   <small>Jarak riding</small>
                   <b>
-                    {hasActiveMember
-                      ? `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(currentMember?.total_km ?? 0)} KM`
-                      : "Privat"}
+                    {hasActiveMember ? (
+                      <CountUpNumber
+                        value={currentMember?.total_km ?? 0}
+                        maximumFractionDigits={1}
+                        suffix=" KM"
+                      />
+                    ) : (
+                      "Privat"
+                    )}
                   </b>
                 </span>
               </div>
@@ -308,7 +315,13 @@ export default function DashboardPage() {
                 <CalendarDays aria-hidden="true" />
                 <span>
                   <small>Kegiatan terverifikasi</small>
-                  <b>{hasActiveMember ? `${currentMember?.touring_count ?? 0} Agenda` : "Privat"}</b>
+                  <b>
+                    {hasActiveMember ? (
+                      <CountUpNumber value={currentMember?.touring_count ?? 0} suffix=" Agenda" />
+                    ) : (
+                      "Privat"
+                    )}
+                  </b>
                 </span>
               </div>
             </div>
@@ -318,14 +331,14 @@ export default function DashboardPage() {
                 <UsersRound aria-hidden="true" />
                 <span>
                   <small>Member resmi</small>
-                  <b>{totalRidersCount} member</b>
+                  <b><CountUpNumber value={totalRidersCount} suffix=" member" /></b>
                 </span>
               </div>
               <div className="unified-community-stat">
                 <Gauge aria-hidden="true" />
                 <span>
                   <small>Total kilometer</small>
-                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(totalKmAccumulated)} KM</b>
+                  <b><CountUpNumber value={totalKmAccumulated} suffix=" KM" /></b>
                 </span>
               </div>
               <div className="unified-community-stat">
@@ -333,16 +346,20 @@ export default function DashboardPage() {
                 <span>
                   <small>Saldo kas</small>
                   <b>
-                    {stats
-                      ? new Intl.NumberFormat("id-ID", {
+                    {stats || user ? (
+                      <CountUpNumber
+                        value={Number(stats?.cash_balance ?? 0)}
+                        maximumFractionDigits={1}
+                        formatOptions={{
                           style: "currency",
                           currency: "IDR",
                           notation: "compact",
                           maximumFractionDigits: 1,
-                        }).format(Number(stats.cash_balance))
-                      : user
-                        ? "Rp 0"
-                        : "Privat"}
+                        }}
+                      />
+                    ) : (
+                      "Privat"
+                    )}
                   </b>
                 </span>
               </div>
