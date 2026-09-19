@@ -5829,3 +5829,41 @@
     font-size: .875rem !important;
   }
 }
+
+
+/* Sidebar typography lock: prevent route-to-route visual size shifts */
+.app-shell > aside nav a,
+.app-shell > aside .sidebar-subnav a,
+.app-shell .sidebar-accordion-header {
+  font-size: .75rem !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+  font-synthesis: none;
+}
+
+.app-shell > aside nav a.active,
+.app-shell > aside .sidebar-subnav a.active,
+.app-shell .sidebar-accordion-header.has-active {
+  font-size: .75rem !important;
+  line-height: 1 !important;
+  font-weight: 700 !important;
+  letter-spacing: 0 !important;
+}
+
+.app-shell > aside nav a > span,
+.app-shell .sidebar-accordion-header .accordion-title {
+  font: inherit !important;
+  line-height: inherit !important;
+}
+
+@media (max-width: 720px) {
+  .app-shell > aside nav a,
+  .app-shell > aside .sidebar-subnav a,
+  .app-shell .sidebar-accordion-header,
+  .app-shell > aside nav a.active,
+  .app-shell > aside .sidebar-subnav a.active,
+  .app-shell .sidebar-accordion-header.has-active {
+    font-size: .75rem !important;
+  }
+}
