@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -407,7 +408,16 @@ export default function CashPage() {
                   <WalletCards />
                   <em>Saldo kas</em>
                 </span>
-                <b>{rupiah(Number(summary?.total_balance ?? 0))}</b>
+                <b>
+                  <CountUpNumber
+                    value={Number(summary?.total_balance ?? 0)}
+                    formatOptions={{
+                      style: "currency",
+                      currency: "IDR",
+                      maximumFractionDigits: 0,
+                    }}
+                  />
+                </b>
                 <small>Diperbarui dari seluruh transaksi tercatat</small>
               </article>
               <article className="finance-metric income">
@@ -417,7 +427,16 @@ export default function CashPage() {
                 <span>
                   <small>Pemasukan bulan ini</small>
                   <b>
-                    {compactRupiah(Number(summary?.income_this_month ?? 0))}
+                    <CountUpNumber
+                      value={Number(summary?.income_this_month ?? 0)}
+                      maximumFractionDigits={1}
+                      formatOptions={{
+                        style: "currency",
+                        currency: "IDR",
+                        notation: "compact",
+                        maximumFractionDigits: 1,
+                      }}
+                    />
                   </b>
                   <em>Arus dana masuk</em>
                 </span>
@@ -429,7 +448,16 @@ export default function CashPage() {
                 <span>
                   <small>Pengeluaran bulan ini</small>
                   <b>
-                    {compactRupiah(Number(summary?.expense_this_month ?? 0))}
+                    <CountUpNumber
+                      value={Number(summary?.expense_this_month ?? 0)}
+                      maximumFractionDigits={1}
+                      formatOptions={{
+                        style: "currency",
+                        currency: "IDR",
+                        notation: "compact",
+                        maximumFractionDigits: 1,
+                      }}
+                    />
                   </b>
                   <em>Arus dana keluar</em>
                 </span>
