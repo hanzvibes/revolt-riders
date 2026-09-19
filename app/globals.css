@@ -925,3 +925,33 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
     font-size: .68rem;
   }
 }
+
+
+/* Global font-weight system */
+:root {
+  --rr-fw-regular: 400;
+  --rr-fw-medium: 500;
+  --rr-fw-semibold: 600;
+  --rr-fw-bold: 700;
+  --rr-fw-extrabold: 800;
+}
+
+body {
+  font-weight: var(--rr-fw-regular);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+strong,
+b {
+  font-weight: var(--rr-fw-bold);
+}
