@@ -47,9 +47,7 @@ const formatEventClock = (value: string) =>
     minute: "2-digit",
     hour12: false,
     timeZone: "Asia/Jakarta",
-  })
-    .format(new Date(value))
-    .replace(".", ":") + " WIB";
+  }).format(new Date(value)) + " WIB";
 
 const rsvpLabel: Record<NonNullable<PublicInvitation["rsvp_status"]>, string> = {
   attending: "Hadir",
@@ -187,7 +185,9 @@ export default function InvitationPage() {
                   <span>
                     <small>Tanggal & waktu</small>
                     <strong>{formatEventDate(data.start_at)}</strong>
-                    <em>{formatEventClock(data.start_at)}</em>
+                    <em className="invitation-event-time-v2">
+                      {formatEventClock(data.start_at)}
+                    </em>
                   </span>
                 </div>
 
