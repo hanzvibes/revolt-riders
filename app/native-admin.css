@@ -435,9 +435,13 @@
     gap: 8px;
   }
   .sheet-form input,
-  .sheet-form select,
   .sheet-form textarea {
     font-size: 16px;
+  }
+
+  .sheet-form select {
+    font-size: 0.8125rem;
+    font-weight: 600;
   }
   .sheet-actions {
     position: sticky;
