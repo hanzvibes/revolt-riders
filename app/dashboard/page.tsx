@@ -242,19 +242,7 @@ export default function DashboardPage() {
                 <b>{formatShortDate(nextEvent.start_at).day}</b>
                 <span>Terdekat</span>
               </div>
-            ) : (
-              <div className="unified-hero-badge unified-crest-badge">
-                <Image
-                  src="/revolt-riders-logo.jpg"
-                  alt="Logo Revolt Riders"
-                  width={58}
-                  height={58}
-                  className="unified-crest-logo"
-                  priority
-                />
-                <span>2026</span>
-              </div>
-            )}
+            ) : null}
           </div>
 
           <div className="unified-hero-main">
@@ -281,7 +269,15 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </div>
-            <div className="unified-hero-watermark" aria-hidden="true">RR</div>
+            <div className="unified-hero-watermark" aria-hidden="true">
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt=""
+                width={220}
+                height={220}
+                className="unified-hero-watermark-logo"
+              />
+            </div>
           </div>
 
           <div className="unified-hero-data">
