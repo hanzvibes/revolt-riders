@@ -347,8 +347,8 @@ export default function ProfilePage() {
     },
     {
       key: "five-agenda",
-      label: "5 Agenda",
-      detail: "5 agenda dihadiri",
+      label: "5 RSVP",
+      detail: "5 RSVP hadir",
       unlocked: attendedAgendaCount >= 5,
       Icon: CalendarDays,
     },
@@ -546,10 +546,10 @@ export default function ProfilePage() {
                 <Bike size={13} color="var(--red)" />
                 {motorcycle || detail?.motorcycle || "Motor belum diisi"}
               </span>
-              {profile?.join_date && (
+              {joinDate && joinYear && (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
                   <Calendar size={13} color="var(--red)" />
-                  Bergabung {new Intl.DateTimeFormat("id-ID", { month: "short", year: "numeric" }).format(new Date(profile.join_date))}
+                  Bergabung {new Intl.DateTimeFormat("id-ID", { month: "short", year: "numeric" }).format(joinDate)}
                 </span>
               )}
             </div>
