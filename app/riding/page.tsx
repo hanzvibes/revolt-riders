@@ -218,7 +218,7 @@ export default function RidingPage() {
       <div className="page-wrap">
         {/* TOP HERO CARD: RINGKASAN RIDING MEMBER */}
         <section
-          className="card"
+          className="card riding-summary-hero"
           style={{
             background: "radial-gradient(circle at 85% 30%, #2a2d30, transparent 40%), linear-gradient(135deg, #141618, #222528)",
             color: "#fff",
