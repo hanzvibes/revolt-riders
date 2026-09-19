@@ -7,7 +7,6 @@ import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Crown,
-  Flame,
   Gauge,
   Medal,
   RefreshCw,
