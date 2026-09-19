@@ -5796,6 +5796,18 @@
     --rr-type-hero: clamp(1.75rem, 7vw, 2.125rem);
   }
 
+  .app-shell input,
+  .app-shell select,
+  .app-shell textarea,
+  .app-shell .sheet-form input,
+  .app-shell .sheet-form select,
+  .app-shell .sheet-form textarea,
+  .app-shell .manual-checkin form select,
+  .app-shell .admin-checkin-card form select,
+  .app-shell .rsvp-select select {
+    font-size: 1rem !important;
+  }
+
   .app-shell .page-intro p,
   .app-shell .system-message,
   .app-shell .error-message,
