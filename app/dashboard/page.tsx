@@ -19,6 +19,7 @@ import {
   UsersRound,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 type DashboardStats = {
@@ -267,9 +268,9 @@ export default function DashboardPage() {
           </div>
 
           <div className="rider-status-actions">
-            <a className="dark-action" href="/profil">
+            <Link className="dark-action" href="/profil">
               Lihat profil
-            </a>
+            </Link>
           </div>
         </section>
       );
@@ -282,9 +283,9 @@ export default function DashboardPage() {
         <p>
           Masuk ke akun untuk mencatat kilometer riding, check-in QR saat kopdar, dan melihat saldo kas komunitas.
         </p>
-        <a className="dark-action" href="/login">
+        <Link className="dark-action" href="/login">
           Masuk
-        </a>
+        </Link>
       </section>
     );
   };
@@ -315,9 +316,9 @@ export default function DashboardPage() {
               ) : (
                 <p className="hero-desc"><ShieldCheck />Satu aspal, satu persaudaraan.</p>
               )}
-              <a className="primary-action hero-cta" href="/agenda">
-                Buka agenda <ChevronRight />
-              </a>
+              <Link className="primary-action hero-cta" href="/agenda">
+                Buka agenda <ChevronRight aria-hidden="true" />
+              </Link>
             </div>
             {nextEvent ? (
               <div className="hero-date-badge">
@@ -333,48 +334,8 @@ export default function DashboardPage() {
             )}
           </section>
 
-          {/* Quick Actions Bar */}
-          <div className="dashboard-quick-actions">
-            <a className="quick-action-btn" href="/check-in">
-              <div className="quick-action-icon">
-                <ScanLine />
-              </div>
-              <div className="quick-action-info">
-                <span className="quick-action-title">Check-in</span>
-                <span className="quick-action-desc">Agenda & kopdar</span>
-              </div>
-            </a>
-            <a className="quick-action-btn" href="/riding">
-              <div className="quick-action-icon">
-                <Bike />
-              </div>
-              <div className="quick-action-info">
-                <span className="quick-action-title">Catat KM</span>
-                <span className="quick-action-desc">Tambah ride log</span>
-              </div>
-            </a>
-            <a className="quick-action-btn" href="/member">
-              <div className="quick-action-icon">
-                <UsersRound />
-              </div>
-              <div className="quick-action-info">
-                <span className="quick-action-title">Direktori</span>
-                <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} member` : "Member club"}</span>
-              </div>
-            </a>
-            <a className="quick-action-btn" href="/leaderboard">
-              <div className="quick-action-icon">
-                <Trophy />
-              </div>
-              <div className="quick-action-info">
-                <span className="quick-action-title">Leaderboard</span>
-                <span className="quick-action-desc">Kilometer riding</span>
-              </div>
-            </a>
-          </div>
-
-          {/* Premium Compact Stats */}
-          <section className="stats">
+          {/* Professional KPI overview */}
+          <section className="stats dashboard-kpis" aria-label="Ringkasan komunitas">
             <article>
               <UsersRound />
               <span>
@@ -412,10 +373,63 @@ export default function DashboardPage() {
                   )}
                 </b>
                 <small>
-                  {user ? "Kas komunitas" : <a href="/login">Masuk untuk melihat</a>}
+                  {user ? "Kas komunitas" : <Link href="/login">Masuk untuk melihat</Link>}
                 </small>
               </span>
             </article>
+          </section>
+
+          {/* Quick Actions */}
+          <section className="dashboard-actions-panel" aria-labelledby="dashboard-actions-title">
+            <div className="dashboard-panel-heading">
+              <span>
+                <em>Akses cepat</em>
+                <h3 id="dashboard-actions-title">Operasional utama</h3>
+              </span>
+              <small>4 pintasan</small>
+            </div>
+            <div className="dashboard-quick-actions">
+              <Link className="quick-action-btn" href="/check-in">
+                <div className="quick-action-icon">
+                  <ScanLine aria-hidden="true" />
+                </div>
+                <div className="quick-action-info">
+                  <span className="quick-action-title">Check-in</span>
+                  <span className="quick-action-desc">Agenda & kopdar</span>
+                </div>
+                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
+              </Link>
+              <Link className="quick-action-btn" href="/riding">
+                <div className="quick-action-icon">
+                  <Bike aria-hidden="true" />
+                </div>
+                <div className="quick-action-info">
+                  <span className="quick-action-title">Catat KM</span>
+                  <span className="quick-action-desc">Tambah ride log</span>
+                </div>
+                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
+              </Link>
+              <Link className="quick-action-btn" href="/member">
+                <div className="quick-action-icon">
+                  <UsersRound aria-hidden="true" />
+                </div>
+                <div className="quick-action-info">
+                  <span className="quick-action-title">Direktori</span>
+                  <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} member` : "Member club"}</span>
+                </div>
+                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
+              </Link>
+              <Link className="quick-action-btn" href="/leaderboard">
+                <div className="quick-action-icon">
+                  <Trophy aria-hidden="true" />
+                </div>
+                <div className="quick-action-info">
+                  <span className="quick-action-title">Leaderboard</span>
+                  <span className="quick-action-desc">Kilometer riding</span>
+                </div>
+                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
+              </Link>
+            </div>
           </section>
 
           {/* Agenda Terdekat */}
