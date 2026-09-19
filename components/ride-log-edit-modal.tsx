@@ -2,7 +2,7 @@
 
 import { deleteRideLog, saveRideLog } from "@/lib/services/ride-log-service";
 import { Calendar, Check, Gauge, Trash2, X } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 export type RideLogEditData = {
   id?: string;
@@ -26,28 +26,52 @@ export function RideLogEditModal({
   onSaved: (totalKm?: number) => void;
   onDeleted?: (totalKm?: number) => void;
 }) {
+  const [closing, setClosing] = useState(false);
+  const closeTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (open) setClosing(false);
+    return () => {
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
+    };
+  }, [open]);
+
+  const requestClose = () => {
+    if (closing) return;
+    setClosing(true);
+    closeTimerRef.current = window.setTimeout(() => {
+      closeTimerRef.current = null;
+      setClosing(false);
+      onClose();
+    }, 220);
+  };
+
   if (!open || !data) return null;
 
   return (
-    <div className="tour-modal-backdrop" onClick={onClose}>
-      <RideLogEditForm
-        key={`${data.id ?? "new"}-${data.memberExternalId}`}
-        data={data}
-        onClose={onClose}
-        onSaved={onSaved}
-        onDeleted={onDeleted}
-      />
-    </div>
+    <RideLogEditForm
+      key={`${data.id ?? "new"}-${data.memberExternalId}`}
+      data={data}
+      closing={closing}
+      onClose={requestClose}
+      onSaved={onSaved}
+      onDeleted={onDeleted}
+    />
   );
 }
 
 function RideLogEditForm({
   data,
+  closing,
   onClose,
   onSaved,
   onDeleted,
 }: {
   data: RideLogEditData;
+  closing: boolean;
   onClose: () => void;
   onSaved: (totalKm?: number) => void;
   onDeleted?: (totalKm?: number) => void;
@@ -138,7 +162,11 @@ function RideLogEditForm({
     : "tour-modal-del-btn";
 
   return (
-    <div className="tour-modal-backdrop" onClick={onClose}>
+    <div
+      className={`tour-modal-backdrop${closing ? " is-closing" : ""}`}
+      onClick={onClose}
+      data-state={closing ? "closed" : "open"}
+    >
       <div
         className="tour-modal-card"
         onClick={(e) => e.stopPropagation()}
