@@ -889,3 +889,20 @@ a{color:inherit;text-decoration:none}.app-shell>aside nav a{color:#969a9e;border
     font-size: .68rem;
   }
 }
+
+
+/* Invitation date/time split formatting */
+.invitation-event-item-v2 > span:last-child em {
+  margin-top: 2px;
+  color: #c8cdd1;
+  font-size: .72rem;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+@media (max-width: 640px) {
+  .invitation-event-item-v2 > span:last-child em {
+    font-size: .68rem;
+  }
+}
