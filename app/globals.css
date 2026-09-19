@@ -955,3 +955,56 @@ strong,
 b {
   font-weight: var(--rr-fw-bold);
 }
+
+
+/* Shared overlay motion performance + accessibility */
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="sheet-overlay"],
+[data-slot="sheet-content"],
+[data-slot="drawer-overlay"],
+[data-slot="drawer-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[data-slot="popover-content"],
+[data-slot="select-content"],
+[data-slot="tooltip-content"],
+[data-slot="accordion-content"],
+[data-slot="collapsible-content"] {
+  backface-visibility: hidden;
+}
+
+[data-slot="dialog-content"],
+[data-slot="sheet-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[data-slot="popover-content"],
+[data-slot="select-content"],
+[data-slot="tooltip-content"] {
+  will-change: transform, opacity;
+}
+
+[data-slot="dialog-overlay"],
+[data-slot="sheet-overlay"],
+[data-slot="drawer-overlay"] {
+  will-change: opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"],
+  [data-slot="drawer-overlay"],
+  [data-slot="drawer-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="popover-content"],
+  [data-slot="select-content"],
+  [data-slot="tooltip-content"],
+  [data-slot="accordion-content"],
+  [data-slot="collapsible-content"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
