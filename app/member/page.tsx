@@ -557,10 +557,6 @@ export default function MemberPage() {
           </>
         )}
 
-        <p className="last-updated">
-          Data member tersinkron langsung ke Supabase. Klik kartu member untuk melihat
-          riwayat touring dan aktivitas terverifikasi.
-        </p>
       </div>
 
       {/* Modal Sheet Detail Member & Riwayat Touring */}
