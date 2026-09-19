@@ -389,16 +389,6 @@ export default function MemberPage() {
 
           <div className="member-directory-hero-main">
             <div className="member-directory-hero-copy">
-              <div className="member-directory-title-logo" aria-hidden="true">
-                <Image
-                  src="/revolt-riders-logo.jpg"
-                  alt=""
-                  width={56}
-                  height={56}
-                  className="member-directory-title-logo-image"
-                  priority
-                />
-              </div>
               <div className="member-directory-eyebrow">
                 <span>REVOLT RIDERS</span>
                 <em>Member directory</em>
