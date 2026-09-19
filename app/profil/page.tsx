@@ -322,6 +322,9 @@ export default function ProfilePage() {
         ),
       )
     : 100;
+  const remainingKmToMilestone = nextKmMilestone
+    ? Math.max(0, nextKmMilestone - totalKm)
+    : 0;
 
   const passportBadges = [
     {
@@ -367,327 +370,218 @@ export default function ProfilePage() {
         {/* ================================================================ */}
         {/* DIGITAL MEMBERSHIP CARD (IDENTITY CARD) */}
         {/* ================================================================ */}
-        <section
-          className="digital-id-card member-passport-card"
-          style={{
-            position: "relative",
-            borderRadius: "22px",
-            background: "linear-gradient(135deg, #0d0f11 0%, #1a1c1f 50%, #111315 100%)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            boxShadow: "0 22px 50px rgba(0, 0, 0, 0.45)",
-            padding: "30px 28px",
-            color: "#fff",
-            overflow: "hidden",
-            marginBottom: "24px",
-          }}
-        >
-          <div className="member-passport-head">
+        <section className="digital-id-card member-passport-card">
+          <div className="member-passport-watermark" aria-hidden="true">
+            <Image
+              src="/revolt-riders-logo.jpg"
+              alt=""
+              width={260}
+              height={260}
+              priority={false}
+            />
+          </div>
+
+          <header className="member-passport-head">
             <span>
               <small>DIGITAL MEMBER PASSPORT</small>
               <strong>REVOLT RIDERS</strong>
+              <em>SITUBONDO · EST. 2022</em>
             </span>
             <span className="member-passport-verified">
               <ShieldCheck aria-hidden="true" />
               VERIFIED
             </span>
-          </div>
+          </header>
 
-          {/* Subtle watermark background logo */}
-          <div
-            style={{
-              position: "absolute",
-              right: "-20px",
-              bottom: "-25px",
-              width: "220px",
-              height: "220px",
-              opacity: 0.05,
-              pointerEvents: "none",
-            }}
-          >
-            <Image
-              src="/revolt-riders-logo.jpg"
-              alt="Revolt Riders Crest"
-              width={220}
-              height={220}
-              style={{ objectFit: "contain" }}
-            />
-          </div>
-
-          {/* Main Card Identity Layout - Clean, Centered & Symmetrical */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              paddingTop: "6px",
-            }}
-          >
-            {/* Avatar badge */}
-            <div
-              style={{
-                width: "86px",
-                height: "86px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #24272a, #0e0f10)",
-                border: "3px solid #fff",
-                boxShadow: "0 0 0 3px var(--red), 0 8px 24px rgba(0,0,0,0.55)",
-                display: "grid",
-                placeItems: "center",
-                fontSize: "1.75rem",
-                fontWeight: 800,
-                color: "#fff",
-                marginBottom: "14px",
-              }}
-            >
+          <div className="member-passport-identity">
+            <div className="member-passport-avatar" aria-hidden="true">
               {displayName.slice(0, 2).toUpperCase()}
             </div>
 
-            {/* Display Name */}
-            <h2
-              style={{
-                fontSize: "1.65rem",
-                fontWeight: 800,
-                margin: 0,
-                letterSpacing: "-0.03em",
-                color: "#fff",
-                lineHeight: 1.2,
-              }}
-            >
-              {displayName}
-            </h2>
-
-            {/* Full Name Subtitle (if different from displayName) */}
-            {profile?.full_name && profile.full_name !== displayName && (
-              <p
-                style={{
-                  fontSize: "0.82rem",
-                  color: "#9ca3af",
-                  margin: "4px 0 0",
-                  fontWeight: 500,
-                }}
-              >
-                {profile.full_name}
-              </p>
-            )}
-
-            {/* Badges Row: ID RR, Club Role, Active Member */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "8px",
-                flexWrap: "wrap",
-                marginTop: "12px",
-              }}
-            >
-              <code
-                style={{
-                  background: "var(--red)",
-                  color: "#fff",
-                  fontWeight: 800,
-                  padding: "3px 10px",
-                  borderRadius: "6px",
-                  fontSize: "0.76rem",
-                  letterSpacing: "0.08em",
-                  boxShadow: "0 2px 8px rgba(229, 29, 42, 0.35)",
-                }}
-              >
-                {account.member_external_id}
-              </code>
-
-              {profile?.club_role && (
-                <span
-                  className={`member-role-badge ${getRoleClass(profile.club_role)}`}
-                  style={{ fontSize: "0.66rem", padding: "3.5px 9px", borderRadius: "6px" }}
-                >
-                  {profile.club_role}
-                </span>
+            <div className="member-passport-name">
+              <small>OFFICIAL MEMBER</small>
+              <h2>{displayName}</h2>
+              {profile?.full_name && profile.full_name !== displayName && (
+                <p>{profile.full_name}</p>
               )}
 
-              <div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "5px",
-                  background: "rgba(22, 163, 74, 0.15)",
-                  border: "1px solid rgba(22, 163, 74, 0.35)",
-                  borderRadius: "20px",
-                  padding: "3px 10px",
-                  fontSize: "0.64rem",
-                  color: "#4ade80",
-                  fontWeight: 800,
-                }}
-              >
-                <ShieldCheck size={12} />
-                <span>ACTIVE MEMBER</span>
+              <div className="member-passport-tags">
+                <code>{account.member_external_id}</code>
+                {profile?.club_role && (
+                  <span className={`member-role-badge ${getRoleClass(profile.club_role)}`}>
+                    {profile.club_role}
+                  </span>
+                )}
+                <span className="member-passport-status">
+                  <ShieldCheck aria-hidden="true" />
+                  Active
+                </span>
               </div>
             </div>
-
-            {/* Meta pills on card (Kota, Motor, Tanggal Bergabung) */}
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "12px 18px",
-                marginTop: "14px",
-                flexWrap: "wrap",
-                fontSize: "0.72rem",
-                color: "#9ca3af",
-              }}
-            >
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                <MapPin size={13} color="var(--red)" />
-                {city || profile?.city || "Kota belum diisi"}
-              </span>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                <Bike size={13} color="var(--red)" />
-                {motorcycle || detail?.motorcycle || "Motor belum diisi"}
-              </span>
-              {joinDate && joinYear && (
-                <span style={{ display: "inline-flex", alignItems: "center", gap: "5px" }}>
-                  <Calendar size={13} color="var(--red)" />
-                  Bergabung {new Intl.DateTimeFormat("id-ID", { month: "short", year: "numeric" }).format(joinDate)}
-                </span>
-              )}
-            </div>
           </div>
 
-          {/* Stats Bar On Card */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              background: "rgba(0, 0, 0, 0.35)",
-              border: "1px solid rgba(255, 255, 255, 0.08)",
-              borderRadius: "14px",
-              padding: "14px",
-              marginTop: "24px",
-              textAlign: "center",
-              gap: "8px",
-            }}
-          >
-            <div>
-              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
-                TOTAL KM RESMI
-              </small>
-              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                <CountUpNumber value={totalKm} maximumFractionDigits={1} />{" "}
-                <span style={{ fontSize: "0.7rem", color: "var(--red)" }}>KM</span>
-              </b>
-            </div>
-
-            <div style={{ borderLeft: "1px solid rgba(255, 255, 255, 0.1)", borderRight: "1px solid rgba(255, 255, 255, 0.1)" }}>
-              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
-                RIWAYAT TOURING
-              </small>
-              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                <CountUpNumber value={approvedRidesCount} />{" "}
-                <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>log</span>
-              </b>
-            </div>
-
-            <div>
-              <small style={{ display: "block", color: "#8b949e", fontSize: "0.58rem", fontWeight: 800, textTransform: "uppercase" }}>
-                RESPONS RSVP
-              </small>
-              <b style={{ fontSize: "1.25rem", color: "#fff", display: "inline-block", marginTop: "2px" }}>
-                <CountUpNumber value={rsvpActivities.length} />{" "}
-                <span style={{ fontSize: "0.7rem", color: "#9ca3af" }}>agenda</span>
-              </b>
-            </div>
-          </div>
-
-          <section className="member-passport-progress" aria-label="Progress member">
-            <div className="member-passport-progress-head">
-              <span>
-                <small>ROAD PROGRESS</small>
-                <strong>
-                  {nextKmMilestone
-                    ? `${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM milestone`
-                    : "Milestone tertinggi tercapai"}
-                </strong>
-              </span>
-              <b>
-                {nextKmMilestone
-                  ? `${Math.round(milestoneProgress)}%`
-                  : "MAX"}
-              </b>
-            </div>
-            <div
-              className="member-passport-progress-track"
-              role="progressbar"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(milestoneProgress)}
-              aria-label="Progress menuju milestone kilometer berikutnya"
-            >
-              <i style={{ width: `${milestoneProgress}%` }} />
-            </div>
-            <div className="member-passport-progress-meta">
-              <span>
-                <Route aria-hidden="true" />
-                <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(totalKm)} KM</b>
-                <small>terverifikasi</small>
-              </span>
-              <span>
-                <Calendar aria-hidden="true" />
-                <b>{joinYear ? `Since ${joinYear}` : "Member resmi"}</b>
-                <small>{account.member_external_id}</small>
-              </span>
-            </div>
-          </section>
-
-          <section className="member-passport-achievements" aria-label="Milestone passport">
-            <div className="member-passport-achievements-head">
-              <span>
-                <small>PASSPORT STAMPS</small>
-                <strong>Milestone Member</strong>
-              </span>
-              <b>{passportBadges.filter((badge) => badge.unlocked).length}/{passportBadges.length}</b>
-            </div>
-            <div className="member-passport-badges">
-              {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
-                <article
-                  key={key}
-                  className={unlocked ? "is-unlocked" : "is-locked"}
-                  aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
-                >
-                  <i><Icon aria-hidden="true" /></i>
-                  <span>
-                    <b>{label}</b>
-                    <small>{badgeDetail}</small>
-                  </span>
-                  {unlocked && <Check aria-hidden="true" />}
-                </article>
-              ))}
-            </div>
-          </section>
-
-          {/* Quick Shortcuts Strip */}
-          <nav className="profile-quick-shortcuts" aria-label="Akses cepat member">
-            <Link className="profile-emboss-action" href="/riding">
+          <div className="member-passport-meta">
+            <span>
+              <MapPin aria-hidden="true" />
+              <small>Domisili</small>
+              <b>{city || profile?.city || "Belum diisi"}</b>
+            </span>
+            <span>
               <Bike aria-hidden="true" />
-              <span>Catat Riding</span>
-            </Link>
+              <small>Motor</small>
+              <b>{motorcycle || detail?.motorcycle || "Belum diisi"}</b>
+            </span>
+            <span>
+              <Calendar aria-hidden="true" />
+              <small>Member since</small>
+              <b>
+                {joinDate && joinYear
+                  ? new Intl.DateTimeFormat("id-ID", {
+                      month: "short",
+                      year: "numeric",
+                    }).format(joinDate)
+                  : "Member resmi"}
+              </b>
+            </span>
+          </div>
 
-            <Link className="profile-emboss-action" href="/agenda">
-              <CalendarDays aria-hidden="true" />
-              <span>Agenda Club</span>
-            </Link>
+          <div className="member-passport-metrics" aria-label="Ringkasan passport member">
+            <article>
+              <small>Total KM Resmi</small>
+              <strong>
+                <CountUpNumber value={totalKm} maximumFractionDigits={1} />
+                <span>KM</span>
+              </strong>
+            </article>
+            <article>
+              <small>Ride Approved</small>
+              <strong>
+                <CountUpNumber value={approvedRidesCount} />
+                <span>ride</span>
+              </strong>
+            </article>
+            <article>
+              <small>RSVP Hadir</small>
+              <strong>
+                <CountUpNumber value={attendedAgendaCount} />
+                <span>agenda</span>
+              </strong>
+            </article>
+          </div>
 
-            <Link className="profile-emboss-action" href="/leaderboard">
-              <Trophy aria-hidden="true" />
-              <span>Leaderboard</span>
-            </Link>
+          <div className="member-passport-body-grid">
+            <section className="member-passport-progress" aria-label="Progress member">
+              <div className="member-passport-progress-head">
+                <span>
+                  <small>ROAD PROGRESS</small>
+                  <strong>
+                    {nextKmMilestone
+                      ? `Menuju ${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM`
+                      : "Milestone tertinggi tercapai"}
+                  </strong>
+                </span>
+                <b>{nextKmMilestone ? `${Math.round(milestoneProgress)}%` : "MAX"}</b>
+              </div>
 
-            <Link className="profile-emboss-action" href="/check-in">
-              <QrCode aria-hidden="true" />
-              <span>Check-in</span>
-            </Link>
-          </nav>
+              <div
+                className="member-passport-progress-track"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={100}
+                aria-valuenow={Math.round(milestoneProgress)}
+                aria-label="Progress menuju milestone kilometer berikutnya"
+              >
+                <i style={{ width: `${milestoneProgress}%` }} />
+              </div>
+
+              <div className="member-passport-progress-scale">
+                <small>
+                  {previousKmMilestone > 0
+                    ? `${new Intl.NumberFormat("id-ID").format(previousKmMilestone)} KM`
+                    : "START"}
+                </small>
+                <small>
+                  {nextKmMilestone
+                    ? `${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM`
+                    : "MAX"}
+                </small>
+              </div>
+
+              <div className="member-passport-progress-callout">
+                <Route aria-hidden="true" />
+                <span>
+                  <b>
+                    {nextKmMilestone
+                      ? `${new Intl.NumberFormat("id-ID", {
+                          maximumFractionDigits: 1,
+                        }).format(remainingKmToMilestone)} KM lagi`
+                      : "Road milestone complete"}
+                  </b>
+                  <small>
+                    {nextKmMilestone
+                      ? "untuk membuka milestone berikutnya"
+                      : "Semua milestone KM saat ini sudah terbuka"}
+                  </small>
+                </span>
+              </div>
+            </section>
+
+            <section className="member-passport-achievements" aria-label="Milestone passport">
+              <div className="member-passport-achievements-head">
+                <span>
+                  <small>PASSPORT STAMPS</small>
+                  <strong>Milestone Member</strong>
+                </span>
+                <b>
+                  {passportBadges.filter((badge) => badge.unlocked).length}
+                  <span>/{passportBadges.length}</span>
+                </b>
+              </div>
+
+              <div className="member-passport-badges">
+                {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
+                  <article
+                    key={key}
+                    className={unlocked ? "is-unlocked" : "is-locked"}
+                    aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
+                  >
+                    <i><Icon aria-hidden="true" /></i>
+                    <span>
+                      <b>{label}</b>
+                      <small>{badgeDetail}</small>
+                    </span>
+                    {unlocked && <Check aria-hidden="true" />}
+                  </article>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          <footer className="member-passport-footer">
+            <span>
+              <small>PASSPORT NO.</small>
+              <b>{account.member_external_id}</b>
+            </span>
+
+            <nav className="profile-quick-shortcuts" aria-label="Akses cepat member">
+              <Link className="profile-emboss-action" href="/riding">
+                <Bike aria-hidden="true" />
+                <span>Riding</span>
+              </Link>
+              <Link className="profile-emboss-action" href="/agenda">
+                <CalendarDays aria-hidden="true" />
+                <span>Agenda</span>
+              </Link>
+              <Link className="profile-emboss-action" href="/leaderboard">
+                <Trophy aria-hidden="true" />
+                <span>Ranking</span>
+              </Link>
+              <Link className="profile-emboss-action" href="/check-in">
+                <QrCode aria-hidden="true" />
+                <span>Check-in</span>
+              </Link>
+            </nav>
+          </footer>
         </section>
 
         {/* ================================================================ */}
