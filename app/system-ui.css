@@ -5867,3 +5867,52 @@
     font-size: .75rem !important;
   }
 }
+
+
+/* Hero elevation containment: keep shadows clear of following sections */
+.app-shell .unified-dashboard-hero,
+.app-shell .member-directory-hero,
+.app-shell .leaderboard-hero,
+.app-shell .riding-summary-hero {
+  position: relative;
+  z-index: 0;
+  box-shadow: 0 8px 22px rgba(0,0,0,.18) !important;
+}
+
+.app-shell .unified-dashboard-hero {
+  margin-bottom: 10px !important;
+}
+
+.app-shell .member-directory-hero,
+.app-shell .leaderboard-hero,
+.app-shell .riding-summary-hero {
+  margin-bottom: 28px !important;
+}
+
+/* Keep the section after a hero above any remaining soft shadow. */
+.app-shell .unified-dashboard-hero ~ *,
+.app-shell .member-directory-hero ~ *,
+.app-shell .leaderboard-hero ~ *,
+.app-shell .riding-summary-hero ~ * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 720px) {
+  .app-shell .unified-dashboard-hero,
+  .app-shell .member-directory-hero,
+  .app-shell .leaderboard-hero,
+  .app-shell .riding-summary-hero {
+    box-shadow: 0 6px 16px rgba(0,0,0,.14) !important;
+  }
+
+  .app-shell .unified-dashboard-hero {
+    margin-bottom: 8px !important;
+  }
+
+  .app-shell .member-directory-hero,
+  .app-shell .leaderboard-hero,
+  .app-shell .riding-summary-hero {
+    margin-bottom: 24px !important;
+  }
+}
