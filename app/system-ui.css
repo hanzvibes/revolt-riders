@@ -2588,3 +2588,39 @@
     font-size: .53rem;
   }
 }
+
+
+/* Compact mobile bottom navigation spacing */
+@media (max-width: 720px) {
+  .app-shell .bottom {
+    left: 50% !important;
+    right: auto !important;
+    width: min(84vw, 390px) !important;
+    max-width: calc(100vw - 28px) !important;
+    transform: translateX(-50%);
+    grid-template-columns: repeat(5, minmax(52px, 1fr)) !important;
+    gap: 2px;
+    padding: 6px 7px;
+  }
+
+  .app-shell .bottom a {
+    min-width: 52px;
+    min-height: 50px;
+    padding-inline: 4px;
+    border-radius: 14px;
+  }
+
+  .app-shell .bottom a.active {
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .bottom {
+    width: min(86vw, 344px) !important;
+  }
+
+  .app-shell .bottom a {
+    min-width: 50px;
+  }
+}
