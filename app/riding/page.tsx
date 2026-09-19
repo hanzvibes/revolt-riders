@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
+import { RidingStatChart } from "@/components/riding-stat-chart";
 import { PageSkeleton } from "@/components/skeleton";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
@@ -303,6 +304,8 @@ export default function RidingPage() {
               </div>
             </div>
           </div>
+
+          <RidingStatChart rides={rides} />
 
           {pendingRides.length > 0 && (
             <div
