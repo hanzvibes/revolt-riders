@@ -365,7 +365,7 @@ export default function ProfilePage() {
                 display: "grid",
                 placeItems: "center",
                 fontSize: "1.75rem",
-                fontWeight: 900,
+                fontWeight: 800,
                 color: "#fff",
                 marginBottom: "14px",
               }}
@@ -377,7 +377,7 @@ export default function ProfilePage() {
             <h2
               style={{
                 fontSize: "1.65rem",
-                fontWeight: 900,
+                fontWeight: 800,
                 margin: 0,
                 letterSpacing: "-0.03em",
                 color: "#fff",
@@ -416,7 +416,7 @@ export default function ProfilePage() {
                 style={{
                   background: "var(--red)",
                   color: "#fff",
-                  fontWeight: 900,
+                  fontWeight: 800,
                   padding: "3px 10px",
                   borderRadius: "6px",
                   fontSize: "0.76rem",
