@@ -4795,36 +4795,6 @@
 }
 
 
-/* Center Revolt logo above Member Revolt title */
-.app-shell .member-directory-title-logo {
-  display: grid;
-  place-items: center;
-  margin: 0 0 10px;
-}
-
-.app-shell .member-directory-title-logo-image {
-  width: 56px;
-  height: 56px;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow:
-    0 0 0 3px rgba(220,27,42,.13),
-    0 10px 24px rgba(0,0,0,.28);
-}
-
-@media (max-width: 720px) {
-  .app-shell .member-directory-title-logo {
-    margin-bottom: 8px;
-  }
-
-  .app-shell .member-directory-title-logo-image {
-    width: 46px;
-    height: 46px;
-  }
-}
-
-
 /* Member hero refresh button in top-right header */
 .app-shell .member-directory-hero-top {
   grid-template-columns: minmax(0, 1fr) auto !important;
