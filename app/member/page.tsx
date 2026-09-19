@@ -24,6 +24,7 @@ import {
   Users,
   UsersRound,
 } from "lucide-react";
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type MemberDisplay = {
@@ -180,6 +181,10 @@ export default function MemberPage() {
 
   const totalKmCombined = useMemo(() => {
     return members.reduce((sum, m) => sum + (Number(m.total_km) || 0), 0);
+  }, [members]);
+
+  const totalVerifiedActivities = useMemo(() => {
+    return members.reduce((sum, m) => sum + (Number(m.touring_count) || 0), 0);
   }, [members]);
 
   const getInitials = (name: string, nickname: string | null) => {
@@ -355,28 +360,109 @@ export default function MemberPage() {
   return (
     <AppShell active="Member" title="Direktori Member">
       <div className="page-wrap">
-        <div className="page-intro native-page-head">
-          <div>
-            <em>Direktori member</em>
-            <h2>Member Revolt</h2>
-            <p>
-              Data member resmi Revolt Riders yang tersinkron langsung ke Supabase.
-              Klik kartu member untuk melihat detail profil & riwayat touring.
-            </p>
+        <section className="member-directory-hero" aria-labelledby="member-directory-title">
+          <div className="member-directory-hero-top">
+            <div className="member-directory-brand">
+              <div className="member-directory-brand-mark" aria-hidden="true">
+                <UsersRound />
+              </div>
+              <div>
+                <small>DIREKTORI MEMBER</small>
+                <strong>Revolt Riders</strong>
+                <span>Internal member hub</span>
+              </div>
+            </div>
+
+            <div className="member-directory-crest" aria-hidden="true">
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt=""
+                width={44}
+                height={44}
+                className="member-directory-crest-logo"
+                priority
+              />
+              <span>RR</span>
+            </div>
           </div>
-          <button
-            type="button"
-            className="outline-action"
-            onClick={() => {
-              invalidateCache("member_profiles_list");
-              void loadMembers();
-            }}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-          >
-            <RefreshCw className={loading ? "spin" : ""} style={{ width: 14, height: 14 }} />
-            <span>REFRESH DATA</span>
-          </button>
-        </div>
+
+          <div className="member-directory-hero-main">
+            <div className="member-directory-hero-copy">
+              <div className="member-directory-eyebrow">
+                <span>REVOLT RIDERS</span>
+                <em>Member directory</em>
+              </div>
+              <h2 id="member-directory-title">Member Revolt</h2>
+              <p>
+                Data member resmi, kilometer riding, dan aktivitas terverifikasi
+                dalam satu direktori internal.
+              </p>
+              <button
+                type="button"
+                className="member-directory-refresh"
+                onClick={() => {
+                  invalidateCache("member_profiles_list");
+                  void loadMembers();
+                }}
+                disabled={loading}
+              >
+                <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" />
+                <span>{loading ? "Memuat data" : "Refresh data"}</span>
+              </button>
+            </div>
+
+            <div className="member-directory-watermark" aria-hidden="true">
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt=""
+                width={220}
+                height={220}
+              />
+            </div>
+          </div>
+
+          <div className="member-directory-hero-stats" aria-label="Ringkasan member">
+            <div>
+              <Users aria-hidden="true" />
+              <span>
+                <small>Total member</small>
+                <b>
+                  {user && !authLoading ? (
+                    <CountUpNumber value={members.length} suffix=" Riders" />
+                  ) : (
+                    "Privat"
+                  )}
+                </b>
+              </span>
+            </div>
+            <div>
+              <Gauge aria-hidden="true" />
+              <span>
+                <small>Total kilometer</small>
+                <b>
+                  {user && !authLoading ? (
+                    <CountUpNumber value={totalKmCombined} suffix=" KM" />
+                  ) : (
+                    "Privat"
+                  )}
+                </b>
+              </span>
+            </div>
+            <div>
+              <Compass aria-hidden="true" />
+              <span>
+                <small>Kegiatan terverifikasi</small>
+                <b>
+                  {user && !authLoading ? (
+                    <CountUpNumber value={totalVerifiedActivities} suffix=" Agenda" />
+                  ) : (
+                    "Privat"
+                  )}
+                </b>
+              </span>
+            </div>
+          </div>
+        </section>
 
         {!user && !authLoading ? (
           <section className="empty-state card">
@@ -403,23 +489,6 @@ export default function MemberPage() {
           </section>
         ) : (
           <>
-            <div className="member-directory-stats">
-              <article className="member-stat-chip">
-                <Users />
-                <span>
-                  <small>Total Member</small>
-                  <b><CountUpNumber value={members.length} suffix=" Riders" /></b>
-                </span>
-              </article>
-              <article className="member-stat-chip">
-                <Gauge />
-                <span>
-                  <small>Total Kilometer</small>
-                  <b><CountUpNumber value={totalKmCombined} suffix=" KM" /></b>
-                </span>
-              </article>
-            </div>
-
             <div className="search-box member-search-bar">
               <Search />
               <input
