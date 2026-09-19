@@ -5352,6 +5352,10 @@
     padding: 8px 10px;
   }
 
+  .app-shell .leaderboard-hero-stats > div {
+    border-left: 0;
+  }
+
   .app-shell .leaderboard-hero-stats > div:nth-child(2n) {
     border-left: 1px solid rgba(255,255,255,.10);
   }
