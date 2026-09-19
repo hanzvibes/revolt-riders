@@ -310,11 +310,11 @@ export default function DashboardPage() {
               <h2>{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
               {nextEvent ? (
                 <div className="hero-meta">
-                  <p><MapPin />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
-                  <p><CalendarDays />{formatEventDate(nextEvent.start_at)}</p>
+                  <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
+                  <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
                 </div>
               ) : (
-                <p className="hero-desc"><ShieldCheck />Satu aspal, satu persaudaraan.</p>
+                <p className="hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
               )}
               <Link className="primary-action hero-cta" href="/agenda">
                 Buka agenda <ChevronRight aria-hidden="true" />
@@ -337,7 +337,7 @@ export default function DashboardPage() {
           {/* Professional KPI overview */}
           <section className="stats dashboard-kpis" aria-label="Ringkasan komunitas">
             <article>
-              <UsersRound />
+              <UsersRound aria-hidden="true" />
               <span>
                 <small>Member resmi</small>
                 <b>{totalRidersCount} member</b>
@@ -345,7 +345,7 @@ export default function DashboardPage() {
               </span>
             </article>
             <article>
-              <Gauge />
+              <Gauge aria-hidden="true" />
               <span>
                 <small>Total kilometer</small>
                 <b>
@@ -355,7 +355,7 @@ export default function DashboardPage() {
               </span>
             </article>
             <article>
-              <CircleDollarSign />
+              <CircleDollarSign aria-hidden="true" />
               <span>
                 <small>Saldo kas</small>
                 <b>
@@ -439,16 +439,16 @@ export default function DashboardPage() {
                 <em>Agenda</em>
                 <h3>Jadwal terdekat</h3>
               </span>
-              <a href="/agenda">
-                Lihat semua <ChevronRight />
-              </a>
+              <Link href="/agenda">
+                Lihat semua <ChevronRight aria-hidden="true" />
+              </Link>
             </div>
 
-            {loading && <p className="system-message">Memuat agenda terbaru…</p>}
-            {error && <p className="error-message">{error}</p>}
+            {loading && <p className="system-message" role="status" aria-live="polite">Memuat agenda terbaru…</p>}
+            {error && <p className="error-message" role="alert">{error}</p>}
             {!loading && !error && events.length === 0 && (
               <div className="inline-empty">
-                <Database />
+                <Database aria-hidden="true" />
                 <span>
                   <b>Belum ada agenda yang dipublikasikan.</b>
                   <small>Agenda touring atau kopdar baru akan tampil otomatis di sini.</small>
@@ -470,9 +470,9 @@ export default function DashboardPage() {
                       {idx === 0 && <span className="event-soon-pill">Terdekat</span>}
                     </div>
                     <h4>{event.title}</h4>
-                    <p><CalendarDays size={13} style={{ verticalAlign: "middle", marginRight: 4 }} />{formatEventDate(event.start_at)}</p>
+                    <p><CalendarDays aria-hidden="true" size={13} style={{ verticalAlign: "middle", marginRight: 4 }} />{formatEventDate(event.start_at)}</p>
                   </div>
-                  <ChevronRight className="event-arrow" />
+                  <ChevronRight className="event-arrow" aria-hidden="true" />
                 </a>
               );
             })}
