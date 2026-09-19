@@ -9,6 +9,7 @@ type CountUpNumberProps = {
   prefix?: string;
   suffix?: string;
   className?: string;
+  formatOptions?: Intl.NumberFormatOptions;
 };
 
 const easeOutCubic = (progress: number) => 1 - Math.pow(1 - progress, 3);
@@ -20,6 +21,7 @@ export function CountUpNumber({
   prefix = "",
   suffix = "",
   className,
+  formatOptions,
 }: CountUpNumberProps) {
   const safeValue = Number.isFinite(value) ? value : 0;
   const [displayValue, setDisplayValue] = useState(0);
@@ -56,14 +58,17 @@ export function CountUpNumber({
     return () => cancelAnimationFrame(frameId);
   }, [duration, safeValue]);
 
-  const formatted = new Intl.NumberFormat("id-ID", {
+  const numberFormat = new Intl.NumberFormat("id-ID", {
     maximumFractionDigits,
-  }).format(displayValue);
+    ...formatOptions,
+  });
+  const formatted = numberFormat.format(displayValue);
 
   return (
-    <span className={className} aria-label={`${prefix}${new Intl.NumberFormat("id-ID", {
-      maximumFractionDigits,
-    }).format(safeValue)}${suffix}`}>
+    <span
+      className={className}
+      aria-label={`${prefix}${numberFormat.format(safeValue)}${suffix}`}
+    >
       {prefix}
       {formatted}
       {suffix}
