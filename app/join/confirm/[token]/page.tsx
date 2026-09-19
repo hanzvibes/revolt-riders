@@ -304,7 +304,7 @@ export default function CandidateConfirmationPage({
                     marginBottom: 18,
                   }}
                 >
-                  <h4 style={{ fontSize: "0.84rem", fontWeight: 850, margin: "0 0 8px", color: "#0f172a" }}>
+                  <h4 style={{ fontSize: "0.84rem", fontWeight: 800, margin: "0 0 8px", color: "#0f172a" }}>
                     Ikrar Persaudaraan Revolt Riders
                   </h4>
                   <ul style={{ margin: 0, paddingLeft: 18, fontSize: "0.74rem", color: "#475569", lineHeight: 1.6 }}>
