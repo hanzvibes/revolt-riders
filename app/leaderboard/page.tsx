@@ -140,30 +140,6 @@ export default function LeaderboardPage() {
   return (
     <AppShell active="Leaderboard" title="Leaderboard">
       <div className="page-wrap">
-        <div className="page-intro native-page-head">
-          <div>
-            <em>Riding</em>
-            <h2>Leaderboard Kilometer</h2>
-            <p>
-              Riwayat resmi kilometer riding yang telah tervalidasi oleh Road
-              Captain.
-            </p>
-          </div>
-          <button
-            type="button"
-            className="outline-action"
-            onClick={() => {
-              invalidateCache("riding_leaderboard_data");
-              invalidateCache("member_profiles_list");
-              void loadLeaderboard();
-            }}
-            style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
-          >
-            <RefreshCw className={loading ? "spin" : ""} style={{ width: 14, height: 14 }} />
-            <span>REFRESH DATA</span>
-          </button>
-        </div>
-
         {!user && !authLoading ? (
           <section className="empty-state card">
             <ShieldAlert />
@@ -189,30 +165,140 @@ export default function LeaderboardPage() {
           </section>
         ) : (
           <>
-            {/* Stats Chips */}
-            <div className="member-directory-stats">
-              <article className="member-stat-chip">
-                <Users />
-                <span>
-                  <small>Riders Terdaftar</small>
-                  <b><CountUpNumber value={riders.length} suffix=" Member" /></b>
-                </span>
-              </article>
-              <article className="member-stat-chip">
-                <Gauge />
-                <span>
-                  <small>Akumulasi Jarak</small>
-                  <b><CountUpNumber value={totalKmSum} suffix=" KM" /></b>
-                </span>
-              </article>
-              <article className="member-stat-chip">
-                <Crown />
-                <span>
-                  <small>Jarak Terjauh</small>
-                  <b><CountUpNumber value={riders[0]?.total_km || 0} suffix=" KM" /></b>
-                </span>
-              </article>
-            </div>
+            <section className="leaderboard-hero" aria-labelledby="leaderboard-hero-title">
+              <div className="leaderboard-hero-top">
+                <div className="leaderboard-hero-brand">
+                  <div className="leaderboard-hero-brand-mark" aria-hidden="true">
+                    <Trophy />
+                  </div>
+                  <div>
+                    <small>RIDING LEADERBOARD</small>
+                    <strong>Revolt Riders</strong>
+                    <span>Kilometer terverifikasi</span>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  className="leaderboard-hero-refresh"
+                  onClick={() => {
+                    invalidateCache("riding_leaderboard_data");
+                    invalidateCache("member_profiles_list");
+                    void loadLeaderboard();
+                  }}
+                  disabled={loading}
+                >
+                  <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" />
+                  <span>{loading ? "Memuat data" : "Refresh data"}</span>
+                </button>
+              </div>
+
+              <div className="leaderboard-hero-main">
+                <div className="leaderboard-hero-copy">
+                  <div className="leaderboard-hero-eyebrow">
+                    <span>REVOLT RIDERS</span>
+                    <em>Official ranking</em>
+                  </div>
+                  <h2 id="leaderboard-hero-title">Leaderboard Kilometer</h2>
+                  <p>
+                    Peringkat berdasarkan kilometer riding yang telah tervalidasi
+                    oleh Road Captain.
+                  </p>
+                </div>
+
+                <div className="leaderboard-hero-watermark" aria-hidden="true">RR</div>
+
+                {top3.length >= 3 ? (
+                  <div className="leaderboard-hero-podium" aria-label="Tiga rider teratas">
+                    <article className="leaderboard-hero-podium-card rank-2">
+                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
+                        <Medal />
+                      </div>
+                      <div className="leaderboard-hero-avatar">
+                        {getInitials(top3[1].full_name)}
+                      </div>
+                      <span className="leaderboard-hero-rank-label">#2</span>
+                      <strong title={top3[1].full_name}>{top3[1].full_name}</strong>
+                      <small>{top3[1].member_external_id}</small>
+                      <b>
+                        <CountUpNumber value={top3[1].total_km} suffix=" KM" />
+                      </b>
+                    </article>
+
+                    <article className="leaderboard-hero-podium-card rank-1">
+                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
+                        <Crown />
+                      </div>
+                      <div className="leaderboard-hero-avatar">
+                        {getInitials(top3[0].full_name)}
+                      </div>
+                      <span className="leaderboard-hero-rank-label">#1</span>
+                      <strong title={top3[0].full_name}>{top3[0].full_name}</strong>
+                      <small>{top3[0].member_external_id}</small>
+                      <b>
+                        <CountUpNumber value={top3[0].total_km} suffix=" KM" />
+                      </b>
+                    </article>
+
+                    <article className="leaderboard-hero-podium-card rank-3">
+                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
+                        <Medal />
+                      </div>
+                      <div className="leaderboard-hero-avatar">
+                        {getInitials(top3[2].full_name)}
+                      </div>
+                      <span className="leaderboard-hero-rank-label">#3</span>
+                      <strong title={top3[2].full_name}>{top3[2].full_name}</strong>
+                      <small>{top3[2].member_external_id}</small>
+                      <b>
+                        <CountUpNumber value={top3[2].total_km} suffix=" KM" />
+                      </b>
+                    </article>
+                  </div>
+                ) : (
+                  <div className="leaderboard-hero-podium-empty">
+                    Podium akan tampil setelah minimal tiga rider memiliki data.
+                  </div>
+                )}
+              </div>
+
+              <div className="leaderboard-hero-stats" aria-label="Ringkasan leaderboard">
+                <div>
+                  <Users aria-hidden="true" />
+                  <span>
+                    <small>Riders terdaftar</small>
+                    <b><CountUpNumber value={riders.length} suffix=" Member" /></b>
+                  </span>
+                </div>
+                <div>
+                  <Gauge aria-hidden="true" />
+                  <span>
+                    <small>Akumulasi jarak</small>
+                    <b><CountUpNumber value={totalKmSum} suffix=" KM" /></b>
+                  </span>
+                </div>
+                <div>
+                  <Crown aria-hidden="true" />
+                  <span>
+                    <small>Jarak terjauh</small>
+                    <b><CountUpNumber value={riders[0]?.total_km || 0} suffix=" KM" /></b>
+                  </span>
+                </div>
+                <div>
+                  <Trophy aria-hidden="true" />
+                  <span>
+                    <small>Posisi kamu</small>
+                    <b>
+                      {myRank ? (
+                        <CountUpNumber value={myRank} prefix="#" />
+                      ) : (
+                        "Belum ada"
+                      )}
+                    </b>
+                  </span>
+                </div>
+              </div>
+            </section>
 
             {/* Logged-in User Position Banner */}
             {myRider && myRank && (
@@ -245,80 +331,6 @@ export default function LeaderboardPage() {
                     <b><CountUpNumber value={myRider.total_km} suffix=" KM" /></b>
                   </div>
                 </div>
-              </section>
-            )}
-
-            {/* Visual Top 3 Podium (Shown when not searching) */}
-            {!query.trim() && top3.length >= 3 && (
-              <section className="leaderboard-podium">
-                {/* 2nd Place (Silver) */}
-                <article className="podium-card podium-rank-2">
-                  <span className="podium-medal" title="Juara 2">
-                    🥈
-                  </span>
-                  <div className="podium-avatar">
-                    {getInitials(top3[1].full_name)}
-                  </div>
-                  <b className="podium-name" title={top3[1].full_name}>
-                    {top3[1].full_name}
-                  </b>
-                  <small className="podium-id">
-                    {top3[1].member_external_id}
-                  </small>
-                  <div className="podium-km">
-                    <Route />
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(top3[1].total_km)}{" "}
-                    KM
-                  </div>
-                </article>
-
-                {/* 1st Place (Gold) */}
-                <article className="podium-card podium-rank-1">
-                  <span className="podium-medal" title="Juara 1">
-                    👑
-                  </span>
-                  <div className="podium-avatar">
-                    {getInitials(top3[0].full_name)}
-                  </div>
-                  <b className="podium-name" title={top3[0].full_name}>
-                    {top3[0].full_name}
-                  </b>
-                  <small className="podium-id">
-                    {top3[0].member_external_id}
-                  </small>
-                  <div className="podium-km">
-                    <Flame />
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(top3[0].total_km)}{" "}
-                    KM
-                  </div>
-                </article>
-
-                {/* 3rd Place (Bronze) */}
-                <article className="podium-card podium-rank-3">
-                  <span className="podium-medal" title="Juara 3">
-                    🥉
-                  </span>
-                  <div className="podium-avatar">
-                    {getInitials(top3[2].full_name)}
-                  </div>
-                  <b className="podium-name" title={top3[2].full_name}>
-                    {top3[2].full_name}
-                  </b>
-                  <small className="podium-id">
-                    {top3[2].member_external_id}
-                  </small>
-                  <div className="podium-km">
-                    <Medal />
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(top3[2].total_km)}{" "}
-                    KM
-                  </div>
-                </article>
               </section>
             )}
 
