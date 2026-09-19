@@ -232,10 +232,10 @@ export default function RidingPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
             <div>
-              <em style={{ fontStyle: "normal", fontSize: "0.62rem", color: "var(--red)", fontWeight: 900, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+              <em style={{ fontStyle: "normal", fontSize: "0.62rem", color: "var(--red)", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase" }}>
                 RIDING LOG · REVOLT RIDERS
               </em>
-              <h2 style={{ fontSize: "1.75rem", margin: "4px 0 6px", fontWeight: 900, letterSpacing: "-0.03em" }}>
+              <h2 style={{ fontSize: "1.75rem", margin: "4px 0 6px", fontWeight: 800, letterSpacing: "-0.03em" }}>
                 {displayName}
               </h2>
               <p style={{ margin: 0, color: "#9ca3af", fontSize: "0.78rem" }}>
@@ -281,7 +281,7 @@ export default function RidingPage() {
               <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Total KM Terverifikasi
               </small>
-              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", marginTop: "2px" }}>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#fff", marginTop: "2px" }}>
                 <CountUpNumber value={totalVerifiedKm} maximumFractionDigits={1} />{" "}
                 <span style={{ fontSize: "0.85rem", color: "var(--red)" }}>KM</span>
               </div>
@@ -291,7 +291,7 @@ export default function RidingPage() {
               <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Ride Disetujui
               </small>
-              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: "#fff", marginTop: "2px" }}>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#fff", marginTop: "2px" }}>
                 <CountUpNumber value={approvedRides.length} />{" "}
                 <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
               </div>
@@ -301,7 +301,7 @@ export default function RidingPage() {
               <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Menunggu Validasi
               </small>
-              <div style={{ fontSize: "1.5rem", fontWeight: 900, color: pendingRides.length > 0 ? "#fbbf24" : "#9ca3af", marginTop: "2px" }}>
+              <div style={{ fontSize: "1.5rem", fontWeight: 800, color: pendingRides.length > 0 ? "#fbbf24" : "#9ca3af", marginTop: "2px" }}>
                 <CountUpNumber value={pendingRides.length} />{" "}
                 <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>log</span>
               </div>
