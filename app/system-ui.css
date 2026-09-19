@@ -3207,3 +3207,280 @@
     font-size: .63rem;
   }
 }
+
+
+/* Unified hero refinement: tighter, cleaner, more professional */
+.app-shell .unified-dashboard-hero {
+  padding: 18px 20px 16px;
+  border-radius: 20px;
+  box-shadow: 0 12px 28px rgba(14, 16, 18, .12);
+}
+
+.app-shell .unified-dashboard-hero::before {
+  height: 3px;
+}
+
+.app-shell .unified-hero-top {
+  min-height: 72px;
+  gap: 14px;
+  padding-bottom: 13px;
+  border-bottom-color: #25292c;
+}
+
+.app-shell .unified-member {
+  gap: 11px;
+}
+
+.app-shell .unified-member-avatar {
+  width: 46px;
+  height: 46px;
+  flex-basis: 46px;
+  border-color: #303438;
+  font-size: .78rem;
+  box-shadow: inset 0 0 0 2px rgba(220, 27, 42, .08);
+}
+
+.app-shell .unified-member-copy > small {
+  margin-bottom: 2px;
+  font-size: .45rem;
+  letter-spacing: .07em;
+}
+
+.app-shell .unified-member-copy > strong {
+  max-width: 520px;
+  font-size: .92rem;
+}
+
+.app-shell .unified-member-chips {
+  gap: 5px;
+  margin-top: 5px;
+}
+
+.app-shell .unified-member-chips span {
+  min-height: 21px;
+  border-radius: 6px;
+  padding: 0 7px;
+  font-size: .44rem;
+}
+
+.app-shell .unified-crest-badge,
+.app-shell .unified-event-badge {
+  width: 64px;
+  min-height: 72px;
+  border-radius: 13px;
+}
+
+.app-shell .unified-crest-logo {
+  width: 44px;
+  height: 44px;
+}
+
+.app-shell .unified-crest-badge > span {
+  font-size: .52rem;
+}
+
+.app-shell .unified-event-badge b {
+  font-size: 1.65rem;
+}
+
+.app-shell .unified-hero-main {
+  min-height: 150px;
+  padding: 18px 0 17px;
+}
+
+.app-shell .unified-hero-copy {
+  max-width: 900px;
+}
+
+.app-shell .unified-hero-eyebrow {
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.app-shell .unified-hero-eyebrow span {
+  font-size: .52rem;
+  letter-spacing: .09em;
+}
+
+.app-shell .unified-hero-eyebrow em {
+  font-size: .53rem;
+}
+
+.app-shell .unified-hero-copy h2 {
+  max-width: 900px;
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  line-height: .98;
+  letter-spacing: -.045em;
+}
+
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta {
+  margin-top: 10px;
+}
+
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta p {
+  font-size: .62rem;
+}
+
+.app-shell .unified-hero-actions {
+  gap: 7px;
+  margin-top: 14px;
+}
+
+.app-shell .unified-primary-action {
+  min-height: 37px;
+  padding: 0 13px;
+  border-radius: 9px;
+  font-size: .58rem;
+}
+
+.app-shell .unified-secondary-action {
+  min-height: 37px;
+  border-color: transparent;
+  background: transparent;
+  color: #92999e;
+  padding: 0 8px;
+  font-size: .57rem;
+}
+
+.app-shell .unified-secondary-action:hover {
+  border-color: transparent;
+  background: transparent;
+  color: #fff;
+}
+
+.app-shell .unified-hero-watermark {
+  right: 1%;
+  color: #181b1d;
+  font-size: clamp(6.5rem, 12vw, 10rem);
+  letter-spacing: -.07em;
+}
+
+/* Collapse personal + community stats into one professional data rail on desktop. */
+@media (min-width: 1051px) {
+  .app-shell .unified-hero-data {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #2a2f32;
+    border-radius: 12px;
+    background: #191c1f;
+  }
+
+  .app-shell .unified-personal-stats,
+  .app-shell .unified-community-stats {
+    display: contents;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    min-height: 64px;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+  }
+
+  .app-shell .unified-personal-stat + .unified-personal-stat,
+  .app-shell .unified-community-stat + .unified-community-stat {
+    border-left: 0;
+  }
+
+  .app-shell .unified-personal-stat:not(:first-child),
+  .app-shell .unified-community-stat {
+    border-left: 1px solid #2a2f32;
+  }
+
+  .app-shell .unified-personal-stat > svg,
+  .app-shell .unified-community-stat > svg {
+    width: 27px;
+    height: 27px;
+    flex-basis: 27px;
+    padding: 6px;
+    background: #23272a;
+  }
+
+  .app-shell .unified-personal-stat small,
+  .app-shell .unified-community-stat small {
+    font-size: .4rem;
+    letter-spacing: .04em;
+  }
+
+  .app-shell .unified-personal-stat b,
+  .app-shell .unified-community-stat b {
+    font-size: .8rem;
+  }
+}
+
+@media (max-width: 1050px) {
+  .app-shell .unified-hero-data {
+    gap: 7px;
+  }
+
+  .app-shell .unified-personal-stats,
+  .app-shell .unified-community-stats {
+    border-radius: 11px;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .unified-dashboard-hero {
+    padding: 13px;
+    border-radius: 16px;
+  }
+
+  .app-shell .unified-hero-top {
+    min-height: 0;
+    padding-bottom: 11px;
+  }
+
+  .app-shell .unified-member-avatar {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+    font-size: .7rem;
+  }
+
+  .app-shell .unified-member-copy > strong {
+    max-width: 55vw;
+    font-size: .78rem;
+  }
+
+  .app-shell .unified-crest-badge,
+  .app-shell .unified-event-badge {
+    width: 54px;
+    min-height: 62px;
+  }
+
+  .app-shell .unified-crest-logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-shell .unified-hero-main {
+    padding: 15px 0 14px;
+  }
+
+  .app-shell .unified-hero-copy h2 {
+    max-width: 92%;
+    font-size: clamp(1.42rem, 6.4vw, 1.82rem);
+    line-height: .99;
+  }
+
+  .app-shell .unified-hero-watermark {
+    right: -2%;
+    font-size: 6rem;
+  }
+
+  .app-shell .unified-primary-action,
+  .app-shell .unified-secondary-action {
+    min-height: 33px;
+    font-size: .51rem;
+  }
+
+  .app-shell .unified-personal-stat,
+  .app-shell .unified-community-stat {
+    padding: 8px 7px;
+  }
+}
