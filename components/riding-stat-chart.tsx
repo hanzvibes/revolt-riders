@@ -1,5 +1,6 @@
 "use client";
 
+import { CountUpNumber } from "@/components/count-up-number";
 import { useMemo, useState } from "react";
 import {
   Area,
@@ -145,6 +146,9 @@ export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
                   fill="url(#ridingKmFill)"
                   activeDot={{ r: 4.5, fill: "#dc1b2a", stroke: "#fff", strokeWidth: 2 }}
                   dot={{ r: 2.5, fill: "#121416", stroke: "#dc1b2a", strokeWidth: 1.5 }}
+                  isAnimationActive
+                  animationDuration={750}
+                  animationEasing="ease-out"
                 />
               </AreaChart>
             </ResponsiveContainer>
@@ -153,15 +157,15 @@ export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
           <div className="riding-stat-chart-summary">
             <span>
               <small>Rata-rata</small>
-              <b>{formatKm(metrics.average)} KM</b>
+              <b><CountUpNumber value={metrics.average} maximumFractionDigits={1} suffix=" KM" /></b>
             </span>
             <span>
               <small>Ride terjauh</small>
-              <b>{formatKm(metrics.max)} KM</b>
+              <b><CountUpNumber value={metrics.max} maximumFractionDigits={1} suffix=" KM" /></b>
             </span>
             <span>
               <small>Aktivitas</small>
-              <b>{chartData.length} ride</b>
+              <b><CountUpNumber value={chartData.length} suffix=" ride" /></b>
             </span>
           </div>
         </>
