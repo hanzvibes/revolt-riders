@@ -1922,3 +1922,219 @@
     height: 72px;
   }
 }
+
+
+/* Dashboard hero v3: larger stage and stronger visual hierarchy */
+.app-shell .dashboard-premium .hero {
+  min-height: 282px !important;
+  padding: 38px 42px !important;
+  border-radius: 22px !important;
+}
+
+.app-shell .dashboard-premium .hero::before {
+  top: 38px;
+  bottom: 38px;
+  width: 4px;
+}
+
+.app-shell .dashboard-premium .hero-content {
+  max-width: min(720px, 64%);
+  gap: 11px;
+}
+
+.app-shell .dashboard-premium .hero-eyebrow {
+  gap: 11px;
+}
+
+.app-shell .dashboard-premium .hero-tag {
+  font-size: .64rem;
+}
+
+.app-shell .dashboard-premium .hero-eyebrow em {
+  font-size: .63rem;
+}
+
+.app-shell .dashboard-premium .hero-eyebrow-line {
+  width: 38px;
+}
+
+.app-shell .dashboard-premium .hero h2 {
+  max-width: 11ch;
+  margin: 6px 0 5px !important;
+  font-size: clamp(2.35rem, 4vw, 3.65rem) !important;
+  line-height: .96 !important;
+}
+
+.app-shell .dashboard-premium .hero-desc,
+.app-shell .dashboard-premium .hero-meta p {
+  font-size: .76rem !important;
+}
+
+.app-shell .dashboard-premium .hero-footer {
+  gap: 16px;
+  margin-top: 13px;
+}
+
+.app-shell .dashboard-premium .hero-cta {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font-size: .68rem;
+}
+
+.app-shell .dashboard-premium .hero-community-meta {
+  font-size: .59rem;
+}
+
+.app-shell .dashboard-premium .hero-crest {
+  right: 32px;
+  width: 300px;
+  height: 300px;
+}
+
+.app-shell .dashboard-premium .hero-crest::before {
+  width: 224px;
+  height: 224px;
+  border-color: #303438;
+}
+
+.app-shell .dashboard-premium .hero-crest-image {
+  width: 204px;
+  height: 204px;
+  opacity: .38;
+}
+
+.app-shell .dashboard-premium .hero-crest > span {
+  right: -12px;
+  bottom: 0;
+  font-size: 6.8rem;
+  color: #1d2022;
+}
+
+.app-shell .dashboard-premium .hero-has-event .hero-date-badge {
+  width: 104px;
+  min-height: 126px;
+  padding: 16px 10px;
+  border-radius: 16px;
+}
+
+.app-shell .dashboard-premium .hero-has-event .hero-badge-day {
+  font-size: 2.55rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-premium .hero {
+    min-height: 202px !important;
+    padding: 23px 20px 22px 23px !important;
+    border-radius: 18px !important;
+  }
+
+  .app-shell .dashboard-premium .hero::before {
+    top: 24px;
+    bottom: 24px;
+  }
+
+  .app-shell .dashboard-premium .hero-content {
+    max-width: 72%;
+    gap: 7px;
+  }
+
+  .app-shell .dashboard-premium .hero-tag {
+    font-size: .56rem;
+  }
+
+  .app-shell .dashboard-premium .hero-eyebrow em {
+    font-size: .55rem;
+  }
+
+  .app-shell .dashboard-premium .hero-eyebrow-line {
+    width: 22px;
+  }
+
+  .app-shell .dashboard-premium .hero h2 {
+    max-width: 10ch;
+    font-size: clamp(1.65rem, 7vw, 2.15rem) !important;
+    line-height: .96 !important;
+  }
+
+  .app-shell .dashboard-premium .hero-desc,
+  .app-shell .dashboard-premium .hero-meta p {
+    font-size: .66rem !important;
+  }
+
+  .app-shell .dashboard-premium .hero-footer {
+    margin-top: 8px;
+  }
+
+  .app-shell .dashboard-premium .hero-cta {
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: .61rem;
+  }
+
+  .app-shell .dashboard-premium .hero-crest {
+    right: -2px;
+    width: 164px;
+    height: 164px;
+  }
+
+  .app-shell .dashboard-premium .hero-crest::before {
+    width: 124px;
+    height: 124px;
+  }
+
+  .app-shell .dashboard-premium .hero-crest-image {
+    width: 112px;
+    height: 112px;
+    opacity: .34;
+  }
+
+  .app-shell .dashboard-premium .hero-crest > span {
+    right: -2px;
+    bottom: 0;
+    font-size: 3.8rem;
+  }
+
+  .app-shell .dashboard-premium .hero-has-event .hero-date-badge {
+    top: 18px;
+    right: 18px;
+    width: 68px;
+    min-height: 84px;
+    padding: 10px 6px;
+  }
+
+  .app-shell .dashboard-premium .hero-has-event .hero-badge-day {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-premium .hero {
+    min-height: 190px !important;
+    padding: 20px 17px 20px 20px !important;
+  }
+
+  .app-shell .dashboard-premium .hero-content {
+    max-width: 74%;
+  }
+
+  .app-shell .dashboard-premium .hero h2 {
+    font-size: clamp(1.5rem, 7vw, 1.9rem) !important;
+  }
+
+  .app-shell .dashboard-premium .hero-crest {
+    right: -10px;
+    width: 148px;
+    height: 148px;
+  }
+
+  .app-shell .dashboard-premium .hero-crest::before {
+    width: 112px;
+    height: 112px;
+  }
+
+  .app-shell .dashboard-premium .hero-crest-image {
+    width: 100px;
+    height: 100px;
+  }
+}
