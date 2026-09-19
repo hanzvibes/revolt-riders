@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { CountUpNumber } from "@/components/count-up-number";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -194,31 +195,21 @@ export default function LeaderboardPage() {
                 <Users />
                 <span>
                   <small>Riders Terdaftar</small>
-                  <b>{riders.length} Member</b>
+                  <b><CountUpNumber value={riders.length} suffix=" Member" /></b>
                 </span>
               </article>
               <article className="member-stat-chip">
                 <Gauge />
                 <span>
                   <small>Akumulasi Jarak</small>
-                  <b>
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(totalKmSum)}{" "}
-                    KM
-                  </b>
+                  <b><CountUpNumber value={totalKmSum} suffix=" KM" /></b>
                 </span>
               </article>
               <article className="member-stat-chip">
                 <Crown />
                 <span>
                   <small>Jarak Terjauh</small>
-                  <b>
-                    {new Intl.NumberFormat("id-ID", {
-                      maximumFractionDigits: 0,
-                    }).format(riders[0]?.total_km || 0)}{" "}
-                    KM
-                  </b>
+                  <b><CountUpNumber value={riders[0]?.total_km || 0} suffix=" KM" /></b>
                 </span>
               </article>
             </div>
@@ -247,16 +238,11 @@ export default function LeaderboardPage() {
                 <div className="my-standing-right">
                   <div className="my-standing-rank">
                     <small>PERINGKAT</small>
-                    <b>#{myRank}</b>
+                    <b><CountUpNumber value={myRank} prefix="#" /></b>
                   </div>
                   <div className="my-standing-distance">
                     <small>TOTAL JARAK</small>
-                    <b>
-                      {new Intl.NumberFormat("id-ID", {
-                        maximumFractionDigits: 0,
-                      }).format(myRider.total_km)}{" "}
-                      KM
-                    </b>
+                    <b><CountUpNumber value={myRider.total_km} suffix=" KM" /></b>
                   </div>
                 </div>
               </section>
