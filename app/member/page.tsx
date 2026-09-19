@@ -390,7 +390,6 @@ export default function MemberPage() {
           <div className="member-directory-hero-main">
             <div className="member-directory-hero-copy">
               <div className="member-directory-eyebrow">
-                <span>REVOLT RIDERS</span>
                 <em>Member directory</em>
               </div>
               <h2 id="member-directory-title">Member Revolt</h2>
