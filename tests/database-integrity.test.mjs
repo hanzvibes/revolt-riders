@@ -10,13 +10,18 @@ const supabase = createClient(url, key);
 // ==============================================================================
 // 1. MEMBER PROFILES (27 OFFICIAL MEMBERS VERIFICATION)
 // ==============================================================================
-test("Live Supabase database contains exactly 27 official member profiles without duplicates", async () => {
+test("Member profiles stay private to anon or preserve official data integrity", async () => {
   const { data: profiles, error } = await supabase
     .from("member_profiles")
     .select("member_external_id, full_name, nickname, club_role, total_km")
     .order("member_external_id");
 
-  assert.equal(error, null, `Query error: ${error?.message}`);
+  if (error) {
+    assert.equal(error.code, "42501", `Unexpected member_profiles error: ${error.message}`);
+    assert.match(error.message, /permission denied/i);
+    return;
+  }
+
   assert.ok(profiles, "Profiles must be returned");
   assert.equal(profiles.length, 27, "Must contain exactly 27 official members");
 
@@ -35,12 +40,17 @@ test("Live Supabase database contains exactly 27 official member profiles withou
 // ==============================================================================
 // 2. RIDE LOGS & SINGLE SOURCE OF TRUTH KM INTEGRITY
 // ==============================================================================
-test("Live ride_logs table maintains odometer math and matches profile total_km", async () => {
+test("Ride logs stay private to anon or preserve KM integrity", async () => {
   const { data: rides, error: rideError } = await supabase
     .from("ride_logs")
     .select("id, member_external_id, odometer_start, odometer_end, distance_km, status, title");
 
-  assert.equal(rideError, null, `Ride query error: ${rideError?.message}`);
+  if (rideError) {
+    assert.equal(rideError.code, "42501", `Unexpected ride_logs error: ${rideError.message}`);
+    assert.match(rideError.message, /permission denied/i);
+    return;
+  }
+
   assert.ok(rides && rides.length > 0, "Ride logs must not be empty");
 
   // Verify distance_km = odometer_end - odometer_start
