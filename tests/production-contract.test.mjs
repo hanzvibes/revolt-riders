@@ -100,3 +100,13 @@ test("account approval cannot assign privileged roles", async () => {
   assert.match(migration, /Perubahan role hanya dapat dilakukan oleh Superadmin/);
   assert.match(migration, /revoke all on function public\.approve_member_account_request.*anon/);
 });
+
+
+test("member account claims are validated at database boundary", async () => {
+  const migration = await read("supabase/migrations/20260920065320_validate_member_account_claims.sql");
+  assert.match(migration, /idx_member_account_requests_pending_member_ext_unique/);
+  assert.match(migration, /\^RR-\[0-9\]\{3,\}\$/);
+  assert.match(migration, /ID member tidak terdaftar sebagai member resmi/);
+  assert.match(migration, /ID member sudah terhubung ke akun lain/);
+  assert.match(migration, /status = 'pending'::public\.account_request_status/);
+});
