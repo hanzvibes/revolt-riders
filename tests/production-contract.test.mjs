@@ -235,6 +235,7 @@ test("Voyager hub keeps core sections visible even before the first activity exi
   assert.match(page, /Activity Gallery/);
   assert.match(page, /Gallery siap digunakan/);
   assert.match(page, /Buat Voyager Pertama/);
+  assert.match(page, /\/admin\/events\?create=voyager/);
   assert.match(page, /galleryPreview\.length === 0/);
   assert.match(page, /uniqueParticipantCount/);
   assert.match(page, /totalOfficialKm/);
@@ -243,4 +244,13 @@ test("Voyager hub keeps core sections visible even before the first activity exi
   assert.match(css, /voyager-gallery-hub-grid/);
   assert.match(css, /voyager-mandatory-card/);
   assert.match(css, /voyager-structured-empty/);
+});
+
+
+test("Voyager create shortcut opens a prefilled Voyager agenda form", async () => {
+  const admin = await read("app/admin/events/page.tsx");
+  assert.match(admin, /params\.get\("create"\) !== "voyager"/);
+  assert.match(admin, /setType\("voyager"\)/);
+  assert.match(admin, /setCountsAsMandatory\(true\)/);
+  assert.match(admin, /setFormOpen\(true\)/);
 });
