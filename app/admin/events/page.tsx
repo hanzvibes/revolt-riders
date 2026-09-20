@@ -10,6 +10,7 @@ import {
   Check,
   Pencil,
   Plus,
+  Route,
   Search,
   ShieldAlert,
   Trash2,
@@ -36,8 +37,19 @@ type Event = {
   status: EventStatus;
   is_public?: boolean;
   cancellation_reason: string | null;
+  counts_as_mandatory: boolean;
+  official_distance_km: number | null;
+  official_support: string | null;
+  activity_summary: string | null;
 };
 type Rsvp = { event_id: string; status: "attending" | "declined" | "maybe" };
+type Member = {
+  member_external_id: string;
+  full_name: string;
+  nickname: string | null;
+  city: string | null;
+};
+type Participant = { event_id: string; member_external_id: string };
 const canManage = (role?: string) => role === "admin" || role === "superadmin";
 const slugify = (value: string) =>
   value
@@ -53,6 +65,8 @@ export default function AdminEventsPage() {
   const { user, account, loading: accessLoading } = useMemberAccess();
   const [events, setEvents] = useState<Event[]>([]);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
+  const [members, setMembers] = useState<Member[]>([]);
+  const [participants, setParticipants] = useState<Participant[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Event | null>(null);
   const [query, setQuery] = useState("");
@@ -71,24 +85,44 @@ export default function AdminEventsPage() {
   const [meetup, setMeetup] = useState("");
   const [end, setEnd] = useState("");
   const [isPublic, setIsPublic] = useState(true);
+  const [countsAsMandatory, setCountsAsMandatory] = useState(false);
+  const [officialDistance, setOfficialDistance] = useState("");
+  const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
+  const [participantQuery, setParticipantQuery] = useState("");
+  const [syncing, setSyncing] = useState(false);
   const load = useCallback(async () => {
     if (account?.status !== "active" || !canManage(account.role)) {
       setLoading(false);
       return;
     }
     const supabase = getSupabaseBrowserClient();
-    const [eventResult, rsvpResult] = await Promise.all([
+    const [eventResult, rsvpResult, memberResult, participantResult] = await Promise.all([
       supabase
         .from("events")
         .select(
-          "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,is_public,cancellation_reason",
+          "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,is_public,cancellation_reason,counts_as_mandatory,official_distance_km,official_support,activity_summary",
         )
         .order("start_at", { ascending: false }),
       supabase.from("event_rsvps").select("event_id,status"),
+      supabase
+        .from("member_profiles")
+        .select("member_external_id,full_name,nickname,city")
+        .order("full_name", { ascending: true }),
+      supabase.from("event_participants").select("event_id,member_external_id"),
     ]);
     if (eventResult.error) setError(eventResult.error.message);
-    setEvents((eventResult.data ?? []) as Event[]);
+    else if (memberResult.error) setError(memberResult.error.message);
+    else if (participantResult.error) setError(participantResult.error.message);
+    setEvents(
+      ((eventResult.data ?? []) as Event[]).map((item) => ({
+        ...item,
+        official_distance_km:
+          item.official_distance_km === null ? null : Number(item.official_distance_km),
+      })),
+    );
     setRsvps((rsvpResult.data ?? []) as Rsvp[]);
+    setMembers((memberResult.data ?? []) as Member[]);
+    setParticipants((participantResult.data ?? []) as Participant[]);
     setLoading(false);
   }, [account]);
   useEffect(() => {
@@ -117,6 +151,10 @@ export default function AdminEventsPage() {
     setMeetup("");
     setEnd("");
     setIsPublic(true);
+    setCountsAsMandatory(false);
+    setOfficialDistance("");
+    setSelectedParticipants([]);
+    setParticipantQuery("");
     setFormOpen(false);
   };
   const beginCreate = () => {
@@ -135,6 +173,18 @@ export default function AdminEventsPage() {
     setMeetup(toInputDate(event.meetup_at));
     setEnd(toInputDate(event.end_at));
     setIsPublic(event.is_public ?? true);
+    setCountsAsMandatory(event.counts_as_mandatory ?? false);
+    setOfficialDistance(
+      event.official_distance_km === null || event.official_distance_km === undefined
+        ? ""
+        : String(event.official_distance_km),
+    );
+    setSelectedParticipants(
+      participants
+        .filter((item) => item.event_id === event.id)
+        .map((item) => item.member_external_id),
+    );
+    setParticipantQuery("");
     setFormOpen(true);
     setError("");
   };
@@ -157,25 +207,128 @@ export default function AdminEventsPage() {
     };
     const supabase = getSupabaseBrowserClient();
     const result = editing
-      ? await supabase.from("events").update(payload).eq("id", editing.id)
-      : await supabase.from("events").insert({
-          ...payload,
-          slug: `${slugify(title)}-${Date.now().toString().slice(-6)}`,
-          status: "draft",
-          created_by: user.id,
-        });
-    if (result.error) setError(result.error.message);
-    else {
-      setMessage(
-        editing
-          ? "Agenda berhasil diperbarui."
-          : "Draft agenda berhasil dibuat. Publikasikan saat siap.",
-      );
-      reset();
-      await load();
+      ? await supabase
+          .from("events")
+          .update(payload)
+          .eq("id", editing.id)
+          .select("id")
+          .single()
+      : await supabase
+          .from("events")
+          .insert({
+            ...payload,
+            slug: `${slugify(title)}-${Date.now().toString().slice(-6)}`,
+            status: "draft",
+            created_by: user.id,
+          })
+          .select("id")
+          .single();
+
+    if (result.error || !result.data?.id) {
+      setError(result.error?.message ?? "Agenda belum dapat disimpan.");
+      setSaving(false);
+      return;
     }
+
+    const targetId = result.data.id;
+    const parsedDistance =
+      officialDistance.trim() === "" ? null : Math.max(0, Number(officialDistance) || 0);
+    const { error: activityError } = await supabase.rpc("save_event_activity", {
+      p_event_id: targetId,
+      p_counts_as_mandatory: countsAsMandatory,
+      p_official_distance_km: parsedDistance,
+      p_official_support: editing?.official_support ?? null,
+      p_activity_summary: editing?.activity_summary ?? null,
+      p_member_external_ids: selectedParticipants,
+    });
+
+    if (activityError) {
+      setError(`Agenda tersimpan, tetapi pengaturan aktivitas gagal: ${activityError.message}`);
+      setSaving(false);
+      await load();
+      return;
+    }
+
+    setMessage(
+      editing
+        ? "Agenda berhasil diperbarui."
+        : "Draft agenda berhasil dibuat. Publikasikan saat siap.",
+    );
+    reset();
+    await load();
     setSaving(false);
   };
+  const toggleParticipant = (memberId: string) => {
+    setSelectedParticipants((current) =>
+      current.includes(memberId)
+        ? current.filter((id) => id !== memberId)
+        : [...current, memberId],
+    );
+  };
+
+  const filteredMembers = useMemo(() => {
+    const term = participantQuery.trim().toLowerCase();
+    if (!term) return members;
+    return members.filter((member) =>
+      `${member.member_external_id} ${member.full_name} ${member.nickname ?? ""} ${member.city ?? ""}`
+        .toLowerCase()
+        .includes(term),
+    );
+  }, [members, participantQuery]);
+
+  const syncOfficialKm = async () => {
+    if (!editing) return;
+    if (editing.status === "draft") {
+      setError("Publikasikan agenda terlebih dahulu sebelum Sync Official KM.");
+      return;
+    }
+    if (!countsAsMandatory) {
+      setError("Aktifkan Count as Mandatory Ride terlebih dahulu.");
+      return;
+    }
+    if (Number(officialDistance) <= 0) {
+      setError("Isi Official Trip Distance lebih dari 0 KM.");
+      return;
+    }
+    if (selectedParticipants.length === 0) {
+      setError("Pilih minimal satu participant.");
+      return;
+    }
+
+    setSyncing(true);
+    setError("");
+    setMessage("");
+    const supabase = getSupabaseBrowserClient();
+    const parsedDistance = Math.max(0, Number(officialDistance) || 0);
+    const { error: activityError } = await supabase.rpc("save_event_activity", {
+      p_event_id: editing.id,
+      p_counts_as_mandatory: true,
+      p_official_distance_km: parsedDistance,
+      p_official_support: editing.official_support,
+      p_activity_summary: editing.activity_summary,
+      p_member_external_ids: selectedParticipants,
+    });
+    if (activityError) {
+      setError(activityError.message);
+      setSyncing(false);
+      return;
+    }
+
+    const { data, error: syncError } = await supabase.rpc(
+      "sync_event_official_rides",
+      { p_event_id: editing.id },
+    );
+    setSyncing(false);
+    if (syncError) {
+      setError(syncError.message);
+      return;
+    }
+
+    const count = Number((data as { synced_members?: number } | null)?.synced_members) || 0;
+    setMessage(`Official KM berhasil disinkronkan ke ${count} member.`);
+    await load();
+  };
+
   const deletePermanently = async (event: Event) => {
     if (
       !window.confirm(
@@ -191,7 +344,10 @@ export default function AdminEventsPage() {
     });
     if (rpcError) {
       // Fallback manual cleanup
-      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", event.id);
+      await supabase.from("ride_logs").delete().eq("event_id", event.id).eq("source_type", "official_agenda");
+      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", event.id).neq("source_type", "official_agenda");
+      await supabase.from("club_gallery").delete().eq("event_id", event.id);
+      await supabase.from("event_participants").delete().eq("event_id", event.id);
       await supabase.from("event_checkin_codes").delete().eq("event_id", event.id);
       await supabase.from("event_attendance").delete().eq("event_id", event.id);
       await supabase.from("event_rsvps").delete().eq("event_id", event.id);
@@ -220,6 +376,7 @@ export default function AdminEventsPage() {
       cancellation_reason: null,
       published_at:
         status === "published" ? new Date().toISOString() : undefined,
+      completed_at: status === "completed" ? new Date().toISOString() : undefined,
     };
     const { error: updateError } = await getSupabaseBrowserClient()
       .from("events")
@@ -431,6 +588,7 @@ export default function AdminEventsPage() {
                 <option value="riding">Riding</option>
                 <option value="touring">Touring</option>
                 <option value="social">Social</option>
+                <option value="voyager">Voyager</option>
                 <option value="other">Lainnya</option>
               </select>
             </label>
@@ -498,6 +656,101 @@ export default function AdminEventsPage() {
                 </small>
               </span>
             </label>
+            <section className="voyager-admin-activity-fields">
+              <div className="section-title">
+                <span>
+                  <em>Official ride</em>
+                  <h3>Mandatory Ride & Participant</h3>
+                </span>
+                <b>{selectedParticipants.length} member</b>
+              </div>
+
+              <label className="voyager-switch">
+                <input
+                  type="checkbox"
+                  checked={countsAsMandatory}
+                  onChange={(event) => setCountsAsMandatory(event.target.checked)}
+                />
+                <span>
+                  <b>Count as Mandatory Ride</b>
+                  <small>
+                    Agenda apa pun boleh dihitung Mandatory jika pengurus mengaktifkannya.
+                  </small>
+                </span>
+              </label>
+
+              {(countsAsMandatory || type === "voyager") && (
+                <>
+                  <label className="voyager-admin-distance">
+                    Official Trip Distance
+                    <div className="voyager-distance-input">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.1"
+                        value={officialDistance}
+                        onChange={(event) => setOfficialDistance(event.target.value)}
+                        placeholder="184"
+                      />
+                      <span>KM</span>
+                    </div>
+                    <small>Tidak ada minimum KM. Semua participant mendapat jarak yang sama.</small>
+                  </label>
+
+                  <label className="voyager-member-search">
+                    <Search />
+                    <input
+                      value={participantQuery}
+                      onChange={(event) => setParticipantQuery(event.target.value)}
+                      placeholder="Cari participant berdasarkan nama atau ID RR"
+                    />
+                  </label>
+
+                  <div className="voyager-member-picker">
+                    {filteredMembers.map((member) => (
+                      <label key={member.member_external_id}>
+                        <input
+                          type="checkbox"
+                          checked={selectedParticipants.includes(member.member_external_id)}
+                          onChange={() => toggleParticipant(member.member_external_id)}
+                        />
+                        <span>
+                          <b>{member.nickname || member.full_name}</b>
+                          <small>
+                            {member.member_external_id}
+                            {member.city ? ` · ${member.city}` : ""}
+                          </small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  <small className="voyager-admin-helper">
+                    Participant dipilih manual oleh pengurus dan tidak bergantung pada RSVP atau Check-in.
+                  </small>
+
+                  {editing && countsAsMandatory && (
+                    <button
+                      type="button"
+                      className="voyager-admin-sync"
+                      disabled={
+                        syncing ||
+                        saving ||
+                        editing.status === "draft" ||
+                        selectedParticipants.length === 0 ||
+                        Number(officialDistance) <= 0
+                      }
+                      onClick={() => void syncOfficialKm()}
+                    >
+                      <Route />
+                      {syncing ? "SINKRONISASI…" : "SYNC OFFICIAL KM"}
+                    </button>
+                  )}
+                </>
+              )}
+            </section>
+
             {error && <p className="error-message">{error}</p>}
             <div className="sheet-actions">
               <button className="primary-action" disabled={saving}>

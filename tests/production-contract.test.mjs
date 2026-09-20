@@ -140,3 +140,58 @@ test("My Garage mutations remain owner-authorized and RPC-only", async () => {
   assert.match(page, /rpc\(\s*"delete_member_motorcycle"/);
   assert.doesNotMatch(page, /from\("member_motorcycles"\)\.(insert|update|delete)/);
 });
+
+
+test("Voyager activity keeps participants, official KM, and media server-authorized", async () => {
+  const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
+  const rideGuard = await read("supabase/migrations/20260920121743_allow_voyager_official_ride_logs.sql");
+  const page = await read("app/voyager/page.tsx");
+  const nav = await read("components/app-shell.tsx");
+  const riding = await read("app/riding/page.tsx");
+
+  assert.match(migration, /create table if not exists public\.event_participants/);
+  assert.match(migration, /ride_logs_official_event_member_unique/);
+  assert.match(migration, /source_type = 'official_agenda'/);
+  assert.match(migration, /create or replace function public\.save_event_activity/);
+  assert.match(migration, /create or replace function public\.sync_event_official_rides/);
+  assert.match(migration, /'club-activity'/);
+  assert.match(migration, /revoke all.*save_event_activity.*anon/);
+  assert.match(migration, /revoke all.*sync_event_official_rides.*anon/);
+
+  assert.match(rideGuard, /'voyager'::public\.event_type/);
+
+  assert.match(page, /rpc\(\s*"save_event_activity"/);
+  assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
+  assert.match(page, /from\("event_participants"\)/);
+  assert.match(page, /from\("club-activity"\)/);
+  assert.match(page, /Tidak ada minimum KM/);
+  assert.ok(!page.includes('.from("event_attendance")'));
+  assert.ok(!page.includes('.from("event_checkin_codes")'));
+
+  assert.match(nav, /\["Voyager", "\/voyager", Route\]/);
+  assert.match(riding, /Official Agenda Distance/);
+  assert.match(riding, /source_type !== "official_agenda"/);
+});
+
+
+test("Mandatory Ride can be enabled on managed agendas without check-in dependency", async () => {
+  const admin = await read("app/admin/events/page.tsx");
+  const anyEventGuard = await read(
+    "supabase/migrations/20260920122209_allow_mandatory_official_km_for_any_event.sql",
+  );
+  const flagSync = await read(
+    "supabase/migrations/20260920122407_sync_mandatory_flag_on_official_rides.sql",
+  );
+
+  assert.match(admin, /Count as Mandatory Ride/);
+  assert.match(admin, /Official Trip Distance/);
+  assert.match(admin, /selectedParticipants/);
+  assert.match(admin, /rpc\(\s*"save_event_activity"/);
+  assert.match(admin, /rpc\(\s*"sync_event_official_rides"/);
+  assert.ok(!admin.includes('.from("event_attendance").select'));
+
+  assert.match(anyEventGuard, /new\.source_type = 'official_agenda'/);
+  assert.match(anyEventGuard, /e\.counts_as_mandatory = true/);
+  assert.match(flagSync, /update public\.ride_logs/);
+  assert.match(flagSync, /counts_as_mandatory is distinct from/);
+});
