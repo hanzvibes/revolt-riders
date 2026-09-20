@@ -159,9 +159,6 @@ export default function PublicLandingPage() {
         setTotalMembers(Number(statsData[0].total_members) || 27);
         setTotalRides(Number(statsData[0].total_rides) || 194);
         setTotalKm(Number(statsData[0].total_km) || 19177);
-      } else {
-        const { count } = await supabase.from("member_profiles").select("member_external_id", { count: "exact", head: true });
-        if (count) setTotalMembers(count);
       }
     } catch (err) {
       console.warn("Public stats fetch notice:", err);
