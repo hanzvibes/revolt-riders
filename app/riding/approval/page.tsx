@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { reviewRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Bike, Check, ShieldAlert, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -68,16 +69,11 @@ export default function RideApprovalPage() {
     if (status === "rejected" && !reason.trim()) return setError("Tuliskan alasan penolakan agar member tahu yang perlu diperbaiki.");
     setBusyId(ride.id);
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sesi pengurus tidak ditemukan.");
-      const { error: updateError } = await supabase.from("ride_logs").update({
+      await reviewRideLog(
+        ride.id,
         status,
-        reviewed_by: user.id,
-        reviewed_at: new Date().toISOString(),
-        rejection_reason: status === "rejected" ? reason.trim() : null,
-      }).eq("id", ride.id).eq("status", "pending");
-      if (updateError) throw updateError;
+        status === "rejected" ? reason.trim() : undefined,
+      );
       setMessage(status === "approved" ? "Ride disetujui dan masuk hitungan kilometer." : "Ride ditolak. Member dapat mengirim data yang benar.");
       setRejectingId(""); setReason("");
       await load();
