@@ -4,6 +4,9 @@ import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageSkeleton } from "@/components/skeleton";
+import { useDataCache } from "@/context/data-cache-context";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   ArrowDownLeft,
@@ -16,7 +19,7 @@ import {
   Undo2,
   WalletCards,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Summary = {
   total_balance: number;
@@ -52,6 +55,11 @@ type TransactionRow = Omit<Transaction, "source" | "amount"> & {
   amount: number | string;
 };
 type FilterType = "all" | "income" | "expense";
+type CashSnapshot = {
+  summary: Summary | null;
+  transactions: Transaction[];
+  dues: Due[];
+};
 
 const rupiah = (value: number) =>
   new Intl.NumberFormat("id-ID", {
@@ -76,11 +84,14 @@ const monthLabel = (value: string) =>
   );
 
 export default function CashPage() {
+  const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [summary, setSummary] = useState<Summary | null>(null);
   const [account, setAccount] = useState<Account | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [dues, setDues] = useState<Due[]>([]);
-  const [message, setMessage] = useState("Memuat ringkasan kas…");
+  const [message, setMessage] = useState("");
+  const [loadingData, setLoadingData] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [type, setType] = useState<"income" | "expense">("income");
@@ -165,109 +176,140 @@ export default function CashPage() {
     [dues],
   );
 
-  const load = async () => {
-    let authenticated = true;
+  const load = useCallback(async (forceRefresh = false) => {
+    if (accessLoading) return;
+
+    if (!forceRefresh) setLoadingData(true);
+
+    if (!user) {
+      setAccount(null);
+      setSummary(null);
+      setTransactions([]);
+      setDues([]);
+      setMessage("Masuk ke akun untuk melihat ringkasan Kas Revolt.");
+      setLoadingData(false);
+      return;
+    }
+
+    const nextAccount = accessAccount as Account | null;
+    setAccount(nextAccount);
+
+    if (!nextAccount || nextAccount.status !== "active") {
+      setSummary(null);
+      setTransactions([]);
+      setDues([]);
+      setMessage("Akun member harus aktif untuk melihat Kas Revolt.");
+      setLoadingData(false);
+      return;
+    }
+
+    setError("");
     try {
-      const supabase = getSupabaseBrowserClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        authenticated = false;
-        setMessage("Masuk ke akun untuk melihat ringkasan Kas Revolt.");
-        return;
-      }
-      const { data: accountData, error: accountError } = await supabase
-        .from("member_accounts")
-        .select("role,status,member_external_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-      if (accountError) throw accountError;
-      const nextAccount = accountData as Account | null;
-      setAccount(nextAccount);
-      if (nextAccount?.status !== "active") {
-        setSummary(null);
-        setMessage("Akun member harus aktif untuk melihat Kas Revolt.");
-        return;
-      }
-      const { data: summaryData, error: summaryError } = await supabase.rpc(
-        "get_member_cash_summary",
+      const cacheKey = `cash:${nextAccount.member_external_id}:${nextAccount.role}`;
+      const snapshot = await fetchWithCache<CashSnapshot>(
+        cacheKey,
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+
+          if (isStaffRole(nextAccount.role)) {
+            const [summaryResult, imported, production, dueResult] = await Promise.all([
+              supabase.rpc("get_member_cash_summary"),
+              supabase
+                .from("cash_transactions")
+                .select(
+                  "id,transaction_type,transaction_date,description,amount,created_at",
+                )
+                .order("transaction_date", { ascending: false })
+                .limit(250),
+              supabase
+                .from("club_cash_transactions")
+                .select(
+                  "id,transaction_type,transaction_date,category,description,amount,created_at,voided_at,void_reason",
+                )
+                .order("transaction_date", { ascending: false })
+                .limit(250),
+              supabase
+                .from("member_dues")
+                .select("id,member_external_id,period_label,amount_paid,recorded_at")
+                .order("recorded_at", { ascending: false })
+                .limit(250),
+            ]);
+
+            if (summaryResult.error) throw summaryResult.error;
+            if (imported.error) throw imported.error;
+            if (production.error) throw production.error;
+            if (dueResult.error) throw dueResult.error;
+
+            const importedRows = (
+              (imported.data ?? []) as Omit<
+                TransactionRow,
+                "category" | "voided_at" | "void_reason"
+              >[]
+            ).map((row) => ({
+              ...row,
+              category: "Data awal",
+              amount: Number(row.amount),
+              voided_at: null,
+              void_reason: null,
+              source: "import" as const,
+            }));
+            const productionRows = ((production.data ?? []) as TransactionRow[]).map(
+              (row) => ({
+                ...row,
+                amount: Number(row.amount),
+                source: "production" as const,
+              }),
+            );
+
+            return {
+              summary: (summaryResult.data?.[0] ?? null) as Summary | null,
+              transactions: [...importedRows, ...productionRows],
+              dues: (dueResult.data ?? []) as Due[],
+            };
+          }
+
+          const [summaryResult, dueResult] = await Promise.all([
+            supabase.rpc("get_member_cash_summary"),
+            supabase
+              .from("member_dues")
+              .select("id,member_external_id,period_label,amount_paid,recorded_at")
+              .eq("member_external_id", nextAccount.member_external_id)
+              .order("recorded_at", { ascending: false })
+              .limit(24),
+          ]);
+
+          if (summaryResult.error) throw summaryResult.error;
+          if (dueResult.error) throw dueResult.error;
+
+          return {
+            summary: (summaryResult.data?.[0] ?? null) as Summary | null,
+            transactions: [],
+            dues: (dueResult.data ?? []) as Due[],
+          };
+        },
+        { ttlMs: 30_000, forceRefresh },
       );
-      if (summaryError) throw summaryError;
-      setSummary((summaryData?.[0] ?? null) as Summary | null);
-      if (isStaffRole(nextAccount.role)) {
-        const [imported, production] = await Promise.all([
-          supabase
-            .from("cash_transactions")
-            .select(
-              "id,transaction_type,transaction_date,description,amount,created_at",
-            )
-            .order("transaction_date", { ascending: false })
-            .limit(250),
-          supabase
-            .from("club_cash_transactions")
-            .select(
-              "id,transaction_type,transaction_date,category,description,amount,created_at,voided_at,void_reason",
-            )
-            .order("transaction_date", { ascending: false })
-            .limit(250),
-        ]);
-        if (imported.error) throw imported.error;
-        if (production.error) throw production.error;
-        setTransactions([
-          ...(
-            (imported.data ?? []) as Omit<
-              TransactionRow,
-              "category" | "voided_at" | "void_reason"
-            >[]
-          ).map((row) => ({
-            ...row,
-            category: "Data awal",
-            amount: Number(row.amount),
-            voided_at: null,
-            void_reason: null,
-            source: "import" as const,
-          })),
-          ...((production.data ?? []) as TransactionRow[]).map((row) => ({
-            ...row,
-            amount: Number(row.amount),
-            source: "production" as const,
-          })),
-        ]);
-        const { data: dueData, error: dueError } = await supabase
-          .from("member_dues")
-          .select("id,member_external_id,period_label,amount_paid,recorded_at")
-          .order("recorded_at", { ascending: false })
-          .limit(250);
-        if (dueError) throw dueError;
-        setDues((dueData ?? []) as Due[]);
-      } else {
-        setTransactions([]);
-        const { data: dueData, error: dueError } = await supabase
-          .from("member_dues")
-          .select("id,member_external_id,period_label,amount_paid,recorded_at")
-          .eq("member_external_id", nextAccount.member_external_id)
-          .order("recorded_at", { ascending: false })
-          .limit(24);
-        if (dueError) throw dueError;
-        setDues((dueData ?? []) as Due[]);
-      }
+
+      setSummary(snapshot.summary);
+      setTransactions(snapshot.transactions);
+      setDues(snapshot.dues);
       setMessage("");
     } catch (caught) {
       setMessage("Ringkasan kas belum dapat dimuat.");
-      if (authenticated)
-        setError(
-          caught instanceof Error
-            ? caught.message
-            : "Terjadi masalah saat membaca kas.",
-        );
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Terjadi masalah saat membaca kas.",
+      );
+    } finally {
+      setLoadingData(false);
     }
-  };
+  }, [accessAccount, accessLoading, fetchWithCache, user]);
 
   useEffect(() => {
-    // Initial authenticated ledger hydration.
+    if (accessLoading) return;
     void load();
-  }, []);
+  }, [accessLoading, load]);
 
   const addTransaction = async (event: FormEvent) => {
     event.preventDefault();
@@ -276,9 +318,6 @@ export default function CashPage() {
     setSaving(true);
     try {
       const supabase = getSupabaseBrowserClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user) throw new Error("Sesi login tidak ditemukan.");
       const parsedAmount = Number(amount);
       if (!Number.isFinite(parsedAmount) || parsedAmount <= 0)
@@ -299,7 +338,10 @@ export default function CashPage() {
       setAmount("");
       setDescription("");
       setFormOpen(false);
-      await load();
+      invalidateCache("cash:");
+      invalidateCache("dashboard_club_stats");
+      invalidateCache("admin_dashboard_overview");
+      await load(true);
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -329,7 +371,10 @@ export default function CashPage() {
       setSuccess(
         "Transaksi dikoreksi. Nilainya tidak lagi dihitung pada saldo kas.",
       );
-      await load();
+      invalidateCache("cash:");
+      invalidateCache("dashboard_club_stats");
+      invalidateCache("admin_dashboard_overview");
+      await load(true);
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -373,6 +418,14 @@ export default function CashPage() {
     link.click();
     URL.revokeObjectURL(url);
   };
+
+  if (accessLoading || loadingData) {
+    return (
+      <AppShell active="Kas Revolt" title="Kas Revolt">
+        <PageSkeleton title="Memuat Kas Revolt..." />
+      </AppShell>
+    );
+  }
 
   return (
     <AppShell active="Kas Revolt" title="Kas Revolt">

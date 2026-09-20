@@ -5,6 +5,7 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { getRiderProgress } from "@/lib/rider-progression";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -30,7 +31,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { member_external_id: string; role: string; status: string };
 type Profile = {
@@ -74,6 +75,14 @@ type RsvpActivity = {
   responded_at: string;
 };
 type ActivityEvent = { id: string; title: string };
+type ProfileSnapshot = {
+  profile: Profile | null;
+  detail: Detail | null;
+  primaryMotorcycle: PrimaryMotorcycle | null;
+  rides: Ride[];
+  rsvpActivities: RsvpActivity[];
+  activityEvents: ActivityEvent[];
+};
 
 const getRoleClass = (role: string | null) => {
   const r = (role ?? "").toUpperCase().trim();
@@ -98,7 +107,8 @@ const getRoleClass = (role: string | null) => {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { invalidateCache } = useDataCache();
+  const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [email, setEmail] = useState("");
   const [account, setAccount] = useState<Account | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -132,96 +142,162 @@ export default function ProfilePage() {
     [activityEvents]
   );
 
-  const load = async () => {
-    const supabase = getSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+  const load = useCallback(async (forceRefresh = false) => {
+    if (accessLoading) return;
+
     if (!user) {
+      setEmail("");
+      setAccount(null);
+      setProfile(null);
+      setDetail(null);
+      setPrimaryMotorcycle(null);
+      setRides([]);
+      setRsvpActivities([]);
+      setActivityEvents([]);
       setLoading(false);
       return;
     }
+
     setEmail(user.email ?? "");
-    const { data: accountData } = await supabase
-      .from("member_accounts")
-      .select("member_external_id,role,status")
-      .eq("user_id", user.id)
-      .maybeSingle();
-    const nextAccount = accountData as Account | null;
+    const nextAccount = accessAccount as Account | null;
     setAccount(nextAccount);
+
     if (!nextAccount) {
       setLoading(false);
       return;
     }
-    const [profileResult, detailResult, rideResult, rsvpResult, garageResult] = await Promise.all([
-      supabase
-        .from("member_profiles")
-        .select("member_external_id,full_name,nickname,city,join_date,club_role,total_km")
-        .eq("member_external_id", nextAccount.member_external_id)
-        .maybeSingle(),
-      supabase
-        .from("member_details")
-        .select("nickname_override,motorcycle,city_override")
-        .eq("member_external_id", nextAccount.member_external_id)
-        .maybeSingle(),
-      supabase
-        .from("ride_logs")
-        .select("id,event_id,title,status,distance_km,odometer_start,odometer_end,created_at,rejection_reason")
-        .eq("member_external_id", nextAccount.member_external_id)
-        .order("created_at", { ascending: false })
-        .limit(40),
-      supabase
-        .from("event_rsvps")
-        .select("event_id,status,responded_at")
-        .eq("member_external_id", nextAccount.member_external_id)
-        .order("responded_at", { ascending: false })
-        .limit(15),
-      supabase
-        .from("member_motorcycles")
-        .select("nickname,brand,model")
-        .eq("member_external_id", nextAccount.member_external_id)
-        .eq("is_primary", true)
-        .maybeSingle(),
-    ]);
-    const nextProfile = profileResult.data
-      ? ({ ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile)
-      : null;
-    const nextDetail = detailResult.data as Detail | null;
-    const nextRides = ((rideResult.data ?? []) as RideRow[]).map((ride: RideRow) => ({
-      ...ride,
-      distance_km: ride.distance_km === null ? null : Number(ride.distance_km),
-      odometer_start:
-        ride.odometer_start === null || ride.odometer_start === undefined
-          ? null
-          : Number(ride.odometer_start),
-      odometer_end:
-        ride.odometer_end === null || ride.odometer_end === undefined
-          ? null
-          : Number(ride.odometer_end),
-    })) as Ride[];
-    const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
-    const activityEventIds = [
-      ...new Set([...nextRides.map((r) => r.event_id), ...nextRsvps.map((r) => r.event_id)].filter(Boolean)),
-    ] as string[];
-    const eventResult = activityEventIds.length
-      ? await supabase.from("events").select("id,title").in("id", activityEventIds)
-      : { data: [] };
 
-    setProfile(nextProfile);
-    setDetail(nextDetail);
-    setPrimaryMotorcycle((garageResult.data as PrimaryMotorcycle | null) ?? null);
-    setRides(nextRides);
-    setRsvpActivities(nextRsvps);
-    setActivityEvents((eventResult.data ?? []) as ActivityEvent[]);
-    setNickname(nextDetail?.nickname_override || nextProfile?.nickname || "");
-    setMotorcycle(nextDetail?.motorcycle || "");
-    setCity(nextDetail?.city_override || nextProfile?.city || "");
-    setLoading(false);
-  };
+    if (!forceRefresh) setLoading(true);
+    setError("");
+
+    try {
+      const snapshot = await fetchWithCache<ProfileSnapshot>(
+        `profile:${nextAccount.member_external_id}`,
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [profileResult, detailResult, rideResult, rsvpResult, garageResult] =
+            await Promise.all([
+              supabase
+                .from("member_profiles")
+                .select(
+                  "member_external_id,full_name,nickname,city,join_date,club_role,total_km",
+                )
+                .eq("member_external_id", nextAccount.member_external_id)
+                .maybeSingle(),
+              supabase
+                .from("member_details")
+                .select("nickname_override,motorcycle,city_override")
+                .eq("member_external_id", nextAccount.member_external_id)
+                .maybeSingle(),
+              supabase
+                .from("ride_logs")
+                .select(
+                  "id,event_id,title,status,distance_km,odometer_start,odometer_end,created_at,rejection_reason",
+                )
+                .eq("member_external_id", nextAccount.member_external_id)
+                .order("created_at", { ascending: false })
+                .limit(40),
+              supabase
+                .from("event_rsvps")
+                .select("event_id,status,responded_at")
+                .eq("member_external_id", nextAccount.member_external_id)
+                .order("responded_at", { ascending: false })
+                .limit(15),
+              supabase
+                .from("member_motorcycles")
+                .select("nickname,brand,model")
+                .eq("member_external_id", nextAccount.member_external_id)
+                .eq("is_primary", true)
+                .maybeSingle(),
+            ]);
+
+          if (profileResult.error) throw profileResult.error;
+          if (detailResult.error) throw detailResult.error;
+          if (rideResult.error) throw rideResult.error;
+          if (rsvpResult.error) throw rsvpResult.error;
+          if (garageResult.error) throw garageResult.error;
+
+          const nextProfile = profileResult.data
+            ? ({
+                ...profileResult.data,
+                total_km: Number(profileResult.data.total_km),
+              } as Profile)
+            : null;
+          const nextDetail = detailResult.data as Detail | null;
+          const nextRides = ((rideResult.data ?? []) as RideRow[]).map(
+            (ride: RideRow) => ({
+              ...ride,
+              distance_km:
+                ride.distance_km === null ? null : Number(ride.distance_km),
+              odometer_start:
+                ride.odometer_start === null || ride.odometer_start === undefined
+                  ? null
+                  : Number(ride.odometer_start),
+              odometer_end:
+                ride.odometer_end === null || ride.odometer_end === undefined
+                  ? null
+                  : Number(ride.odometer_end),
+            }),
+          ) as Ride[];
+          const nextRsvps = (rsvpResult.data ?? []) as RsvpActivity[];
+          const activityEventIds = [
+            ...new Set(
+              [
+                ...nextRides.map((ride) => ride.event_id),
+                ...nextRsvps.map((rsvp) => rsvp.event_id),
+              ].filter(Boolean),
+            ),
+          ] as string[];
+
+          let activityEvents: ActivityEvent[] = [];
+          if (activityEventIds.length > 0) {
+            const eventResult = await supabase
+              .from("events")
+              .select("id,title")
+              .in("id", activityEventIds);
+            if (eventResult.error) throw eventResult.error;
+            activityEvents = (eventResult.data ?? []) as ActivityEvent[];
+          }
+
+          return {
+            profile: nextProfile,
+            detail: nextDetail,
+            primaryMotorcycle:
+              (garageResult.data as PrimaryMotorcycle | null) ?? null,
+            rides: nextRides,
+            rsvpActivities: nextRsvps,
+            activityEvents,
+          };
+        },
+        { ttlMs: 60_000, forceRefresh },
+      );
+
+      setProfile(snapshot.profile);
+      setDetail(snapshot.detail);
+      setPrimaryMotorcycle(snapshot.primaryMotorcycle);
+      setRides(snapshot.rides);
+      setRsvpActivities(snapshot.rsvpActivities);
+      setActivityEvents(snapshot.activityEvents);
+      setNickname(
+        snapshot.detail?.nickname_override || snapshot.profile?.nickname || "",
+      );
+      setMotorcycle(snapshot.detail?.motorcycle || "");
+      setCity(snapshot.detail?.city_override || snapshot.profile?.city || "");
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Profil member belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [accessAccount, accessLoading, fetchWithCache, user]);
 
   useEffect(() => {
+    if (accessLoading) return;
     void load();
-  }, []);
+  }, [accessLoading, load]);
 
   const handleRideUpdated = async () => {
     invalidateCache("member_profiles_list");
@@ -230,8 +306,9 @@ export default function ProfilePage() {
     invalidateCache("admin_dashboard_overview");
     if (account) {
       invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
+      invalidateCache(`profile:${account.member_external_id}`);
     }
-    await load();
+    await load(true);
   };
 
   const saveDetails = async (event: FormEvent) => {
@@ -241,9 +318,6 @@ export default function ProfilePage() {
     setError("");
     try {
       const supabase = getSupabaseBrowserClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
       if (!user || !account) throw new Error("Sesi member tidak ditemukan.");
       const { error: upsertError } = await supabase.from("member_details").upsert({
         member_external_id: account.member_external_id,
@@ -258,7 +332,8 @@ export default function ProfilePage() {
       invalidateCache("member_profiles_list");
       invalidateCache("admin_dashboard_overview");
       invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
-      await load();
+      invalidateCache(`profile:${account.member_external_id}`);
+      await load(true);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Profil belum dapat disimpan.");
     } finally {

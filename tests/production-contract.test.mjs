@@ -329,3 +329,61 @@ test("Voyager gallery images decode lazily", async () => {
   assert.match(voyager, /decoding="async"/);
   assert.match(voyager, /PageSkeleton/);
 });
+
+
+test("Audit polish keeps navigation, cache, and microcopy resilient", async () => {
+  const shell = await read("components/app-shell.tsx");
+  const css = await read("app/system-ui.css");
+
+  assert.match(shell, /DRAWER_FOCUSABLE_SELECTOR/);
+  assert.match(shell, /event\.key === "Escape"/);
+  assert.match(shell, /event\.key !== "Tab"/);
+  assert.match(shell, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(shell, /inert=\{isMobileDrawer && open \? true : undefined\}/);
+  assert.match(shell, /shell:pending-join-count/);
+  assert.match(shell, /fetchWithCache<number>/);
+
+  assert.match(css, /Audit polish · readable microcopy and coarse-pointer targets/);
+  assert.match(css, /bottom a small[\s\S]*font-size: var\(--rr-type-caption\)/);
+  assert.match(css, /@media \(pointer: coarse\) and \(max-width: 900px\)/);
+  assert.match(css, /riding-stat-range button[\s\S]*min-height: var\(--rr-control-lg\)/);
+});
+
+test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
+  const cash = await read("app/kas/page.tsx");
+  const profile = await read("app/profil/page.tsx");
+
+  assert.match(cash, /useMemberAccess/);
+  assert.match(cash, /fetchWithCache<CashSnapshot>/);
+  assert.match(cash, /ttlMs: 30_000/);
+  assert.match(cash, /invalidateCache\("cash:"\)/);
+  assert.match(cash, /PageSkeleton title="Memuat Kas Revolt\.\.\."/);
+  assert.doesNotMatch(cash, /auth\.getUser\(\)/);
+
+  assert.match(profile, /useMemberAccess/);
+  assert.match(profile, /fetchWithCache<ProfileSnapshot>/);
+  assert.match(profile, /ttlMs: 60_000/);
+  assert.match(profile, /profile:\$\{nextAccount\.member_external_id\}/);
+  assert.match(profile, /load\(true\)/);
+  assert.doesNotMatch(profile, /auth\.getUser\(\)/);
+});
+
+test("Join request admin refreshes the cached shell badge after workflow changes", async () => {
+  const joinRequests = await read("app/admin/join-requests/page.tsx");
+
+  assert.match(joinRequests, /fetchWithCache<JoinRequestsSnapshot>/);
+  assert.match(joinRequests, /"admin:join-requests"/);
+  assert.match(joinRequests, /ttlMs: 30_000/);
+  assert.match(joinRequests, /invalidateCache\("shell:pending-join-count"\)/);
+  assert.match(joinRequests, /loadRequests\(true\)/);
+});
+
+test("Data cache evicts stale and cross-user entries", async () => {
+  const cache = await read("context/data-cache-context.tsx");
+
+  assert.match(cache, /Date\.now\(\) - entry\.timestamp >= entry\.ttl/);
+  assert.match(cache, /userIdRef\.current !== nextUser\.id/);
+  assert.match(cache, /cacheRef\.current\.clear\(\)/);
+  assert.match(cache, /inFlightRef\.current\.clear\(\)/);
+  assert.match(cache, /const value = useMemo/);
+});
