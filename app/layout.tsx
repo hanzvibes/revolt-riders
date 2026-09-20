@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#0b0d10", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0b0d10", colorScheme: "dark", viewportFit: "cover" };
 
 import { DataCacheProvider } from "@/context/data-cache-context";
 
