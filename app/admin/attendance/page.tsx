@@ -9,7 +9,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Check, Download, ShieldAlert, UserCheck, UserRoundX } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
-type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Member = { member_external_id: string; full_name: string; nickname: string | null };
 type Attendance = { id: string; event_id: string; member_external_id: string; checked_in_at: string; method: "qr" | "manual" };
 type Rsvp = { event_id: string; member_external_id: string; status: "attending" | "declined" | "maybe" };
@@ -108,7 +107,13 @@ export default function AttendancePage() {
   }, [accessLoading, account, fetchWithCache]);
 
   useEffect(() => {
-    if (accessLoading) return;
+    if (
+      accessLoading ||
+      account?.status !== "active" ||
+      !canManageAttendance(account.role)
+    ) {
+      return;
+    }
 
     void load();
     const supabase = getSupabaseBrowserClient();
@@ -127,7 +132,7 @@ export default function AttendancePage() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [accessLoading, invalidateCache, load]);
+  }, [accessLoading, account?.role, account?.status, invalidateCache, load]);
 
   const memberById = useMemo(() => new Map(members.map((member) => [member.member_external_id, member])), [members]);
   const eventAttendance = attendance.filter((row) => row.event_id === selectedEvent);
