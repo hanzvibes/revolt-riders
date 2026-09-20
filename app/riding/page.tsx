@@ -1,10 +1,11 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { useDataCache } from "@/context/data-cache-context";
 import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
-import { RidingStatChart } from "@/components/riding-stat-chart";
 import { PageSkeleton } from "@/components/skeleton";
+import dynamic from "next/dynamic";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { deleteRideLog, saveRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -22,6 +23,24 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+
+const RidingStatChart = dynamic(
+  () =>
+    import("@/components/riding-stat-chart").then(
+      (module) => module.RidingStatChart,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <section
+        className="riding-stat-chart riding-stat-chart-loading"
+        aria-label="Memuat statistik riding"
+      >
+        <div className="skeleton-shimmer" aria-hidden="true" />
+      </section>
+    ),
+  },
+);
 
 type RideEvent = { id: string; title: string; type: "riding" | "touring"; start_at: string };
 type UserRide = {
@@ -44,6 +63,12 @@ type MemberProfile = {
   total_km: number;
 };
 
+type RidingSnapshot = {
+  events: RideEvent[];
+  profile: MemberProfile | null;
+  rides: UserRide[];
+};
+
 const eventDate = (value: string) =>
   new Intl.DateTimeFormat("id-ID", {
     dateStyle: "medium",
@@ -52,6 +77,7 @@ const eventDate = (value: string) =>
 
 export default function RidingPage() {
   const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache } = useDataCache();
   const [profile, setProfile] = useState<MemberProfile | null>(null);
   const [rides, setRides] = useState<UserRide[]>([]);
   const [events, setEvents] = useState<RideEvent[]>([]);
@@ -76,64 +102,87 @@ export default function RidingPage() {
   const distance = Math.max(0, Number(end || 0) - Number(start || 0));
   const selectedEvent = useMemo(() => events.find((item) => item.id === eventId), [eventId, events]);
 
-  const loadData = useCallback(async () => {
+  const loadData = useCallback(async (forceRefresh = false) => {
     if (!activeAccount) {
       setLoadingData(false);
       return;
     }
-    const supabase = getSupabaseBrowserClient();
-    try {
-      const [eventsRes, profileRes, ridesRes] = await Promise.all([
-        supabase
-          .from("events")
-          .select("id,title,type,start_at")
-          .in("status", ["published", "completed"])
-          .in("type", ["riding", "touring"])
-          .order("start_at", { ascending: false })
-          .limit(50),
-        supabase
-          .from("member_profiles")
-          .select("member_external_id,full_name,nickname,total_km")
-          .eq("member_external_id", activeAccount.member_external_id)
-          .maybeSingle(),
-        supabase
-          .from("ride_logs")
-          .select("id,title,event_id,odometer_start,odometer_end,distance_km,status,created_at,rejection_reason,source_type,counts_as_mandatory")
-          .eq("member_external_id", activeAccount.member_external_id)
-          .order("created_at", { ascending: false })
-          .limit(50),
-      ]);
 
-      if (eventsRes.data) setEvents(eventsRes.data as RideEvent[]);
-      if (profileRes.data) {
-        setProfile({
-          ...profileRes.data,
-          total_km: Number(profileRes.data.total_km) || 0,
-        });
-      }
-      if (ridesRes.data) {
-        setRides(
-          (ridesRes.data as { [key: string]: unknown }[]).map((r) => ({
+    try {
+      const snapshot = await fetchWithCache<RidingSnapshot>(
+        `riding:${activeAccount.member_external_id}`,
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [eventsRes, profileRes, ridesRes] = await Promise.all([
+            supabase
+              .from("events")
+              .select("id,title,type,start_at")
+              .in("status", ["published", "completed"])
+              .in("type", ["riding", "touring"])
+              .order("start_at", { ascending: false })
+              .limit(50),
+            supabase
+              .from("member_profiles")
+              .select("member_external_id,full_name,nickname,total_km")
+              .eq("member_external_id", activeAccount.member_external_id)
+              .maybeSingle(),
+            supabase
+              .from("ride_logs")
+              .select("id,title,event_id,odometer_start,odometer_end,distance_km,status,created_at,rejection_reason,source_type,counts_as_mandatory")
+              .eq("member_external_id", activeAccount.member_external_id)
+              .order("created_at", { ascending: false })
+              .limit(50),
+          ]);
+
+          if (eventsRes.error) throw eventsRes.error;
+          if (profileRes.error) throw profileRes.error;
+          if (ridesRes.error) throw ridesRes.error;
+
+          const profileRow = profileRes.data
+            ? {
+                ...(profileRes.data as Omit<MemberProfile, "total_km"> & { total_km: number | string }),
+                total_km: Number(profileRes.data.total_km) || 0,
+              }
+            : null;
+
+          const rideRows = ((ridesRes.data ?? []) as { [key: string]: unknown }[]).map((r) => ({
             id: String(r.id),
             title: (r.title as string) || null,
             event_id: (r.event_id as string) || null,
             odometer_start: Number(r.odometer_start) || 0,
             odometer_end: Number(r.odometer_end) || 0,
-            distance_km: r.distance_km !== null && r.distance_km !== undefined ? Number(r.distance_km) : null,
+            distance_km:
+              r.distance_km !== null && r.distance_km !== undefined
+                ? Number(r.distance_km)
+                : null,
             status: r.status as "pending" | "approved" | "rejected",
             created_at: String(r.created_at),
             rejection_reason: (r.rejection_reason as string) || null,
-            source_type: (r.source_type as "member_submission" | "official_agenda") || "member_submission",
+            source_type:
+              (r.source_type as "member_submission" | "official_agenda") ||
+              "member_submission",
             counts_as_mandatory: Boolean(r.counts_as_mandatory),
-          }))
-        );
-      }
+          }));
+
+          return {
+            events: (eventsRes.data ?? []) as RideEvent[],
+            profile: profileRow,
+            rides: rideRows,
+          };
+        },
+        { ttlMs: 60_000, forceRefresh },
+      );
+
+      setEvents(snapshot.events);
+      setProfile(snapshot.profile);
+      setRides(snapshot.rides);
+      setError("");
     } catch {
       setError("Gagal memuat data riding. Coba segarkan halaman.");
     } finally {
       setLoadingData(false);
     }
-  }, [activeAccount]);
+  }, [activeAccount, fetchWithCache]);
 
   useEffect(() => {
     if (!accessLoading) void loadData();
@@ -184,7 +233,7 @@ export default function RidingPage() {
       setStart("");
       setEnd("");
       setShowForm(false);
-      await loadData();
+      await loadData(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Ride log belum dapat dikirim.");
     } finally {
@@ -665,7 +714,7 @@ export default function RidingPage() {
                             if (!confirm(`Hapus catatan "${ride.title || "Riding"}"?`)) return;
                             try {
                               await deleteRideLog(ride.id, activeAccount.member_external_id);
-                              await loadData();
+                              await loadData(true);
                             } catch (e) {
                               alert(e instanceof Error ? e.message : "Gagal menghapus");
                             }
@@ -699,8 +748,8 @@ export default function RidingPage() {
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         data={editModalData}
-        onSaved={() => void loadData()}
-        onDeleted={() => void loadData()}
+        onSaved={() => void loadData(true)}
+        onDeleted={() => void loadData(true)}
       />
     </AppShell>
   );

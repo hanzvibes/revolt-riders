@@ -1303,13 +1303,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell *,
-  .app-shell *::before,
-  .app-shell *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
+  .app-shell {
+    scroll-behavior: auto;
+  }
+
+  .app-shell .skeleton-shimmer,
+  .app-shell .spin,
+  .app-shell .loading-wheel,
+  .app-shell .qr-loading {
+    animation: none !important;
+  }
+
+  .app-shell [data-animated="true"] {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -8848,7 +8855,7 @@
   padding: 13px;
   border: 1px solid var(--rr-line);
   border-radius: 13px;
-  background: #fff;
+  background: var(--rr-surface);
   box-shadow: var(--rr-shadow-soft);
 }
 
@@ -8857,7 +8864,7 @@
   height: 34px;
   padding: 8px;
   border-radius: 10px;
-  background: #f2f3f4;
+  background: var(--rr-surface-muted);
   color: var(--rr-red);
 }
 
@@ -8944,9 +8951,9 @@
   gap: 7px;
   flex: none;
   border-radius: 9px;
-  background: #17191b;
+  background: var(--rr-surface-inverse);
   padding: 0 12px;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: .58rem;
   font-weight: 800;
   text-decoration: none;
@@ -8968,8 +8975,8 @@
   padding: 20px;
   border: 1px solid #2c3033;
   border-radius: 16px;
-  background: #16181a;
-  color: #fff;
+  background: var(--rr-surface-inverse);
+  color: var(--rr-ink-inverse);
 }
 
 .app-shell .voyager-featured-card::after {
@@ -8996,7 +9003,7 @@
   border-radius: 999px;
   background: var(--rr-red);
   padding: 0 8px;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: .48rem;
   font-weight: 800;
   letter-spacing: .07em;
@@ -9004,7 +9011,7 @@
 
 .app-shell .voyager-featured-main h3 {
   margin: 9px 0 0;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: clamp(1.15rem, 3vw, 1.8rem);
   letter-spacing: -.04em;
 }
@@ -9020,7 +9027,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: #a9afb4;
+  color: var(--rr-muted-inverse);
   font-size: .6rem;
 }
 
@@ -9067,8 +9074,8 @@
   min-height: 38px;
   border: 1px solid #393d40;
   border-radius: 9px;
-  background: #222527;
-  color: #fff;
+  background: var(--rr-surface-inverse-soft);
+  color: var(--rr-ink-inverse);
   font-size: .55rem;
   font-weight: 800;
   cursor: pointer;
@@ -9076,7 +9083,7 @@
 
 .app-shell .voyager-featured-actions button:first-child {
   border-color: transparent;
-  background: #fff;
+  background: var(--rr-surface);
   color: #191b1d;
 }
 
@@ -9087,9 +9094,9 @@
   align-items: center;
   min-height: 112px;
   padding: 16px;
-  border: 1px dashed #c9cdd0;
+  border: 1px dashed var(--rr-line-strong);
   border-radius: 14px;
-  background: #fafbfb;
+  background: var(--rr-surface-soft);
 }
 
 .app-shell .voyager-structured-empty.compact {
@@ -9102,7 +9109,7 @@
   height: 44px;
   place-items: center;
   border-radius: 12px;
-  background: #eceeef;
+  background: var(--rr-surface-muted);
   color: var(--rr-red);
 }
 
@@ -9134,9 +9141,9 @@
   align-items: center;
   justify-content: center;
   border-radius: 9px;
-  background: #17191b;
+  background: var(--rr-surface-inverse);
   padding: 0 11px;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: .54rem;
   font-weight: 800;
   text-decoration: none;
@@ -9148,7 +9155,7 @@
   overflow: hidden;
   border: 1px solid var(--rr-line);
   border-radius: 15px;
-  background: #fff;
+  background: var(--rr-surface);
   box-shadow: var(--rr-shadow-soft);
 }
 
@@ -9205,7 +9212,7 @@
   height: 30px;
   padding: 7px;
   border-radius: 9px;
-  background: #f1f2f3;
+  background: var(--rr-surface-muted);
   color: var(--rr-red);
 }
 
@@ -9239,9 +9246,9 @@
   min-height: 30px;
   align-items: center;
   border-radius: 999px;
-  background: #f0f2f3;
+  background: var(--rr-surface-muted);
   padding: 0 9px;
-  color: #60656a;
+  color: var(--rr-muted);
   font-size: .52rem;
 }
 
@@ -9251,7 +9258,7 @@
   padding: 18px;
   border: 1px solid var(--rr-line);
   border-radius: 14px;
-  background: #fff;
+  background: var(--rr-surface);
   text-align: center;
 }
 
@@ -9266,10 +9273,10 @@
   display: grid;
   aspect-ratio: 4 / 3;
   place-items: center;
-  border: 1px dashed #c9cdd0;
+  border: 1px dashed var(--rr-line-strong);
   border-radius: 9px;
-  background: #f5f6f6;
-  color: #abb0b4;
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted-2);
 }
 
 .app-shell .voyager-gallery-placeholders svg {
@@ -9297,9 +9304,9 @@
   margin-top: 11px;
   border: 0;
   border-radius: 9px;
-  background: #17191b;
+  background: var(--rr-surface-inverse);
   padding: 0 11px;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: .54rem;
   font-weight: 800;
   cursor: pointer;
@@ -9322,7 +9329,7 @@
   overflow: hidden;
   border: 0;
   border-radius: 12px;
-  background: #1c1f21;
+  background: var(--rr-charcoal-2);
   padding: 0;
   cursor: pointer;
 }
@@ -9338,7 +9345,7 @@
   width: 100%;
   height: 100%;
   place-items: center;
-  color: #9aa0a5;
+  color: var(--rr-muted-2);
 }
 
 .app-shell .voyager-gallery-hub-grid > button > span svg {
@@ -9352,7 +9359,7 @@
   gap: 2px;
   padding: 24px 10px 9px;
   background: linear-gradient(to top, rgba(0,0,0,.82), transparent);
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-style: normal;
   text-align: left;
 }
@@ -9365,7 +9372,7 @@
 }
 
 .app-shell .voyager-gallery-hub-grid i small {
-  color: #c1c5c8;
+  color: var(--rr-muted-inverse);
   font-size: .48rem;
 }
 
@@ -9502,4 +9509,126 @@
   .app-shell .voyager-gallery-hub-grid {
     gap: 6px;
   }
+}
+
+
+/* ==============================================================================
+   Audit hardening · legibility, touch, focus, motion
+   ============================================================================== */
+
+.app-shell .voyager-overview-grid small,
+.app-shell .voyager-section-heading em,
+.app-shell .voyager-featured-status,
+.app-shell .voyager-featured-chips b,
+.app-shell .voyager-featured-meta > span,
+.app-shell .voyager-section-count,
+.app-shell .voyager-gallery-hub-grid i small {
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-section-heading p,
+.app-shell .voyager-structured-empty p,
+.app-shell .voyager-mandatory-card > div:first-child p,
+.app-shell .voyager-mandatory-source small,
+.app-shell .voyager-gallery-empty > p {
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-create-action,
+.app-shell .voyager-featured-actions button,
+.app-shell .voyager-structured-empty > a,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button,
+.app-shell .finance-segments button,
+.app-shell .ledger-export,
+.app-shell .checkin-qr-actions button,
+.app-shell .role-panel .role-list select {
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell .sidebar-user-btn,
+.app-shell .header-bell-btn,
+.app-shell .hamb,
+.app-shell .close-menu {
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell :where(
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--rr-focus-outline);
+  outline-offset: 2px;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .native-sheet:focus {
+  outline: none;
+}
+
+.app-shell .native-sheet-handle {
+  min-height: 28px;
+  touch-action: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell input,
+  .app-shell textarea,
+  .app-shell select {
+    font-size: max(1rem, var(--rr-type-body));
+  }
+
+  .app-shell .voyager-overview-grid small,
+  .app-shell .voyager-section-heading em,
+  .app-shell .voyager-featured-status,
+  .app-shell .voyager-featured-chips b,
+  .app-shell .voyager-featured-meta > span,
+  .app-shell .voyager-section-count {
+    font-size: var(--rr-type-caption);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .native-sheet,
+  .app-shell .native-sheet-backdrop,
+  .app-shell > aside,
+  .app-shell .shade,
+  .app-shell .sidebar-subnav,
+  .app-shell .accordion-chevron,
+  .app-shell .voyager-card,
+  .app-shell .floating-action-button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+.app-shell .riding-stat-chart-loading {
+  min-height: 310px;
+  overflow: hidden;
+}
+
+.app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+  width: 100%;
+  min-height: 310px;
+  border-radius: var(--rr-radius-lg);
+}
+
+@media (max-width: 720px) {
+  .app-shell .riding-stat-chart-loading,
+  .app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+    min-height: 260px;
+  }
+}
+
+.app-shell .sidebar-link-label {
+  min-width: 0;
+  flex: 1;
 }

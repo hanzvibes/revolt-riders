@@ -17,6 +17,13 @@
   --rr-red: #dc1b2a;
   --rr-red-soft: #fff0f1;
   --rr-green: #18794e;
+  --rr-danger: #b31221;
+  --rr-danger-soft: #fff0f1;
+  --rr-danger-line: #f2c5c9;
+  --rr-surface-inverse: #17191b;
+  --rr-surface-inverse-soft: #222527;
+  --rr-ink-inverse: #ffffff;
+  --rr-muted-inverse: #a9afb4;
 
   --rr-radius-sm: 9px;
   --rr-radius-md: 13px;

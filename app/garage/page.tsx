@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { useDataCache } from "@/context/data-cache-context";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
 import { PageSkeleton } from "@/components/skeleton";
@@ -83,6 +84,7 @@ const motorcycleStyles = [
 
 export default function GaragePage() {
   const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache } = useDataCache();
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -93,34 +95,42 @@ export default function GaragePage() {
   const [message, setMessage] = useState("");
 
   const activeAccount = account?.status === "active" ? account : null;
+  const memberExternalId = activeAccount?.member_external_id ?? null;
 
-  const loadMotorcycles = useCallback(async () => {
-    if (!activeAccount?.member_external_id) {
+  const loadMotorcycles = useCallback(async (forceRefresh = false) => {
+    if (!memberExternalId) {
       setMotorcycles([]);
       setLoadingData(false);
       return;
     }
 
-    setLoadingData(true);
     try {
-      const { data, error: fetchError } = await getSupabaseBrowserClient()
-        .from("member_motorcycles")
-        .select(
-          "id,member_external_id,nickname,brand,model,production_year,style,engine_cc,color,notes,is_primary,is_visible_to_members,created_at,updated_at",
-        )
-        .eq("member_external_id", activeAccount.member_external_id)
-        .order("is_primary", { ascending: false })
-        .order("created_at", { ascending: true });
+      const motorcyclesData = await fetchWithCache<Motorcycle[]>(
+        `garage:${memberExternalId}`,
+        async () => {
+          const { data, error: fetchError } = await getSupabaseBrowserClient()
+            .from("member_motorcycles")
+            .select(
+              "id,member_external_id,nickname,brand,model,production_year,style,engine_cc,color,notes,is_primary,is_visible_to_members,created_at,updated_at",
+            )
+            .eq("member_external_id", memberExternalId)
+            .order("is_primary", { ascending: false })
+            .order("created_at", { ascending: true });
 
-      if (fetchError) throw fetchError;
-      setMotorcycles((data ?? []) as Motorcycle[]);
+          if (fetchError) throw fetchError;
+          return (data ?? []) as Motorcycle[];
+        },
+        { ttlMs: 90_000, forceRefresh },
+      );
+
+      setMotorcycles(motorcyclesData);
       setError("");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Garage belum dapat dimuat.");
     } finally {
       setLoadingData(false);
     }
-  }, [activeAccount?.member_external_id]);
+  }, [fetchWithCache, memberExternalId]);
 
   useEffect(() => {
     if (accessLoading) return;
@@ -189,7 +199,7 @@ export default function GaragePage() {
       setSheetOpen(false);
       setMessage(form.id ? "Motor berhasil diperbarui." : "Motor berhasil masuk ke Garage.");
       setForm(emptyForm);
-      await loadMotorcycles();
+      await loadMotorcycles(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Data motor belum dapat disimpan.");
     } finally {
@@ -213,7 +223,7 @@ export default function GaragePage() {
       );
       if (deleteError) throw deleteError;
       setMessage("Motor dihapus dari Garage.");
-      await loadMotorcycles();
+      await loadMotorcycles(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Motor belum dapat dihapus.");
     } finally {

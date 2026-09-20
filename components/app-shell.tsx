@@ -31,7 +31,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type NavItem = readonly [string, string, ComponentType];
@@ -108,11 +115,36 @@ const isItemActive = (label: string, currentActive: string) =>
 
 export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [isMobileDrawer, setIsMobileDrawer] = useState(false);
   const [pendingJoinCount, setPendingJoinCount] = useState(0);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const { user, account, loading } = useMemberAccess();
 
   const canOperational = account?.status === "active" && hasRole(account.role, ["road_captain", "admin", "superadmin"]);
   const canAdmin = account?.status === "active" && hasRole(account.role, ["admin", "superadmin"]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 720px)");
+    const sync = () => setIsMobileDrawer(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileDrawer) return;
+
+    if (open) {
+      window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+    } else if (
+      document.activeElement &&
+      document.querySelector("#app-mobile-drawer")?.contains(document.activeElement)
+    ) {
+      menuButtonRef.current?.focus();
+    }
+  }, [isMobileDrawer, open]);
+
 
   // Detect which accordion section contains the active page
   const isKomunitasActive = useMemo(() => komunitasItems.some(([label]) => isItemActive(label, active)), [active]);
@@ -125,14 +157,9 @@ export function AppShell({ active, title, children }: { active: string; title: s
     admin: isAdminActive,
   });
 
-  useEffect(() => {
-    setOpenSections((prev) => ({
-      ...prev,
-      ...(isKomunitasActive ? { komunitas: true } : {}),
-      ...(isOperationalActive ? { operational: true } : {}),
-      ...(isAdminActive ? { admin: true } : {}),
-    }));
-  }, [active, isAdminActive, isKomunitasActive, isOperationalActive]);
+  const komunitasOpen = Boolean(openSections.komunitas || isKomunitasActive);
+  const operationalOpen = Boolean(openSections.operational || isOperationalActive);
+  const adminOpen = Boolean(openSections.admin || isAdminActive);
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -180,7 +207,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
             onClick={() => setOpen(false)}
           >
             <Icon />
-            <span style={{ flex: 1 }}>{label}</span>
+            <span className="sidebar-link-label">{label}</span>
             {label === "Pendaftaran Member" && pendingJoinCount > 0 && (
               <b className="sidebar-badge-pill">{pendingJoinCount}</b>
             )}
@@ -192,14 +219,25 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
   return (
     <main className="app-shell">
-      <aside className={open ? "open" : ""} aria-label="Navigasi aplikasi">
+      <aside
+        id="app-mobile-drawer"
+        className={open ? "open" : ""}
+        aria-label="Navigasi aplikasi"
+        aria-hidden={isMobileDrawer && !open ? true : undefined}
+        inert={isMobileDrawer && !open ? true : undefined}
+      >
         <Link className="brand" href="/" aria-label="Revolt Riders home">
           <Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority />
           <strong>
             REVOLT RIDERS<small>MEMBER HUB</small>
           </strong>
         </Link>
-        <button className="close-menu" onClick={() => setOpen(false)} aria-label="Tutup menu">
+        <button
+          ref={closeButtonRef}
+          className="close-menu"
+          onClick={() => setOpen(false)}
+          aria-label="Tutup menu"
+        >
           <X />
         </button>
 
@@ -212,12 +250,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
         {/* 2. Accordion Group: Komunitas, Operasional, Admin */}
         <div className="sidebar-accordion-group">
           {/* Komunitas & Aktivitas */}
-          <div className={`sidebar-accordion ${openSections.komunitas ? "open" : ""}`}>
+          <div className={`sidebar-accordion ${komunitasOpen ? "open" : ""}`}>
             <button
               type="button"
               className={`sidebar-accordion-header ${isKomunitasActive ? "has-active" : ""}`}
               onClick={() => toggleSection("komunitas")}
-              aria-expanded={openSections.komunitas}
+              aria-expanded={komunitasOpen}
             >
               <Trophy />
               <span className="accordion-title">Komunitas</span>
@@ -228,12 +266,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
           {/* Operasional Lapangan (Khusus Road Captain, Admin, Superadmin) */}
           {canOperational && (
-            <div className={`sidebar-accordion ${openSections.operational ? "open" : ""}`}>
+            <div className={`sidebar-accordion ${operationalOpen ? "open" : ""}`}>
               <button
                 type="button"
                 className={`sidebar-accordion-header ${isOperationalActive ? "has-active" : ""}`}
                 onClick={() => toggleSection("operational")}
-                aria-expanded={openSections.operational}
+                aria-expanded={operationalOpen}
               >
                 <ShieldCheck />
                 <span className="accordion-title">Operasional</span>
@@ -246,12 +284,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
           {/* Manajemen Admin (Khusus Admin & Superadmin) */}
           {canAdmin && (
-            <div className={`sidebar-accordion ${openSections.admin ? "open" : ""}`}>
+            <div className={`sidebar-accordion ${adminOpen ? "open" : ""}`}>
               <button
                 type="button"
                 className={`sidebar-accordion-header ${isAdminActive ? "has-active" : ""}`}
                 onClick={() => toggleSection("admin")}
-                aria-expanded={openSections.admin}
+                aria-expanded={adminOpen}
               >
                 <Settings />
                 <span className="accordion-title">Administrasi</span>
@@ -333,7 +371,14 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
       <section className="content">
         <header>
-          <button className="hamb" onClick={() => setOpen(true)} aria-label="Buka menu">
+          <button
+            ref={menuButtonRef}
+            className="hamb"
+            onClick={() => setOpen(true)}
+            aria-label="Buka menu"
+            aria-controls="app-mobile-drawer"
+            aria-expanded={open}
+          >
             <Menu />
           </button>
           <div>

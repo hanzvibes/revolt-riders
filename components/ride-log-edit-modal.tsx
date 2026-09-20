@@ -29,15 +29,15 @@ export function RideLogEditModal({
   const [closing, setClosing] = useState(false);
   const closeTimerRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    if (open) setClosing(false);
-    return () => {
+  useEffect(
+    () => () => {
       if (closeTimerRef.current !== null) {
         window.clearTimeout(closeTimerRef.current);
         closeTimerRef.current = null;
       }
-    };
-  }, [open]);
+    },
+    [],
+  );
 
   const requestClose = () => {
     if (closing) return;
