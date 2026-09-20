@@ -5,6 +5,7 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import { getRiderProgress } from "@/lib/rider-progression";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -306,63 +307,35 @@ export default function ProfilePage() {
   const joinYear =
     joinDate && !Number.isNaN(joinDate.getTime()) ? joinDate.getFullYear() : null;
 
-  const kmMilestones = [500, 1000, 2500, 5000, 10000, 25000];
-  const previousKmMilestone =
-    [...kmMilestones].reverse().find((milestone) => totalKm >= milestone) ?? 0;
-  const nextKmMilestone =
-    kmMilestones.find((milestone) => totalKm < milestone) ?? null;
-  const milestoneProgress = nextKmMilestone
-    ? Math.min(
-        100,
-        Math.max(
-          0,
-          ((totalKm - previousKmMilestone) /
-            (nextKmMilestone - previousKmMilestone)) *
-            100,
-        ),
-      )
-    : 100;
-  const remainingKmToMilestone = nextKmMilestone
-    ? Math.max(0, nextKmMilestone - totalKm)
-    : 0;
+  const riderProgress = getRiderProgress({
+    totalKm,
+    approvedRideCount: approvedRidesCount,
+    approvedRideDates: rides
+      .filter((ride) => ride.status === "approved")
+      .map((ride) => ride.created_at),
+    attendedAgendaCount,
+    activeMember: account.status === "active",
+  });
+  const previousKmMilestone = riderProgress.level.minKm;
+  const nextKmMilestone = riderProgress.level.nextKm;
+  const milestoneProgress = riderProgress.levelProgress;
+  const remainingKmToMilestone = riderProgress.remainingKm;
 
-  const passportBadges = [
-    {
-      key: "verified",
-      label: "Verified",
-      detail: "Member resmi",
-      unlocked: account.status === "active",
-      Icon: ShieldCheck,
-    },
-    {
-      key: "road-1k",
-      label: "Road 1K",
-      detail: "1.000 KM resmi",
-      unlocked: totalKm >= 1000,
-      Icon: Route,
-    },
-    {
-      key: "five-rides",
-      label: "5 Rides",
-      detail: "5 ride disetujui",
-      unlocked: approvedRidesCount >= 5,
-      Icon: Bike,
-    },
-    {
-      key: "five-agenda",
-      label: "5 RSVP",
-      detail: "5 RSVP hadir",
-      unlocked: attendedAgendaCount >= 5,
-      Icon: CalendarDays,
-    },
-    {
-      key: "road-5k",
-      label: "Road 5K",
-      detail: "5.000 KM resmi",
-      unlocked: totalKm >= 5000,
-      Icon: Trophy,
-    },
-  ];
+  const badgeIcon = (key: string) => {
+    if (key === "verified") return ShieldCheck;
+    if (key === "streak-3") return Clock3;
+    if (key.includes("agenda")) return CalendarDays;
+    if (key.includes("road-")) return key === "road-1k" ? Route : Trophy;
+    return Bike;
+  };
+
+  const passportBadges = riderProgress.badges
+    .filter((badge) =>
+      ["verified", "first-ride", "road-1k", "five-rides", "streak-3", "road-5k"].includes(
+        badge.key,
+      ),
+    )
+    .map((badge) => ({ ...badge, Icon: badgeIcon(badge.key) }));
 
   return (
     <AppShell active="Profil" title="Profil Saya">
@@ -473,12 +446,8 @@ export default function ProfilePage() {
             <section className="member-passport-progress" aria-label="Progress member">
               <div className="member-passport-progress-head">
                 <span>
-                  <small>ROAD PROGRESS</small>
-                  <strong>
-                    {nextKmMilestone
-                      ? `Menuju ${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM`
-                      : "Milestone tertinggi tercapai"}
-                  </strong>
+                  <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
+                  <strong>{riderProgress.level.title}</strong>
                 </span>
                 <b>{nextKmMilestone ? `${Math.round(milestoneProgress)}%` : "MAX"}</b>
               </div>
@@ -519,8 +488,8 @@ export default function ProfilePage() {
                   </b>
                   <small>
                     {nextKmMilestone
-                      ? "untuk membuka milestone berikutnya"
-                      : "Semua milestone KM saat ini sudah terbuka"}
+                      ? `menuju level berikutnya · ${riderProgress.streakMonths} bulan ride streak`
+                      : `level tertinggi · ${riderProgress.streakMonths} bulan ride streak`}
                   </small>
                 </span>
               </div>

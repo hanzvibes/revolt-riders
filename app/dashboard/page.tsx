@@ -5,6 +5,7 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { useDataCache } from "@/context/data-cache-context";
 import type { AnnouncementRecord, EventRecord } from "@/lib/domain";
 import { formatEventDate, formatShortDate } from "@/lib/domain";
+import { getRiderProgress } from "@/lib/rider-progression";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Bike,
@@ -12,6 +13,7 @@ import {
   ChevronRight,
   CircleDollarSign,
   Database,
+  Flame,
   Gauge,
   MapPin,
   ScanLine,
@@ -37,6 +39,7 @@ type LoggedInMember = {
   club_role: string | null;
   total_km: number;
   touring_count: number;
+  ride_dates: string[];
 };
 
 export default function DashboardPage() {
@@ -153,9 +156,11 @@ export default function DashboardPage() {
                     .maybeSingle(),
                   supabase
                     .from("ride_logs")
-                    .select("id", { count: "exact", head: true })
+                    .select("created_at", { count: "exact" })
                     .eq("member_external_id", account.member_external_id)
-                    .eq("status", "approved"),
+                    .eq("status", "approved")
+                    .order("created_at", { ascending: false })
+                    .limit(60),
                 ]);
                 if (!pRes.data) return null;
                 return {
@@ -165,6 +170,9 @@ export default function DashboardPage() {
                   club_role: pRes.data.club_role || null,
                   total_km: Number(pRes.data.total_km) || 0,
                   touring_count: rLogs.count || 0,
+                  ride_dates: ((rLogs.data ?? []) as { created_at: string }[]).map(
+                    (ride) => ride.created_at,
+                  ),
                 };
               },
               { ttlMs: 2 * 60 * 1000 },
@@ -217,8 +225,15 @@ export default function DashboardPage() {
     (user ? "Rider Revolt" : "Guest Rider");
   const memberId = account?.member_external_id || "MEMBER";
   const memberRole = currentMember?.club_role || account?.role || "Member";
-  const hasActiveMember = Boolean(user && !authLoading);
-
+  const hasActiveMember = Boolean(
+    user && !authLoading && account?.status === "active" && currentMember,
+  );
+  const riderProgress = getRiderProgress({
+    totalKm: currentMember?.total_km ?? 0,
+    approvedRideCount: currentMember?.touring_count ?? 0,
+    approvedRideDates: currentMember?.ride_dates ?? [],
+    activeMember: hasActiveMember,
+  });
 
   return (
     <AppShell active="Home" title="Dashboard">
@@ -366,6 +381,38 @@ export default function DashboardPage() {
             </div>
           </div>
         </section>
+
+        {hasActiveMember && (
+          <section className="dashboard-rider-progress" aria-label="Road progression member">
+            <div className="dashboard-rider-progress-copy">
+              <span className="dashboard-rider-level">
+                <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
+                <strong>{riderProgress.level.title}</strong>
+              </span>
+              <span className="dashboard-rider-streak">
+                <Flame aria-hidden="true" />
+                <b>{riderProgress.streakMonths}</b>
+                <small>bulan streak</small>
+              </span>
+            </div>
+
+            <div className="dashboard-rider-progress-track" aria-hidden="true">
+              <i style={{ width: `${riderProgress.levelProgress}%` }} />
+            </div>
+
+            <div className="dashboard-rider-progress-foot">
+              <small>
+                {riderProgress.level.nextKm
+                  ? `${new Intl.NumberFormat("id-ID").format(riderProgress.remainingKm)} KM ke level berikutnya`
+                  : "Road level tertinggi tercapai"}
+              </small>
+              <Link href="/profil">
+                {riderProgress.unlockedBadges.length} badge terbuka
+                <ChevronRight aria-hidden="true" />
+              </Link>
+            </div>
+          </section>
+        )}
 
         <div className="left-column">
           {/* Quick Actions */}
