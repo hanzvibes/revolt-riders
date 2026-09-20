@@ -656,6 +656,101 @@ export default function AdminEventsPage() {
                 </small>
               </span>
             </label>
+            <section className="voyager-admin-activity-fields">
+              <div className="section-title">
+                <span>
+                  <em>Official ride</em>
+                  <h3>Mandatory Ride & Participant</h3>
+                </span>
+                <b>{selectedParticipants.length} member</b>
+              </div>
+
+              <label className="voyager-switch">
+                <input
+                  type="checkbox"
+                  checked={countsAsMandatory}
+                  onChange={(event) => setCountsAsMandatory(event.target.checked)}
+                />
+                <span>
+                  <b>Count as Mandatory Ride</b>
+                  <small>
+                    Agenda apa pun boleh dihitung Mandatory jika pengurus mengaktifkannya.
+                  </small>
+                </span>
+              </label>
+
+              {(countsAsMandatory || type === "voyager") && (
+                <>
+                  <label className="voyager-admin-distance">
+                    Official Trip Distance
+                    <div className="voyager-distance-input">
+                      <input
+                        type="number"
+                        inputMode="decimal"
+                        min="0"
+                        step="0.1"
+                        value={officialDistance}
+                        onChange={(event) => setOfficialDistance(event.target.value)}
+                        placeholder="184"
+                      />
+                      <span>KM</span>
+                    </div>
+                    <small>Tidak ada minimum KM. Semua participant mendapat jarak yang sama.</small>
+                  </label>
+
+                  <label className="voyager-member-search">
+                    <Search />
+                    <input
+                      value={participantQuery}
+                      onChange={(event) => setParticipantQuery(event.target.value)}
+                      placeholder="Cari participant berdasarkan nama atau ID RR"
+                    />
+                  </label>
+
+                  <div className="voyager-member-picker">
+                    {filteredMembers.map((member) => (
+                      <label key={member.member_external_id}>
+                        <input
+                          type="checkbox"
+                          checked={selectedParticipants.includes(member.member_external_id)}
+                          onChange={() => toggleParticipant(member.member_external_id)}
+                        />
+                        <span>
+                          <b>{member.nickname || member.full_name}</b>
+                          <small>
+                            {member.member_external_id}
+                            {member.city ? ` · ${member.city}` : ""}
+                          </small>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+
+                  <small className="voyager-admin-helper">
+                    Participant dipilih manual oleh pengurus dan tidak bergantung pada RSVP atau Check-in.
+                  </small>
+
+                  {editing && countsAsMandatory && (
+                    <button
+                      type="button"
+                      className="voyager-admin-sync"
+                      disabled={
+                        syncing ||
+                        saving ||
+                        editing.status === "draft" ||
+                        selectedParticipants.length === 0 ||
+                        Number(officialDistance) <= 0
+                      }
+                      onClick={() => void syncOfficialKm()}
+                    >
+                      <Route />
+                      {syncing ? "SINKRONISASI…" : "SYNC OFFICIAL KM"}
+                    </button>
+                  )}
+                </>
+              )}
+            </section>
+
             {error && <p className="error-message">{error}</p>}
             <div className="sheet-actions">
               <button className="primary-action" disabled={saving}>
