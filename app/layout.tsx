@@ -1,4 +1,5 @@
 import { PwaRegister } from "@/components/pwa-register";
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import "./tokens.css";
 import "./globals.css";
@@ -56,6 +57,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <DataCacheProvider>
           {children}
           <PwaRegister />
+          <Analytics />
         </DataCacheProvider>
       </body>
     </html>
