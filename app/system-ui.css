@@ -9632,3 +9632,126 @@
   min-width: 0;
   flex: 1;
 }
+
+
+/* ==============================================================================
+   Audit polish · readable microcopy and coarse-pointer targets
+   ============================================================================== */
+
+.app-shell .brand small,
+.app-shell .navlabel,
+.app-shell .motto small,
+.app-shell .content > header small,
+.app-shell .page-intro em,
+.app-shell .section-title em,
+.app-shell .form-heading em,
+.app-shell .ledger-head em,
+.app-shell .bottom a small,
+.app-shell .dashboard-premium .hero-tag,
+.app-shell .dashboard-premium .hero-eyebrow em,
+.app-shell .dashboard-premium .stats article span > small:first-child,
+.app-shell .dashboard-premium .dashboard-kpis article span > small:first-child,
+.app-shell .dashboard-premium .dashboard-kpis article span > small:last-child,
+.app-shell .dashboard-premium .dashboard-panel-heading em,
+.app-shell .unified-member-copy > small,
+.app-shell .unified-member-chips span,
+.app-shell .unified-crest-badge > span,
+.app-shell .unified-event-badge small,
+.app-shell .unified-event-badge span,
+.app-shell .unified-hero-eyebrow span,
+.app-shell .unified-hero-eyebrow em,
+.app-shell .unified-personal-stat small,
+.app-shell .unified-community-stat small,
+.app-shell .riding-stat-chart-head small,
+.app-shell .riding-stat-chart-summary small,
+.app-shell .member-directory-brand small,
+.app-shell .member-directory-brand span,
+.app-shell .member-directory-crest span,
+.app-shell .member-directory-eyebrow span,
+.app-shell .member-directory-eyebrow em,
+.app-shell .member-directory-hero-stats small,
+.app-shell .leaderboard-hero-brand small,
+.app-shell .leaderboard-hero-brand span,
+.app-shell .leaderboard-hero-eyebrow span,
+.app-shell .leaderboard-hero-eyebrow em,
+.app-shell .leaderboard-hero-rank-label,
+.app-shell .leaderboard-hero-podium-card small,
+.app-shell .leaderboard-hero-stats small,
+.app-shell .member-passport-head em,
+.app-shell .member-passport-progress-scale small,
+.app-shell .member-passport-progress-callout small,
+.app-shell .member-passport-badges article > span small,
+.app-shell .member-passport-metrics small,
+.app-shell .member-passport-verified,
+.app-shell .member-passport-metrics strong > span,
+.app-shell .member-passport-meta-link,
+.app-shell .voyager-hero em,
+.app-shell .voyager-km small,
+.app-shell .voyager-km span {
+  font-size: var(--rr-type-caption);
+  line-height: 1.3;
+}
+
+.app-shell .dashboard-premium .quick-action-desc,
+.app-shell .dashboard-premium .dashboard-panel-heading > small,
+.app-shell .dashboard-premium .inline-empty small,
+.app-shell .dashboard-premium .support figcaption,
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta p,
+.app-shell .member-directory-hero-copy p,
+.app-shell .leaderboard-hero-copy p,
+.app-shell .riding-stat-empty span,
+.app-shell .voyager-section-heading p,
+.app-shell .voyager-structured-empty p,
+.app-shell .voyager-gallery-empty > p {
+  font-size: var(--rr-type-meta);
+  line-height: 1.45;
+}
+
+.app-shell .login-link,
+.app-shell .agenda-tabs button,
+.app-shell .finance-segments button,
+.app-shell .admin-member-tab-btn,
+.app-shell .riding-stat-range button,
+.app-shell .member-directory-refresh,
+.app-shell .member-directory-refresh-top,
+.app-shell .leaderboard-hero-refresh,
+.app-shell .unified-primary-action,
+.app-shell .unified-secondary-action,
+.app-shell .profile-emboss-action {
+  font-size: var(--rr-type-meta);
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell .bottom a,
+  .app-shell .login-link,
+  .app-shell .agenda-tabs button,
+  .app-shell .finance-segments button,
+  .app-shell .admin-member-tab-btn,
+  .app-shell .riding-stat-range button,
+  .app-shell .member-directory-refresh,
+  .app-shell .member-directory-refresh-top,
+  .app-shell .leaderboard-hero-refresh,
+  .app-shell .profile-emboss-action,
+  .app-shell .generated-link button,
+  .app-shell .rsvp-list-title button,
+  .app-shell .void-transaction {
+    min-height: var(--rr-control-lg);
+  }
+
+  .app-shell .generated-link button,
+  .app-shell .void-transaction {
+    min-width: var(--rr-control-lg);
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-premium .stats article span > small:first-child,
+  .app-shell .dashboard-premium .dashboard-kpis article span > small:first-child,
+  .app-shell .unified-personal-stat small,
+  .app-shell .unified-community-stat small,
+  .app-shell .member-directory-hero-stats small,
+  .app-shell .leaderboard-hero-stats small {
+    font-size: var(--rr-type-caption);
+  }
+}
