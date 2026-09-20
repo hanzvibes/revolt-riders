@@ -12,7 +12,8 @@
     "start": "next start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "test": "node --test tests/**/*.test.mjs",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "audit:ui": "node scripts/audit-ui-css.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
