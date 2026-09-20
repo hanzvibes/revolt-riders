@@ -1,7 +1,23 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
+
+const FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  "textarea:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 export function ModalSheet({
   open,
@@ -21,45 +37,99 @@ export function ModalSheet({
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef<number | null>(null);
   const dragOffsetRef = useRef(0);
+  const sheetRef = useRef<HTMLElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
+  const titleId = useId();
+
+  const finishClose = useCallback(() => {
+    setClosing(false);
+    dragOffsetRef.current = 0;
+    setDragOffset(0);
+    setIsDragging(false);
+    onClose();
+
+    window.requestAnimationFrame(() => {
+      previousFocusRef.current?.focus();
+      previousFocusRef.current = null;
+    });
+  }, [onClose]);
+
+  const requestClose = useCallback(() => {
+    if (closing) return;
+    setClosing(true);
+
+    if (closeTimerRef.current !== null) {
+      window.clearTimeout(closeTimerRef.current);
+    }
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    closeTimerRef.current = window.setTimeout(finishClose, reduceMotion ? 0 : 220);
+  }, [closing, finishClose]);
 
   useEffect(() => {
     if (!open) return;
-    const previous = document.body.style.overflow;
-    const closeOnEscape = (event: KeyboardEvent) => {
+
+    const previousOverflow = document.body.style.overflow;
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.body.style.overflow = "hidden";
+
+    const focusSheet = window.requestAnimationFrame(() => {
+      sheetRef.current?.focus();
+    });
+
+    const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        if (!closing) {
-          setClosing(true);
-          window.setTimeout(() => {
-            setClosing(false);
-            dragOffsetRef.current = 0;
-            setDragOffset(0);
-            setIsDragging(false);
-            onClose();
-          }, 220);
-        }
+        event.preventDefault();
+        requestClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !sheetRef.current) return;
+
+      const focusable = Array.from(
+        sheetRef.current.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("disabled") &&
+          element.getAttribute("aria-hidden") !== "true" &&
+          element.offsetParent !== null,
+      );
+
+      if (focusable.length === 0) {
+        event.preventDefault();
+        sheetRef.current.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+
+      if (event.shiftKey && (active === first || active === sheetRef.current)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && active === last) {
+        event.preventDefault();
+        first.focus();
       }
     };
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", closeOnEscape);
+
+    window.addEventListener("keydown", onKeyDown);
+
     return () => {
-      document.body.style.overflow = previous;
-      window.removeEventListener("keydown", closeOnEscape);
+      document.body.style.overflow = previousOverflow;
+      window.cancelAnimationFrame(focusSheet);
+      window.removeEventListener("keydown", onKeyDown);
+      if (closeTimerRef.current !== null) {
+        window.clearTimeout(closeTimerRef.current);
+        closeTimerRef.current = null;
+      }
     };
-  }, [closing, onClose, open]);
+  }, [open, requestClose]);
 
   if (!open) return null;
-
-  const requestClose = () => {
-    if (closing) return;
-    setClosing(true);
-    window.setTimeout(() => {
-      setClosing(false);
-      dragOffsetRef.current = 0;
-      setDragOffset(0);
-      setIsDragging(false);
-      onClose();
-    }, 220);
-  };
 
   const finishDrag = () => {
     const finalOffset = dragOffsetRef.current;
@@ -79,7 +149,8 @@ export function ModalSheet({
     if (closing) {
       return {
         transform: "translate3d(0, calc(100% + 24px), 0)",
-        transition: "transform 220ms cubic-bezier(.4, 0, 1, 1), opacity 220ms ease-in",
+        transition:
+          "transform var(--rr-motion-close) var(--rr-ease-in), opacity var(--rr-motion-close) ease-in",
         opacity: 0,
       };
     }
@@ -91,7 +162,7 @@ export function ModalSheet({
     }
     return {
       transform: "translate3d(0, 0, 0)",
-      transition: "transform 240ms cubic-bezier(.16, 1, .3, 1)",
+      transition: "transform var(--rr-motion-open) var(--rr-ease-out)",
     };
   };
 
@@ -104,18 +175,19 @@ export function ModalSheet({
       }}
     >
       <section
+        ref={sheetRef}
         className="native-sheet"
         data-state={closing ? "closed" : "open"}
         role="dialog"
         aria-modal="true"
-        aria-label={title}
+        aria-labelledby={titleId}
+        tabIndex={-1}
         onPointerDown={(event) => event.stopPropagation()}
         style={getSheetStyle()}
       >
-        <button
+        <div
           className="native-sheet-handle"
-          type="button"
-          aria-label="Geser ke bawah untuk menutup"
+          aria-hidden="true"
           onPointerDown={(event) => {
             if (closing || (event.pointerType === "mouse" && event.button !== 0)) return;
             dragStart.current = event.clientY;
@@ -124,7 +196,10 @@ export function ModalSheet({
             setIsDragging(true);
           }}
           onPointerMove={(event) => {
-            if (dragStart.current === null || !event.currentTarget.hasPointerCapture(event.pointerId)) {
+            if (
+              dragStart.current === null ||
+              !event.currentTarget.hasPointerCapture(event.pointerId)
+            ) {
               return;
             }
             const delta = Math.max(0, event.clientY - dragStart.current);
@@ -142,10 +217,10 @@ export function ModalSheet({
         <header>
           <span>
             <em>{eyebrow}</em>
-            <h2>{title}</h2>
+            <h2 id={titleId}>{title}</h2>
           </span>
           <button type="button" onClick={requestClose} aria-label="Tutup">
-            <X />
+            <X aria-hidden="true" />
           </button>
         </header>
         <div className="native-sheet-body">{children}</div>
@@ -153,4 +228,3 @@ export function ModalSheet({
     </div>
   );
 }
-
