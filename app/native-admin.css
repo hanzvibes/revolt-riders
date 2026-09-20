@@ -4299,6 +4299,12 @@ html {
 
 
 @media (prefers-reduced-motion: reduce) {
+  .native-sheet-backdrop,
+  .native-sheet {
+    animation: none !important;
+    transition: none !important;
+  }
+
   .tour-modal-backdrop,
   .tour-modal-backdrop.is-closing,
   .tour-modal-card,
