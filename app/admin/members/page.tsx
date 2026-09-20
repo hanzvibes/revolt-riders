@@ -828,7 +828,7 @@ export default function ManageMembersPage() {
                         openEdit(member);
                       }}
                       aria-label={`Edit ${displayName}`}
-                      style={{ padding: "4px 8px", fontSize: "0.65rem", flexShrink: 0 }}
+                      style={{ padding: "4px 8px", flexShrink: 0 }}
                     >
                       <Pencil size={11} />
                       <span>Edit</span>
