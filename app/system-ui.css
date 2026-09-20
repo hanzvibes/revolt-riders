@@ -8758,3 +8758,66 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.app-shell .voyager-admin-activity-fields {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 11px;
+  margin-top: 4px;
+  padding: 14px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: #f8f9f9;
+}
+
+.app-shell .voyager-admin-activity-fields .section-title {
+  margin-bottom: 0;
+}
+
+.app-shell .voyager-admin-distance {
+  display: grid;
+  gap: 6px;
+  color: var(--rr-ink);
+  font-size: .62rem;
+  font-weight: 800;
+}
+
+.app-shell .voyager-admin-distance > small,
+.app-shell .voyager-admin-helper {
+  color: var(--rr-muted);
+  font-size: .53rem;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-admin-sync {
+  display: inline-flex;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 9px;
+  background: #171819;
+  padding: 0 14px;
+  color: #fff;
+  font-size: .58rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-admin-sync svg {
+  width: 16px;
+}
+
+.app-shell .voyager-admin-sync:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+@media (max-width: 720px) {
+  .app-shell .voyager-admin-activity-fields {
+    padding: 12px;
+  }
+}
