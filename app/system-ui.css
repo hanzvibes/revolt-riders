@@ -7154,3 +7154,45 @@
     font-size: 1rem !important;
   }
 }
+
+
+/* =========================================================
+   Responsive overflow guards
+   Long data must not widen the app shell on small screens.
+   ========================================================= */
+.app-shell .data-table-wrap,
+.app-shell .admin-member-table-wrap,
+.app-shell .import-preview,
+.app-shell .table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.app-shell .admin-table-rider-name,
+.app-shell .admin-table-rider-sub {
+  display: block;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .native-sheet,
+.app-shell .tour-modal-card,
+[data-slot="dialog-content"],
+[data-slot="sheet-content"],
+[data-slot="drawer-content"],
+[data-slot="popover-content"],
+[data-slot="select-content"],
+[data-slot="dropdown-menu-content"] {
+  max-width: min(100%, 100vw);
+}
+
+@media (max-width: 720px) {
+  .app-shell .admin-table-rider-name,
+  .app-shell .admin-table-rider-sub {
+    max-width: 140px;
+  }
+}
