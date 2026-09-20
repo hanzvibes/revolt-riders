@@ -157,14 +157,9 @@ export function AppShell({ active, title, children }: { active: string; title: s
     admin: isAdminActive,
   });
 
-  useEffect(() => {
-    setOpenSections((prev) => ({
-      ...prev,
-      ...(isKomunitasActive ? { komunitas: true } : {}),
-      ...(isOperationalActive ? { operational: true } : {}),
-      ...(isAdminActive ? { admin: true } : {}),
-    }));
-  }, [active, isAdminActive, isKomunitasActive, isOperationalActive]);
+  const komunitasOpen = Boolean(openSections.komunitas || isKomunitasActive);
+  const operationalOpen = Boolean(openSections.operational || isOperationalActive);
+  const adminOpen = Boolean(openSections.admin || isAdminActive);
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -255,12 +250,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
         {/* 2. Accordion Group: Komunitas, Operasional, Admin */}
         <div className="sidebar-accordion-group">
           {/* Komunitas & Aktivitas */}
-          <div className={`sidebar-accordion ${openSections.komunitas ? "open" : ""}`}>
+          <div className={`sidebar-accordion ${komunitasOpen ? "open" : ""}`}>
             <button
               type="button"
               className={`sidebar-accordion-header ${isKomunitasActive ? "has-active" : ""}`}
               onClick={() => toggleSection("komunitas")}
-              aria-expanded={openSections.komunitas}
+              aria-expanded={komunitasOpen}
             >
               <Trophy />
               <span className="accordion-title">Komunitas</span>
@@ -271,12 +266,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
           {/* Operasional Lapangan (Khusus Road Captain, Admin, Superadmin) */}
           {canOperational && (
-            <div className={`sidebar-accordion ${openSections.operational ? "open" : ""}`}>
+            <div className={`sidebar-accordion ${operationalOpen ? "open" : ""}`}>
               <button
                 type="button"
                 className={`sidebar-accordion-header ${isOperationalActive ? "has-active" : ""}`}
                 onClick={() => toggleSection("operational")}
-                aria-expanded={openSections.operational}
+                aria-expanded={operationalOpen}
               >
                 <ShieldCheck />
                 <span className="accordion-title">Operasional</span>
@@ -289,12 +284,12 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
           {/* Manajemen Admin (Khusus Admin & Superadmin) */}
           {canAdmin && (
-            <div className={`sidebar-accordion ${openSections.admin ? "open" : ""}`}>
+            <div className={`sidebar-accordion ${adminOpen ? "open" : ""}`}>
               <button
                 type="button"
                 className={`sidebar-accordion-header ${isAdminActive ? "has-active" : ""}`}
                 onClick={() => toggleSection("admin")}
-                aria-expanded={openSections.admin}
+                aria-expanded={adminOpen}
               >
                 <Settings />
                 <span className="accordion-title">Administrasi</span>
