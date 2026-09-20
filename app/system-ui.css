@@ -8986,7 +8986,7 @@
   bottom: -18px;
   color: rgba(255,255,255,.035);
   font-size: clamp(3.1rem, 8vw, 6.4rem);
-  font-weight: 900;
+  font-weight: var(--rr-fw-extrabold);
   letter-spacing: -.08em;
   pointer-events: none;
 }
