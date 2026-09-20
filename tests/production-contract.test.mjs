@@ -195,3 +195,30 @@ test("Mandatory Ride can be enabled on managed agendas without check-in dependen
   assert.match(flagSync, /update public\.ride_logs/);
   assert.match(flagSync, /counts_as_mandatory is distinct from/);
 });
+
+
+test("Riding create and review mutations are routed through authorized RPCs", async () => {
+  const service = await read("lib/services/ride-log-service.ts");
+  const riding = await read("app/riding/page.tsx");
+  const approval = await read("app/riding/approval/page.tsx");
+  const migration = await read(
+    "supabase/migrations/20260920153036_extend_ride_log_rpc_flow.sql",
+  );
+
+  assert.match(service, /"manage_ride_log"/);
+  assert.match(service, /p_event_id:/);
+  assert.match(service, /p_odometer_start:/);
+  assert.match(service, /p_odometer_end:/);
+  assert.match(service, /"review_ride_log"/);
+
+  assert.match(riding, /await saveRideLog\(/);
+  assert.doesNotMatch(riding, /from\("ride_logs"\)\.insert/);
+
+  assert.match(approval, /await reviewRideLog\(/);
+  assert.doesNotMatch(approval, /from\("ride_logs"\)\.update/);
+
+  assert.match(migration, /target_record\.source_type = 'official_agenda'/);
+  assert.match(migration, /Official Agenda Distance hanya dapat diubah melalui sinkronisasi agenda/);
+  assert.match(migration, /revoke all on function public\.review_ride_log.*from anon/);
+  assert.match(migration, /grant execute on function public\.review_ride_log.*to authenticated/);
+});
