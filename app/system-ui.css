@@ -1303,13 +1303,20 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell *,
-  .app-shell *::before,
-  .app-shell *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
+  .app-shell {
+    scroll-behavior: auto;
+  }
+
+  .app-shell .skeleton-shimmer,
+  .app-shell .spin,
+  .app-shell .loading-wheel,
+  .app-shell .qr-loading {
+    animation: none !important;
+  }
+
+  .app-shell [data-animated="true"] {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
@@ -9501,5 +9508,103 @@
 
   .app-shell .voyager-gallery-hub-grid {
     gap: 6px;
+  }
+}
+
+
+/* ==============================================================================
+   Audit hardening · legibility, touch, focus, motion
+   ============================================================================== */
+
+.app-shell .voyager-overview-grid small,
+.app-shell .voyager-section-heading em,
+.app-shell .voyager-featured-status,
+.app-shell .voyager-featured-chips b,
+.app-shell .voyager-featured-meta > span,
+.app-shell .voyager-section-count,
+.app-shell .voyager-gallery-hub-grid i small {
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-section-heading p,
+.app-shell .voyager-structured-empty p,
+.app-shell .voyager-mandatory-card > div:first-child p,
+.app-shell .voyager-mandatory-source small,
+.app-shell .voyager-gallery-empty > p {
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-create-action,
+.app-shell .voyager-featured-actions button,
+.app-shell .voyager-structured-empty > a,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button,
+.app-shell .finance-segments button,
+.app-shell .ledger-export,
+.app-shell .checkin-qr-actions button,
+.app-shell .role-panel .role-list select {
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell .sidebar-user-btn,
+.app-shell .header-bell-btn,
+.app-shell .hamb,
+.app-shell .close-menu {
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell :where(
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--rr-focus-outline);
+  outline-offset: 2px;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .native-sheet:focus {
+  outline: none;
+}
+
+.app-shell .native-sheet-handle {
+  min-height: 28px;
+  touch-action: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell input,
+  .app-shell textarea,
+  .app-shell select {
+    font-size: max(1rem, var(--rr-type-body));
+  }
+
+  .app-shell .voyager-overview-grid small,
+  .app-shell .voyager-section-heading em,
+  .app-shell .voyager-featured-status,
+  .app-shell .voyager-featured-chips b,
+  .app-shell .voyager-featured-meta > span,
+  .app-shell .voyager-section-count {
+    font-size: var(--rr-type-caption);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .native-sheet,
+  .app-shell .native-sheet-backdrop,
+  .app-shell > aside,
+  .app-shell .shade,
+  .app-shell .sidebar-subnav,
+  .app-shell .accordion-chevron,
+  .app-shell .voyager-card,
+  .app-shell .floating-action-button {
+    transition: none !important;
+    animation: none !important;
   }
 }
