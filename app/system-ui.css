@@ -7196,3 +7196,130 @@
     max-width: 140px;
   }
 }
+
+
+/* ==========================================================================
+   RIDER PROGRESSION
+   Compact gamification layer shared by Dashboard and Member Passport.
+   ========================================================================== */
+
+.app-shell .dashboard-rider-progress {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 9px;
+  padding: 13px 15px;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-md);
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-sm);
+}
+
+.app-shell .dashboard-rider-progress-copy,
+.app-shell .dashboard-rider-progress-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-shell .dashboard-rider-level {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-shell .dashboard-rider-level small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.app-shell .dashboard-rider-level strong {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-card);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.app-shell .dashboard-rider-streak {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 5px;
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-rider-streak svg {
+  width: 15px;
+  height: 15px;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-rider-streak b {
+  font-size: var(--rr-type-card);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .dashboard-rider-streak small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  font-weight: 600;
+}
+
+.app-shell .dashboard-rider-progress-track {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--rr-bg);
+}
+
+.app-shell .dashboard-rider-progress-track > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rr-red);
+  transition: width 700ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-rider-progress-foot small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  font-weight: 600;
+}
+
+.app-shell .dashboard-rider-progress-foot a {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 3px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-meta);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .dashboard-rider-progress-foot a svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (max-width: 520px) {
+  .app-shell .dashboard-rider-progress {
+    padding: 12px 13px;
+  }
+
+  .app-shell .dashboard-rider-progress-copy,
+  .app-shell .dashboard-rider-progress-foot {
+    gap: 8px;
+  }
+
+  .app-shell .dashboard-rider-streak small {
+    display: none;
+  }
+
+  .app-shell .dashboard-rider-progress-foot small {
+    max-width: 68%;
+  }
+}
