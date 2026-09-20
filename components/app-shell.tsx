@@ -53,7 +53,7 @@ const bottomItems: readonly NavItem[] = [
 ];
 
 const komunitasItems: readonly NavItem[] = [
-  ["My Garage", "/garage", Wrench],
+  ["My Garage", "/garage", Wrench],\n  ["Voyager", "/voyager", Route],
   ["Leaderboard", "/leaderboard", Trophy],
   ["Kas Revolt", "/kas", CircleDollarSign],
   ["Buletin", "/bulletin", Bell],
@@ -84,7 +84,7 @@ const activeAliases: Record<string, readonly string[]> = {
   "Catat Riding": ["Riding", "Catat Riding"],
   "Direktori Member": ["Member", "Direktori Member"],
   "Profil Saya": ["Profil", "Profil Saya"],
-  "My Garage": ["Garage", "My Garage"],
+  "My Garage": ["Garage", "My Garage"],\n  "Voyager": ["Voyager"],
   "Leaderboard": ["Leaderboard"],
   "Kas Revolt": ["Kas Revolt"],
   "Buletin": ["Bulletin", "Buletin"],
