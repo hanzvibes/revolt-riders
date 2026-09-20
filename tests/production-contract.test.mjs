@@ -387,3 +387,66 @@ test("Data cache evicts stale and cross-user entries", async () => {
   assert.match(cache, /inFlightRef\.current\.clear\(\)/);
   assert.match(cache, /const value = useMemo/);
 });
+
+
+test("Fullscreen check-in QR behaves like an accessible modal", async () => {
+  const qr = await read("components/checkin-qr.tsx");
+
+  assert.match(qr, /FOCUSABLE_SELECTOR/);
+  assert.match(qr, /dialogRef/);
+  assert.match(qr, /openerRef/);
+  assert.match(qr, /event\.key === "Escape"/);
+  assert.match(qr, /event\.key !== "Tab"/);
+  assert.match(qr, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(qr, /aria-modal="true"/);
+  assert.match(qr, /aria-labelledby=\{titleId\}/);
+  assert.match(qr, /tabIndex=\{-1\}/);
+  assert.match(qr, /openerRef\.current\?\.focus\(\)/);
+});
+
+test("High-traffic admin workspaces reuse shared access and cache state", async () => {
+  const files = [
+    "app/admin/events/page.tsx",
+    "app/admin/insights/page.tsx",
+    "app/admin/attendance/page.tsx",
+    "app/admin/members/page.tsx",
+    "app/riding/approval/page.tsx",
+  ];
+
+  for (const file of files) {
+    const source = await read(file);
+    assert.match(source, /useMemberAccess/);
+    assert.match(source, /useDataCache/);
+    assert.match(source, /fetchWithCache/);
+    assert.doesNotMatch(source, /auth\.getUser\(\)/);
+  }
+
+  const events = await read("app/admin/events/page.tsx");
+  const attendance = await read("app/admin/attendance/page.tsx");
+
+  assert.match(events, /admin:events:workspace/);
+  assert.match(events, /load\(true\)/);
+  assert.match(attendance, /admin:attendance/);
+  assert.match(attendance, /postgres_changes/);
+});
+
+test("UI audit budgets prevent legacy design debt from silently increasing", async () => {
+  const audit = await read("scripts/audit-ui-css.mjs");
+
+  assert.match(audit, /legacyBudgets/);
+  assert.match(audit, /tiny typography debt increased/);
+  assert.match(audit, /hard-coded color debt increased/);
+  assert.match(audit, /!important debt increased/);
+  assert.match(audit, /window\.\(\?:confirm\|prompt\)/);
+  assert.match(audit, /24-43px height/);
+});
+
+test("Audit next pass keeps active admin microcopy and touch targets readable", async () => {
+  const css = await read("app/system-ui.css");
+
+  assert.match(css, /Audit next pass · admin readability and touch resilience/);
+  assert.match(css, /checkin-qr-content em[\s\S]*font-size: var\(--rr-type-caption\)/);
+  assert.match(css, /attendance-stats small[\s\S]*font-size: var\(--rr-type-caption\)/);
+  assert.match(css, /qr-close[\s\S]*min-height: var\(--rr-control-lg\)/);
+  assert.match(css, /sidebar-accordion-header[\s\S]*min-height: var\(--rr-control-lg\)/);
+});
