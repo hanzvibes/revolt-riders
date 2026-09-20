@@ -8821,3 +8821,685 @@
     padding: 12px;
   }
 }
+
+
+/* ==============================================================================
+   VOYAGER HUB — persistent activity structure, including empty states
+   ============================================================================== */
+
+.app-shell .voyager-page {
+  display: grid;
+  gap: 16px;
+}
+
+.app-shell .voyager-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.app-shell .voyager-overview-grid > article {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  min-height: 86px;
+  padding: 13px;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .voyager-overview-grid > article > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 10px;
+  background: #f2f3f4;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-overview-grid > article > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.app-shell .voyager-overview-grid small {
+  color: var(--rr-muted);
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-overview-grid strong {
+  color: var(--rr-ink);
+  font-size: 1.05rem;
+  line-height: 1.05;
+}
+
+.app-shell .voyager-overview-grid em {
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: .5rem;
+  font-style: normal;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-featured-section,
+.app-shell .voyager-mandatory-section,
+.app-shell .voyager-journal-section,
+.app-shell .voyager-gallery-hub {
+  display: grid;
+  gap: 11px;
+  min-width: 0;
+}
+
+.app-shell .voyager-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.app-shell .voyager-section-heading > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.app-shell .voyager-section-heading em {
+  color: var(--rr-red);
+  font-size: .5rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.app-shell .voyager-section-heading h3 {
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: .92rem;
+  letter-spacing: -.025em;
+}
+
+.app-shell .voyager-section-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--rr-muted);
+  font-size: .58rem;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-create-action {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: none;
+  border-radius: 9px;
+  background: #17191b;
+  padding: 0 12px;
+  color: #fff;
+  font-size: .58rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .voyager-create-action svg {
+  width: 15px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-featured-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  min-height: 164px;
+  padding: 20px;
+  border: 1px solid #2c3033;
+  border-radius: 16px;
+  background: #16181a;
+  color: #fff;
+}
+
+.app-shell .voyager-featured-card::after {
+  content: "VOYAGER";
+  position: absolute;
+  right: -8px;
+  bottom: -18px;
+  color: rgba(255,255,255,.035);
+  font-size: clamp(3.1rem, 8vw, 6.4rem);
+  font-weight: 900;
+  letter-spacing: -.08em;
+  pointer-events: none;
+}
+
+.app-shell .voyager-featured-main {
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell .voyager-featured-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rr-red);
+  padding: 0 8px;
+  color: #fff;
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-featured-main h3 {
+  margin: 9px 0 0;
+  color: #fff;
+  font-size: clamp(1.15rem, 3vw, 1.8rem);
+  letter-spacing: -.04em;
+}
+
+.app-shell .voyager-featured-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+  margin-top: 9px;
+}
+
+.app-shell .voyager-featured-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #a9afb4;
+  font-size: .6rem;
+}
+
+.app-shell .voyager-featured-meta svg {
+  width: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-featured-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.app-shell .voyager-featured-chips b {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid rgba(220,27,42,.28);
+  border-radius: 999px;
+  background: rgba(220,27,42,.12);
+  padding: 0 9px;
+  color: #ffb6bc;
+  font-size: .5rem;
+  font-weight: 800;
+}
+
+.app-shell .voyager-featured-chips b.neutral {
+  border-color: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05);
+  color: #c1c6ca;
+}
+
+.app-shell .voyager-featured-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 7px;
+  min-width: 115px;
+}
+
+.app-shell .voyager-featured-actions button {
+  min-height: 38px;
+  border: 1px solid #393d40;
+  border-radius: 9px;
+  background: #222527;
+  color: #fff;
+  font-size: .55rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-featured-actions button:first-child {
+  border-color: transparent;
+  background: #fff;
+  color: #191b1d;
+}
+
+.app-shell .voyager-structured-empty {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 112px;
+  padding: 16px;
+  border: 1px dashed #c9cdd0;
+  border-radius: 14px;
+  background: #fafbfb;
+}
+
+.app-shell .voyager-structured-empty.compact {
+  min-height: 94px;
+}
+
+.app-shell .voyager-empty-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  background: #eceeef;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-empty-icon svg {
+  width: 20px;
+}
+
+.app-shell .voyager-structured-empty > div {
+  min-width: 0;
+}
+
+.app-shell .voyager-structured-empty strong {
+  display: block;
+  color: var(--rr-ink);
+  font-size: .7rem;
+}
+
+.app-shell .voyager-structured-empty p {
+  max-width: 650px;
+  margin: 4px 0 0;
+  color: var(--rr-muted);
+  font-size: .57rem;
+  line-height: 1.5;
+}
+
+.app-shell .voyager-structured-empty > a {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #17191b;
+  padding: 0 11px;
+  color: #fff;
+  font-size: .54rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .voyager-mandatory-card {
+  display: grid;
+  grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .voyager-mandatory-card > div:first-child {
+  display: flex;
+  min-height: 132px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px;
+  border-right: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-mandatory-card > div:first-child small {
+  color: var(--rr-red);
+  font-size: .5rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-mandatory-card > div:first-child strong {
+  margin-top: 5px;
+  color: var(--rr-ink);
+  font-size: 1.45rem;
+  letter-spacing: -.045em;
+}
+
+.app-shell .voyager-mandatory-card > div:first-child p {
+  margin: 5px 0 0;
+  color: var(--rr-muted);
+  font-size: .57rem;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-mandatory-source {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell .voyager-mandatory-source > span {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 8px;
+  align-content: center;
+  padding: 15px;
+}
+
+.app-shell .voyager-mandatory-source > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-mandatory-source svg {
+  grid-row: 1 / span 2;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border-radius: 9px;
+  background: #f1f2f3;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-mandatory-source b {
+  color: var(--rr-ink);
+  font-size: .62rem;
+}
+
+.app-shell .voyager-mandatory-source small {
+  margin-top: 3px;
+  color: var(--rr-muted);
+  font-size: .5rem;
+  line-height: 1.4;
+}
+
+.app-shell .voyager-journal-heading {
+  align-items: center;
+}
+
+.app-shell .voyager-journal-heading .voyager-tabs {
+  margin-bottom: 0;
+  flex: none;
+}
+
+.app-shell .voyager-gallery-hub {
+  margin-bottom: 10px;
+}
+
+.app-shell .voyager-section-count {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  border-radius: 999px;
+  background: #f0f2f3;
+  padding: 0 9px;
+  color: #60656a;
+  font-size: .52rem;
+}
+
+.app-shell .voyager-gallery-empty {
+  display: grid;
+  justify-items: center;
+  padding: 18px;
+  border: 1px solid var(--rr-line);
+  border-radius: 14px;
+  background: #fff;
+  text-align: center;
+}
+
+.app-shell .voyager-gallery-placeholders {
+  display: grid;
+  grid-template-columns: repeat(3, 86px);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.app-shell .voyager-gallery-placeholders > span {
+  display: grid;
+  aspect-ratio: 4 / 3;
+  place-items: center;
+  border: 1px dashed #c9cdd0;
+  border-radius: 9px;
+  background: #f5f6f6;
+  color: #abb0b4;
+}
+
+.app-shell .voyager-gallery-placeholders svg {
+  width: 20px;
+}
+
+.app-shell .voyager-gallery-empty > strong {
+  color: var(--rr-ink);
+  font-size: .7rem;
+}
+
+.app-shell .voyager-gallery-empty > p {
+  max-width: 520px;
+  margin: 5px 0 0;
+  color: var(--rr-muted);
+  font-size: .56rem;
+  line-height: 1.5;
+}
+
+.app-shell .voyager-gallery-empty > button {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+  border: 0;
+  border-radius: 9px;
+  background: #17191b;
+  padding: 0 11px;
+  color: #fff;
+  font-size: .54rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-gallery-empty > button svg {
+  width: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-gallery-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.app-shell .voyager-gallery-hub-grid > button {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: #1c1f21;
+  padding: 0;
+  cursor: pointer;
+}
+
+.app-shell .voyager-gallery-hub-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-shell .voyager-gallery-hub-grid > button > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: #9aa0a5;
+}
+
+.app-shell .voyager-gallery-hub-grid > button > span svg {
+  width: 25px;
+}
+
+.app-shell .voyager-gallery-hub-grid i {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 2px;
+  padding: 24px 10px 9px;
+  background: linear-gradient(to top, rgba(0,0,0,.82), transparent);
+  color: #fff;
+  font-style: normal;
+  text-align: left;
+}
+
+.app-shell .voyager-gallery-hub-grid i b {
+  overflow: hidden;
+  font-size: .6rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-gallery-hub-grid i small {
+  color: #c1c5c8;
+  font-size: .48rem;
+}
+
+@media (max-width: 900px) {
+  .app-shell .voyager-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-mandatory-card {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-mandatory-card > div:first-child {
+    border-right: 0;
+    border-bottom: 1px solid var(--rr-line);
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell .voyager-page {
+    gap: 14px;
+  }
+
+  .app-shell .voyager-overview-grid {
+    gap: 7px;
+  }
+
+  .app-shell .voyager-overview-grid > article {
+    grid-template-columns: 30px minmax(0, 1fr);
+    min-height: 72px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .app-shell .voyager-overview-grid > article > svg {
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+  }
+
+  .app-shell .voyager-overview-grid strong {
+    font-size: .9rem;
+  }
+
+  .app-shell .voyager-overview-grid em {
+    display: none;
+  }
+
+  .app-shell .voyager-section-heading {
+    align-items: flex-start;
+  }
+
+  .app-shell .voyager-section-heading p {
+    font-size: .54rem;
+  }
+
+  .app-shell .voyager-create-action {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: .52rem;
+  }
+
+  .app-shell .voyager-featured-card {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .app-shell .voyager-featured-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .app-shell .voyager-structured-empty {
+    grid-template-columns: 38px minmax(0, 1fr);
+    min-height: 0;
+    padding: 13px;
+  }
+
+  .app-shell .voyager-structured-empty > a {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .voyager-empty-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .app-shell .voyager-mandatory-source {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-mandatory-source > span + span {
+    border-top: 1px solid var(--rr-line);
+    border-left: 0;
+  }
+
+  .app-shell .voyager-journal-heading {
+    display: grid;
+  }
+
+  .app-shell .voyager-journal-heading .voyager-tabs {
+    width: 100%;
+  }
+
+  .app-shell .voyager-gallery-placeholders {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-gallery-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .voyager-overview-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app-shell .voyager-overview-grid > article {
+    padding: 9px;
+  }
+
+  .app-shell .voyager-section-heading h3 {
+    font-size: .82rem;
+  }
+
+  .app-shell .voyager-featured-main h3 {
+    font-size: 1.08rem;
+  }
+
+  .app-shell .voyager-gallery-hub-grid {
+    gap: 6px;
+  }
+}
