@@ -222,3 +222,25 @@ test("Riding create and review mutations are routed through authorized RPCs", as
   assert.match(migration, /revoke all on function public\.review_ride_log.*from anon/);
   assert.match(migration, /grant execute on function public\.review_ride_log.*to authenticated/);
 });
+
+
+test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
+  const page = await read("app/voyager/page.tsx");
+  const css = await read("app/system-ui.css");
+
+  assert.match(page, /voyager-overview-grid/);
+  assert.match(page, /Voyager berikutnya/);
+  assert.match(page, /Progress riding resmi/);
+  assert.match(page, /Activity & History/);
+  assert.match(page, /Activity Gallery/);
+  assert.match(page, /Gallery siap digunakan/);
+  assert.match(page, /Buat Voyager Pertama/);
+  assert.match(page, /galleryPreview\.length === 0/);
+  assert.match(page, /uniqueParticipantCount/);
+  assert.match(page, /totalOfficialKm/);
+
+  assert.match(css, /VOYAGER HUB/);
+  assert.match(css, /voyager-gallery-hub-grid/);
+  assert.match(css, /voyager-mandatory-card/);
+  assert.match(css, /voyager-structured-empty/);
+});
