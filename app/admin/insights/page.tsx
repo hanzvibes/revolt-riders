@@ -2,9 +2,11 @@
 
 import { AppShell } from "@/components/app-shell";
 import { PageSkeleton } from "@/components/skeleton";
+import { useDataCache } from "@/context/data-cache-context";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Activity, BarChart3, Bike, CalendarDays, CircleDollarSign, ShieldAlert, UsersRound } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Account = { user_id: string; member_external_id: string; role: string; status: string };
 type MemberProfile = { member_external_id: string; full_name: string; nickname: string | null };
@@ -15,12 +17,24 @@ type Attendance = { event_id: string; member_external_id: string };
 type Ride = { status: string; distance_km: number | string | null };
 type Cash = { transaction_type: "income" | "expense" | "advance"; amount: number | string };
 type Audit = { id: number; actor_id: string | null; action: string; entity_type: string; entity_id: string | null; created_at: string };
+type InsightsSnapshot = {
+  accounts: Account[];
+  profiles: MemberProfile[];
+  events: Event[];
+  invitations: Invitation[];
+  rsvps: Rsvp[];
+  attendance: Attendance[];
+  rides: Ride[];
+  cash: Cash[];
+  audits: Audit[];
+};
 
 const money = (value: number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(value);
 const number = (value: number) => new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(value);
 
 export default function AdminInsightsPage() {
-  const [account, setAccount] = useState<Account | null>(null);
+  const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache } = useDataCache();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [profiles, setProfiles] = useState<MemberProfile[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
@@ -35,46 +49,79 @@ export default function AdminInsightsPage() {
 
   const allowed = account?.status === "active" && ["admin", "superadmin"].includes(account.role);
 
-  useEffect(() => {
-    let active = true;
-    const load = async () => {
-      const supabase = getSupabaseBrowserClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      const accountResult = user ? await supabase.from("member_accounts").select("user_id,member_external_id,role,status").eq("user_id", user.id).maybeSingle() : { data: null, error: null };
-      if (!active) return;
-      const current = accountResult.data as Account | null;
-      setAccount(current);
-      if (!current || current.status !== "active" || !["admin", "superadmin"].includes(current.role)) { setLoading(false); return; }
-
-      const results = await Promise.all([
-        supabase.from("member_accounts").select("user_id,member_external_id,role,status"),
-        supabase.from("member_profiles").select("member_external_id,full_name,nickname"),
-        supabase.from("events").select("id,status"),
-        supabase.from("event_invitations").select("event_id,member_external_id"),
-        supabase.from("event_rsvps").select("event_id,member_external_id,status"),
-        supabase.from("event_attendance").select("event_id,member_external_id"),
-        supabase.from("ride_logs").select("status,distance_km"),
-        supabase.from("cash_transactions").select("transaction_type,amount"),
-        supabase.from("club_cash_transactions").select("transaction_type,amount"),
-        supabase.from("audit_logs").select("id,actor_id,action,entity_type,entity_id,created_at").order("created_at", { ascending: false }).limit(100),
-      ]);
-      if (!active) return;
-      const failed = results.find((result) => result.error)?.error;
-      if (failed) setError(failed.message);
-      setAccounts((results[0].data ?? []) as Account[]);
-      setProfiles((results[1].data ?? []) as MemberProfile[]);
-      setEvents((results[2].data ?? []) as Event[]);
-      setInvitations((results[3].data ?? []) as Invitation[]);
-      setRsvps((results[4].data ?? []) as Rsvp[]);
-      setAttendance((results[5].data ?? []) as Attendance[]);
-      setRides((results[6].data ?? []) as Ride[]);
-      setCash([...(results[7].data ?? []), ...(results[8].data ?? [])] as Cash[]);
-      setAudits((results[9].data ?? []) as Audit[]);
+  const load = useCallback(async (forceRefresh = false) => {
+    if (accessLoading) return;
+    if (!account || account.status !== "active" || !["admin", "superadmin"].includes(account.role)) {
       setLoading(false);
-    };
-    void load();
-    return () => { active = false; };
-  }, []);
+      return;
+    }
+
+    if (!forceRefresh) setLoading(true);
+    setError("");
+
+    try {
+      const snapshot = await fetchWithCache<InsightsSnapshot>(
+        "admin:insights",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const results = await Promise.all([
+            supabase.from("member_accounts").select("user_id,member_external_id,role,status"),
+            supabase.from("member_profiles").select("member_external_id,full_name,nickname"),
+            supabase.from("events").select("id,status"),
+            supabase.from("event_invitations").select("event_id,member_external_id"),
+            supabase.from("event_rsvps").select("event_id,member_external_id,status"),
+            supabase.from("event_attendance").select("event_id,member_external_id"),
+            supabase.from("ride_logs").select("status,distance_km"),
+            supabase.from("cash_transactions").select("transaction_type,amount"),
+            supabase.from("club_cash_transactions").select("transaction_type,amount"),
+            supabase
+              .from("audit_logs")
+              .select("id,actor_id,action,entity_type,entity_id,created_at")
+              .order("created_at", { ascending: false })
+              .limit(100),
+          ]);
+
+          const failed = results.find((result) => result.error)?.error;
+          if (failed) throw failed;
+
+          return {
+            accounts: (results[0].data ?? []) as Account[],
+            profiles: (results[1].data ?? []) as MemberProfile[],
+            events: (results[2].data ?? []) as Event[],
+            invitations: (results[3].data ?? []) as Invitation[],
+            rsvps: (results[4].data ?? []) as Rsvp[],
+            attendance: (results[5].data ?? []) as Attendance[],
+            rides: (results[6].data ?? []) as Ride[],
+            cash: [...(results[7].data ?? []), ...(results[8].data ?? [])] as Cash[],
+            audits: (results[9].data ?? []) as Audit[],
+          };
+        },
+        { ttlMs: 30_000, forceRefresh },
+      );
+
+      setAccounts(snapshot.accounts);
+      setProfiles(snapshot.profiles);
+      setEvents(snapshot.events);
+      setInvitations(snapshot.invitations);
+      setRsvps(snapshot.rsvps);
+      setAttendance(snapshot.attendance);
+      setRides(snapshot.rides);
+      setCash(snapshot.cash);
+      setAudits(snapshot.audits);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Analytics belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [accessLoading, account, fetchWithCache]);
+
+  useEffect(() => {
+    if (!accessLoading) void load();
+  }, [accessLoading, load]);
 
   const analytics = useMemo(() => {
     const responses = new Set(rsvps.map((row) => `${row.event_id}:${row.member_external_id}`)).size;
