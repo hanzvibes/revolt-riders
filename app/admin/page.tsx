@@ -1158,7 +1158,6 @@ export default function AdminPage() {
                       border: "1px solid #ffd3d6",
                       borderRadius: "6px",
                       padding: "8px 12px",
-                      fontSize: "0.65rem",
                       fontWeight: 800,
                       display: "flex",
                       alignItems: "center",
