@@ -1617,6 +1617,12 @@
   color-scheme: dark;
 }
 
+@media (max-width: 720px) {
+  .join-input-wrap input {
+    font-size: 1rem;
+  }
+}
+
 .join-input-wrap input::placeholder {
   color: #6b7280;
 }
