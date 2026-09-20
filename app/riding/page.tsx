@@ -34,6 +34,8 @@ type UserRide = {
   status: "pending" | "approved" | "rejected";
   created_at: string;
   rejection_reason: string | null;
+  source_type: "member_submission" | "official_agenda";
+  counts_as_mandatory: boolean;
 };
 type MemberProfile = {
   member_external_id: string;
@@ -96,7 +98,7 @@ export default function RidingPage() {
           .maybeSingle(),
         supabase
           .from("ride_logs")
-          .select("id,title,event_id,odometer_start,odometer_end,distance_km,status,created_at,rejection_reason")
+          .select("id,title,event_id,odometer_start,odometer_end,distance_km,status,created_at,rejection_reason,source_type,counts_as_mandatory")
           .eq("member_external_id", activeAccount.member_external_id)
           .order("created_at", { ascending: false })
           .limit(50),
@@ -121,6 +123,8 @@ export default function RidingPage() {
             status: r.status as "pending" | "approved" | "rejected",
             created_at: String(r.created_at),
             rejection_reason: (r.rejection_reason as string) || null,
+            source_type: (r.source_type as "member_submission" | "official_agenda") || "member_submission",
+            counts_as_mandatory: Boolean(r.counts_as_mandatory),
           }))
         );
       }
@@ -603,6 +607,11 @@ export default function RidingPage() {
                         <small style={{ color: "var(--muted)", fontSize: "0.68rem", marginTop: "2px" }}>
                           {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(ride.created_at))} · Odometer {ride.odometer_start} → {ride.odometer_end}
                         </small>
+                        {ride.source_type === "official_agenda" && (
+                          <small className="riding-official-source">
+                            Official Agenda Distance{ride.counts_as_mandatory ? " · Mandatory Ride" : ""}
+                          </small>
+                        )}
                         {ride.status === "rejected" && ride.rejection_reason && (
                           <small style={{ color: "var(--red)", fontSize: "0.65rem", marginTop: "2px", fontWeight: 700 }}>
                             ⚠️ Alasan: {ride.rejection_reason}
@@ -632,6 +641,7 @@ export default function RidingPage() {
                         </span>
                       </div>
 
+                      {ride.source_type !== "official_agenda" && (
                       <div style={{ display: "flex", gap: "4px" }}>
                         <button
                           type="button"
@@ -688,6 +698,7 @@ export default function RidingPage() {
                           <Trash2 size={12} />
                         </button>
                       </div>
+                      )}
                     </div>
                   </article>
                 );
