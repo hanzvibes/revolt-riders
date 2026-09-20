@@ -252,13 +252,9 @@ export default function RidingPage() {
                 setMessage("");
               }}
               style={{
-                borderRadius: "10px",
-                height: "42px",
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
-                fontWeight: 800,
-                fontSize: "0.72rem",
               }}
             >
               {showForm ? <X size={16} /> : <Plus size={16} />}
@@ -483,7 +479,7 @@ export default function RidingPage() {
                 type="button"
                 className="primary-action"
                 onClick={() => setShowForm(true)}
-                style={{ fontSize: "0.7rem", height: "38px" }}
+
               >
                 + Catat Riding Pertama
               </button>
