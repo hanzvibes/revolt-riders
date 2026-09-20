@@ -201,7 +201,7 @@ test("AppShell implements streamlined navigation with collapsible operational pa
   // Komunitas items (4 items)
   assert.match(shellContent, /\["Leaderboard", "\/leaderboard", Trophy\]/);
   assert.match(shellContent, /\["Kas Revolt", "\/kas", CircleDollarSign\]/);
-  assert.match(shellContent, /\["Bulletin", "\/bulletin", Bell\]/);
+  assert.match(shellContent, /\["Buletin", "\/bulletin", Bell\]/);
   assert.match(shellContent, /\["Check-in", "\/check-in", ScanLine\]/);
 
   // Accordion group navigation
