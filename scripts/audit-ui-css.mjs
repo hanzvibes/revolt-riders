@@ -51,10 +51,15 @@ for (const file of cssTargets) {
     }
   }
 
-  const rawControlHeights = [...content.matchAll(/min-height\s*:\s*(36|40|44)px/g)];
-  if (rawControlHeights.length) {
+  let rawControlHeightCount = 0;
+  for (const match of content.matchAll(/([^{}]*(?:button|input|select|textarea|action)[^{}]*)\{([^{}]*)\}/gi)) {
+    if (/min-height\s*:\s*(?:36|40|44)px/i.test(match[2])) {
+      rawControlHeightCount += 1;
+    }
+  }
+  if (rawControlHeightCount) {
     warnings.push(
-      `${file}: ${rawControlHeights.length} raw standard control heights remain; prefer --rr-control-sm/md/lg tokens`,
+      `${file}: ${rawControlHeightCount} interactive control rules still use raw 36/40/44px heights; prefer --rr-control-sm/md/lg tokens`,
     );
   }
 }
