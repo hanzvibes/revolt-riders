@@ -79,3 +79,15 @@ test("processed ride logs are immutable to regular members", async () => {
   assert.match(migration, /revoke all on function public\.manage_ride_log/);
   assert.match(migration, /grant execute on function public\.manage_ride_log.*authenticated/);
 });
+
+
+test("anonymous table access is least-privilege", async () => {
+  const migration = await read("supabase/migrations/20260920064956_least_privilege_public_tables.sql");
+
+  assert.match(migration, /revoke all privileges on table public\.join_requests from anon/);
+  assert.match(migration, /revoke all privileges on table public\.member_profiles from anon/);
+  assert.match(migration, /revoke all privileges on table public\.member_details from anon/);
+  assert.match(migration, /revoke all privileges on table public\.ride_logs from anon/);
+  assert.match(migration, /grant select on table public\.club_gallery to anon/);
+  assert.match(migration, /ride_logs_authenticated_approved_read/);
+});
