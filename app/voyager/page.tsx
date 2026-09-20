@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -475,9 +476,7 @@ export default function VoyagerPage() {
   if (accessLoading || loading) {
     return (
       <AppShell active="Voyager" title="Voyager">
-        <div className="page-wrap">
-          <p className="system-message">Memuat Voyager…</p>
-        </div>
+        <PageSkeleton title="Memuat Voyager..." />
       </AppShell>
     );
   }
@@ -710,7 +709,12 @@ export default function VoyagerPage() {
                 const relatedEvent = events.find((event) => event.id === photo.event_id);
                 return (
                   <button type="button" key={photo.id} onClick={() => { if (relatedEvent) setDetailEvent(relatedEvent); }}>
-                    {photo.signedUrl ? <img src={photo.signedUrl} alt={photo.title || "Dokumentasi Voyager"} /> : <span><Camera /></span>}
+                    {photo.signedUrl ? <img
+                        src={photo.signedUrl}
+                        alt={photo.title || "Dokumentasi Voyager"}
+                        loading="lazy"
+                        decoding="async"
+                      /> : <span><Camera /></span>}
                     <i>
                       <b>{relatedEvent?.title ?? photo.title}</b>
                       <small>{photo.ride_date ? formatDate(photo.ride_date) : "Voyager"}</small>
@@ -821,7 +825,12 @@ export default function VoyagerPage() {
                   {photosFor(detailEvent.id).map((photo) => (
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
-                        <img src={photo.signedUrl} alt={photo.title || "Dokumentasi Voyager"} />
+                        <img
+                        src={photo.signedUrl}
+                        alt={photo.title || "Dokumentasi Voyager"}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       ) : (
                         <span>Foto tidak tersedia</span>
                       )}
@@ -987,7 +996,12 @@ export default function VoyagerPage() {
                   {photosFor(manageEvent.id).map((photo) => (
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
-                        <img src={photo.signedUrl} alt={photo.title || "Dokumentasi Voyager"} />
+                        <img
+                        src={photo.signedUrl}
+                        alt={photo.title || "Dokumentasi Voyager"}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       ) : (
                         <span>Foto</span>
                       )}
