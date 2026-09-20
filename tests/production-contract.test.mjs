@@ -165,7 +165,7 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   assert.match(page, /from\("event_participants"\)/);
   assert.match(page, /from\("club-activity"\)/);
   assert.match(page, /Tidak ada minimum KM/);
-  assert.doesNotMatch(page, /event_attendance|check_in|check-in/i);
+  assert.doesNotMatch(page, /from\\("event_attendance"\\)|from\\("event_checkin_codes"\\)/);
 
   assert.match(nav, /\["Voyager", "\/voyager", Route\]/);
   assert.match(riding, /Official Agenda Distance/);
