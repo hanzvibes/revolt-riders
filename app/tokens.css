@@ -37,6 +37,13 @@
   --rr-control-lg: 44px;
   --rr-control-radius: 10px;
 
+  /* Mobile shell geometry */
+  --rr-mobile-nav-height: 64px;
+  --rr-mobile-nav-bottom: 10px;
+  --rr-mobile-fab-clearance: 92px;
+  --rr-mobile-page-clearance: 118px;
+  --rr-mobile-dashboard-clearance: 108px;
+
   --rr-shadow-soft: 0 6px 18px rgba(20, 22, 24, .07);
   --rr-shadow-card: 0 10px 28px rgba(20, 22, 24, .10);
   --rr-shadow-sheet: 0 -16px 42px rgba(10, 12, 14, .14);
