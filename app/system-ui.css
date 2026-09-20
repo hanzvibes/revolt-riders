@@ -6,12 +6,21 @@
   background: var(--rr-bg);
   color: var(--rr-ink);
   font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x: clip;
 }
 
 .app-shell *,
 .app-shell *::before,
 .app-shell *::after {
   box-sizing: border-box;
+}
+
+.app-shell .grid > *,
+.app-shell .dashboard-grid > *,
+.app-shell .left-column,
+.app-shell .right-column,
+.app-shell .page-wrap > * {
+  min-width: 0;
 }
 
 .app-shell a,
@@ -56,6 +65,7 @@
 .app-shell .content {
   margin-left: 248px;
   min-width: 0;
+  overflow-x: clip;
 }
 
 .app-shell .brand {
@@ -1042,10 +1052,10 @@
 
 /* Floating bottom nav */
 .app-shell .bottom {
-  height: 64px;
+  height: var(--rr-mobile-nav-height);
   left: 12px;
   right: 12px;
-  bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px));
+  bottom: max(var(--rr-mobile-nav-bottom), calc(env(safe-area-inset-bottom) + 8px));
   padding: 6px;
   border: 1px solid rgba(213, 216, 218, .92);
   border-radius: 22px;
@@ -1165,7 +1175,7 @@
   }
 
   .app-shell .page-wrap {
-    padding: 18px 13px calc(118px + env(safe-area-inset-bottom));
+    padding: 18px 13px calc(var(--rr-mobile-page-clearance) + env(safe-area-inset-bottom));
   }
 
   .app-shell .page-intro {
@@ -1232,7 +1242,7 @@
   }
 
   .app-shell .floating-action-button {
-    bottom: max(92px, calc(env(safe-area-inset-bottom) + 84px));
+    bottom: max(var(--rr-mobile-fab-clearance), calc(env(safe-area-inset-bottom) + 84px));
   }
 }
 
@@ -1361,7 +1371,7 @@
 
 @media (max-width: 720px) {
   .app-shell .dashboard-grid.dashboard-premium {
-    padding: 10px 11px calc(108px + env(safe-area-inset-bottom));
+    padding: 10px 11px calc(var(--rr-mobile-dashboard-clearance) + env(safe-area-inset-bottom));
   }
 
   .app-shell .dashboard-premium .left-column,
