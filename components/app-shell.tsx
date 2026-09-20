@@ -26,6 +26,7 @@ import {
   UserPlus,
   UserRound,
   UsersRound,
+  Wrench,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -52,6 +53,7 @@ const bottomItems: readonly NavItem[] = [
 ];
 
 const komunitasItems: readonly NavItem[] = [
+  ["My Garage", "/garage", Wrench],
   ["Leaderboard", "/leaderboard", Trophy],
   ["Kas Revolt", "/kas", CircleDollarSign],
   ["Buletin", "/bulletin", Bell],
@@ -82,6 +84,7 @@ const activeAliases: Record<string, readonly string[]> = {
   "Catat Riding": ["Riding", "Catat Riding"],
   "Direktori Member": ["Member", "Direktori Member"],
   "Profil Saya": ["Profil", "Profil Saya"],
+  "My Garage": ["Garage", "My Garage"],
   "Leaderboard": ["Leaderboard"],
   "Kas Revolt": ["Kas Revolt"],
   "Buletin": ["Bulletin", "Buletin"],
