@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -45,6 +46,10 @@ type JoinRequest = {
   assigned_member_id: string | null;
   created_at: string;
 };
+type JoinRequestsSnapshot = {
+  requests: JoinRequest[];
+  suggestedMemberId: string;
+};
 
 const getInitials = (name: string) => {
   const parts = name.trim().split(/\s+/).filter(Boolean);
@@ -56,6 +61,7 @@ const getInitials = (name: string) => {
 
 export default function AdminJoinRequestsPage() {
   const { account, loading: authLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const isStaff = Boolean(account && ["admin", "superadmin", "road_captain"].includes(account.role));
 
   const [requests, setRequests] = useState<JoinRequest[]>([]);
@@ -89,43 +95,54 @@ export default function AdminJoinRequestsPage() {
   const [actionLoading, setActionLoading] = useState(false);
 
   // Load Data
-  const loadRequests = useCallback(async () => {
+  const loadRequests = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
       setError("");
-      const supabase = getSupabaseBrowserClient();
 
-      const { data, error: qErr } = await supabase
-        .from("join_requests")
-        .select("*")
-        .order("created_at", { ascending: false });
+      const snapshot = await fetchWithCache<JoinRequestsSnapshot>(
+        "admin:join-requests",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
 
-      if (qErr) throw qErr;
+          const [requestsResult, profilesResult] = await Promise.all([
+            supabase
+              .from("join_requests")
+              .select("*")
+              .order("created_at", { ascending: false }),
+            supabase
+              .from("member_profiles")
+              .select("member_external_id"),
+          ]);
 
-      setRequests((data ?? []) as JoinRequest[]);
+          if (requestsResult.error) throw requestsResult.error;
+          if (profilesResult.error) throw profilesResult.error;
 
-      // Calculate next Member ID
-      const { data: profiles } = await supabase
-        .from("member_profiles")
-        .select("member_external_id");
-
-      if (profiles && profiles.length > 0) {
-        let maxNum = 27;
-        for (const p of profiles) {
-          const m = p.member_external_id?.match(/^RR-(\d+)$/);
-          if (m) {
-            const n = parseInt(m[1], 10);
-            if (!isNaN(n) && n > maxNum) maxNum = n;
+          let maxNum = 27;
+          for (const profile of profilesResult.data ?? []) {
+            const match = profile.member_external_id?.match(/^RR-(\d+)$/);
+            if (!match) continue;
+            const value = Number.parseInt(match[1], 10);
+            if (Number.isFinite(value) && value > maxNum) maxNum = value;
           }
-        }
-        const nextId = `RR-${String(maxNum + 1).padStart(3, "0")}`;
-        setSuggestedMemberId(nextId);
-        setCustomMemberId(nextId);
-      }
+
+          return {
+            requests: (requestsResult.data ?? []) as JoinRequest[],
+            suggestedMemberId: `RR-${String(maxNum + 1).padStart(3, "0")}`,
+          };
+        },
+        { ttlMs: 30_000, forceRefresh },
+      );
+
+      setRequests(snapshot.requests);
+      setSuggestedMemberId(snapshot.suggestedMemberId);
+      setCustomMemberId((current) => current || snapshot.suggestedMemberId);
     } catch (err) {
       const rawMsg = (err as { message?: string })?.message || "";
       if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
-        setError("Tabel join_requests belum dibuat di Supabase. Silakan jalankan file migrasi 20260918000300_add_join_requests_and_public_landing.sql di SQL Editor Supabase.");
+        setError(
+          "Tabel join_requests belum dibuat di Supabase. Silakan jalankan file migrasi 20260918000300_add_join_requests_and_public_landing.sql di SQL Editor Supabase.",
+        );
       } else if (rawMsg) {
         setError(rawMsg);
       } else {
@@ -134,11 +151,13 @@ export default function AdminJoinRequestsPage() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [fetchWithCache]);
 
   useEffect(() => {
     if (isStaff) {
-      void loadRequests();
+      invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
     }
   }, [isStaff, loadRequests]);
 
@@ -191,7 +210,9 @@ export default function AdminJoinRequestsPage() {
       if (rpcErr) throw rpcErr;
 
       showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
-      void loadRequests();
+      invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
     } catch (err) {
       // Fallback direct update
       try {
@@ -210,7 +231,9 @@ export default function AdminJoinRequestsPage() {
         if (updErr) throw updErr;
 
         showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
-        void loadRequests();
+        invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
       } catch (innerErr) {
         showToast(innerErr instanceof Error ? innerErr.message : "Gagal menyetujui pendaftaran.", "error");
       }
@@ -236,7 +259,9 @@ export default function AdminJoinRequestsPage() {
       showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
       setRejectItem(null);
       setRejectReason("");
-      void loadRequests();
+      invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
     } catch (err) {
       // Fallback direct update
       try {
@@ -256,7 +281,9 @@ export default function AdminJoinRequestsPage() {
         showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
         setRejectItem(null);
         setRejectReason("");
-        void loadRequests();
+        invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
       } catch (innerErr) {
         showToast(innerErr instanceof Error ? innerErr.message : "Gagal menolak pendaftaran.", "error");
       }
@@ -288,7 +315,9 @@ export default function AdminJoinRequestsPage() {
 
       showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
       setActivateItem(null);
-      void loadRequests();
+      invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
     } catch (err) {
       // Fallback direct update + insert
       try {
@@ -323,7 +352,9 @@ export default function AdminJoinRequestsPage() {
 
         showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
         setActivateItem(null);
-        void loadRequests();
+        invalidateCache("admin:join-requests");
+      invalidateCache("shell:pending-join-count");
+      void loadRequests(true);
       } catch (innerErr) {
         showToast(innerErr instanceof Error ? innerErr.message : "Gagal mengaktivasi member.", "error");
       }
