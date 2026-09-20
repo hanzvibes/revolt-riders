@@ -155,9 +155,7 @@ export default function AdminJoinRequestsPage() {
 
   useEffect(() => {
     if (isStaff) {
-      invalidateCache("admin:join-requests");
-      invalidateCache("shell:pending-join-count");
-      void loadRequests(true);
+      void loadRequests();
     }
   }, [isStaff, loadRequests]);
 
@@ -439,7 +437,7 @@ export default function AdminJoinRequestsPage() {
             <p>Alur seleksi: Pending → Disetujui (Accepted) → Konfirmasi Calon (Confirmed) → Aktivasi Resmi (Active).</p>
           </div>
 
-          <button onClick={() => void loadRequests()} disabled={loading}>
+          <button onClick={() => void loadRequests(true)} disabled={loading}>
             <RefreshCw className={loading ? "spin" : ""} size={16} />
             <span>Segarkan</span>
           </button>
