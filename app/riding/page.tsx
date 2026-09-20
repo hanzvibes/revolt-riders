@@ -6,7 +6,7 @@ import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-ed
 import { RidingStatChart } from "@/components/riding-stat-chart";
 import { PageSkeleton } from "@/components/skeleton";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { deleteRideLog } from "@/lib/services/ride-log-service";
+import { deleteRideLog, saveRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Bike,
@@ -159,30 +159,17 @@ export default function RidingPage() {
     setMessage("");
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error("Sesi login tidak ditemukan.");
-
       const finalTitle = cleanTitle || "Ride Mandiri";
-      const initialStatus = isStaff ? "approved" : "pending";
-
-      const { error: insertError } = await supabase.from("ride_logs").insert({
-        event_id: eventId || null,
+      const result = await saveRideLog({
+        memberExternalId: activeAccount.member_external_id,
         title: finalTitle,
-        member_external_id: activeAccount.member_external_id,
-        odometer_start: Number(start),
-        odometer_end: Number(end),
-        submitted_by: user.id,
-        status: initialStatus,
-        reviewed_at: isStaff ? new Date().toISOString() : null,
-        reviewed_by: isStaff ? user.id : null,
+        km: distance,
+        eventId: eventId || null,
+        odometerStart: Number(start),
+        odometerEnd: Number(end),
       });
 
-      if (insertError) throw insertError;
-
-      if (isStaff) {
+      if (result.status === "approved" || isStaff) {
         setMessage(
           `${distance.toLocaleString("id-ID")} KM ("${finalTitle}") berhasil disimpan dan langsung disetujui (Approved).`
         );
