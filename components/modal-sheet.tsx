@@ -33,6 +33,7 @@ export function ModalSheet({
   children: ReactNode;
 }) {
   const [closing, setClosing] = useState(false);
+  const closingRef = useRef(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef<number | null>(null);
@@ -43,6 +44,7 @@ export function ModalSheet({
   const titleId = useId();
 
   const finishClose = useCallback(() => {
+    closingRef.current = false;
     setClosing(false);
     dragOffsetRef.current = 0;
     setDragOffset(0);
@@ -56,7 +58,8 @@ export function ModalSheet({
   }, [onClose]);
 
   const requestClose = useCallback(() => {
-    if (closing) return;
+    if (closingRef.current) return;
+    closingRef.current = true;
     setClosing(true);
 
     if (closeTimerRef.current !== null) {
@@ -65,7 +68,7 @@ export function ModalSheet({
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     closeTimerRef.current = window.setTimeout(finishClose, reduceMotion ? 0 : 220);
-  }, [closing, finishClose]);
+  }, [finishClose]);
 
   useEffect(() => {
     if (!open) return;
