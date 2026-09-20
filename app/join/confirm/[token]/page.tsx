@@ -16,18 +16,14 @@ import { use, useEffect, useState } from "react";
 type JoinRequestData = {
   id: string;
   full_name: string;
-  birth_place: string;
-  birth_date: string;
   city: string;
   instagram: string;
   whatsapp: string;
   status: "pending" | "accepted" | "confirmed" | "active" | "rejected" | "expired";
-  confirmation_token: string;
   accepted_at: string | null;
   confirmed_at: string | null;
   activated_at: string | null;
   assigned_member_id: string | null;
-  rejection_reason: string | null;
 };
 
 export default function CandidateConfirmationPage({
@@ -53,11 +49,9 @@ export default function CandidateConfirmationPage({
         setError("");
         const supabase = getSupabaseBrowserClient();
 
-        const { data, error: qErr } = await supabase
-          .from("join_requests")
-          .select("*")
-          .eq("confirmation_token", token)
-          .maybeSingle();
+        const { data, error: qErr } = await supabase.rpc("get_public_join_request", {
+          p_token: token,
+        });
 
         if (qErr) throw qErr;
 
@@ -114,31 +108,12 @@ export default function CandidateConfirmationPage({
       // Refresh data
       setRequest((prev) => (prev ? { ...prev, status: "confirmed", confirmed_at: new Date().toISOString() } : null));
     } catch (err) {
-      // Fallback direct update
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const { error: updErr } = await supabase
-          .from("join_requests")
-          .update({
-            status: "confirmed",
-            confirmed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("confirmation_token", token);
-
-        if (updErr) throw updErr;
-
-        setSuccessMsg("Terima kasih! Konfirmasi komitmen Anda telah diterima.");
-        setRequest((prev) => (prev ? { ...prev, status: "confirmed" } : null));
-      } catch (fallbackErr) {
-        const rawMsg =
-          (fallbackErr as { message?: string })?.message ||
-          (err as { message?: string })?.message ||
-          "Gagal mengonfirmasi komitmen. Silakan coba lagi.";
-        setError(rawMsg);
-      } finally {
-        setConfirming(false);
-      }
+      const rawMsg =
+        (err as { message?: string })?.message ||
+        "Gagal mengonfirmasi komitmen. Silakan coba lagi.";
+      setError(rawMsg);
+    } finally {
+      setConfirming(false);
     }
   };
 
