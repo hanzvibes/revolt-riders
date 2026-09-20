@@ -2,47 +2,6 @@
    Scoped to .app-shell so the public landing page remains untouched. */
 
 .app-shell {
-  --rr-bg: #f4f4f3;
-  --rr-surface: #ffffff;
-  --rr-surface-soft: #f8f8f7;
-  --rr-surface-muted: #f0f1f1;
-  --rr-ink: #1b1d1f;
-  --rr-muted: #767c81;
-  --rr-muted-2: #9ba0a4;
-  --rr-line: #e5e6e6;
-  --rr-line-strong: #d5d8da;
-  --rr-charcoal: #171819;
-  --rr-charcoal-2: #222326;
-  --rr-red: #dc1b2a;
-  --rr-red-soft: #fff0f1;
-  --rr-green: #18794e;
-  --rr-radius-sm: 9px;
-  --rr-radius-md: 13px;
-  --rr-radius-lg: 16px;
-  --rr-radius-xl: 20px;
-  --rr-radius-pill: 999px;
-
-  /* Spacing scale */
-  --rr-space-1: 4px;
-  --rr-space-2: 8px;
-  --rr-space-3: 12px;
-  --rr-space-4: 16px;
-  --rr-space-5: 20px;
-  --rr-space-6: 24px;
-  --rr-space-8: 32px;
-
-  /* Shared control geometry */
-  --rr-control-sm: 36px;
-  --rr-control-md: 40px;
-  --rr-control-lg: 44px;
-  --rr-control-radius: 10px;
-
-  /* Shared elevation + focus */
-  --rr-shadow-soft: 0 6px 18px rgba(20, 22, 24, .07);
-  --rr-shadow-card: 0 10px 28px rgba(20, 22, 24, .10);
-  --rr-shadow-sheet: 0 -16px 42px rgba(10, 12, 14, .14);
-  --rr-focus-outline: rgba(220, 27, 42, .52);
-  --rr-focus-ring: 0 0 0 3px rgba(220, 27, 42, .09);
   min-height: 100dvh;
   background: var(--rr-bg);
   color: var(--rr-ink);
@@ -5556,15 +5515,6 @@
    One hierarchy for all authenticated/internal app pages.
    ========================================================= */
 .app-shell {
-  --rr-type-caption: .625rem;   /* 10px */
-  --rr-type-meta: .6875rem;     /* 11px */
-  --rr-type-small: .75rem;      /* 12px */
-  --rr-type-body: .8125rem;     /* 13px */
-  --rr-type-card: .875rem;      /* 14px */
-  --rr-type-section: 1rem;      /* 16px */
-  --rr-type-metric: 1rem;       /* 16px */
-  --rr-type-page: clamp(1.5rem, 2.8vw, 1.9rem);
-  --rr-type-hero: clamp(2rem, 3.6vw, 3rem);
   font-size: var(--rr-type-body);
 }
 
@@ -5950,14 +5900,6 @@
 /* =========================================================
    Motion system: smooth, symmetric, mobile-friendly
    ========================================================= */
-.app-shell {
-  --rr-motion-open: 240ms;
-  --rr-motion-close: 220ms;
-  --rr-motion-fast: 180ms;
-  --rr-ease-out: cubic-bezier(.16, 1, .3, 1);
-  --rr-ease-in: cubic-bezier(.4, 0, 1, 1);
-}
-
 /* Mobile sidebar */
 @media (max-width: 720px) {
   .app-shell > aside {
