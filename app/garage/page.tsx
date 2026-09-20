@@ -95,9 +95,10 @@ export default function GaragePage() {
   const [message, setMessage] = useState("");
 
   const activeAccount = account?.status === "active" ? account : null;
+  const memberExternalId = activeAccount?.member_external_id ?? null;
 
   const loadMotorcycles = useCallback(async (forceRefresh = false) => {
-    if (!activeAccount?.member_external_id) {
+    if (!memberExternalId) {
       setMotorcycles([]);
       setLoadingData(false);
       return;
@@ -105,14 +106,14 @@ export default function GaragePage() {
 
     try {
       const motorcyclesData = await fetchWithCache<Motorcycle[]>(
-        `garage:${activeAccount.member_external_id}`,
+        `garage:${memberExternalId}`,
         async () => {
           const { data, error: fetchError } = await getSupabaseBrowserClient()
             .from("member_motorcycles")
             .select(
               "id,member_external_id,nickname,brand,model,production_year,style,engine_cc,color,notes,is_primary,is_visible_to_members,created_at,updated_at",
             )
-            .eq("member_external_id", activeAccount.member_external_id)
+            .eq("member_external_id", memberExternalId)
             .order("is_primary", { ascending: false })
             .order("created_at", { ascending: true });
 
@@ -129,7 +130,7 @@ export default function GaragePage() {
     } finally {
       setLoadingData(false);
     }
-  }, [activeAccount?.member_external_id, fetchWithCache]);
+  }, [fetchWithCache, memberExternalId]);
 
   useEffect(() => {
     if (accessLoading) return;
