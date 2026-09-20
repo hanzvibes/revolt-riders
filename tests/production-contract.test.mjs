@@ -91,3 +91,12 @@ test("anonymous table access is least-privilege", async () => {
   assert.match(migration, /grant select on table public\.club_gallery to anon/);
   assert.match(migration, /ride_logs_authenticated_approved_read/);
 });
+
+
+test("account approval cannot assign privileged roles", async () => {
+  const migration = await read("supabase/migrations/20260920065114_lock_account_approval_role.sql");
+  assert.match(migration, /coalesce\(nullif\(trim\(p_role\), ''\), 'member'\) <> 'member'/);
+  assert.match(migration, /values \(v_request\.user_id, v_request\.member_external_id, 'member'::public\.app_role\)/);
+  assert.match(migration, /Perubahan role hanya dapat dilakukan oleh Superadmin/);
+  assert.match(migration, /revoke all on function public\.approve_member_account_request.*anon/);
+});
