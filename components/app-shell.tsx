@@ -31,7 +31,14 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type ReactNode,
+} from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type NavItem = readonly [string, string, ComponentType];
@@ -108,11 +115,36 @@ const isItemActive = (label: string, currentActive: string) =>
 
 export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [isMobileDrawer, setIsMobileDrawer] = useState(false);
   const [pendingJoinCount, setPendingJoinCount] = useState(0);
+  const menuButtonRef = useRef<HTMLButtonElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const { user, account, loading } = useMemberAccess();
 
   const canOperational = account?.status === "active" && hasRole(account.role, ["road_captain", "admin", "superadmin"]);
   const canAdmin = account?.status === "active" && hasRole(account.role, ["admin", "superadmin"]);
+
+  useEffect(() => {
+    const media = window.matchMedia("(max-width: 720px)");
+    const sync = () => setIsMobileDrawer(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobileDrawer) return;
+
+    if (open) {
+      window.requestAnimationFrame(() => closeButtonRef.current?.focus());
+    } else if (
+      document.activeElement &&
+      document.querySelector("#app-mobile-drawer")?.contains(document.activeElement)
+    ) {
+      menuButtonRef.current?.focus();
+    }
+  }, [isMobileDrawer, open]);
+
 
   // Detect which accordion section contains the active page
   const isKomunitasActive = useMemo(() => komunitasItems.some(([label]) => isItemActive(label, active)), [active]);
@@ -192,14 +224,25 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
   return (
     <main className="app-shell">
-      <aside className={open ? "open" : ""} aria-label="Navigasi aplikasi">
+      <aside
+        id="app-mobile-drawer"
+        className={open ? "open" : ""}
+        aria-label="Navigasi aplikasi"
+        aria-hidden={isMobileDrawer && !open ? true : undefined}
+        inert={isMobileDrawer && !open ? true : undefined}
+      >
         <Link className="brand" href="/" aria-label="Revolt Riders home">
           <Image src="/revolt-riders-logo.jpg" alt="Logo resmi Revolt Riders" width={66} height={66} priority />
           <strong>
             REVOLT RIDERS<small>MEMBER HUB</small>
           </strong>
         </Link>
-        <button className="close-menu" onClick={() => setOpen(false)} aria-label="Tutup menu">
+        <button
+          ref={closeButtonRef}
+          className="close-menu"
+          onClick={() => setOpen(false)}
+          aria-label="Tutup menu"
+        >
           <X />
         </button>
 
@@ -333,7 +376,14 @@ export function AppShell({ active, title, children }: { active: string; title: s
 
       <section className="content">
         <header>
-          <button className="hamb" onClick={() => setOpen(true)} aria-label="Buka menu">
+          <button
+            ref={menuButtonRef}
+            className="hamb"
+            onClick={() => setOpen(true)}
+            aria-label="Buka menu"
+            aria-controls="app-mobile-drawer"
+            aria-expanded={open}
+          >
             <Menu />
           </button>
           <div>
