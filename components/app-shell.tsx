@@ -451,7 +451,6 @@ export function AppShell({ active, title, children }: { active: string; title: s
       <section
         className="content"
         inert={isMobileDrawer && open ? true : undefined}
-        aria-hidden={isMobileDrawer && open ? true : undefined}
       >
         <header>
           <button
@@ -492,7 +491,6 @@ export function AppShell({ active, title, children }: { active: string; title: s
         className="bottom"
         aria-label="Navigasi utama"
         inert={isMobileDrawer && open ? true : undefined}
-        aria-hidden={isMobileDrawer && open ? true : undefined}
       >
         {bottomItems.map(([label, href, Icon]) => (
           <Link
