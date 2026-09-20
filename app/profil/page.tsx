@@ -46,6 +46,11 @@ type Detail = {
   motorcycle: string | null;
   city_override: string | null;
 };
+type PrimaryMotorcycle = {
+  nickname: string | null;
+  brand: string;
+  model: string;
+};
 type Ride = {
   id: string;
   event_id: string | null;
@@ -97,6 +102,7 @@ export default function ProfilePage() {
   const [account, setAccount] = useState<Account | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [detail, setDetail] = useState<Detail | null>(null);
+  const [primaryMotorcycle, setPrimaryMotorcycle] = useState<PrimaryMotorcycle | null>(null);
   const [rides, setRides] = useState<Ride[]>([]);
   const [rsvpActivities, setRsvpActivities] = useState<RsvpActivity[]>([]);
   const [activityEvents, setActivityEvents] = useState<ActivityEvent[]>([]);
@@ -146,7 +152,7 @@ export default function ProfilePage() {
       setLoading(false);
       return;
     }
-    const [profileResult, detailResult, rideResult, rsvpResult] = await Promise.all([
+    const [profileResult, detailResult, rideResult, rsvpResult, garageResult] = await Promise.all([
       supabase
         .from("member_profiles")
         .select("member_external_id,full_name,nickname,city,join_date,club_role,total_km")
@@ -169,6 +175,12 @@ export default function ProfilePage() {
         .eq("member_external_id", nextAccount.member_external_id)
         .order("responded_at", { ascending: false })
         .limit(15),
+      supabase
+        .from("member_motorcycles")
+        .select("nickname,brand,model")
+        .eq("member_external_id", nextAccount.member_external_id)
+        .eq("is_primary", true)
+        .maybeSingle(),
     ]);
     const nextProfile = profileResult.data
       ? ({ ...profileResult.data, total_km: Number(profileResult.data.total_km) } as Profile)
@@ -196,6 +208,7 @@ export default function ProfilePage() {
 
     setProfile(nextProfile);
     setDetail(nextDetail);
+    setPrimaryMotorcycle((garageResult.data as PrimaryMotorcycle | null) ?? null);
     setRides(nextRides);
     setRsvpActivities(nextRsvps);
     setActivityEvents((eventResult.data ?? []) as ActivityEvent[]);
@@ -429,7 +442,12 @@ export default function ProfilePage() {
             <span>
               <Bike aria-hidden="true" />
               <small>Motor</small>
-              <b>{motorcycle || detail?.motorcycle || "Belum diisi"}</b>
+              <b>
+                {primaryMotorcycle
+                  ? primaryMotorcycle.nickname || `${primaryMotorcycle.brand} ${primaryMotorcycle.model}`
+                  : motorcycle || detail?.motorcycle || "Belum diisi"}
+              </b>
+              <Link className="member-passport-meta-link" href="/garage">My Garage</Link>
             </span>
             <span>
               <Calendar aria-hidden="true" />
