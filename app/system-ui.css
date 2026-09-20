@@ -9608,3 +9608,22 @@
     animation: none !important;
   }
 }
+
+
+.app-shell .riding-stat-chart-loading {
+  min-height: 310px;
+  overflow: hidden;
+}
+
+.app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+  width: 100%;
+  min-height: 310px;
+  border-radius: var(--rr-radius-lg);
+}
+
+@media (max-width: 720px) {
+  .app-shell .riding-stat-chart-loading,
+  .app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+    min-height: 260px;
+  }
+}
