@@ -110,3 +110,14 @@ test("member account claims are validated at database boundary", async () => {
   assert.match(migration, /ID member sudah terhubung ke akun lain/);
   assert.match(migration, /status = 'pending'::public\.account_request_status/);
 });
+
+
+test("internal member reads require active accounts and leaderboard uses one KM source", async () => {
+  const migration = await read("supabase/migrations/20260920065523_require_active_member_and_fix_leaderboard_source.sql");
+  assert.match(migration, /ma\.status = 'active'::public\.account_status/);
+  assert.match(migration, /member_profiles_authenticated_read/);
+  assert.match(migration, /member_details_authenticated_read/);
+  assert.match(migration, /ride_logs_authenticated_approved_read/);
+  assert.match(migration, /round\(coalesce\(mp\.total_km, 0\)\)::numeric as total_km/);
+  assert.doesNotMatch(migration, /mp\.total_km.*sum\(rl\.distance_km\)/s);
+});
