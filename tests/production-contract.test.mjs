@@ -254,3 +254,78 @@ test("Voyager create shortcut opens a prefilled Voyager agenda form", async () =
   assert.match(admin, /setCountsAsMandatory\(true\)/);
   assert.match(admin, /setFormOpen\(true\)/);
 });
+
+
+test("ModalSheet traps focus and restores the opener", async () => {
+  const sheet = await read("components/modal-sheet.tsx");
+
+  assert.match(sheet, /FOCUSABLE_SELECTOR/);
+  assert.match(sheet, /previousFocusRef/);
+  assert.match(sheet, /aria-labelledby=/);
+  assert.match(sheet, /tabIndex=\{-1\}/);
+  assert.match(sheet, /event\.key !== "Tab"/);
+  assert.match(sheet, /previousFocusRef\.current\?\.focus\(\)/);
+  assert.doesNotMatch(
+    sheet,
+    /<button\s+className="native-sheet-handle"/,
+  );
+});
+
+test("Mobile navigation is inert while the drawer is hidden", async () => {
+  const shell = await read("components/app-shell.tsx");
+
+  assert.match(shell, /matchMedia\("\(max-width: 720px\)"\)/);
+  assert.match(shell, /inert=\{isMobileDrawer && !open \? true : undefined\}/);
+  assert.match(shell, /aria-hidden=\{isMobileDrawer && !open \? true : undefined\}/);
+  assert.match(shell, /aria-controls="app-mobile-drawer"/);
+  assert.match(shell, /aria-expanded=\{open\}/);
+});
+
+test("Audit hardening keeps shared controls touch friendly", async () => {
+  const css = await read("app/system-ui.css");
+  const tokens = await read("app/tokens.css");
+
+  assert.match(tokens, /--rr-control-lg: 44px/);
+  assert.match(css, /voyager-create-action[\s\S]*min-height: var\(--rr-control-lg\)/);
+  assert.match(css, /role-panel \.role-list select[\s\S]*min-height: var\(--rr-control-lg\)/);
+  assert.match(css, /@media \(max-width: 720px\)[\s\S]*font-size: max\(1rem, var\(--rr-type-body\)\)/);
+});
+
+test("Reduced motion preserves state changes without blanket-killing the app", async () => {
+  const css = await read("app/system-ui.css");
+  const chart = await read("components/riding-stat-chart.tsx");
+
+  assert.doesNotMatch(
+    css,
+    /\.app-shell \*,\s*\.app-shell \*::before,\s*\.app-shell \*::after[\s\S]*transition-duration: \.01ms/,
+  );
+  assert.match(chart, /prefers-reduced-motion: reduce/);
+  assert.match(chart, /isAnimationActive=\{!reduceMotion\}/);
+  assert.match(chart, /animationDuration=\{reduceMotion \? 0 : 240\}/);
+});
+
+test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
+  const voyager = await read("app/voyager/page.tsx");
+  const riding = await read("app/riding/page.tsx");
+  const garage = await read("app/garage/page.tsx");
+
+  for (const source of [voyager, riding, garage]) {
+    assert.match(source, /useDataCache/);
+    assert.match(source, /fetchWithCache/);
+    assert.match(source, /forceRefresh/);
+  }
+
+  assert.match(voyager, /ttlMs: 90_000/);
+  assert.match(riding, /ttlMs: 60_000/);
+  assert.match(garage, /ttlMs: 90_000/);
+  assert.match(riding, /dynamic\(/);
+  assert.match(riding, /components\/riding-stat-chart/);
+});
+
+test("Voyager gallery images decode lazily", async () => {
+  const voyager = await read("app/voyager/page.tsx");
+
+  assert.match(voyager, /loading="lazy"/);
+  assert.match(voyager, /decoding="async"/);
+  assert.match(voyager, /PageSkeleton/);
+});
