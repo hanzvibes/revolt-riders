@@ -159,9 +159,6 @@ export default function PublicLandingPage() {
         setTotalMembers(Number(statsData[0].total_members) || 27);
         setTotalRides(Number(statsData[0].total_rides) || 194);
         setTotalKm(Number(statsData[0].total_km) || 19177);
-      } else {
-        const { count } = await supabase.from("member_profiles").select("member_external_id", { count: "exact", head: true });
-        if (count) setTotalMembers(count);
       }
     } catch (err) {
       console.warn("Public stats fetch notice:", err);
@@ -226,46 +223,15 @@ export default function PublicLandingPage() {
 
       setFormSuccess(true);
     } catch (err) {
-      try {
-        const supabase = getSupabaseBrowserClient();
-        let cleanWa = whatsapp.replace(/[^0-9]/g, "");
-        if (cleanWa.startsWith("08")) cleanWa = "628" + cleanWa.slice(2);
-        const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
-
-        const { error: insErr } = await supabase.from("join_requests").insert({
-          full_name: fullName.trim(),
-          birth_place: birthPlace.trim(),
-          birth_date: birthDate,
-          city: city.trim(),
-          instagram: instagram.trim().replace(/^@/, ""),
-          whatsapp: cleanWa,
-          agreement: true,
-          status: "pending",
-          confirmation_token: token,
-        });
-
-        if (insErr) {
-          if (insErr.message.includes("whatsapp") || insErr.message.includes("unique")) {
-            throw new Error("Nomor WhatsApp ini sudah pernah terdaftar dan sedang dalam proses verifikasi.");
-          }
-          throw insErr;
-        }
-
-        setFormSuccess(true);
-      } catch (innerErr) {
-        const rawMsg =
-          (innerErr as { message?: string })?.message ||
-          (err as { message?: string })?.message ||
-          "";
-        if (rawMsg.includes("join_requests") || rawMsg.includes("schema cache")) {
-          setFormError("Sistem pendaftaran sedang dalam proses sinkronisasi. Silakan hubungi pengurus atau coba beberapa saat lagi.");
-        } else if (rawMsg.includes("whatsapp") || rawMsg.includes("unique")) {
-          setFormError("Nomor WhatsApp ini sudah pernah terdaftar dan sedang dalam proses verifikasi.");
-        } else if (rawMsg) {
-          setFormError(rawMsg);
-        } else {
-          setFormError("Pendaftaran gagal dikirim. Silakan periksa kembali data Anda.");
-        }
+      const rawMsg = (err as { message?: string })?.message || "";
+      if (rawMsg.includes("whatsapp") || rawMsg.includes("unique") || rawMsg.includes("sedang diproses")) {
+        setFormError("Nomor WhatsApp ini sudah pernah terdaftar dan sedang dalam proses verifikasi.");
+      } else if (rawMsg.includes("schema cache") || rawMsg.includes("Could not find the function")) {
+        setFormError("Sistem pendaftaran sedang dalam proses sinkronisasi. Silakan hubungi pengurus atau coba beberapa saat lagi.");
+      } else if (rawMsg) {
+        setFormError(rawMsg);
+      } else {
+        setFormError("Pendaftaran gagal dikirim. Silakan periksa kembali data Anda.");
       }
     } finally {
       setFormSubmitting(false);
