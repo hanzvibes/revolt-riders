@@ -49,3 +49,23 @@ test("event lifecycle and ride distance are enforced by the database", async () 
   assert.match(migration, /push_subscriptions_owner_all/);
   assert.match(migration, /notification_preferences_owner_all/);
 });
+
+
+test("public join and ride mutations stay behind scoped RPCs", async () => {
+  const landing = await read("app/page.tsx");
+  const confirmation = await read("app/join/confirm/[token]/page.tsx");
+  const rideService = await read("lib/services/ride-log-service.ts");
+  const migration = await read("supabase/migrations/20260920064108_phase1_security_rpc_and_ride_policy_hardening.sql");
+
+  assert.doesNotMatch(landing, /from\("join_requests"\)\.insert/);
+  assert.doesNotMatch(confirmation, /from\("join_requests"\)/);
+  assert.match(confirmation, /rpc\("get_public_join_request"/);
+  assert.match(confirmation, /rpc\("confirm_join_request"/);
+
+  assert.doesNotMatch(rideService, /from\("ride_logs"\)\.(insert|update|delete)/);
+  assert.match(rideService, /rpc\(\s*"manage_ride_log"/);
+
+  assert.match(migration, /drop policy if exists "Members and admins can insert ride logs"/);
+  assert.match(migration, /revoke execute on function public\.manage_ride_log/);
+  assert.match(migration, /get_public_join_request/);
+});
