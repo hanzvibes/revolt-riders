@@ -4,8 +4,8 @@ import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
 import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
-import { RidingStatChart } from "@/components/riding-stat-chart";
 import { PageSkeleton } from "@/components/skeleton";
+import dynamic from "next/dynamic";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { deleteRideLog, saveRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -23,6 +23,24 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
+
+const RidingStatChart = dynamic(
+  () =>
+    import("@/components/riding-stat-chart").then(
+      (module) => module.RidingStatChart,
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <section
+        className="riding-stat-chart riding-stat-chart-loading"
+        aria-label="Memuat statistik riding"
+      >
+        <div className="skeleton-shimmer" aria-hidden="true" />
+      </section>
+    ),
+  },
+);
 
 type RideEvent = { id: string; title: string; type: "riding" | "touring"; start_at: string };
 type UserRide = {
