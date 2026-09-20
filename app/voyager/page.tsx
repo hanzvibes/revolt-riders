@@ -71,6 +71,10 @@ type RideRow = {
   distance_km: number | null;
 };
 
+type VoyagerEventRow = Omit<VoyagerEvent, "official_distance_km"> & {
+  official_distance_km: number | string | null;
+};
+
 const isAdminRole = (role?: string) => role === "admin" || role === "superadmin";
 
 const formatDate = (value: string) =>
@@ -148,11 +152,11 @@ export default function VoyagerPage() {
       if (membersRes.error) throw membersRes.error;
       if (ridesRes.error) throw ridesRes.error;
 
-      const eventRows = (eventsRes.data ?? []).map((item) => ({
+      const eventRows = ((eventsRes.data ?? []) as VoyagerEventRow[]).map((item) => ({
         ...item,
         official_distance_km:
           item.official_distance_km === null ? null : Number(item.official_distance_km),
-      })) as VoyagerEvent[];
+      }));
 
       setEvents(eventRows);
       setMembers((membersRes.data ?? []) as Member[]);
