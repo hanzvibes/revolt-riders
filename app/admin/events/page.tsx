@@ -126,6 +126,39 @@ export default function AdminEventsPage() {
     setLoading(false);
   }, [account]);
   useEffect(() => {
+    if (
+      accessLoading ||
+      account?.status !== "active" ||
+      !canManage(account.role)
+    ) {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("create") !== "voyager") return;
+
+    setEditing(null);
+    setTitle("");
+    setType("voyager");
+    setDescription("");
+    setLocation("");
+    setLocationUrl("");
+    setStart("");
+    setMeetup("");
+    setEnd("");
+    setIsPublic(true);
+    setCountsAsMandatory(true);
+    setOfficialDistance("");
+    setSelectedParticipants([]);
+    setParticipantQuery("");
+    setError("");
+    setMessage("");
+    setFormOpen(true);
+
+    window.history.replaceState(null, "", "/admin/events");
+  }, [accessLoading, account?.status, account?.role]);
+
+  useEffect(() => {
     if (!accessLoading) void load();
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
