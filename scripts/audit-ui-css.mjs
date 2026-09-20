@@ -12,6 +12,13 @@ const cssTargets = [
 ];
 
 const allowedWeights = new Set(["400", "500", "600", "700", "800"]);
+const canonicalTokenTargets = new Set([
+  "app/system-ui.css",
+  "app/polish.css",
+  "app/form-density.css",
+  "app/native-admin.css",
+]);
+const legacyTokenPattern = /var\(--(?:red|line|ink|muted|bg|surface)\)/g;
 const fatal = [];
 const warnings = [];
 
@@ -47,6 +54,14 @@ for (const file of cssTargets) {
     if (/font-size\s*:\s*(?:16px|1rem)(?:\s*!important)?/i.test(body)) {
       fatal.push(
         `${file}:${lineOf(content, match.index)} select uses 16px/1rem typography; use 0.8125rem unless there is a documented exception`,
+      );
+    }
+  }
+
+  if (canonicalTokenTargets.has(file)) {
+    for (const match of content.matchAll(legacyTokenPattern)) {
+      fatal.push(
+        `${file}:${lineOf(content, match.index)} legacy design-token alias ${match[0]}; use the canonical --rr-* token`,
       );
     }
   }
