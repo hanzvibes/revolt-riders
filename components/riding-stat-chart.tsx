@@ -24,6 +24,8 @@ type RidingChartRide = {
 
 type RangeKey = "30d" | "90d" | "all";
 
+const CHART_REFERENCE_NOW = Date.now();
+
 const RANGE_OPTIONS: { key: RangeKey; label: string; days: number | null }[] = [
   { key: "30d", label: "30 Hari", days: 30 },
   { key: "90d", label: "90 Hari", days: 90 },
@@ -54,7 +56,9 @@ export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
 
   const chartData = useMemo(() => {
     const option = RANGE_OPTIONS.find((item) => item.key === range) ?? RANGE_OPTIONS[1];
-    const cutoff = option.days ? Date.now() - option.days * 24 * 60 * 60 * 1000 : null;
+    const cutoff = option.days
+      ? CHART_REFERENCE_NOW - option.days * 24 * 60 * 60 * 1000
+      : null;
 
     return rides
       .filter((ride) => {
