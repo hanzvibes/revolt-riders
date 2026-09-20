@@ -30,7 +30,17 @@ const LEVELS = [
   { level: 7, title: "RR Legend", minKm: 25000 },
 ] as const;
 
-const monthKey = (date: Date) =>
+const JAKARTA_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+const toJakartaCalendarDate = (date: Date) =>
+  new Date(date.getTime() + JAKARTA_OFFSET_MS);
+
+const monthKey = (date: Date) => {
+  const jakartaDate = toJakartaCalendarDate(date);
+  return `${jakartaDate.getUTCFullYear()}-${String(jakartaDate.getUTCMonth() + 1).padStart(2, "0")}`;
+};
+
+const monthCursorKey = (date: Date) =>
   `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
 
 const previousMonth = (date: Date) =>
@@ -47,14 +57,17 @@ export function getMonthlyRideStreak(
       .map(monthKey),
   );
 
-  const currentMonth = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
+  const jakartaNow = toJakartaCalendarDate(now);
+  const currentMonth = new Date(
+    Date.UTC(jakartaNow.getUTCFullYear(), jakartaNow.getUTCMonth(), 1),
+  );
   const previous = previousMonth(currentMonth);
-  let cursor = rideMonths.has(monthKey(currentMonth)) ? currentMonth : previous;
+  let cursor = rideMonths.has(monthCursorKey(currentMonth)) ? currentMonth : previous;
 
-  if (!rideMonths.has(monthKey(cursor))) return 0;
+  if (!rideMonths.has(monthCursorKey(cursor))) return 0;
 
   let streak = 0;
-  while (rideMonths.has(monthKey(cursor))) {
+  while (rideMonths.has(monthCursorKey(cursor))) {
     streak += 1;
     cursor = previousMonth(cursor);
   }
