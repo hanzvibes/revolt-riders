@@ -8,6 +8,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type ReactNode,
@@ -60,12 +61,19 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
 
   const cacheRef = useRef<Map<string, CacheEntry<unknown>>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<unknown>>>(new Map());
+  const userIdRef = useRef<string | null>(null);
 
   const refreshAccess = useCallback(async () => {
     try {
       const supabase = getSupabaseBrowserClient();
       const { data: userData, error: userError } = await supabase.auth.getUser();
       const nextUser = userData.user;
+
+      if (nextUser && userIdRef.current && userIdRef.current !== nextUser.id) {
+        cacheRef.current.clear();
+        inFlightRef.current.clear();
+      }
+      userIdRef.current = nextUser?.id ?? null;
       setUser(nextUser);
 
       if (userError || !nextUser) {
@@ -107,10 +115,12 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     } = supabase.auth.onAuthStateChange(
       (_event: AuthChangeEvent, session: Session | null) => {
         if (!session) {
+          userIdRef.current = null;
           setUser(null);
           setAccount(null);
           setLoading(false);
           cacheRef.current.clear();
+          inFlightRef.current.clear();
           return;
         }
         window.setTimeout(() => void refreshAccess(), 0);
@@ -137,6 +147,10 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
   const getCached = useCallback(<T,>(key: string): T | undefined => {
     const entry = cacheRef.current.get(key) as CacheEntry<T> | undefined;
     if (!entry) return undefined;
+    if (Date.now() - entry.timestamp >= entry.ttl) {
+      cacheRef.current.delete(key);
+      return undefined;
+    }
     return entry.data;
   }, []);
 
@@ -177,6 +191,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
         if (cached && Date.now() - cached.timestamp < cached.ttl) {
           return cached.data;
         }
+        if (cached) cacheRef.current.delete(key);
       }
 
       // Check if there is already an in-flight request for this key to deduplicate
@@ -205,17 +220,30 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     [],
   );
 
-  const value = {
-    user,
-    account,
-    loading,
-    error,
-    refreshAccess,
-    getCached,
-    setCached,
-    invalidateCache,
-    fetchWithCache,
-  };
+  const value = useMemo(
+    () => ({
+      user,
+      account,
+      loading,
+      error,
+      refreshAccess,
+      getCached,
+      setCached,
+      invalidateCache,
+      fetchWithCache,
+    }),
+    [
+      account,
+      error,
+      fetchWithCache,
+      getCached,
+      invalidateCache,
+      loading,
+      refreshAccess,
+      setCached,
+      user,
+    ],
+  );
 
   return (
     <DataCacheContext.Provider value={value}>
