@@ -1142,7 +1142,6 @@ export default function AdminJoinRequestsPage() {
                 border: "1px solid #cbd5e1",
                 borderRadius: 8,
                 padding: "10px",
-                fontSize: "0.78rem",
                 marginBottom: 20,
               }}
             />
@@ -1156,7 +1155,6 @@ export default function AdminJoinRequestsPage() {
                   border: 0,
                   borderRadius: 8,
                   padding: "9px 18px",
-                  fontSize: "0.78rem",
                   fontWeight: 700,
                   cursor: "pointer",
                 }}
@@ -1173,7 +1171,6 @@ export default function AdminJoinRequestsPage() {
                   border: 0,
                   borderRadius: 8,
                   padding: "9px 18px",
-                  fontSize: "0.78rem",
                   fontWeight: 800,
                   cursor: "pointer",
                 }}
@@ -1214,7 +1211,6 @@ export default function AdminJoinRequestsPage() {
                     borderRadius: 8,
                     padding: "10px 12px",
                     fontWeight: 800,
-                    fontSize: "0.95rem",
                     letterSpacing: "0.08em",
                   }}
                 />
