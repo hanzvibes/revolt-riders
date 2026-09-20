@@ -172,3 +172,26 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   assert.match(riding, /Official Agenda Distance/);
   assert.match(riding, /source_type !== "official_agenda"/);
 });
+
+
+test("Mandatory Ride can be enabled on managed agendas without check-in dependency", async () => {
+  const admin = await read("app/admin/events/page.tsx");
+  const anyEventGuard = await read(
+    "supabase/migrations/20260920122209_allow_mandatory_official_km_for_any_event.sql",
+  );
+  const flagSync = await read(
+    "supabase/migrations/20260920122407_sync_mandatory_flag_on_official_rides.sql",
+  );
+
+  assert.match(admin, /Count as Mandatory Ride/);
+  assert.match(admin, /Official Trip Distance/);
+  assert.match(admin, /selectedParticipants/);
+  assert.match(admin, /rpc\(\s*"save_event_activity"/);
+  assert.match(admin, /rpc\(\s*"sync_event_official_rides"/);
+  assert.ok(!admin.includes('.from("event_attendance").select'));
+
+  assert.match(anyEventGuard, /new\.source_type = 'official_agenda'/);
+  assert.match(anyEventGuard, /e\.counts_as_mandatory = true/);
+  assert.match(flagSync, /update public\.ride_logs/);
+  assert.match(flagSync, /counts_as_mandatory is distinct from/);
+});
