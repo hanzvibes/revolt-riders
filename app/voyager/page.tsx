@@ -292,6 +292,10 @@ export default function VoyagerPage() {
 
   const syncOfficialKm = async () => {
     if (!manageEvent || !canManage) return;
+    if (manageEvent.status === "draft") {
+      setError("Publikasikan agenda terlebih dahulu sebelum Sync Official KM.");
+      return;
+    }
     if (Number(officialDistance) <= 0) {
       setError("Isi Official Trip Distance lebih dari 0 KM sebelum sinkronisasi.");
       return;
@@ -898,7 +902,13 @@ export default function VoyagerPage() {
               <button
                 type="button"
                 className="primary-action"
-                disabled={saving || syncing || selectedMembers.length === 0 || Number(officialDistance) <= 0}
+                disabled={
+                  saving ||
+                  syncing ||
+                  manageEvent.status === "draft" ||
+                  selectedMembers.length === 0 ||
+                  Number(officialDistance) <= 0
+                }
                 onClick={() => void syncOfficialKm()}
               >
                 <Route />
