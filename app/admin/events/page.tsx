@@ -210,7 +210,15 @@ export default function AdminEventsPage() {
   }, [accessLoading, account?.status, account?.role]);
 
   useEffect(() => {
-    if (!accessLoading) void load();
+    if (
+      accessLoading ||
+      account?.status !== "active" ||
+      !canManage(account.role)
+    ) {
+      return;
+    }
+
+    void load();
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
       .channel("admin-events-live")
@@ -226,7 +234,7 @@ export default function AdminEventsPage() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [accessLoading, invalidateAgendaCaches, load]);
+  }, [accessLoading, account?.role, account?.status, invalidateAgendaCaches, load]);
   const reset = () => {
     setEditing(null);
     setTitle("");
