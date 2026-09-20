@@ -99,6 +99,13 @@ export default function AdminEventsPage() {
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
   const [participantQuery, setParticipantQuery] = useState("");
   const [syncing, setSyncing] = useState(false);
+  const invalidateAgendaCaches = useCallback(() => {
+    invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+  }, [invalidateCache]);
+
   const load = useCallback(async (forceRefresh = false) => {
     if (account?.status !== "active" || !canManage(account.role)) {
       setLoading(false);
@@ -211,9 +218,7 @@ export default function AdminEventsPage() {
         "postgres_changes",
         { event: "*", schema: "public", table: "events" },
         () => {
-          invalidateCache("admin:events:");
-          invalidateCache("dashboard_upcoming_events");
-          invalidateCache("voyager:");
+          invalidateAgendaCaches();
           void load(true);
         }
       )
@@ -221,7 +226,7 @@ export default function AdminEventsPage() {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [accessLoading, invalidateCache, load]);
+  }, [accessLoading, invalidateAgendaCaches, load]);
   const reset = () => {
     setEditing(null);
     setTitle("");
@@ -327,10 +332,7 @@ export default function AdminEventsPage() {
     if (activityError) {
       setError(`Agenda tersimpan, tetapi pengaturan aktivitas gagal: ${activityError.message}`);
       setSaving(false);
-      invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-    invalidateCache("riding:");
+      invalidateAgendaCaches();
     await load(true);
       return;
     }
@@ -341,10 +343,7 @@ export default function AdminEventsPage() {
         : "Draft agenda berhasil dibuat. Publikasikan saat siap.",
     );
     reset();
-    invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-    invalidateCache("riding:");
+    invalidateAgendaCaches();
     await load(true);
     setSaving(false);
   };
@@ -416,10 +415,7 @@ export default function AdminEventsPage() {
 
     const count = Number((data as { synced_members?: number } | null)?.synced_members) || 0;
     setMessage(`Official KM berhasil disinkronkan ke ${count} member.`);
-    invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-    invalidateCache("riding:");
+    invalidateAgendaCaches();
     await load(true);
   };
 
@@ -450,10 +446,7 @@ export default function AdminEventsPage() {
       if (delError) return setError(delError.message);
     }
     setMessage(`Agenda "${event.title}" berhasil dihapus secara permanen.`);
-    invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-    invalidateCache("riding:");
+    invalidateAgendaCaches();
     await load(true);
   };
 
@@ -487,10 +480,7 @@ export default function AdminEventsPage() {
           ? "Agenda masuk History komunitas."
           : "Agenda dipublikasikan.",
       );
-      invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-    invalidateCache("riding:");
+      invalidateAgendaCaches();
     await load(true);
     }
   };
