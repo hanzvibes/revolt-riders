@@ -69,3 +69,13 @@ test("public join and ride mutations stay behind scoped RPCs", async () => {
   assert.match(migration, /revoke execute on function public\.manage_ride_log/);
   assert.match(migration, /get_public_join_request/);
 });
+
+
+test("processed ride logs are immutable to regular members", async () => {
+  const migration = await read("supabase/migrations/20260920064553_lock_processed_ride_mutations.sql");
+  assert.match(migration, /target_record\.status <> 'pending'::public\.ride_status/);
+  assert.match(migration, /Ride yang sudah diproses tidak dapat diubah atau dihapus oleh member/);
+  assert.match(migration, /for update/);
+  assert.match(migration, /revoke all on function public\.manage_ride_log/);
+  assert.match(migration, /grant execute on function public\.manage_ride_log.*authenticated/);
+});
