@@ -522,7 +522,7 @@ export default function VoyagerPage() {
               <p>Agenda utama, jarak resmi, participant, dan status Mandatory dalam satu kartu.</p>
             </span>
             {canManage && (
-              <Link className="voyager-create-action" href="/admin/events">
+              <Link className="voyager-create-action" href="/admin/events?create=voyager">
                 <Plus /> Buat Voyager
               </Link>
             )}
@@ -566,7 +566,7 @@ export default function VoyagerPage() {
                   participant, Official KM, gallery, dan history akan terhubung otomatis.
                 </p>
               </div>
-              {canManage && <Link href="/admin/events">Buat Voyager Pertama</Link>}
+              {canManage && <Link href="/admin/events?create=voyager">Buat Voyager Pertama</Link>}
             </div>
           )}
         </section>
