@@ -17,6 +17,7 @@ import {
   Pencil,
   Plus,
   Route,
+  Share2,
   Trash2,
   X,
 } from "lucide-react";
@@ -204,6 +205,49 @@ export default function RidingPage() {
   const approvedRides = useMemo(() => rides.filter((r) => r.status === "approved"), [rides]);
   const totalVerifiedKm = profile?.total_km ?? approvedRides.reduce((sum, r) => sum + (r.distance_km ?? 0), 0);
   const displayName = profile?.nickname || profile?.full_name || activeAccount?.member_external_id || "Rider";
+  const recapYear = new Date().getFullYear();
+  const yearApprovedRides = approvedRides.filter((ride) => {
+    const date = new Date(ride.created_at);
+    return !Number.isNaN(date.getTime()) && date.getFullYear() === recapYear;
+  });
+  const yearKm = yearApprovedRides.reduce((sum, ride) => sum + (ride.distance_km ?? 0), 0);
+  const longestRideKm = yearApprovedRides.reduce(
+    (max, ride) => Math.max(max, ride.distance_km ?? 0),
+    0,
+  );
+  const activeRideMonths = new Set(
+    yearApprovedRides.map((ride) => {
+      const date = new Date(ride.created_at);
+      return `${date.getFullYear()}-${date.getMonth() + 1}`;
+    }),
+  ).size;
+
+  const shareRideRecap = async () => {
+    const recapText = [
+      `REVOLT RIDERS · RIDE RECAP ${recapYear}`,
+      displayName,
+      `${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(yearKm)} KM terverifikasi`,
+      `${yearApprovedRides.length} ride disetujui`,
+      `Longest ride ${new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(longestRideKm)} KM`,
+      `${activeRideMonths} bulan aktif riding`,
+    ].join("\n");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: `Revolt Riders Ride Recap ${recapYear}`,
+          text: recapText,
+        });
+        return;
+      }
+      await navigator.clipboard.writeText(recapText);
+      setMessage("Ride Recap berhasil disalin. Tinggal paste ke WhatsApp atau Instagram.");
+    } catch (cause) {
+      if ((cause as { name?: string })?.name !== "AbortError") {
+        setError("Ride Recap belum dapat dibagikan dari browser ini.");
+      }
+    }
+  };
 
   if (accessLoading || (activeAccount && loadingData)) {
     return (
@@ -305,6 +349,39 @@ export default function RidingPage() {
           </div>
 
           <RidingStatChart rides={rides} />
+
+          {activeAccount && (
+            <section className="riding-recap-strip" aria-label={`Ride Recap ${recapYear}`}>
+              <div className="riding-recap-head">
+                <span>
+                  <small>RIDE RECAP {recapYear}</small>
+                  <strong>Jejak jalan tahun ini</strong>
+                </span>
+                <button type="button" onClick={() => void shareRideRecap()}>
+                  <Share2 aria-hidden="true" />
+                  Share
+                </button>
+              </div>
+              <div className="riding-recap-grid">
+                <span>
+                  <small>KM</small>
+                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(yearKm)}</b>
+                </span>
+                <span>
+                  <small>Ride</small>
+                  <b>{yearApprovedRides.length}</b>
+                </span>
+                <span>
+                  <small>Longest</small>
+                  <b>{new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(longestRideKm)} KM</b>
+                </span>
+                <span>
+                  <small>Bulan aktif</small>
+                  <b>{activeRideMonths}</b>
+                </span>
+              </div>
+            </section>
+          )}
 
           {pendingRides.length > 0 && (
             <div
