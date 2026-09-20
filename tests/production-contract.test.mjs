@@ -79,3 +79,45 @@ test("processed ride logs are immutable to regular members", async () => {
   assert.match(migration, /revoke all on function public\.manage_ride_log/);
   assert.match(migration, /grant execute on function public\.manage_ride_log.*authenticated/);
 });
+
+
+test("anonymous table access is least-privilege", async () => {
+  const migration = await read("supabase/migrations/20260920064956_least_privilege_public_tables.sql");
+
+  assert.match(migration, /revoke all privileges on table public\.join_requests from anon/);
+  assert.match(migration, /revoke all privileges on table public\.member_profiles from anon/);
+  assert.match(migration, /revoke all privileges on table public\.member_details from anon/);
+  assert.match(migration, /revoke all privileges on table public\.ride_logs from anon/);
+  assert.match(migration, /grant select on table public\.club_gallery to anon/);
+  assert.match(migration, /ride_logs_authenticated_approved_read/);
+});
+
+
+test("account approval cannot assign privileged roles", async () => {
+  const migration = await read("supabase/migrations/20260920065114_lock_account_approval_role.sql");
+  assert.match(migration, /coalesce\(nullif\(trim\(p_role\), ''\), 'member'\) <> 'member'/);
+  assert.match(migration, /values \(v_request\.user_id, v_request\.member_external_id, 'member'::public\.app_role\)/);
+  assert.match(migration, /Perubahan role hanya dapat dilakukan oleh Superadmin/);
+  assert.match(migration, /revoke all on function public\.approve_member_account_request.*anon/);
+});
+
+
+test("member account claims are validated at database boundary", async () => {
+  const migration = await read("supabase/migrations/20260920065320_validate_member_account_claims.sql");
+  assert.match(migration, /idx_member_account_requests_pending_member_ext_unique/);
+  assert.match(migration, /\^RR-\[0-9\]\{3,\}\$/);
+  assert.match(migration, /ID member tidak terdaftar sebagai member resmi/);
+  assert.match(migration, /ID member sudah terhubung ke akun lain/);
+  assert.match(migration, /status = 'pending'::public\.account_request_status/);
+});
+
+
+test("internal member reads require active accounts and leaderboard uses one KM source", async () => {
+  const migration = await read("supabase/migrations/20260920065523_require_active_member_and_fix_leaderboard_source.sql");
+  assert.match(migration, /ma\.status = 'active'::public\.account_status/);
+  assert.match(migration, /member_profiles_authenticated_read/);
+  assert.match(migration, /member_details_authenticated_read/);
+  assert.match(migration, /ride_logs_authenticated_approved_read/);
+  assert.match(migration, /round\(coalesce\(mp\.total_km, 0\)\)::numeric as total_km/);
+  assert.doesNotMatch(migration, /mp\.total_km.*sum\(rl\.distance_km\)/s);
+});
