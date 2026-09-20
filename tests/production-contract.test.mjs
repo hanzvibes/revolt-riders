@@ -121,3 +121,22 @@ test("internal member reads require active accounts and leaderboard uses one KM 
   assert.match(migration, /round\(coalesce\(mp\.total_km, 0\)\)::numeric as total_km/);
   assert.doesNotMatch(migration, /mp\.total_km.*sum\(rl\.distance_km\)/s);
 });
+
+
+test("My Garage mutations remain owner-authorized and RPC-only", async () => {
+  const migration = await read("supabase/migrations/20260920070800_add_member_motorcycle_garage.sql");
+  const page = await read("app/garage/page.tsx");
+
+  assert.match(migration, /member_motorcycles_one_primary_idx/);
+  assert.match(migration, /ma\.status = 'active'::public\.account_status/);
+  assert.match(migration, /ma\.member_external_id = member_motorcycles\.member_external_id/);
+  assert.match(migration, /revoke all privileges on table public\.member_motorcycles from anon/);
+  assert.match(migration, /revoke insert, update, delete on table public\.member_motorcycles from authenticated/);
+  assert.match(migration, /save_member_motorcycle/);
+  assert.match(migration, /delete_member_motorcycle/);
+  assert.match(migration, /Motor tidak ditemukan atau bukan milik akun ini/);
+
+  assert.match(page, /rpc\(\s*"save_member_motorcycle"/);
+  assert.match(page, /rpc\(\s*"delete_member_motorcycle"/);
+  assert.doesNotMatch(page, /from\("member_motorcycles"\)\.(insert|update|delete)/);
+});
