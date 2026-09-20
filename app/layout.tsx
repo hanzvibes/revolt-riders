@@ -1,5 +1,6 @@
 import { PwaRegister } from "@/components/pwa-register";
 import type { Metadata, Viewport } from "next";
+import "./tokens.css";
 import "./globals.css";
 import "./polish.css";
 import "./checkin-qr.css";
