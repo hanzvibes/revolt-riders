@@ -7708,3 +7708,17 @@
     grid-column: 1 / -1;
   }
 }
+
+
+.app-shell .member-passport-meta-link {
+  grid-column: 2;
+  color: var(--rr-red);
+  font-size: .56rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.app-shell .member-passport-meta-link:hover {
+  text-decoration: underline;
+}
