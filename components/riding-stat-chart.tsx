@@ -1,7 +1,7 @@
 "use client";
 
 import { CountUpNumber } from "@/components/count-up-number";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Area,
   AreaChart,
@@ -42,6 +42,15 @@ const formatShortDate = (value: string) =>
 
 export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
   const [range, setRange] = useState<RangeKey>("90d");
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(media.matches);
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  }, []);
 
   const chartData = useMemo(() => {
     const option = RANGE_OPTIONS.find((item) => item.key === range) ?? RANGE_OPTIONS[1];
@@ -146,8 +155,8 @@ export function RidingStatChart({ rides }: { rides: RidingChartRide[] }) {
                   fill="url(#ridingKmFill)"
                   activeDot={{ r: 4.5, fill: "#dc1b2a", stroke: "#fff", strokeWidth: 2 }}
                   dot={{ r: 2.5, fill: "#121416", stroke: "#dc1b2a", strokeWidth: 1.5 }}
-                  isAnimationActive
-                  animationDuration={1300}
+                  isAnimationActive={!reduceMotion}
+                  animationDuration={reduceMotion ? 0 : 240}
                   animationEasing="ease-out"
                 />
               </AreaChart>
