@@ -407,7 +407,7 @@ export default function DashboardPage() {
                   : "Road level tertinggi tercapai"}
               </small>
               <Link href="/profil">
-                {riderProgress.unlockedBadges.length}/{riderProgress.badges.length} badge
+                {riderProgress.unlockedBadges.length} badge terbuka
                 <ChevronRight aria-hidden="true" />
               </Link>
             </div>
