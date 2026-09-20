@@ -20,6 +20,29 @@
   --rr-radius-md: 13px;
   --rr-radius-lg: 16px;
   --rr-radius-xl: 20px;
+  --rr-radius-pill: 999px;
+
+  /* Spacing scale */
+  --rr-space-1: 4px;
+  --rr-space-2: 8px;
+  --rr-space-3: 12px;
+  --rr-space-4: 16px;
+  --rr-space-5: 20px;
+  --rr-space-6: 24px;
+  --rr-space-8: 32px;
+
+  /* Shared control geometry */
+  --rr-control-sm: 36px;
+  --rr-control-md: 40px;
+  --rr-control-lg: 44px;
+  --rr-control-radius: 10px;
+
+  /* Shared elevation + focus */
+  --rr-shadow-soft: 0 6px 18px rgba(20, 22, 24, .07);
+  --rr-shadow-card: 0 10px 28px rgba(20, 22, 24, .10);
+  --rr-shadow-sheet: 0 -16px 42px rgba(10, 12, 14, .14);
+  --rr-focus-outline: rgba(220, 27, 42, .52);
+  --rr-focus-ring: 0 0 0 3px rgba(220, 27, 42, .09);
   min-height: 100dvh;
   background: var(--rr-bg);
   color: var(--rr-ink);
@@ -59,7 +82,7 @@
 .app-shell input:focus-visible,
 .app-shell select:focus-visible,
 .app-shell textarea:focus-visible {
-  outline: 2px solid rgba(229, 29, 42, .55);
+  outline: 2px solid var(--rr-focus-outline);
   outline-offset: 2px;
 }
 
@@ -389,12 +412,12 @@
 
 .app-shell .page-intro button,
 .app-shell .outline-action {
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   border: 1px solid var(--rr-line);
-  border-radius: 10px;
+  border-radius: var(--rr-control-radius);
   background: #fff;
   color: #555b60;
-  padding: 0 13px;
+  padding: 0 var(--rr-space-3);
   font-size: .64rem;
   font-weight: 700;
   box-shadow: none;
@@ -419,11 +442,11 @@
 }
 
 .app-shell .card {
-  padding: 20px;
+  padding: var(--rr-space-5);
 }
 
 .app-shell .section-title {
-  gap: 12px;
+  gap: var(--rr-space-3);
   margin-bottom: 14px;
 }
 
@@ -469,11 +492,11 @@
 .app-shell .primary-action,
 .app-shell .dark-action,
 .app-shell .cash-add-button {
-  min-height: 42px;
+  min-height: var(--rr-control-lg);
   border: 0;
-  border-radius: 10px;
+  border-radius: var(--rr-control-radius);
   box-shadow: none;
-  padding: 0 15px;
+  padding: 0 var(--rr-space-4);
   font-size: .64rem;
   font-weight: 700;
   letter-spacing: 0;
@@ -516,7 +539,7 @@
 .app-shell select,
 .app-shell textarea {
   border-color: var(--rr-line);
-  border-radius: 10px;
+  border-radius: var(--rr-control-radius);
   background: #fafafa;
   color: var(--rr-ink);
 }
@@ -531,7 +554,7 @@
 .app-shell textarea:focus {
   border-color: #bdc2c5;
   background: #fff;
-  box-shadow: 0 0 0 3px rgba(24, 26, 28, .055);
+  box-shadow: var(--rr-focus-ring);
 }
 
 .app-shell .form-card,
@@ -628,12 +651,12 @@
 .app-shell .agenda-tabs,
 .app-shell .finance-segments,
 .app-shell .admin-member-tabs {
-  gap: 4px;
+  gap: var(--rr-space-1);
   width: max-content;
   max-width: 100%;
-  padding: 4px;
+  padding: var(--rr-space-1);
   border: 1px solid #eceeef;
-  border-radius: 11px;
+  border-radius: var(--rr-radius-md);
   background: #f1f2f2;
   overflow-x: auto;
 }
@@ -641,9 +664,9 @@
 .app-shell .agenda-tabs button,
 .app-shell .finance-segments button,
 .app-shell .admin-member-tab-btn {
-  min-height: 34px;
+  min-height: var(--rr-control-sm);
   border: 0;
-  border-radius: 8px;
+  border-radius: var(--rr-radius-sm);
   background: transparent;
   color: #777d81;
   box-shadow: none;
@@ -1018,7 +1041,7 @@
 .app-shell .native-sheet {
   border-color: #e3e5e6;
   background: #fff;
-  box-shadow: 0 -16px 42px rgba(10, 12, 14, .14);
+  box-shadow: var(--rr-shadow-sheet);
 }
 
 .app-shell .native-sheet-handle::after {
@@ -7061,5 +7084,98 @@
   .native-sheet > header h2,
   .app-shell .tour-modal-header h3 {
     font-size: 1rem !important;
+  }
+}
+
+
+/* =========================================================
+   Design token consolidation
+   Final geometry source-of-truth for shared app controls.
+   ========================================================= */
+.app-shell .primary-action,
+.app-shell .outline-action,
+.app-shell .dark-action,
+.app-shell .login-link,
+.app-shell .native-sheet .sheet-actions .primary-action,
+.app-shell .native-sheet .sheet-actions .outline-action {
+  min-height: var(--rr-control-lg);
+  border-radius: var(--rr-control-radius);
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell textarea,
+.app-shell .sheet-form input,
+.app-shell .sheet-form select,
+.app-shell .sheet-form textarea,
+.app-shell .manual-checkin form select,
+.app-shell .admin-checkin-card form select,
+.app-shell .rsvp-select select {
+  border-radius: var(--rr-control-radius) !important;
+}
+
+.app-shell input,
+.app-shell select,
+.app-shell .sheet-form input,
+.app-shell .sheet-form select,
+.app-shell .manual-checkin form select,
+.app-shell .admin-checkin-card form select,
+.app-shell .rsvp-select select {
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell .agenda-tabs,
+.app-shell .finance-segments,
+.app-shell .admin-member-tabs {
+  gap: var(--rr-space-1);
+  padding: var(--rr-space-1);
+  border-radius: var(--rr-radius-md);
+}
+
+.app-shell .agenda-tabs button,
+.app-shell .finance-segments button,
+.app-shell .admin-member-tab-btn {
+  min-height: var(--rr-control-sm);
+  border-radius: var(--rr-radius-sm);
+}
+
+.app-shell .card,
+.app-shell .agenda-detail,
+.app-shell .member-card,
+.app-shell .admin-mobile-card,
+.app-shell .admin-member-table-card,
+.app-shell .form-card,
+.app-shell .finance-entry {
+  border-radius: var(--rr-radius-lg);
+}
+
+.app-shell .native-sheet > header,
+.app-shell .native-sheet-body,
+.app-shell .native-sheet .sheet-actions {
+  --rr-sheet-inline: var(--rr-space-5);
+}
+
+.app-shell .native-sheet > header {
+  padding-left: var(--rr-sheet-inline);
+  padding-right: var(--rr-sheet-inline);
+}
+
+.app-shell .native-sheet-body {
+  padding-left: var(--rr-sheet-inline);
+  padding-right: var(--rr-sheet-inline);
+}
+
+.app-shell .native-sheet .sheet-actions {
+  padding-left: var(--rr-sheet-inline);
+  padding-right: var(--rr-sheet-inline);
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    --rr-sheet-inline: var(--rr-space-4);
+  }
+
+  .app-shell .card {
+    padding: var(--rr-space-4);
   }
 }
