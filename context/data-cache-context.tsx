@@ -77,6 +77,8 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
       setUser(nextUser);
 
       if (userError || !nextUser) {
+        cacheRef.current.clear();
+        inFlightRef.current.clear();
         setAccount(null);
         if (userError && !userError.message.includes("Auth session missing")) {
           setError("Sesi akun belum dapat diperiksa.");
