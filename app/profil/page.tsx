@@ -609,7 +609,7 @@ export default function ProfilePage() {
                 });
                 setEditModalOpen(true);
               }}
-              style={{ height: "36px", padding: "0 14px", fontSize: "0.68rem", borderRadius: "8px" }}
+              style={{ paddingInline: "14px" }}
             >
               <Plus size={14} /> Catat Riwayat
             </button>
