@@ -330,6 +330,10 @@
 }
 
 @media (max-width: 480px) {
+  .auth-input-wrap input {
+    font-size: 16px !important;
+  }
+
   .auth-card {
     padding: 0 20px 24px !important;
     margin-top: 36px !important;
