@@ -3,6 +3,8 @@
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
+import { PageSkeleton } from "@/components/skeleton";
+import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -50,6 +52,12 @@ type Member = {
   city: string | null;
 };
 type Participant = { event_id: string; member_external_id: string };
+type AdminEventsSnapshot = {
+  events: Event[];
+  rsvps: Rsvp[];
+  members: Member[];
+  participants: Participant[];
+};
 const canManage = (role?: string) => role === "admin" || role === "superadmin";
 const slugify = (value: string) =>
   value
@@ -63,6 +71,7 @@ const toInputDate = (value: string | null) =>
 
 export default function AdminEventsPage() {
   const { user, account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [events, setEvents] = useState<Event[]>([]);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
@@ -90,41 +99,76 @@ export default function AdminEventsPage() {
   const [selectedParticipants, setSelectedParticipants] = useState<string[]>([]);
   const [participantQuery, setParticipantQuery] = useState("");
   const [syncing, setSyncing] = useState(false);
-  const load = useCallback(async () => {
+  const load = useCallback(async (forceRefresh = false) => {
     if (account?.status !== "active" || !canManage(account.role)) {
       setLoading(false);
       return;
     }
-    const supabase = getSupabaseBrowserClient();
-    const [eventResult, rsvpResult, memberResult, participantResult] = await Promise.all([
-      supabase
-        .from("events")
-        .select(
-          "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,is_public,cancellation_reason,counts_as_mandatory,official_distance_km,official_support,activity_summary",
-        )
-        .order("start_at", { ascending: false }),
-      supabase.from("event_rsvps").select("event_id,status"),
-      supabase
-        .from("member_profiles")
-        .select("member_external_id,full_name,nickname,city")
-        .order("full_name", { ascending: true }),
-      supabase.from("event_participants").select("event_id,member_external_id"),
-    ]);
-    if (eventResult.error) setError(eventResult.error.message);
-    else if (memberResult.error) setError(memberResult.error.message);
-    else if (participantResult.error) setError(participantResult.error.message);
-    setEvents(
-      ((eventResult.data ?? []) as Event[]).map((item) => ({
-        ...item,
-        official_distance_km:
-          item.official_distance_km === null ? null : Number(item.official_distance_km),
-      })),
-    );
-    setRsvps((rsvpResult.data ?? []) as Rsvp[]);
-    setMembers((memberResult.data ?? []) as Member[]);
-    setParticipants((participantResult.data ?? []) as Participant[]);
-    setLoading(false);
-  }, [account]);
+
+    if (!forceRefresh) setLoading(true);
+    setError("");
+
+    try {
+      const snapshot = await fetchWithCache<AdminEventsSnapshot>(
+        "admin:events:workspace",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [eventResult, rsvpResult, memberResult, participantResult] =
+            await Promise.all([
+              supabase
+                .from("events")
+                .select(
+                  "id,title,type,description,location_name,location_url,start_at,meetup_at,end_at,status,is_public,cancellation_reason,counts_as_mandatory,official_distance_km,official_support,activity_summary",
+                )
+                .order("start_at", { ascending: false }),
+              supabase.from("event_rsvps").select("event_id,status"),
+              supabase
+                .from("member_profiles")
+                .select("member_external_id,full_name,nickname,city")
+                .order("full_name", { ascending: true }),
+              supabase
+                .from("event_participants")
+                .select("event_id,member_external_id"),
+            ]);
+
+          const failed =
+            eventResult.error ||
+            rsvpResult.error ||
+            memberResult.error ||
+            participantResult.error;
+          if (failed) throw failed;
+
+          return {
+            events: ((eventResult.data ?? []) as Event[]).map((item) => ({
+              ...item,
+              official_distance_km:
+                item.official_distance_km === null
+                  ? null
+                  : Number(item.official_distance_km),
+            })),
+            rsvps: (rsvpResult.data ?? []) as Rsvp[],
+            members: (memberResult.data ?? []) as Member[],
+            participants: (participantResult.data ?? []) as Participant[],
+          };
+        },
+        { ttlMs: 30_000, forceRefresh },
+      );
+
+      setEvents(snapshot.events);
+      setRsvps(snapshot.rsvps);
+      setMembers(snapshot.members);
+      setParticipants(snapshot.participants);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Data agenda belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [account, fetchWithCache]);
+
   useEffect(() => {
     if (
       accessLoading ||
@@ -166,13 +210,18 @@ export default function AdminEventsPage() {
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "events" },
-        () => void load()
+        () => {
+          invalidateCache("admin:events:");
+          invalidateCache("dashboard_upcoming_events");
+          invalidateCache("voyager:");
+          void load(true);
+        }
       )
       .subscribe();
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [accessLoading, load]);
+  }, [accessLoading, invalidateCache, load]);
   const reset = () => {
     setEditing(null);
     setTitle("");
@@ -278,7 +327,11 @@ export default function AdminEventsPage() {
     if (activityError) {
       setError(`Agenda tersimpan, tetapi pengaturan aktivitas gagal: ${activityError.message}`);
       setSaving(false);
-      await load();
+      invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+    await load(true);
       return;
     }
 
@@ -288,7 +341,11 @@ export default function AdminEventsPage() {
         : "Draft agenda berhasil dibuat. Publikasikan saat siap.",
     );
     reset();
-    await load();
+    invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+    await load(true);
     setSaving(false);
   };
   const toggleParticipant = (memberId: string) => {
@@ -359,7 +416,11 @@ export default function AdminEventsPage() {
 
     const count = Number((data as { synced_members?: number } | null)?.synced_members) || 0;
     setMessage(`Official KM berhasil disinkronkan ke ${count} member.`);
-    await load();
+    invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+    await load(true);
   };
 
   const deletePermanently = async (event: Event) => {
@@ -389,7 +450,11 @@ export default function AdminEventsPage() {
       if (delError) return setError(delError.message);
     }
     setMessage(`Agenda "${event.title}" berhasil dihapus secara permanen.`);
-    await load();
+    invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+    await load(true);
   };
 
   const changeStatus = async (event: Event, status: EventStatus) => {
@@ -422,7 +487,11 @@ export default function AdminEventsPage() {
           ? "Agenda masuk History komunitas."
           : "Agenda dipublikasikan.",
       );
-      await load();
+      invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+    invalidateCache("riding:");
+    await load(true);
     }
   };
   const visible = useMemo(
@@ -448,9 +517,7 @@ export default function AdminEventsPage() {
   if (accessLoading || loading)
     return (
       <AppShell active="Kelola Agenda" title="Manajemen Agenda">
-        <div className="page-wrap">
-          <p>Memeriksa agenda…</p>
-        </div>
+        <PageSkeleton title="Memuat Manajemen Agenda..." />
       </AppShell>
     );
   if (account?.status !== "active" || !canManage(account?.role))
