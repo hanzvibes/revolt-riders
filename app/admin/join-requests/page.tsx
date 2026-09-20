@@ -1229,7 +1229,6 @@ export default function AdminJoinRequestsPage() {
                   border: 0,
                   borderRadius: 8,
                   padding: "9px 18px",
-                  fontSize: "0.78rem",
                   fontWeight: 700,
                   cursor: "pointer",
                 }}
@@ -1246,7 +1245,6 @@ export default function AdminJoinRequestsPage() {
                   border: 0,
                   borderRadius: 8,
                   padding: "9px 20px",
-                  fontSize: "0.78rem",
                   fontWeight: 800,
                   cursor: "pointer",
                   display: "inline-flex",
