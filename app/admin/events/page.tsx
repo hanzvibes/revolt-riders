@@ -190,8 +190,7 @@ export default function AdminEventsPage() {
       p_event_id: event.id,
     });
     if (rpcError) {
-      // Fallback manual cleanup
-      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", event.id);
+      // Fallback manual cleanup\n      await supabase.from("ride_logs").delete().eq("event_id", event.id).eq("source_type", "official_agenda");\n      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", event.id).neq("source_type", "official_agenda");\n      await supabase.from("club_gallery").delete().eq("event_id", event.id);\n      await supabase.from("event_participants").delete().eq("event_id", event.id);
       await supabase.from("event_checkin_codes").delete().eq("event_id", event.id);
       await supabase.from("event_attendance").delete().eq("event_id", event.id);
       await supabase.from("event_rsvps").delete().eq("event_id", event.id);
@@ -218,8 +217,7 @@ export default function AdminEventsPage() {
       cancelled_at: null,
       cancelled_by: null,
       cancellation_reason: null,
-      published_at:
-        status === "published" ? new Date().toISOString() : undefined,
+      published_at:\n        status === "published" ? new Date().toISOString() : undefined,\n      completed_at: status === "completed" ? new Date().toISOString() : undefined,
     };
     const { error: updateError } = await getSupabaseBrowserClient()
       .from("events")
@@ -430,8 +428,7 @@ export default function AdminEventsPage() {
                 <option value="kopdar">Kopdar</option>
                 <option value="riding">Riding</option>
                 <option value="touring">Touring</option>
-                <option value="social">Social</option>
-                <option value="other">Lainnya</option>
+                <option value="social">Social</option>\n                <option value="voyager">Voyager</option>\n                <option value="other">Lainnya</option>
               </select>
             </label>
             <label className="field-location">
