@@ -437,7 +437,8 @@ test("UI audit budgets prevent legacy design debt from silently increasing", asy
   assert.match(audit, /tiny typography debt increased/);
   assert.match(audit, /hard-coded color debt increased/);
   assert.match(audit, /!important debt increased/);
-  assert.match(audit, /window\.\(\?:confirm\|prompt\)/);
+  assert.match(audit, /nativeDialogCount/);
+  assert.match(audit, /window\.\\\.\(\?:confirm\|prompt\)/);
   assert.match(audit, /24-43px height/);
 });
 
