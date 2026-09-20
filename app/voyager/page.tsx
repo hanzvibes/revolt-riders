@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -76,6 +77,14 @@ type VoyagerEventRow = Omit<VoyagerEvent, "official_distance_km"> & {
   official_distance_km: number | string | null;
 };
 
+type VoyagerSnapshot = {
+  events: VoyagerEvent[];
+  members: Member[];
+  participants: Participant[];
+  photos: GalleryPhoto[];
+  mandatoryKm: number;
+};
+
 const isAdminRole = (role?: string) => role === "admin" || role === "superadmin";
 
 const formatDate = (value: string) =>
@@ -89,6 +98,7 @@ const formatKm = (value: number | null | undefined) =>
 
 export default function VoyagerPage() {
   const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache } = useDataCache();
   const [events, setEvents] = useState<VoyagerEvent[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -114,103 +124,121 @@ export default function VoyagerPage() {
   const activeAccount = account?.status === "active" ? account : null;
   const canManage = Boolean(activeAccount && isAdminRole(activeAccount.role));
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (forceRefresh = false) => {
     if (!activeAccount) {
       setLoading(false);
       return;
     }
 
     setError("");
-    const supabase = getSupabaseBrowserClient();
     try {
       const year = new Date().getFullYear();
       const startYear = new Date(Date.UTC(year, 0, 1)).toISOString();
       const nextYear = new Date(Date.UTC(year + 1, 0, 1)).toISOString();
+      const cacheKey = `voyager:${activeAccount.member_external_id}:${year}`;
 
-      const [eventsRes, membersRes, ridesRes] = await Promise.all([
-        supabase
-          .from("events")
-          .select(
-            "id,title,slug,description,location_name,location_url,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at",
-          )
-          .eq("type", "voyager")
-          .order("start_at", { ascending: false }),
-        supabase
-          .from("member_profiles")
-          .select("member_external_id,full_name,nickname,city")
-          .order("full_name", { ascending: true }),
-        supabase
-          .from("ride_logs")
-          .select("distance_km")
-          .eq("member_external_id", activeAccount.member_external_id)
-          .eq("status", "approved")
-          .eq("counts_as_mandatory", true)
-          .gte("created_at", startYear)
-          .lt("created_at", nextYear),
-      ]);
+      const snapshot = await fetchWithCache<VoyagerSnapshot>(
+        cacheKey,
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [eventsRes, membersRes, ridesRes] = await Promise.all([
+            supabase
+              .from("events")
+              .select(
+                "id,title,slug,description,location_name,location_url,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at",
+              )
+              .eq("type", "voyager")
+              .order("start_at", { ascending: false }),
+            supabase
+              .from("member_profiles")
+              .select("member_external_id,full_name,nickname,city")
+              .order("full_name", { ascending: true }),
+            supabase
+              .from("ride_logs")
+              .select("distance_km")
+              .eq("member_external_id", activeAccount.member_external_id)
+              .eq("status", "approved")
+              .eq("counts_as_mandatory", true)
+              .gte("created_at", startYear)
+              .lt("created_at", nextYear),
+          ]);
 
-      if (eventsRes.error) throw eventsRes.error;
-      if (membersRes.error) throw membersRes.error;
-      if (ridesRes.error) throw ridesRes.error;
+          if (eventsRes.error) throw eventsRes.error;
+          if (membersRes.error) throw membersRes.error;
+          if (ridesRes.error) throw ridesRes.error;
 
-      const eventRows = ((eventsRes.data ?? []) as VoyagerEventRow[]).map((item) => ({
-        ...item,
-        official_distance_km:
-          item.official_distance_km === null ? null : Number(item.official_distance_km),
-      }));
+          const eventRows = ((eventsRes.data ?? []) as VoyagerEventRow[]).map((item) => ({
+            ...item,
+            official_distance_km:
+              item.official_distance_km === null ? null : Number(item.official_distance_km),
+          }));
+          const memberRows = (membersRes.data ?? []) as Member[];
+          const mandatoryTotal = ((ridesRes.data ?? []) as RideRow[]).reduce(
+            (sum, row) => sum + (Number(row.distance_km) || 0),
+            0,
+          );
 
-      setEvents(eventRows);
-      setMembers((membersRes.data ?? []) as Member[]);
-      setMandatoryKm(
-        ((ridesRes.data ?? []) as RideRow[]).reduce(
-          (sum, row) => sum + (Number(row.distance_km) || 0),
-          0,
-        ),
-      );
-
-      const eventIds = eventRows.map((item) => item.id);
-      if (eventIds.length === 0) {
-        setParticipants([]);
-        setPhotos([]);
-        return;
-      }
-
-      const [participantsRes, photosRes] = await Promise.all([
-        supabase
-          .from("event_participants")
-          .select("event_id,member_external_id")
-          .in("event_id", eventIds),
-        supabase
-          .from("club_gallery")
-          .select("id,event_id,title,image_url,location,ride_date")
-          .in("event_id", eventIds)
-          .order("created_at", { ascending: true }),
-      ]);
-
-      if (participantsRes.error) throw participantsRes.error;
-      if (photosRes.error) throw photosRes.error;
-
-      setParticipants((participantsRes.data ?? []) as Participant[]);
-
-      const rawPhotos = (photosRes.data ?? []) as GalleryPhoto[];
-      const resolvedPhotos = await Promise.all(
-        rawPhotos.map(async (photo) => {
-          if (/^https?:\/\//i.test(photo.image_url)) {
-            return { ...photo, signedUrl: photo.image_url };
+          const eventIds = eventRows.map((item) => item.id);
+          if (eventIds.length === 0) {
+            return {
+              events: eventRows,
+              members: memberRows,
+              participants: [],
+              photos: [],
+              mandatoryKm: mandatoryTotal,
+            };
           }
-          const { data } = await supabase.storage
-            .from("club-activity")
-            .createSignedUrl(photo.image_url, 60 * 60);
-          return { ...photo, signedUrl: data?.signedUrl };
-        }),
+
+          const [participantsRes, photosRes] = await Promise.all([
+            supabase
+              .from("event_participants")
+              .select("event_id,member_external_id")
+              .in("event_id", eventIds),
+            supabase
+              .from("club_gallery")
+              .select("id,event_id,title,image_url,location,ride_date")
+              .in("event_id", eventIds)
+              .order("created_at", { ascending: true }),
+          ]);
+
+          if (participantsRes.error) throw participantsRes.error;
+          if (photosRes.error) throw photosRes.error;
+
+          const rawPhotos = (photosRes.data ?? []) as GalleryPhoto[];
+          const resolvedPhotos = await Promise.all(
+            rawPhotos.map(async (photo) => {
+              if (/^https?:\/\//i.test(photo.image_url)) {
+                return { ...photo, signedUrl: photo.image_url };
+              }
+              const { data } = await supabase.storage
+                .from("club-activity")
+                .createSignedUrl(photo.image_url, 60 * 60);
+              return { ...photo, signedUrl: data?.signedUrl };
+            }),
+          );
+
+          return {
+            events: eventRows,
+            members: memberRows,
+            participants: (participantsRes.data ?? []) as Participant[],
+            photos: resolvedPhotos,
+            mandatoryKm: mandatoryTotal,
+          };
+        },
+        { ttlMs: 90_000, forceRefresh },
       );
-      setPhotos(resolvedPhotos);
+
+      setEvents(snapshot.events);
+      setMembers(snapshot.members);
+      setParticipants(snapshot.participants);
+      setPhotos(snapshot.photos);
+      setMandatoryKm(snapshot.mandatoryKm);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Data Voyager belum dapat dimuat.");
     } finally {
       setLoading(false);
     }
-  }, [activeAccount]);
+  }, [activeAccount, fetchWithCache]);
 
   useEffect(() => {
     if (!accessLoading) void load();
@@ -304,7 +332,7 @@ export default function VoyagerPage() {
 
     if (!silent) {
       setMessage("Pengaturan Voyager dan peserta berhasil disimpan.");
-      await load();
+      await load(true);
     }
     return true;
   };
@@ -349,7 +377,7 @@ export default function VoyagerPage() {
     setMessage(
       `Official KM berhasil disinkronkan ke ${synced} member tanpa membuat duplikat.`,
     );
-    await load();
+    await load(true);
   };
 
   const uploadPhotos = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -399,7 +427,7 @@ export default function VoyagerPage() {
       }
 
       setMessage(`${files.length} foto dokumentasi berhasil ditambahkan.`);
-      await load();
+      await load(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Upload dokumentasi gagal.");
     } finally {
@@ -430,7 +458,7 @@ export default function VoyagerPage() {
     if (rowError) setError(rowError.message);
     else {
       setMessage("Foto dokumentasi dihapus.");
-      await load();
+      await load(true);
     }
   };
 
