@@ -9755,3 +9755,50 @@
     font-size: var(--rr-type-caption);
   }
 }
+
+
+/* ==============================================================================
+   Audit next pass · admin readability and touch resilience
+   ============================================================================== */
+
+.app-shell .checkin-qr-content em,
+.app-shell .checkin-qr-modal p,
+.app-shell .attendance-stats small,
+.app-shell .attendance-list-head small,
+.app-shell .attendance-list small,
+.app-shell .attendance-list em,
+.app-shell .attendance-absent small,
+.app-shell .event-management-list article em,
+.app-shell .event-management-list article small,
+.app-shell .bulletin-management-list span,
+.app-shell .bulletin-management-list small,
+.app-shell .audit-list small,
+.app-shell .audit-list time,
+.app-shell .mapping-grid label em {
+  font-size: var(--rr-type-caption);
+  line-height: 1.35;
+}
+
+.app-shell .checkin-qr-content p,
+.app-shell .checkin-qr-modal small,
+.app-shell .attendance-absent .system-message,
+.app-shell .event-management-list article p {
+  font-size: var(--rr-type-meta);
+  line-height: 1.45;
+}
+
+.app-shell .qr-close {
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell > aside nav a,
+  .app-shell .sidebar-accordion-header,
+  .app-shell .sidebar-tools summary,
+  .app-shell .sidebar-tools nav a,
+  .app-shell .attendance-export,
+  .app-shell .bulletin-actions button {
+    min-height: var(--rr-control-lg);
+  }
+}

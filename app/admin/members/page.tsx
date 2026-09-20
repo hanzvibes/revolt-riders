@@ -5,6 +5,7 @@ import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Check,
@@ -20,9 +21,8 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
-type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Member = {
   member_external_id: string;
   full_name: string;
@@ -44,6 +44,12 @@ type MemberAccount = {
   role: string;
   status: "active" | "inactive" | "pending";
 };
+type MemberAdminSnapshot = {
+  members: Member[];
+  details: Detail[];
+  accounts: MemberAccount[];
+};
+
 type MemberForm = {
   memberId: string;
   fullName: string;
@@ -98,8 +104,8 @@ const getRoleClass = (role: string | null) => {
 };
 
 export default function ManageMembersPage() {
-  const { invalidateCache } = useDataCache();
-  const [account, setAccount] = useState<Account | null>(null);
+  const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [members, setMembers] = useState<Member[]>([]);
   const [details, setDetails] = useState<Detail[]>([]);
   const [accounts, setAccounts] = useState<MemberAccount[]>([]);
@@ -130,65 +136,79 @@ export default function ManageMembersPage() {
     setToast({ text, type });
   };
 
-  const load = async () => {
-    const supabase = getSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    const accountResult = user
-      ? await supabase
-          .from("member_accounts")
-          .select("role,status")
-          .eq("user_id", user.id)
-          .maybeSingle()
-      : { data: null };
-    setAccount(accountResult.data as Account | null);
+  const load = useCallback(async (forceRefresh = false) => {
+    if (accessLoading) return;
+
     if (
-      !accountResult.data ||
-      accountResult.data.status !== "active" ||
-      !["admin", "superadmin"].includes(accountResult.data.role)
+      account?.status !== "active" ||
+      !["admin", "superadmin"].includes(account.role)
     ) {
       setLoading(false);
       return;
     }
-    const [memberResult, detailResult, accountListResult] = await Promise.all([
-      supabase
-        .from("member_profiles")
-        .select(
-          "member_external_id,full_name,nickname,city,join_date,club_role,total_km",
-        )
-        .order("member_external_id"),
-      supabase
-        .from("member_details")
-        .select(
-          "member_external_id,nickname_override,motorcycle,city_override",
-        ),
-      supabase
-        .from("member_accounts")
-        .select("id,member_external_id,role,status")
-        .order("member_external_id"),
-    ]);
-    if (memberResult.error || detailResult.error || accountListResult.error)
-      setError(
-        memberResult.error?.message ||
-          detailResult.error?.message ||
-          accountListResult.error?.message ||
-          "Data member belum dapat dimuat.",
+
+    if (!forceRefresh) setLoading(true);
+    setError("");
+
+    try {
+      const snapshot = await fetchWithCache<MemberAdminSnapshot>(
+        "admin:members",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [memberResult, detailResult, accountListResult] =
+            await Promise.all([
+              supabase
+                .from("member_profiles")
+                .select(
+                  "member_external_id,full_name,nickname,city,join_date,club_role,total_km",
+                )
+                .order("member_external_id"),
+              supabase
+                .from("member_details")
+                .select(
+                  "member_external_id,nickname_override,motorcycle,city_override",
+                ),
+              supabase
+                .from("member_accounts")
+                .select("id,member_external_id,role,status")
+                .order("member_external_id"),
+            ]);
+
+          const failed =
+            memberResult.error ||
+            detailResult.error ||
+            accountListResult.error;
+          if (failed) throw failed;
+
+          return {
+            members: ((memberResult.data ?? []) as Member[]).map((member) => ({
+              ...member,
+              total_km: Number(member.total_km),
+            })),
+            details: (detailResult.data ?? []) as Detail[],
+            accounts: (accountListResult.data ?? []) as MemberAccount[],
+          };
+        },
+        { ttlMs: 45_000, forceRefresh },
       );
-    setMembers(
-      ((memberResult.data ?? []) as Member[]).map((member) => ({
-        ...member,
-        total_km: Number(member.total_km),
-      })),
-    );
-    setDetails((detailResult.data ?? []) as Detail[]);
-    setAccounts((accountListResult.data ?? []) as MemberAccount[]);
-    setLoading(false);
-  };
+
+      setMembers(snapshot.members);
+      setDetails(snapshot.details);
+      setAccounts(snapshot.accounts);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Data member belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [accessLoading, account, fetchWithCache]);
 
   useEffect(() => {
-    void load();
-  }, []);
+    if (!accessLoading) void load();
+  }, [accessLoading, load]);
 
   const detailByMember = useMemo(
     () => new Map(details.map((detail) => [detail.member_external_id, detail])),
@@ -335,7 +355,8 @@ export default function ManageMembersPage() {
     invalidateCache("admin_dashboard_overview");
     invalidateCache("dashboard_club_stats");
     invalidateCache("riding_leaderboard_data");
-    await load();
+    invalidateCache("admin:members");
+      await load(true);
     setSaving(false);
   };
 
@@ -385,7 +406,8 @@ export default function ManageMembersPage() {
               invalidateCache("member_profiles_list");
               invalidateCache("admin_dashboard_overview");
               invalidateCache("dashboard_club_stats");
-              void load();
+              invalidateCache("admin:members");
+      void load(true);
             }}
             style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
           >

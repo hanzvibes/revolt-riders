@@ -1,12 +1,14 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { PageSkeleton } from "@/components/skeleton";
+import { useDataCache } from "@/context/data-cache-context";
+import { useMemberAccess } from "@/hooks/use-member-access";
 import { reviewRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Bike, Check, ShieldAlert, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Account = { role: string; status: "pending" | "active" | "inactive" };
 type Ride = {
   id: string;
   member_external_id: string;
@@ -25,11 +27,17 @@ type RideRow = Omit<Ride, "odometer_start" | "odometer_end" | "distance_km"> & {
 };
 type Member = { member_external_id: string; full_name: string; nickname: string | null };
 type EventItem = { id: string; title: string; type: string };
+type RideApprovalSnapshot = {
+  rides: Ride[];
+  members: Member[];
+  events: EventItem[];
+};
 
 const canReview = (role?: string) => ["road_captain", "admin", "superadmin"].includes(role || "");
 
 export default function RideApprovalPage() {
-  const [account, setAccount] = useState<Account | null>(null);
+  const { account, loading: accessLoading } = useMemberAccess();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [rides, setRides] = useState<Ride[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [events, setEvents] = useState<EventItem[]>([]);
@@ -43,26 +51,72 @@ export default function RideApprovalPage() {
   const memberById = useMemo(() => new Map(members.map((member) => [member.member_external_id, member])), [members]);
   const eventById = useMemo(() => new Map(events.map((e) => [e.id, e])), [events]);
 
-  const load = async () => {
-    const supabase = getSupabaseBrowserClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    const { data: accountData } = user ? await supabase.from("member_accounts").select("role,status").eq("user_id", user.id).maybeSingle() : { data: null };
-    const nextAccount = accountData as Account | null;
-    setAccount(nextAccount);
-    if (nextAccount?.status !== "active" || !canReview(nextAccount.role)) { setLoading(false); return; }
-    const [{ data: rideData, error: rideError }, { data: memberData }, { data: eventData }] = await Promise.all([
-      supabase.from("ride_logs").select("id,member_external_id,title,event_id,odometer_start,odometer_end,distance_km,created_at,status").eq("status", "pending").order("created_at", { ascending: true }),
-      supabase.from("member_profiles").select("member_external_id,full_name,nickname"),
-      supabase.from("events").select("id,title,type"),
-    ]);
-    if (rideError) setError(rideError.message);
-    setRides(((rideData ?? []) as RideRow[]).map((ride: RideRow) => ({ ...ride, odometer_start: Number(ride.odometer_start), odometer_end: Number(ride.odometer_end), distance_km: ride.distance_km === null ? null : Number(ride.distance_km) })) as Ride[]);
-    setMembers((memberData ?? []) as Member[]);
-    setEvents((eventData ?? []) as EventItem[]);
-    setLoading(false);
-  };
+  const load = useCallback(async (forceRefresh = false) => {
+    if (accessLoading) return;
 
-  useEffect(() => { void load(); }, []);
+    if (account?.status !== "active" || !canReview(account.role)) {
+      setLoading(false);
+      return;
+    }
+
+    if (!forceRefresh) setLoading(true);
+    setError("");
+
+    try {
+      const snapshot = await fetchWithCache<RideApprovalSnapshot>(
+        "riding:approval",
+        async () => {
+          const supabase = getSupabaseBrowserClient();
+          const [rideResult, memberResult, eventResult] = await Promise.all([
+            supabase
+              .from("ride_logs")
+              .select(
+                "id,member_external_id,title,event_id,odometer_start,odometer_end,distance_km,created_at,status",
+              )
+              .eq("status", "pending")
+              .order("created_at", { ascending: true }),
+            supabase
+              .from("member_profiles")
+              .select("member_external_id,full_name,nickname"),
+            supabase.from("events").select("id,title,type"),
+          ]);
+
+          const failed =
+            rideResult.error || memberResult.error || eventResult.error;
+          if (failed) throw failed;
+
+          return {
+            rides: ((rideResult.data ?? []) as RideRow[]).map((ride) => ({
+              ...ride,
+              odometer_start: Number(ride.odometer_start),
+              odometer_end: Number(ride.odometer_end),
+              distance_km:
+                ride.distance_km === null ? null : Number(ride.distance_km),
+            })) as Ride[],
+            members: (memberResult.data ?? []) as Member[],
+            events: (eventResult.data ?? []) as EventItem[],
+          };
+        },
+        { ttlMs: 20_000, forceRefresh },
+      );
+
+      setRides(snapshot.rides);
+      setMembers(snapshot.members);
+      setEvents(snapshot.events);
+    } catch (caught) {
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Ride yang menunggu validasi belum dapat dimuat.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, [accessLoading, account, fetchWithCache]);
+
+  useEffect(() => {
+    if (!accessLoading) void load();
+  }, [accessLoading, load]);
 
   const review = async (ride: Ride, status: "approved" | "rejected") => {
     setError(""); setMessage("");
@@ -75,8 +129,15 @@ export default function RideApprovalPage() {
         status === "rejected" ? reason.trim() : undefined,
       );
       setMessage(status === "approved" ? "Ride disetujui dan masuk hitungan kilometer." : "Ride ditolak. Member dapat mengirim data yang benar.");
-      setRejectingId(""); setReason("");
-      await load();
+      setRejectingId("");
+      setReason("");
+      invalidateCache("riding:approval");
+      invalidateCache("riding:");
+      invalidateCache("profile:");
+      invalidateCache("dashboard_member_profile_");
+      invalidateCache("dashboard_club_stats");
+      invalidateCache("riding_leaderboard_data");
+      await load(true);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Ride belum dapat diperbarui.");
     } finally {
@@ -84,7 +145,7 @@ export default function RideApprovalPage() {
     }
   };
 
-  if (loading) return <AppShell active="Validasi Ride" title="Validasi Riding"><div className="page-wrap"><p>Memeriksa akses…</p></div></AppShell>;
+  if (accessLoading || loading) return <AppShell active="Validasi Ride" title="Validasi Riding"><PageSkeleton title="Memuat Validasi Riding..." /></AppShell>;
   if (account?.status !== "active" || !canReview(account?.role)) return <AppShell active="Validasi Ride" title="Validasi Riding"><div className="page-wrap"><section className="empty-state card"><ShieldAlert/><h2>Akses Road Captain diperlukan</h2><p>Halaman validasi riding hanya tersedia untuk akun aktif dengan role Road Captain, Admin, atau Superadmin.</p><a className="primary-action" href={account?"/profil":"/login"}>{account?"LIHAT STATUS AKUN":"MASUK"}</a></section></div></AppShell>;
 
   return (
