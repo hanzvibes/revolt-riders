@@ -212,7 +212,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
             onClick={() => setOpen(false)}
           >
             <Icon />
-            <span style={{ flex: 1 }}>{label}</span>
+            <span className="sidebar-link-label">{label}</span>
             {label === "Pendaftaran Member" && pendingJoinCount > 0 && (
               <b className="sidebar-badge-pill">{pendingJoinCount}</b>
             )}
