@@ -1132,6 +1132,11 @@
 }
 
 @media (max-width: 720px) {
+  .app-shell input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]),
+  .app-shell textarea {
+    font-size: 16px;
+  }
+
   .app-shell > aside {
     width: min(284px, 86vw);
     padding: 18px 13px 14px;
