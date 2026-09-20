@@ -3134,7 +3134,7 @@
 
   .app-shell .unified-primary-action,
   .app-shell .unified-secondary-action {
-    min-height: 35px;
+    min-height: var(--rr-control-sm);
     padding: 0 11px;
     border-radius: 9px;
     font-size: .54rem;
@@ -3472,7 +3472,7 @@
 
   .app-shell .unified-primary-action,
   .app-shell .unified-secondary-action {
-    min-height: 33px;
+    min-height: var(--rr-control-sm);
     font-size: .51rem;
   }
 
@@ -4359,7 +4359,7 @@
 
   .app-shell .riding-stat-range button {
     width: 100%;
-    min-height: 31px;
+    min-height: var(--rr-control-sm);
     padding: 0 5px;
   }
 
@@ -4743,7 +4743,7 @@
   }
 
   .app-shell .member-directory-refresh {
-    min-height: 33px;
+    min-height: var(--rr-control-sm);
     margin-top: 11px;
     font-size: .51rem;
   }
@@ -4811,7 +4811,7 @@
   }
 
   .app-shell .member-directory-refresh-top {
-    min-height: 34px;
+    min-height: var(--rr-control-sm);
     padding-inline: 10px;
     font-size: .5rem;
   }
@@ -5279,7 +5279,7 @@
   }
 
   .app-shell .leaderboard-hero-refresh {
-    min-height: 34px;
+    min-height: var(--rr-control-sm);
     padding-inline: 10px;
     font-size: .5rem;
   }
