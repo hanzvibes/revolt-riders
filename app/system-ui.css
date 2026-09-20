@@ -7179,3 +7179,36 @@
     padding: var(--rr-space-4);
   }
 }
+
+
+/* =========================================================
+   Final public/modal typography closure
+   ========================================================= */
+.landing-page .native-sheet > header h2 {
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -.02em !important;
+}
+
+.landing-page .native-sheet > header em {
+  font-size: .6875rem !important;
+  font-weight: 700 !important;
+  letter-spacing: .12em !important;
+}
+
+@media (max-width: 720px) {
+  /* Search/command fields are typed controls, keep 16px to avoid iOS focus zoom. */
+  [data-slot="command-input"] {
+    font-size: 1rem !important;
+  }
+
+  .auth-input-wrap input,
+  .join-input-wrap input,
+  .landing-page input[type="text"],
+  .landing-page input[type="email"],
+  .landing-page input[type="tel"],
+  .landing-page textarea {
+    font-size: 1rem !important;
+  }
+}
