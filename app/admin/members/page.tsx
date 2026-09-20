@@ -207,8 +207,7 @@ export default function ManageMembersPage() {
   }, [accessLoading, account, fetchWithCache]);
 
   useEffect(() => {
-    if (!accessLoading) invalidateCache("admin:members");
-      void load(true);
+    if (!accessLoading) void load();
   }, [accessLoading, load]);
 
   const detailByMember = useMemo(
