@@ -270,7 +270,7 @@ export default function VoyagerPage() {
     () => new Set(participants.map((item) => item.member_external_id)).size,
     [participants],
   );
-  const galleryPreview = useMemo(() => photos.slice(0, 6), [photos]);
+  const galleryPreview = useMemo(() => photos.slice(0, 4), [photos]);
   const currentMemberVoyagerEvents = useMemo(() => {
     const memberId = activeAccount?.member_external_id;
     if (!memberId) return [];
@@ -540,19 +540,21 @@ export default function VoyagerPage() {
   return (
     <AppShell active="Voyager" title="Voyager">
       <div className="page-wrap voyager-page">
-        <section className="voyager-hero">
-          <div>
-            <em>REVOLT RIDERS · CLUB ACTIVITY</em>
+        <section className="voyager-hero voyager-hero-compact">
+          <div className="voyager-hero-copy">
             <h2>Voyager</h2>
-            <p>
-              Jejak riding resmi club, peserta, dokumentasi, dan KM Mandatory dalam satu
-              alur agenda.
-            </p>
+            <p>Progress riding resmi, participant, dan bukti foto club.</p>
           </div>
-          <div className="voyager-km">
-            <small>MANDATORY KM {new Date().getFullYear()}</small>
-            <strong>{formatKm(mandatoryKm)} KM</strong>
-            <span>Total riding Mandatory terverifikasi milikmu.</span>
+          <div className="voyager-hero-tools">
+            <span className="voyager-km-inline">
+              <small>MANDATORY {new Date().getFullYear()}</small>
+              <strong>{formatKm(mandatoryKm)} KM</strong>
+            </span>
+            {canManage && (
+              <Link className="voyager-create-action" href="/admin/events?create=voyager">
+                <Plus /> Buat
+              </Link>
+            )}
           </div>
         </section>
 
@@ -564,237 +566,280 @@ export default function VoyagerPage() {
         )}
         {error && <p className="error-message">{error}</p>}
 
-        {featuredEvent && (
-          <section className="voyager-member-progress" aria-label="Status Voyager saya">
-            <div className="voyager-member-progress-copy">
-              <small>VOYAGER SAYA</small>
-              <strong>{featuredMemberStatus}</strong>
-              <p>
-                {featuredJoined
-                  ? featuredEvent.status === "completed"
-                    ? `Kamu tercatat menyelesaikan ${featuredEvent.title}.`
-                    : `Kamu tercatat sebagai participant ${featuredEvent.title}.`
-                  : `Kamu belum tercatat sebagai participant ${featuredEvent.title}.`}
-              </p>
-            </div>
-            <div className="voyager-member-progress-metrics">
-              <span>
-                <History aria-hidden="true" />
-                <small>RIWAYAT IKUT</small>
-                <b>{completedMemberVoyagers}</b>
-              </span>
-              <span>
-                <Bike aria-hidden="true" />
-                <small>JARAK RESMI</small>
-                <b>{formatKm(featuredEvent.official_distance_km)} KM</b>
-              </span>
-              <button type="button" onClick={() => setDetailEvent(featuredEvent)}>
-                <Camera aria-hidden="true" />
-                <small>BUKTI FOTO</small>
-                <b>{featuredPhotoCount}</b>
-              </button>
-            </div>
-          </section>
-        )}
-
-        <section className="voyager-overview-grid" aria-label="Ringkasan Voyager">
-          <article>
-            <Route />
-            <span><small>VOYAGER AKTIF</small><strong>{activeEvents.length}</strong><em>Agenda berjalan / mendatang</em></span>
-          </article>
-          <article>
-            <History />
-            <span><small>SELESAI</small><strong>{historyEvents.length}</strong><em>Aktivitas tersimpan di journal</em></span>
-          </article>
-          <article>
-            <Bike />
-            <span><small>OFFICIAL KM</small><strong>{formatKm(totalOfficialKm)}</strong><em>Total jarak Voyager selesai</em></span>
-          </article>
-          <article>
-            <UsersRound />
-            <span><small>PARTICIPANT</small><strong>{uniqueParticipantCount}</strong><em>Member unik di Voyager</em></span>
-          </article>
-        </section>
-
-        <section className="voyager-featured-section">
-          <div className="voyager-section-heading">
-            <span>
-              <em>Official club ride</em>
-              <h3>{activeEvents.length > 0 ? "Voyager berikutnya" : "Latest Voyager"}</h3>
-              <p>Agenda utama, jarak resmi, participant, dan status Mandatory dalam satu kartu.</p>
-            </span>
-            {canManage && (
-              <Link className="voyager-create-action" href="/admin/events?create=voyager">
-                <Plus /> Buat Voyager
-              </Link>
-            )}
-          </div>
-
-          {featuredEvent ? (
-            <article className="voyager-featured-card">
-              <div className="voyager-featured-main">
-                <span className="voyager-featured-status">
+        {featuredEvent ? (
+          <section className="voyager-command-card" aria-label="Voyager utama dan status saya">
+            <div className="voyager-command-head">
+              <div className="voyager-command-copy">
+                <span className="voyager-command-status">
                   {featuredEvent.status === "completed" ? "COMPLETED" : "UPCOMING"}
                 </span>
                 <h3>{featuredEvent.title}</h3>
-                <div className="voyager-featured-meta">
+                <div className="voyager-command-meta">
                   <span><CalendarDays />{formatDate(featuredEvent.start_at)}</span>
                   <span><MapPin />{featuredEvent.location_name ?? "Lokasi menyusul"}</span>
                 </div>
-                <div className="voyager-featured-chips">
-                  {featuredEvent.counts_as_mandatory && <b>Mandatory Ride</b>}
-                  {featuredEvent.official_distance_km ? (
-                    <b>{formatKm(featuredEvent.official_distance_km)} KM Official</b>
-                  ) : (
-                    <b className="neutral">Official KM belum diisi</b>
-                  )}
-                  <b className="neutral">{participantsFor(featuredEvent.id).length} Participant</b>
-                </div>
               </div>
-              <div className="voyager-featured-actions">
-                <button type="button" onClick={() => setDetailEvent(featuredEvent)}>Lihat Detail</button>
+
+              <div className="voyager-command-actions">
+                <button type="button" onClick={() => setDetailEvent(featuredEvent)}>
+                  Lihat detail
+                </button>
                 {canManage && (
-                  <button type="button" onClick={() => openManage(featuredEvent)}>Kelola</button>
+                  <button type="button" onClick={() => openManage(featuredEvent)}>
+                    Kelola
+                  </button>
                 )}
               </div>
-            </article>
-          ) : (
-            <div className="voyager-structured-empty">
-              <span className="voyager-empty-icon"><Route /></span>
-              <div>
-                <strong>Belum ada aktivitas Voyager</strong>
+            </div>
+
+            <div className="voyager-command-member">
+              <div className="voyager-command-member-copy">
+                <small>STATUS KAMU</small>
+                <strong>{featuredMemberStatus}</strong>
                 <p>
-                  Struktur Voyager sudah siap. Setelah pengurus membuat agenda pertama,
-                  participant, Official KM, gallery, dan history akan terhubung otomatis.
+                  {featuredJoined
+                    ? featuredEvent.status === "completed"
+                      ? "Voyager ini sudah tercatat di riwayatmu."
+                      : "Kamu sudah tercatat sebagai participant."
+                    : "Belum tercatat sebagai participant."}
                 </p>
               </div>
-              {canManage && <Link href="/admin/events?create=voyager">Buat Voyager Pertama</Link>}
-            </div>
-          )}
-        </section>
 
-        <section className="voyager-mandatory-section">
-          <div className="voyager-section-heading">
-            <span>
-              <em>Mandatory ride</em>
-              <h3>Progress riding resmi</h3>
-              <p>Tidak ada minimum jarak per aktivitas. KM berasal dari ride log terverifikasi.</p>
-            </span>
-          </div>
-          <div className="voyager-mandatory-card">
+              <div className="voyager-command-metrics">
+                <span>
+                  <History aria-hidden="true" />
+                  <small>Riwayat</small>
+                  <b>{completedMemberVoyagers}</b>
+                </span>
+                <span>
+                  <Bike aria-hidden="true" />
+                  <small>KM resmi</small>
+                  <b>{featuredEvent.official_distance_km ? formatKm(featuredEvent.official_distance_km) : "—"}</b>
+                </span>
+                <button type="button" onClick={() => setDetailEvent(featuredEvent)}>
+                  <Camera aria-hidden="true" />
+                  <small>Bukti foto</small>
+                  <b>{featuredPhotoCount}</b>
+                </button>
+                <span>
+                  <UsersRound aria-hidden="true" />
+                  <small>Participant</small>
+                  <b>{participantsFor(featuredEvent.id).length}</b>
+                </span>
+              </div>
+            </div>
+
+            <div className="voyager-command-tags">
+              {featuredEvent.counts_as_mandatory && <span>Mandatory Ride</span>}
+              {featuredJoined && <span className="neutral">Kamu ikut</span>}
+              {featuredEvent.official_support && (
+                <span className="neutral">{featuredEvent.official_support}</span>
+              )}
+            </div>
+          </section>
+        ) : (
+          <section className="voyager-structured-empty compact">
+            <span className="voyager-empty-icon"><Route /></span>
             <div>
-              <small>MANDATORY KM {new Date().getFullYear()}</small>
-              <strong>{formatKm(mandatoryKm)} KM</strong>
-              <p>Akumulasi Mandatory Ride milikmu dari aktivitas resmi yang sudah disetujui.</p>
+              <strong>Belum ada Voyager</strong>
+              <p>Activity Voyager akan muncul di sini setelah dibuat pengurus.</p>
             </div>
-            <div className="voyager-mandatory-source">
-              <span><Route /><b>Official Agenda Distance</b><small>Voyager dan agenda Mandatory lain memakai source KM yang sama.</small></span>
-              <span><Check /><b>Single source of truth</b><small>Tidak menggandakan KM di Riding, Leaderboard, atau Mandatory progress.</small></span>
-            </div>
-          </div>
+            {canManage && <Link href="/admin/events?create=voyager">Buat Voyager</Link>}
+          </section>
+        )}
+
+        <section className="voyager-stat-strip" aria-label="Ringkasan Voyager">
+          <span><Route /><small>Aktif</small><strong>{activeEvents.length}</strong></span>
+          <span><History /><small>Selesai</small><strong>{historyEvents.length}</strong></span>
+          <span><Bike /><small>Official KM</small><strong>{formatKm(totalOfficialKm)}</strong></span>
+          <span><UsersRound /><small>Participant</small><strong>{uniqueParticipantCount}</strong></span>
         </section>
 
-        <section className="voyager-journal-section">
+        <section className="voyager-journal-section voyager-journal-primary">
           <div className="voyager-section-heading voyager-journal-heading">
             <span>
-              <em>Club journal</em>
               <h3>Activity & History</h3>
-              <p>Aktivitas mendatang dan arsip perjalanan club tetap terlihat dari satu halaman.</p>
             </span>
-            <div className="voyager-tabs" role="tablist" aria-label="Voyager">
-              <button type="button" role="tab" aria-selected={view === "active"} className={view === "active" ? "active" : ""} onClick={() => setView("active")}>
+            <div className="voyager-tabs" role="tablist" aria-label="Filter Voyager">
+              <button
+                id="voyager-tab-active"
+                type="button"
+                role="tab"
+                aria-selected={view === "active"}
+                aria-controls="voyager-panel"
+                className={view === "active" ? "active" : ""}
+                onClick={() => setView("active")}
+              >
                 <Route /> Aktif <b>{activeEvents.length}</b>
               </button>
-              <button type="button" role="tab" aria-selected={view === "history"} className={view === "history" ? "active" : ""} onClick={() => setView("history")}>
+              <button
+                id="voyager-tab-history"
+                type="button"
+                role="tab"
+                aria-selected={view === "history"}
+                aria-controls="voyager-panel"
+                className={view === "history" ? "active" : ""}
+                onClick={() => setView("history")}
+              >
                 <History /> History <b>{historyEvents.length}</b>
               </button>
             </div>
           </div>
 
-          {visibleEvents.length === 0 ? (
-            <div className="voyager-structured-empty compact">
-              <span className="voyager-empty-icon"><History /></span>
-              <div>
-                <strong>{view === "active" ? "Belum ada Voyager aktif" : "Club Journal masih kosong"}</strong>
-                <p>{view === "active" ? "Agenda Voyager yang dipublikasikan akan muncul di sini." : "Voyager yang selesai akan tersimpan otomatis sebagai history club."}</p>
+          <div
+            id="voyager-panel"
+            className="voyager-list"
+            role="tabpanel"
+            aria-labelledby={view === "active" ? "voyager-tab-active" : "voyager-tab-history"}
+          >
+            {visibleEvents.filter((event) => event.id !== featuredEvent?.id).length === 0 ? (
+              <div className="voyager-list-empty">
+                <History />
+                <span>
+                  <strong>
+                    {visibleEvents.length > 0
+                      ? "Activity utama sudah tampil di atas"
+                      : view === "active"
+                        ? "Belum ada Voyager aktif"
+                        : "History masih kosong"}
+                  </strong>
+                  <small>
+                    {visibleEvents.length > 0
+                      ? "Buka kartu utama untuk melihat detail dan bukti foto."
+                      : "Activity akan muncul otomatis saat tersedia."}
+                  </small>
+                </span>
               </div>
-            </div>
-          ) : (
-            <div className="voyager-grid">
-              {visibleEvents.map((event) => {
-                const eventParticipants = participantsFor(event.id);
-                const eventPhotos = photosFor(event.id);
-                const joined = eventParticipants.some((member) => member.member_external_id === activeAccount.member_external_id);
-                return (
-                  <article className="voyager-card" key={event.id}>
-                    <button type="button" className="voyager-card-main" onClick={() => setDetailEvent(event)}>
-                      <span className="voyager-date">
-                        <b>{new Intl.DateTimeFormat("id-ID", { day: "2-digit", timeZone: "Asia/Jakarta" }).format(new Date(event.start_at))}</b>
-                        <small>{new Intl.DateTimeFormat("id-ID", { month: "short", timeZone: "Asia/Jakarta" }).format(new Date(event.start_at)).toUpperCase()}</small>
+            ) : (
+              visibleEvents
+                .filter((event) => event.id !== featuredEvent?.id)
+                .map((event) => {
+                  const eventParticipants = participantsFor(event.id);
+                  const eventPhotos = photosFor(event.id);
+                  const joined = eventParticipants.some(
+                    (member) => member.member_external_id === activeAccount.member_external_id,
+                  );
+
+                  return (
+                    <button
+                      type="button"
+                      className="voyager-list-row"
+                      key={event.id}
+                      onClick={() => setDetailEvent(event)}
+                      aria-label={`Buka detail ${event.title}`}
+                    >
+                      <span className="voyager-list-date">
+                        <b>
+                          {new Intl.DateTimeFormat("id-ID", {
+                            day: "2-digit",
+                            timeZone: "Asia/Jakarta",
+                          }).format(new Date(event.start_at))}
+                        </b>
+                        <small>
+                          {new Intl.DateTimeFormat("id-ID", {
+                            month: "short",
+                            timeZone: "Asia/Jakarta",
+                          })
+                            .format(new Date(event.start_at))
+                            .toUpperCase()}
+                        </small>
                       </span>
-                      <span className="voyager-card-copy">
-                        <em>VOYAGER · {event.status === "completed" ? "COMPLETED" : event.status.toUpperCase()}</em>
+
+                      <span className="voyager-list-copy">
                         <strong>{event.title}</strong>
                         <small><MapPin />{event.location_name ?? "Lokasi menyusul"}</small>
                       </span>
+
+                      <span className="voyager-list-meta" aria-hidden="true">
+                        <b>{eventParticipants.length}<small>member</small></b>
+                        <b>{event.official_distance_km ? formatKm(event.official_distance_km) : "—"}<small>km</small></b>
+                        <b>{eventPhotos.length}<small>foto</small></b>
+                      </span>
+
+                      <span className="voyager-list-flags">
+                        {event.counts_as_mandatory && <i>Mandatory</i>}
+                        {joined && <i className="neutral">Kamu ikut</i>}
+                      </span>
                     </button>
-                    <div className="voyager-card-meta">
-                      <span><UsersRound /><b>{eventParticipants.length}</b><small>Member</small></span>
-                      <span><Bike /><b>{event.official_distance_km ? formatKm(event.official_distance_km) : "—"}</b><small>KM resmi</small></span>
-                      <span><Camera /><b>{eventPhotos.length}</b><small>Foto</small></span>
-                    </div>
-                    <div className="voyager-card-foot">
-                      <div>
-                        {event.counts_as_mandatory && <span className="voyager-badge">Mandatory Ride</span>}
-                        {joined && <span className="voyager-badge neutral">Kamu ikut</span>}
-                      </div>
-                      <button type="button" onClick={() => setDetailEvent(event)}>Detail</button>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-          )}
+                  );
+                })
+            )}
+          </div>
         </section>
 
-        <section className="voyager-gallery-hub">
+        <details className="voyager-disclosure">
+          <summary>
+            <span>
+              <strong>Cara Mandatory KM dihitung</strong>
+              <small>{formatKm(mandatoryKm)} KM terverifikasi · {new Date().getFullYear()}</small>
+            </span>
+            <b>Info</b>
+          </summary>
+          <div className="voyager-disclosure-body">
+            <span>
+              <Route />
+              <b>Official Agenda Distance</b>
+              <small>Voyager dan agenda Mandatory lain memakai sumber KM yang sama.</small>
+            </span>
+            <span>
+              <Check />
+              <b>Single source of truth</b>
+              <small>KM tidak digandakan di Riding, Leaderboard, atau progress Mandatory.</small>
+            </span>
+          </div>
+        </details>
+
+        <section className="voyager-gallery-hub voyager-gallery-compact">
           <div className="voyager-section-heading">
             <span>
-              <em>Documentation</em>
-              <h3>Activity Gallery</h3>
-              <p>Dokumentasi resmi pengurus dari aktivitas Voyager akan terkumpul di sini.</p>
+              <h3>Bukti Foto</h3>
             </span>
             <b className="voyager-section-count">{photos.length} Foto</b>
           </div>
 
           {galleryPreview.length === 0 ? (
-            <div className="voyager-gallery-empty">
-              <div className="voyager-gallery-placeholders" aria-hidden="true">
-                <span><Camera /></span><span><Camera /></span><span><Camera /></span>
-              </div>
-              <strong>Gallery siap digunakan</strong>
-              <p>Foto belum tersedia karena belum ada Voyager yang didokumentasikan. Pengurus dapat upload foto dari tombol Kelola pada activity.</p>
+            <div className="voyager-gallery-empty compact">
+              <Camera aria-hidden="true" />
+              <span>
+                <strong>Belum ada dokumentasi</strong>
+                <p>Foto akan muncul setelah pengurus menambahkan bukti aktivitas.</p>
+              </span>
               {canManage && featuredEvent && (
-                <button type="button" onClick={() => openManage(featuredEvent)}><Upload /> Tambah Dokumentasi</button>
+                <button type="button" onClick={() => openManage(featuredEvent)}>
+                  <Upload /> Tambah Foto
+                </button>
               )}
             </div>
           ) : (
-            <div className="voyager-gallery-hub-grid">
+            <div className="voyager-gallery-hub-grid voyager-gallery-preview">
               {galleryPreview.map((photo) => {
                 const relatedEvent = events.find((event) => event.id === photo.event_id);
+                const photoLabel = relatedEvent?.title ?? photo.title;
+
                 return (
-                  <button type="button" key={photo.id} onClick={() => { if (relatedEvent) setDetailEvent(relatedEvent); }}>
-                    {photo.signedUrl ? <Image
+                  <button
+                    type="button"
+                    key={photo.id}
+                    onClick={() => {
+                      if (relatedEvent) setDetailEvent(relatedEvent);
+                    }}
+                    aria-label={`Buka dokumentasi ${photoLabel}`}
+                  >
+                    {photo.signedUrl ? (
+                      <Image
                         src={photo.signedUrl}
                         alt={photo.title || "Dokumentasi Voyager"}
                         width={640}
                         height={640}
                         loading="lazy"
                         decoding="async"
-                        sizes="(max-width: 520px) 50vw, 320px"
-                      /> : <span><Camera /></span>}
+                        sizes="(max-width: 520px) 50vw, 280px"
+                      />
+                    ) : (
+                      <span><Camera /></span>
+                    )}
                     <i>
-                      <b>{relatedEvent?.title ?? photo.title}</b>
+                      <b>{photoLabel}</b>
                       <small>{photo.ride_date ? formatDate(photo.ride_date) : "Voyager"}</small>
                     </i>
                   </button>
