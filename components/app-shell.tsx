@@ -230,7 +230,6 @@ export function AppShell({ active, title, children }: { active: string; title: s
     let mounted = true;
 
     if (!canOperational) {
-      setPendingJoinCount(0);
       return () => {
         mounted = false;
       };
