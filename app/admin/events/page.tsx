@@ -431,9 +431,13 @@ export default function AdminEventsPage() {
 
   const deletePermanently = async (event: Event) => {
     if (
-      !await confirmAction(
-        `Hapus agenda "${event.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan dari sistem.`,
-      )
+      !await confirmAction({
+        title: "Hapus agenda permanen?",
+        description: `Agenda "${event.title}" beserta undangan dan respons terkait akan dibersihkan dari sistem.`,
+        confirmLabel: "Hapus Permanen",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
     )
       return;
     setError("");
@@ -454,9 +458,15 @@ export default function AdminEventsPage() {
   const changeStatus = async (event: Event, status: EventStatus) => {
     if (!user) return;
     if (
-      !await confirmAction(
-        `${status === "completed" ? "Tandai agenda ini selesai?" : "Publikasikan agenda ini?"}`,
-      )
+      !await confirmAction({
+        title: status === "completed" ? "Selesaikan agenda?" : "Publikasikan agenda?",
+        description:
+          status === "completed"
+            ? "Agenda akan dipindahkan ke History komunitas."
+            : "Agenda akan terlihat sebagai agenda aktif untuk member.",
+        confirmLabel: status === "completed" ? "Tandai Selesai" : "Publikasikan",
+        cancelLabel: "Batal",
+      })
     )
       return;
     setError("");
