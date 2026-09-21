@@ -525,3 +525,35 @@ test("Database performance hardening is migration-tracked", async () => {
   assert.match(migration, /Staff can view and manage join requests/);
   assert.match(migration, /\(select auth\.uid\(\)\)/);
 });
+
+
+test("Admin rejection stays behind its authorized RPC", async () => {
+  const admin = await read("app/admin/page.tsx");
+
+  assert.match(admin, /rpc\(\s*"reject_member_account_request"/);
+  assert.doesNotMatch(
+    admin,
+    /from\("member_account_requests"\)\s*\.delete\(/,
+  );
+  assert.match(admin, /Tolak Pendaftaran/);
+});
+
+test("Destructive action dialogs use explicit safe labels", async () => {
+  const files = [
+    "app/admin/events/page.tsx",
+    "app/admin/page.tsx",
+    "app/garage/page.tsx",
+    "app/kas/page.tsx",
+    "app/voyager/page.tsx",
+  ];
+
+  const sources = await Promise.all(files.map(read));
+  const combined = sources.join("\n");
+
+  assert.doesNotMatch(combined, /window\.(?:confirm|prompt|alert)\(/);
+  assert.match(combined, /destructive:\s*true/);
+  assert.match(combined, /Hapus Permanen/);
+  assert.match(combined, /Hapus Motor/);
+  assert.match(combined, /Hapus Foto/);
+  assert.match(combined, /Koreksi Transaksi/);
+});
