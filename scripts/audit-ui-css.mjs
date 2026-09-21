@@ -194,7 +194,7 @@ for (const file of uiFiles) {
     if (Number(match[1]) < 0.625) inlineTinyTypeCount += 1;
   }
 
-  nativeDialogCount += [...content.matchAll(/window\.(?:confirm|prompt)\(/g)].length;
+  nativeDialogCount += [...content.matchAll(/window\.(?:confirm|prompt|alert)\(/g)].length;
 }
 
 if (inlineTinyTypeCount) {
@@ -204,8 +204,8 @@ if (inlineTinyTypeCount) {
 }
 
 if (nativeDialogCount) {
-  warnings.push(
-    `TSX: ${nativeDialogCount} window.confirm/window.prompt calls remain; migrate destructive flows to the shared accessible dialog pattern`,
+  fatal.push(
+    `TSX: ${nativeDialogCount} native browser dialogs remain; use the shared accessible action-dialog provider`,
   );
 }
 
