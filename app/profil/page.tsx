@@ -2,6 +2,7 @@
 
 import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
+import { ModalSheet } from "@/components/modal-sheet";
 import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
 import { PageState } from "@/components/page-state";
@@ -23,7 +24,6 @@ import {
   Plus,
   QrCode,
   Route,
-  Save,
   ShieldAlert,
   ShieldCheck,
   Trash2,
@@ -128,6 +128,7 @@ export default function ProfilePage() {
   const [nickname, setNickname] = useState("");
   const [motorcycle, setMotorcycle] = useState("");
   const [city, setCity] = useState("");
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalData, setEditModalData] = useState<RideLogEditData | null>(null);
@@ -340,6 +341,7 @@ export default function ProfilePage() {
       invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
       invalidateCache(`profile:${account.member_external_id}`);
       await load(true);
+      setProfileEditOpen(false);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Profil belum dapat disimpan.");
     } finally {
@@ -460,10 +462,18 @@ export default function ProfilePage() {
               <div className="profile-social-avatar" aria-hidden="true">
                 {displayName.slice(0, 2).toUpperCase()}
               </div>
-              <a className="profile-social-edit" href="#edit-profile">
+              <button
+                type="button"
+                className="profile-social-edit"
+                onClick={() => {
+                  setMessage("");
+                  setError("");
+                  setProfileEditOpen(true);
+                }}
+              >
                 <Pencil aria-hidden="true" />
                 Edit profil
-              </a>
+              </button>
             </div>
 
             <div className="profile-social-intro">
@@ -527,10 +537,10 @@ export default function ProfilePage() {
                 <strong><CountUpNumber value={approvedRidesCount} /></strong>
                 <span>Ride approved</span>
               </a>
-              <a href="#profile-rsvp">
+              <Link href="/agenda">
                 <strong><CountUpNumber value={attendedAgendaCount} /></strong>
                 <span>Agenda hadir</span>
-              </a>
+              </Link>
             </div>
 
             <nav className="profile-social-actions" aria-label="Akses cepat member">
@@ -619,19 +629,18 @@ export default function ProfilePage() {
               </b>
             </div>
 
-            <div className="member-passport-badges">
+            <div className="member-passport-timeline">
               {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
                 <article
                   key={key}
                   className={unlocked ? "is-unlocked" : "is-locked"}
                   aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
                 >
-                  <i><Icon aria-hidden="true" /></i>
+                  <i aria-hidden="true"><Icon /></i>
                   <span>
                     <b>{label}</b>
                     <small>{badgeDetail}</small>
                   </span>
-                  {unlocked ? <Check aria-hidden="true" /> : null}
                 </article>
               ))}
             </div>
@@ -757,17 +766,13 @@ export default function ProfilePage() {
                     </div>
 
                     <div className="profile-ride-controls">
-                      <span
-                        className={`profile-ride-status ${
-                          isApproved
-                            ? "approved"
-                            : isPending
-                              ? "pending"
-                              : "rejected"
-                        }`}
-                      >
-                        {isApproved ? "Approved" : isPending ? "Pending" : "Ditolak"}
-                      </span>
+                      {!isApproved ? (
+                        <span
+                          className={`profile-ride-status ${isPending ? "pending" : "rejected"}`}
+                        >
+                          {isPending ? "Pending" : "Ditolak"}
+                        </span>
+                      ) : null}
 
                       <button
                         type="button"
@@ -831,18 +836,24 @@ export default function ProfilePage() {
         </section>
 
         {/* ================================================================ */}
-        {/* EDIT PROFIL MEMBER */}
-        {/* ================================================================ */}
-        <section id="edit-profile" className="profile-edit card profile-social-panel">
-          <div className="section-title">
-            <span>
-              <em>Data pribadi</em>
-              <h3>Lengkapi Profil & Kendaraan</h3>
-            </span>
-            <Save />
-          </div>
-          <p style={{ margin: "0 0 14px", color: "var(--muted)", fontSize: "0.75rem" }}>
-            Perbarui nama panggilan, motor, dan kota domisili. Data ini akan ditampilkan pada identitas kartu anggota.
+        {/* LOGOUT BUTTON */}
+        <div style={{ textAlign: "center", marginTop: "16px" }}>
+          <button className="dark-action" onClick={logout} style={{ borderRadius: "8px" }}>
+            <LogOut />
+            KELUAR DARI AKUN
+          </button>
+        </div>
+      </div>
+
+      <ModalSheet
+        open={profileEditOpen}
+        onClose={() => setProfileEditOpen(false)}
+        eyebrow="Data pribadi"
+        title="Lengkapi Profil & Kendaraan"
+      >
+        <div className="profile-edit profile-edit-sheet">
+          <p className="profile-edit-sheet-copy">
+            Perbarui nama panggilan, motor, dan kota domisili. Data ini tampil pada identitas member.
           </p>
           <form onSubmit={saveDetails}>
             <label>
@@ -872,67 +883,19 @@ export default function ProfilePage() {
                 placeholder="Contoh: Situbondo, Bondowoso"
               />
             </label>
-            {message && (
+            {message ? (
               <p className="success-message" role="status" aria-live="polite">
-                <Check aria-hidden="true" />{message}
+                <Check aria-hidden="true" />
+                {message}
               </p>
-            )}
-            {error && <p className="error-message" role="alert">{error}</p>}
+            ) : null}
+            {error ? <p className="error-message" role="alert">{error}</p> : null}
             <button className="primary-action" disabled={saving}>
               {saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}
             </button>
           </form>
-        </section>
-
-        {/* ================================================================ */}
-        {/* AKTIVITAS AGENDA RSVP */}
-        {/* ================================================================ */}
-        <section id="profile-rsvp" className="card profile-social-panel">
-          <div className="section-title">
-            <span>
-              <em>Agenda club</em>
-              <h3>Respons RSVP Undangan</h3>
-            </span>
-            <CalendarDays />
-          </div>
-          {rsvpActivities.length === 0 ? (
-            <p className="system-message">Belum ada respons agenda tercatat.</p>
-          ) : (
-            <div className="activity-list">
-              {rsvpActivities.slice(0, 5).map((rsvp) => (
-                <article key={`${rsvp.event_id}-${rsvp.responded_at}`}>
-                  <i>
-                    <Clock3 />
-                  </i>
-                  <span>
-                    <b>{eventTitleById.get(rsvp.event_id) || "Agenda Revolt Riders"}</b>
-                    <small>
-                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(
-                        new Date(rsvp.responded_at)
-                      )}
-                    </small>
-                  </span>
-                  <em className={`rsvp-${rsvp.status}`}>
-                    {rsvp.status === "attending"
-                      ? "hadir"
-                      : rsvp.status === "declined"
-                        ? "tidak hadir"
-                        : "mungkin"}
-                  </em>
-                </article>
-              ))}
-            </div>
-          )}
-        </section>
-
-        {/* LOGOUT BUTTON */}
-        <div style={{ textAlign: "center", marginTop: "16px" }}>
-          <button className="dark-action" onClick={logout} style={{ borderRadius: "8px" }}>
-            <LogOut />
-            KELUAR DARI AKUN
-          </button>
         </div>
-      </div>
+      </ModalSheet>
 
       <RideLogEditModal
         open={editModalOpen}
