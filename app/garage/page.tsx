@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
 import { FloatingActionButton } from "@/components/floating-action-button";
@@ -83,6 +84,7 @@ const motorcycleStyles = [
 ];
 
 export default function GaragePage() {
+  const { confirmAction } = useActionDialog();
   const { account, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache } = useDataCache();
   const [motorcycles, setMotorcycles] = useState<Motorcycle[]>([]);
@@ -208,7 +210,7 @@ export default function GaragePage() {
   };
 
   const deleteMotorcycle = async (motorcycle: Motorcycle) => {
-    if (!window.confirm(`Hapus ${motorcycle.nickname || `${motorcycle.brand} ${motorcycle.model}`} dari Garage?`)) {
+    if (!await confirmAction(`Hapus ${motorcycle.nickname || `${motorcycle.brand} ${motorcycle.model}`} dari Garage?`)) {
       return;
     }
 
