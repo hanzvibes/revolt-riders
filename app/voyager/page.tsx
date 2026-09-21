@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
@@ -783,11 +784,12 @@ export default function VoyagerPage() {
                 const relatedEvent = events.find((event) => event.id === photo.event_id);
                 return (
                   <button type="button" key={photo.id} onClick={() => { if (relatedEvent) setDetailEvent(relatedEvent); }}>
-                    {photo.signedUrl ? <img
+                    {photo.signedUrl ? <Image
                         src={photo.signedUrl}
                         alt={photo.title || "Dokumentasi Voyager"}
-                        loading="lazy"
-                        decoding="async"
+                        width={640}
+                        height={640}
+                        sizes="(max-width: 520px) 50vw, 320px"
                       /> : <span><Camera /></span>}
                     <i>
                       <b>{relatedEvent?.title ?? photo.title}</b>
@@ -899,11 +901,12 @@ export default function VoyagerPage() {
                   {photosFor(detailEvent.id).map((photo) => (
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
-                        <img
+                        <Image
                         src={photo.signedUrl}
                         alt={photo.title || "Dokumentasi Voyager"}
-                        loading="lazy"
-                        decoding="async"
+                        width={640}
+                        height={640}
+                        sizes="(max-width: 520px) 50vw, 320px"
                       />
                       ) : (
                         <span>Foto tidak tersedia</span>
@@ -1070,11 +1073,12 @@ export default function VoyagerPage() {
                   {photosFor(manageEvent.id).map((photo) => (
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
-                        <img
+                        <Image
                         src={photo.signedUrl}
                         alt={photo.title || "Dokumentasi Voyager"}
-                        loading="lazy"
-                        decoding="async"
+                        width={640}
+                        height={640}
+                        sizes="(max-width: 520px) 50vw, 320px"
                       />
                       ) : (
                         <span>Foto</span>
