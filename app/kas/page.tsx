@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { FloatingActionButton } from "@/components/floating-action-button";
@@ -84,6 +85,7 @@ const monthLabel = (value: string) =>
   );
 
 export default function CashPage() {
+  const { promptAction } = useActionDialog();
   const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache, invalidateCache } = useDataCache();
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -355,7 +357,7 @@ export default function CashPage() {
 
   const voidTransaction = async (transaction: Transaction) => {
     if (transaction.source !== "production" || transaction.voided_at) return;
-    const reason = window.prompt(
+    const reason = await promptAction(
       `Koreksi transaksi “${transaction.description}”. Transaksi tidak akan dihapus dari audit trail.`,
       "",
     );
