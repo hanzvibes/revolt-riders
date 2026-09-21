@@ -1,4 +1,6 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap");\n\n.landing-page {
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap");
+
+\n\n.landing-page {
   color-scheme: dark;
 }
 
@@ -8,8 +10,6 @@
    - Fonts: Oswald (Headings), Inter (Body)
    - Accents: Subtle Noise Texture, Text Outlines, Red Signature Accent
    ============================================================================== */
-
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Oswald:wght@400;500;600;700&display=swap");
 
 :root {
   --font-heading: 'Oswald', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
