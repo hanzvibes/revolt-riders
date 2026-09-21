@@ -470,7 +470,16 @@ export default function VoyagerPage() {
 
   const removePhoto = async (photo: GalleryPhoto) => {
     if (!canManage) return;
-    if (!await confirmAction("Hapus foto dokumentasi ini?")) return;
+    if (
+      !await confirmAction({
+        title: "Hapus foto dokumentasi?",
+        description: "Foto akan dihapus dari Gallery Voyager dan tidak bisa dipulihkan.",
+        confirmLabel: "Hapus Foto",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
+    )
+      return;
 
     const supabase = getSupabaseBrowserClient();
     setError("");
