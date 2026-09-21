@@ -316,7 +316,7 @@ export default function RidingPage() {
         >
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "16px" }}>
             <div>
-              <em style={{ fontStyle: "normal", fontSize: "0.62rem", color: "var(--red)", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase" }}>
+              <em style={{ fontStyle: "normal", fontSize: "var(--rr-type-caption)", color: "var(--red)", fontWeight: 800, letterSpacing: "0.15em", textTransform: "uppercase" }}>
                 RIDING LOG · REVOLT RIDERS
               </em>
               <h2 style={{ fontSize: "1.75rem", margin: "4px 0 6px", fontWeight: 800, letterSpacing: "-0.03em" }}>
@@ -358,7 +358,7 @@ export default function RidingPage() {
             }}
           >
             <div>
-              <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <small style={{ color: "#8b949e", fontSize: "var(--rr-type-caption)", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Total KM Terverifikasi
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#fff", marginTop: "2px" }}>
@@ -368,7 +368,7 @@ export default function RidingPage() {
             </div>
 
             <div>
-              <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <small style={{ color: "#8b949e", fontSize: "var(--rr-type-caption)", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Ride Disetujui
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 800, color: "#fff", marginTop: "2px" }}>
@@ -378,7 +378,7 @@ export default function RidingPage() {
             </div>
 
             <div>
-              <small style={{ color: "#8b949e", fontSize: "0.6rem", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+              <small style={{ color: "#8b949e", fontSize: "var(--rr-type-caption)", fontWeight: 800, letterSpacing: "0.05em", textTransform: "uppercase" }}>
                 Menunggu Validasi
               </small>
               <div style={{ fontSize: "1.5rem", fontWeight: 800, color: pendingRides.length > 0 ? "#fbbf24" : "#9ca3af", marginTop: "2px" }}>
@@ -663,7 +663,7 @@ export default function RidingPage() {
                         </strong>
                         <span
                           style={{
-                            fontSize: "0.6rem",
+                            fontSize: "var(--rr-type-caption)",
                             fontWeight: 800,
                             borderRadius: "12px",
                             padding: "2px 7px",
