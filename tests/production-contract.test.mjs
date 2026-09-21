@@ -476,3 +476,19 @@ test("Shared action dialogs replace native browser prompts", async () => {
     assert.doesNotMatch(source, /window\.(?:confirm|prompt|alert)\(/);
   }
 });
+
+
+test("Voyager makes member status and evidence visible", async () => {
+  const voyager = await read("app/voyager/page.tsx");
+  const css = await read("app/system-ui.css");
+
+  assert.match(voyager, /currentMemberVoyagerEvents/);
+  assert.match(voyager, /featuredMemberStatus/);
+  assert.match(voyager, /aria-label="Status Voyager saya"/);
+  assert.match(voyager, /BUKTI FOTO/);
+  assert.match(voyager, /setDetailEvent\(featuredEvent\)/);
+
+  assert.match(css, /voyager-member-progress/);
+  assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(css, /@media \(max-width: 390px\)/);
+});
