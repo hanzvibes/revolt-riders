@@ -534,14 +534,8 @@ export default function AdminPage() {
       p_event_id: eventRecord.id,
     });
     if (rpcError) {
-      // Fallback cleanup & direct delete
-      await supabase.from("ride_logs").update({ event_id: null }).eq("event_id", eventRecord.id);
-      await supabase.from("event_checkin_codes").delete().eq("event_id", eventRecord.id);
-      await supabase.from("event_attendance").delete().eq("event_id", eventRecord.id);
-      await supabase.from("event_rsvps").delete().eq("event_id", eventRecord.id);
-      await supabase.from("event_invitations").delete().eq("event_id", eventRecord.id);
-      const { error: delError } = await supabase.from("events").delete().eq("id", eventRecord.id);
-      if (delError) return setError(delError.message);
+      setError(rpcError.message);
+      return;
     }
     setMessage(`Agenda "${eventRecord.title}" berhasil dihapus secara permanen.`);
     invalidateCache("admin_dashboard_overview");
