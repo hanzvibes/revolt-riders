@@ -789,6 +789,8 @@ export default function VoyagerPage() {
                         alt={photo.title || "Dokumentasi Voyager"}
                         width={640}
                         height={640}
+                        loading="lazy"
+                        decoding="async"
                         sizes="(max-width: 520px) 50vw, 320px"
                       /> : <span><Camera /></span>}
                     <i>
