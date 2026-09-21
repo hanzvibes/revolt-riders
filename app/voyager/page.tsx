@@ -270,6 +270,36 @@ export default function VoyagerPage() {
     [participants],
   );
   const galleryPreview = useMemo(() => photos.slice(0, 6), [photos]);
+  const currentMemberVoyagerEvents = useMemo(() => {
+    const memberId = activeAccount?.member_external_id;
+    if (!memberId) return [];
+    const joinedEventIds = new Set(
+      participants
+        .filter((item) => item.member_external_id === memberId)
+        .map((item) => item.event_id),
+    );
+    return events.filter((event) => joinedEventIds.has(event.id));
+  }, [activeAccount?.member_external_id, events, participants]);
+  const completedMemberVoyagers = useMemo(
+    () =>
+      currentMemberVoyagerEvents.filter((event) => event.status === "completed")
+        .length,
+    [currentMemberVoyagerEvents],
+  );
+  const featuredJoined = Boolean(
+    featuredEvent &&
+      currentMemberVoyagerEvents.some((event) => event.id === featuredEvent.id),
+  );
+  const featuredPhotoCount = featuredEvent
+    ? photos.filter((photo) => photo.event_id === featuredEvent.id).length
+    : 0;
+  const featuredMemberStatus = !featuredEvent
+    ? "Belum ada Voyager"
+    : featuredJoined
+      ? featuredEvent.status === "completed"
+        ? "Selesai"
+        : "Tercatat"
+      : "Belum tercatat";
 
   const participantIdsFor = (eventId: string) =>
     participants
@@ -523,6 +553,39 @@ export default function VoyagerPage() {
           </p>
         )}
         {error && <p className="error-message">{error}</p>}
+
+        {featuredEvent && (
+          <section className="voyager-member-progress" aria-label="Status Voyager saya">
+            <div className="voyager-member-progress-copy">
+              <small>VOYAGER SAYA</small>
+              <strong>{featuredMemberStatus}</strong>
+              <p>
+                {featuredJoined
+                  ? featuredEvent.status === "completed"
+                    ? `Kamu tercatat menyelesaikan ${featuredEvent.title}.`
+                    : `Kamu tercatat sebagai participant ${featuredEvent.title}.`
+                  : `Kamu belum tercatat sebagai participant ${featuredEvent.title}.`}
+              </p>
+            </div>
+            <div className="voyager-member-progress-metrics">
+              <span>
+                <History aria-hidden="true" />
+                <small>RIWAYAT IKUT</small>
+                <b>{completedMemberVoyagers}</b>
+              </span>
+              <span>
+                <Bike aria-hidden="true" />
+                <small>JARAK RESMI</small>
+                <b>{formatKm(featuredEvent.official_distance_km)} KM</b>
+              </span>
+              <button type="button" onClick={() => setDetailEvent(featuredEvent)}>
+                <Camera aria-hidden="true" />
+                <small>BUKTI FOTO</small>
+                <b>{featuredPhotoCount}</b>
+              </button>
+            </div>
+          </section>
+        )}
 
         <section className="voyager-overview-grid" aria-label="Ringkasan Voyager">
           <article>
