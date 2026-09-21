@@ -97,6 +97,14 @@ for (const file of cssTargets) {
     }
   }
 
+  for (const match of content.matchAll(
+    /(?:animation|transition)-duration\s*:\s*0?\.01ms/gi,
+  )) {
+    fatal.push(
+      `${file}:${lineOf(content, match.index)} uses a 0.01ms motion kill switch; use targeted prefers-reduced-motion rules that preserve state feedback`,
+    );
+  }
+
   const budget = legacyBudgets[file];
   if (budget) {
     const tinyType = countTinyRemDeclarations(content);

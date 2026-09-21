@@ -61,10 +61,16 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
 
   const cacheRef = useRef<Map<string, CacheEntry<unknown>>>(new Map());
   const inFlightRef = useRef<Map<string, Promise<unknown>>>(new Map());
+  const accessRefreshRef = useRef<Promise<void> | null>(null);
+  const lastFocusRefreshAtRef = useRef(0);
   const userIdRef = useRef<string | null>(null);
 
-  const refreshAccess = useCallback(async () => {
-    try {
+  const refreshAccess = useCallback((): Promise<void> => {
+    const inFlight = accessRefreshRef.current;
+    if (inFlight) return inFlight;
+
+    const refreshPromise = (async () => {
+      try {
       const supabase = getSupabaseBrowserClient();
       const { data: userData, error: userError } = await supabase.auth.getUser();
       const nextUser = userData.user;
@@ -101,14 +107,32 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
       } else {
         setError("");
       }
-    } catch {
-      setError("Gagal memeriksa sesi pengguna.");
-    } finally {
-      setLoading(false);
-    }
+      } catch {
+        setError("Gagal memeriksa sesi pengguna.");
+      } finally {
+        setLoading(false);
+      }
+    })();
+
+    accessRefreshRef.current = refreshPromise;
+    void refreshPromise.then(
+      () => {
+        if (accessRefreshRef.current === refreshPromise) {
+          accessRefreshRef.current = null;
+        }
+      },
+      () => {
+        if (accessRefreshRef.current === refreshPromise) {
+          accessRefreshRef.current = null;
+        }
+      },
+    );
+
+    return refreshPromise;
   }, []);
 
   useEffect(() => {
+    lastFocusRefreshAtRef.current = Date.now();
     void refreshAccess();
 
     const supabase = getSupabaseBrowserClient();
@@ -130,10 +154,14 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     );
 
     const onFocus = () => {
-      // Background revalidation without resetting loading spinner
-      if (document.visibilityState === "visible") {
-        void refreshAccess();
-      }
+      // Focus + visibilitychange commonly fire as a pair. Collapse that pair into
+      // one background revalidation while refreshAccess handles in-flight dedupe.
+      if (document.visibilityState !== "visible") return;
+
+      const now = Date.now();
+      if (now - lastFocusRefreshAtRef.current < 1_500) return;
+      lastFocusRefreshAtRef.current = now;
+      void refreshAccess();
     };
 
     window.addEventListener("focus", onFocus);

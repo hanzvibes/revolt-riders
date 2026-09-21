@@ -107,6 +107,14 @@ export default function LeaderboardPage() {
   const kmToNext =
     myIndex > 0 ? riders[myIndex - 1].total_km - (myRider?.total_km ?? 0) : 0;
 
+  const rankByMemberId = useMemo(() => {
+    const ranks = new Map<string, number>();
+    riders.forEach((rider, index) => {
+      ranks.set(rider.member_external_id, index + 1);
+    });
+    return ranks;
+  }, [riders]);
+
   const filteredRiders = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return riders;
@@ -368,10 +376,7 @@ export default function LeaderboardPage() {
                 <div className="leaderboard-items">
                   {remainingRiders.map((r) => {
                     const originalRank =
-                      riders.findIndex(
-                        (orig) =>
-                          orig.member_external_id === r.member_external_id,
-                      ) + 1;
+                      rankByMemberId.get(r.member_external_id) ?? 0;
                     const isMe =
                       r.member_external_id === account?.member_external_id;
                     const percent = Math.min(

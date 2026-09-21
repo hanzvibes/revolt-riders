@@ -1774,32 +1774,29 @@
 }
 
 /* ------------------------------------------------------------------------------
-   16. MOBILE PERFORMANCE & HARDWARE ACCELERATION
+   16. REDUCED MOTION
+   Keep state/color feedback intact while removing continuous and spatial motion.
    ------------------------------------------------------------------------------ */
-.hero-inner,
-.about-left,
-.about-right,
-.brotherhood-inner,
-.values-grid,
-.value-card,
-.gallery-card,
-.activity-row,
-.join-inner,
-.closing-title {
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  *,
-  ::before,
-  ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+  .landing-page {
+    scroll-behavior: auto;
+  }
+
+  .hero-scroll-indicator {
+    animation: none;
+    transform: translateX(-50%);
+  }
+
+  .dark-nav-brand:hover .dark-nav-logo,
+  .btn-nav-join:hover,
+  .btn-hero-primary:hover,
+  .btn-hero-secondary:hover,
+  .value-card:hover,
+  .gallery-card:hover .gallery-card-img,
+  .instagram-card:hover img,
+  .landing-page .native-sheet > header button:hover,
+  .btn-join-submit:hover:not(:disabled) {
+    transform: none;
   }
 }
 
