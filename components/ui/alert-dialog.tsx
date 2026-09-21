@@ -58,8 +58,8 @@ function AlertDialogContent({
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
-          "fixed left-1/2 top-1/2 z-[80] grid max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 overflow-y-auto rounded-[var(--rr-radius-lg)] border border-[var(--rr-line)] bg-[var(--rr-surface)] p-5 text-[var(--rr-ink)] shadow-[0_24px_64px_rgba(20,22,24,0.22)] outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-[220ms] data-[state=closed]:ease-in data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:duration-[240ms] data-[state=open]:ease-out",
-          size === "sm" ? "max-w-[400px]" : "max-w-[560px] sm:p-6",
+          "fixed left-1/2 top-1/2 z-[80] flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col gap-4 overflow-y-auto rounded-[var(--rr-radius-lg)] border border-[var(--rr-line)] bg-[var(--rr-surface)] p-4 text-[var(--rr-ink)] shadow-[0_24px_64px_rgba(20,22,24,0.22)] outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:duration-[220ms] data-[state=closed]:ease-in data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:duration-[240ms] data-[state=open]:ease-out sm:p-5",
+          size === "sm" ? "max-w-[380px]" : "max-w-[560px] sm:p-6",
           className
         )}
         {...props}
@@ -75,7 +75,7 @@ function AlertDialogHeader({
   return (
     <div
       data-slot="alert-dialog-header"
-      className={cn("grid gap-2 text-left", className)}
+      className={cn("flex flex-col gap-1.5 text-left", className)}
       {...props}
     />
   )
@@ -89,7 +89,7 @@ function AlertDialogFooter({
     <div
       data-slot="alert-dialog-footer"
       className={cn(
-        "grid grid-cols-2 gap-2 sm:flex sm:justify-end",
+        "flex flex-row flex-wrap justify-end gap-2",
         className
       )}
       {...props}
