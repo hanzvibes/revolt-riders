@@ -439,229 +439,209 @@ export default function ProfilePage() {
 
   return (
     <AppShell active="Profil" title="Profil Saya">
-      <div className="page-wrap">
+      <div className="page-wrap profile-social-page">
         {/* ================================================================ */}
-        {/* DIGITAL MEMBERSHIP CARD (IDENTITY CARD) */}
+        {/* SOCIAL MEMBER PROFILE */}
         {/* ================================================================ */}
-        <section className="digital-id-card member-passport-card">
-          <div className="member-passport-watermark" aria-hidden="true">
+        <section className="profile-social-card" aria-labelledby="profile-social-name">
+          <div className="profile-social-cover">
             <Image
               src="/revolt-riders-logo.jpg"
               alt=""
-              width={260}
-              height={260}
+              width={180}
+              height={180}
               priority={false}
             />
+            <span>REVOLT RIDERS · MEMBER NETWORK</span>
           </div>
 
-          <header className="member-passport-head">
-            <span>
-              <small>DIGITAL MEMBER PASSPORT</small>
-              <strong>REVOLT RIDERS</strong>
-              <em>SITUBONDO · EST. 2022</em>
-            </span>
-            <span className="member-passport-verified">
-              <ShieldCheck aria-hidden="true" />
-              VERIFIED
-            </span>
-          </header>
-
-          <div className="member-passport-identity">
-            <div className="member-passport-avatar" aria-hidden="true">
-              {displayName.slice(0, 2).toUpperCase()}
+          <div className="profile-social-body">
+            <div className="profile-social-avatar-row">
+              <div className="profile-social-avatar" aria-hidden="true">
+                {displayName.slice(0, 2).toUpperCase()}
+              </div>
+              <a className="profile-social-edit" href="#edit-profile">
+                <Pencil aria-hidden="true" />
+                Edit profil
+              </a>
             </div>
 
-            <div className="member-passport-name">
-              <small>OFFICIAL MEMBER</small>
-              <h2>{displayName}</h2>
-              {profile?.full_name && profile.full_name !== displayName && (
-                <p>{profile.full_name}</p>
-              )}
+            <div className="profile-social-intro">
+              <div className="profile-social-name-row">
+                <h2 id="profile-social-name">{displayName}</h2>
+                <ShieldCheck aria-label="Member terverifikasi" />
+              </div>
+              {profile?.full_name && profile.full_name !== displayName ? (
+                <p className="profile-social-full-name">{profile.full_name}</p>
+              ) : null}
 
-              <div className="member-passport-tags">
-                <code>{account.member_external_id}</code>
-                {profile?.club_role && (
+              <div className="profile-social-handle-row">
+                <code>@{account.member_external_id}</code>
+                {profile?.club_role ? (
                   <span className={`member-role-badge ${getRoleClass(profile.club_role)}`}>
                     {profile.club_role}
                   </span>
-                )}
-                <span className="member-passport-status">
+                ) : null}
+                <span className="profile-social-active">
                   <ShieldCheck aria-hidden="true" />
                   Active
                 </span>
               </div>
+
+              <p className="profile-social-bio">
+                Rider Revolt Riders · Your Motorcycle, Yourself Expression.
+              </p>
+
+              <div className="profile-social-meta" aria-label="Informasi member">
+                <span>
+                  <MapPin aria-hidden="true" />
+                  {city || profile?.city || "Domisili belum diisi"}
+                </span>
+                <span>
+                  <Bike aria-hidden="true" />
+                  {primaryMotorcycle
+                    ? primaryMotorcycle.nickname ||
+                      `${primaryMotorcycle.brand} ${primaryMotorcycle.model}`
+                    : motorcycle || detail?.motorcycle || "Motor belum diisi"}
+                </span>
+                <span>
+                  <Calendar aria-hidden="true" />
+                  {joinDate && joinYear
+                    ? `Bergabung ${new Intl.DateTimeFormat("id-ID", {
+                        month: "short",
+                        year: "numeric",
+                      }).format(joinDate)}`
+                    : "Member resmi"}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="member-passport-meta">
-            <span>
-              <MapPin aria-hidden="true" />
-              <small>Domisili</small>
-              <b>{city || profile?.city || "Belum diisi"}</b>
-            </span>
-            <span>
-              <Bike aria-hidden="true" />
-              <small>Motor</small>
-              <b>
-                {primaryMotorcycle
-                  ? primaryMotorcycle.nickname || `${primaryMotorcycle.brand} ${primaryMotorcycle.model}`
-                  : motorcycle || detail?.motorcycle || "Belum diisi"}
-              </b>
-              <Link className="member-passport-meta-link" href="/garage">My Garage</Link>
-            </span>
-            <span>
-              <Calendar aria-hidden="true" />
-              <small>Member since</small>
-              <b>
-                {joinDate && joinYear
-                  ? new Intl.DateTimeFormat("id-ID", {
-                      month: "short",
-                      year: "numeric",
-                    }).format(joinDate)
-                  : "Member resmi"}
-              </b>
-            </span>
-          </div>
+            <div className="profile-social-stats" aria-label="Statistik member">
+              <a href="#profile-activity">
+                <strong>
+                  <CountUpNumber value={totalKm} maximumFractionDigits={1} />
+                </strong>
+                <span>KM resmi</span>
+              </a>
+              <a href="#profile-activity">
+                <strong><CountUpNumber value={approvedRidesCount} /></strong>
+                <span>Ride approved</span>
+              </a>
+              <a href="#profile-rsvp">
+                <strong><CountUpNumber value={attendedAgendaCount} /></strong>
+                <span>Agenda hadir</span>
+              </a>
+            </div>
 
-          <div className="member-passport-metrics" aria-label="Ringkasan passport member">
-            <article>
-              <small>Total KM Resmi</small>
-              <strong>
-                <CountUpNumber value={totalKm} maximumFractionDigits={1} />
-                <span>KM</span>
-              </strong>
-            </article>
-            <article>
-              <small>Ride Approved</small>
-              <strong>
-                <CountUpNumber value={approvedRidesCount} />
-                <span>ride</span>
-              </strong>
-            </article>
-            <article>
-              <small>RSVP Hadir</small>
-              <strong>
-                <CountUpNumber value={attendedAgendaCount} />
-                <span>agenda</span>
-              </strong>
-            </article>
-          </div>
-
-          <div className="member-passport-body-grid">
-            <section className="member-passport-progress" aria-label="Progress member">
-              <div className="member-passport-progress-head">
-                <span>
-                  <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
-                  <strong>{riderProgress.level.title}</strong>
-                </span>
-                <b>{nextKmMilestone ? `${Math.round(milestoneProgress)}%` : "MAX"}</b>
-              </div>
-
-              <div
-                className="member-passport-progress-track"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={100}
-                aria-valuenow={Math.round(milestoneProgress)}
-                aria-label="Progress menuju milestone kilometer berikutnya"
-              >
-                <i style={{ width: `${milestoneProgress}%` }} />
-              </div>
-
-              <div className="member-passport-progress-scale">
-                <small>
-                  {previousKmMilestone > 0
-                    ? `${new Intl.NumberFormat("id-ID").format(previousKmMilestone)} KM`
-                    : "START"}
-                </small>
-                <small>
-                  {nextKmMilestone
-                    ? `${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM`
-                    : "MAX"}
-                </small>
-              </div>
-
-              <div className="member-passport-progress-callout">
-                <Route aria-hidden="true" />
-                <span>
-                  <b>
-                    {nextKmMilestone
-                      ? `${new Intl.NumberFormat("id-ID", {
-                          maximumFractionDigits: 1,
-                        }).format(remainingKmToMilestone)} KM lagi`
-                      : "Road milestone complete"}
-                  </b>
-                  <small>
-                    {nextKmMilestone
-                      ? `menuju level berikutnya · ${riderProgress.streakMonths} bulan ride streak`
-                      : `level tertinggi · ${riderProgress.streakMonths} bulan ride streak`}
-                  </small>
-                </span>
-              </div>
-            </section>
-
-            <section className="member-passport-achievements" aria-label="Milestone passport">
-              <div className="member-passport-achievements-head">
-                <span>
-                  <small>PASSPORT STAMPS</small>
-                  <strong>Milestone Member</strong>
-                </span>
-                <b>
-                  {passportBadges.filter((badge) => badge.unlocked).length}
-                  <span>/{passportBadges.length}</span>
-                </b>
-              </div>
-
-              <div className="member-passport-badges">
-                {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
-                  <article
-                    key={key}
-                    className={unlocked ? "is-unlocked" : "is-locked"}
-                    aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
-                  >
-                    <i><Icon aria-hidden="true" /></i>
-                    <span>
-                      <b>{label}</b>
-                      <small>{badgeDetail}</small>
-                    </span>
-                    {unlocked && <Check aria-hidden="true" />}
-                  </article>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          <footer className="member-passport-footer">
-            <span>
-              <small>PASSPORT NO.</small>
-              <b>{account.member_external_id}</b>
-            </span>
-
-            <nav className="profile-quick-shortcuts" aria-label="Akses cepat member">
-              <Link className="profile-emboss-action" href="/riding">
+            <nav className="profile-social-actions" aria-label="Akses cepat member">
+              <Link href="/riding">
                 <Bike aria-hidden="true" />
                 <span>Riding</span>
               </Link>
-              <Link className="profile-emboss-action" href="/agenda">
+              <Link href="/agenda">
                 <CalendarDays aria-hidden="true" />
                 <span>Agenda</span>
               </Link>
-              <Link className="profile-emboss-action" href="/leaderboard">
+              <Link href="/leaderboard">
                 <Trophy aria-hidden="true" />
                 <span>Ranking</span>
               </Link>
-              <Link className="profile-emboss-action" href="/check-in">
+              <Link href="/check-in">
                 <QrCode aria-hidden="true" />
                 <span>Check-in</span>
               </Link>
             </nav>
-          </footer>
+          </div>
         </section>
+
+        <div className="profile-social-grid">
+          <section className="member-passport-progress profile-social-progress" aria-label="Progress member">
+            <div className="member-passport-progress-head">
+              <span>
+                <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
+                <strong>{riderProgress.level.title}</strong>
+              </span>
+              <b>{nextKmMilestone ? `${Math.round(milestoneProgress)}%` : "MAX"}</b>
+            </div>
+
+            <div
+              className="member-passport-progress-track"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(milestoneProgress)}
+              aria-label="Progress menuju milestone kilometer berikutnya"
+            >
+              <i style={{ width: `${milestoneProgress}%` }} />
+            </div>
+
+            <div className="member-passport-progress-scale">
+              <small>
+                {previousKmMilestone > 0
+                  ? `${new Intl.NumberFormat("id-ID").format(previousKmMilestone)} KM`
+                  : "START"}
+              </small>
+              <small>
+                {nextKmMilestone
+                  ? `${new Intl.NumberFormat("id-ID").format(nextKmMilestone)} KM`
+                  : "MAX"}
+              </small>
+            </div>
+
+            <div className="member-passport-progress-callout">
+              <Route aria-hidden="true" />
+              <span>
+                <b>
+                  {nextKmMilestone
+                    ? `${new Intl.NumberFormat("id-ID", {
+                        maximumFractionDigits: 1,
+                      }).format(remainingKmToMilestone)} KM lagi`
+                    : "Road milestone complete"}
+                </b>
+                <small>
+                  {nextKmMilestone
+                    ? `menuju level berikutnya · ${riderProgress.streakMonths} bulan ride streak`
+                    : `level tertinggi · ${riderProgress.streakMonths} bulan ride streak`}
+                </small>
+              </span>
+            </div>
+          </section>
+
+          <section className="member-passport-achievements profile-social-achievements" aria-label="Milestone member">
+            <div className="member-passport-achievements-head">
+              <span>
+                <small>ACHIEVEMENTS</small>
+                <strong>Milestone Member</strong>
+              </span>
+              <b>
+                {passportBadges.filter((badge) => badge.unlocked).length}
+                <span>/{passportBadges.length}</span>
+              </b>
+            </div>
+
+            <div className="member-passport-badges">
+              {passportBadges.map(({ key, label, detail: badgeDetail, unlocked, Icon }) => (
+                <article
+                  key={key}
+                  className={unlocked ? "is-unlocked" : "is-locked"}
+                  aria-label={`${label}: ${unlocked ? "tercapai" : "belum tercapai"}`}
+                >
+                  <i><Icon aria-hidden="true" /></i>
+                  <span>
+                    <b>{label}</b>
+                    <small>{badgeDetail}</small>
+                  </span>
+                  {unlocked ? <Check aria-hidden="true" /> : null}
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
 
         {/* ================================================================ */}
         {/* SECTION RIWAYAT SOWAN & TOURING */}
         {/* ================================================================ */}
-        <section className="card" style={{ marginBottom: "22px" }}>
+        <section id="profile-activity" className="card profile-social-feed">
           <div
             className="section-title"
             style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%" }}
@@ -853,7 +833,7 @@ export default function ProfilePage() {
         {/* ================================================================ */}
         {/* EDIT PROFIL MEMBER */}
         {/* ================================================================ */}
-        <section className="profile-edit card" style={{ marginBottom: "22px" }}>
+        <section id="edit-profile" className="profile-edit card profile-social-panel">
           <div className="section-title">
             <span>
               <em>Data pribadi</em>
@@ -907,7 +887,7 @@ export default function ProfilePage() {
         {/* ================================================================ */}
         {/* AKTIVITAS AGENDA RSVP */}
         {/* ================================================================ */}
-        <section className="card" style={{ marginBottom: "24px" }}>
+        <section id="profile-rsvp" className="card profile-social-panel">
           <div className="section-title">
             <span>
               <em>Agenda club</em>
