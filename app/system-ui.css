@@ -11011,3 +11011,77 @@
     aspect-ratio: 1 / .82;
   }
 }
+
+/* ==============================================================================
+   Final consistency · Profile ride status and actions
+   ============================================================================== */
+
+.app-shell .profile-ride-controls {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--rr-space-2);
+}
+
+.app-shell .profile-ride-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border: 1px solid var(--rr-line);
+  border-radius: 999px;
+  padding: 0 8px;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  text-transform: capitalize;
+}
+
+.app-shell .profile-ride-status.approved {
+  border-color: var(--rr-success-line);
+  background: var(--rr-success-soft);
+  color: var(--rr-success-ink);
+}
+
+.app-shell .profile-ride-status.pending {
+  border-color: var(--rr-warning-line);
+  background: var(--rr-warning-soft);
+  color: var(--rr-warning-ink);
+}
+
+.app-shell .profile-ride-status.rejected {
+  border-color: var(--rr-danger-line);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+}
+
+.app-shell .profile-ride-action {
+  display: grid;
+  width: var(--rr-control-sm);
+  height: var(--rr-control-sm);
+  place-items: center;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-sm);
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  cursor: pointer;
+}
+
+.app-shell .profile-ride-action.delete {
+  border-color: var(--rr-danger-line);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+}
+
+.app-shell .profile-ride-action svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell .profile-ride-action {
+    width: var(--rr-control-lg);
+    height: var(--rr-control-lg);
+  }
+}
+

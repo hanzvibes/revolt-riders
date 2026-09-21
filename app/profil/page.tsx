@@ -1,8 +1,10 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
+import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
@@ -106,6 +108,7 @@ const getRoleClass = (role: string | null) => {
 };
 
 export default function ProfilePage() {
+  const { confirmAction } = useActionDialog();
   const router = useRouter();
   const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache, invalidateCache } = useDataCache();
@@ -121,6 +124,7 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const [rideActionError, setRideActionError] = useState("");
   const [nickname, setNickname] = useState("");
   const [motorcycle, setMotorcycle] = useState("");
   const [city, setCity] = useState("");
@@ -300,6 +304,7 @@ export default function ProfilePage() {
   }, [accessLoading, load]);
 
   const handleRideUpdated = async () => {
+    invalidateCache("riding:");
     invalidateCache("member_profiles_list");
     invalidateCache("riding_leaderboard_data");
     invalidateCache("dashboard_club_stats");
@@ -307,6 +312,7 @@ export default function ProfilePage() {
     if (account) {
       invalidateCache(`dashboard_member_profile_${account.member_external_id}`);
       invalidateCache(`profile:${account.member_external_id}`);
+      invalidateCache(`member_touring:${account.member_external_id}`);
     }
     await load(true);
   };
@@ -359,14 +365,17 @@ export default function ProfilePage() {
     return (
       <AppShell active="Profil" title="Profil Saya">
         <div className="page-wrap">
-          <section className="empty-state card">
-            <UserRound />
-            <h2>Belum masuk ke akun</h2>
-            <p>Silakan masuk terlebih dahulu untuk membuka kartu anggota digital Revolt Riders.</p>
-            <a className="primary-action" href="/login">
-              MASUK KE AKUN
-            </a>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<UserRound />}
+            title="Belum masuk ke akun"
+            description="Silakan masuk terlebih dahulu untuk membuka kartu anggota digital Revolt Riders."
+            action={
+              <a className="primary-action" href="/login">
+                MASUK KE AKUN
+              </a>
+            }
+          />
         </div>
       </AppShell>
     );
@@ -376,14 +385,17 @@ export default function ProfilePage() {
     return (
       <AppShell active="Profil" title="Profil Saya">
         <div className="page-wrap">
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akun menunggu verifikasi pengurus</h2>
-            <p>{email}</p>
-            <p className="notice" style={{ marginTop: "12px" }}>
-              Pendaftaran Anda telah diterima. Pengurus akan segera memverifikasi dan menghubungkan akun Anda dengan Member ID resmi.
-            </p>
-          </section>
+          <PageState
+            icon={<ShieldAlert />}
+            title="Akun menunggu verifikasi pengurus"
+            description={
+              <>
+                {email}
+                <br />
+                Pendaftaran Anda telah diterima. Pengurus akan segera memverifikasi dan menghubungkan akun dengan Member ID resmi.
+              </>
+            }
+          />
         </div>
       </AppShell>
     );
@@ -677,6 +689,9 @@ export default function ProfilePage() {
             </button>
           </div>
 
+          {rideActionError ? (
+            <p className="error-message" role="alert">{rideActionError}</p>
+          ) : null}
           {rides.length === 0 ? (
             <p className="system-message">Belum ada riwayat sowan / ride log yang dicatat.</p>
           ) : (
@@ -761,26 +776,26 @@ export default function ProfilePage() {
                       </span>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
+                    <div className="profile-ride-controls">
                       <span
-                        style={{
-                          fontSize: "var(--rr-type-caption)",
-                          fontWeight: 800,
-                          borderRadius: "12px",
-                          padding: "3px 8px",
-                          background: isApproved ? "#eaf8f1" : isPending ? "#fef3c7" : "#fff0f1",
-                          color: isApproved ? "#137748" : isPending ? "#b45309" : "#b31221",
-                          textTransform: "capitalize",
-                        }}
+                        className={`profile-ride-status ${
+                          isApproved
+                            ? "approved"
+                            : isPending
+                              ? "pending"
+                              : "rejected"
+                        }`}
                       >
                         {isApproved ? "Approved" : isPending ? "Pending" : "Ditolak"}
                       </span>
 
                       <button
                         type="button"
-                        className="member-tour-action"
+                        className="profile-ride-action"
                         title="Edit catatan ini"
+                        aria-label={`Edit catatan ${displayTitle}`}
                         onClick={() => {
+                          setRideActionError("");
                           setEditModalData({
                             id: ride.id,
                             memberExternalId: account.member_external_id,
@@ -791,45 +806,41 @@ export default function ProfilePage() {
                           });
                           setEditModalOpen(true);
                         }}
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                          borderRadius: "6px",
-                          border: "1px solid var(--line)",
-                          background: "#fff",
-                          display: "grid",
-                          placeItems: "center",
-                          cursor: "pointer",
-                        }}
                       >
-                        <Pencil size={12} />
+                        <Pencil aria-hidden="true" />
                       </button>
                       <button
                         type="button"
-                        className="member-tour-action delete"
+                        className="profile-ride-action delete"
                         title="Hapus catatan ini"
+                        aria-label={`Hapus catatan ${displayTitle}`}
                         onClick={async () => {
-                          if (!confirm(`Hapus catatan "${displayTitle}"?`)) return;
+                          const confirmed = await confirmAction({
+                            title: "Hapus catatan riding?",
+                            description: `Catatan "${displayTitle}" akan dihapus permanen.`,
+                            confirmLabel: "Hapus Catatan",
+                            cancelLabel: "Batal",
+                            destructive: true,
+                          });
+                          if (!confirmed) return;
+
+                          setRideActionError("");
                           try {
-                            await deleteRideLog(ride.id, account.member_external_id);
+                            await deleteRideLog(
+                              ride.id,
+                              account.member_external_id,
+                            );
                             await handleRideUpdated();
-                          } catch (e) {
-                            alert(e instanceof Error ? e.message : "Gagal menghapus");
+                          } catch (caught) {
+                            setRideActionError(
+                              caught instanceof Error
+                                ? caught.message
+                                : "Gagal menghapus catatan riding.",
+                            );
                           }
                         }}
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                          borderRadius: "6px",
-                          border: "1px solid #ffd3d6",
-                          background: "#fff",
-                          display: "grid",
-                          placeItems: "center",
-                          cursor: "pointer",
-                          color: "#dc1b2a",
-                        }}
                       >
-                        <Trash2 size={12} />
+                        <Trash2 aria-hidden="true" />
                       </button>
                     </div>
                   </article>
@@ -881,8 +892,12 @@ export default function ProfilePage() {
                 placeholder="Contoh: Situbondo, Bondowoso"
               />
             </label>
-            {message && <p className="success-message"><Check />{message}</p>}
-            {error && <p className="error-message">{error}</p>}
+            {message && (
+              <p className="success-message" role="status" aria-live="polite">
+                <Check aria-hidden="true" />{message}
+              </p>
+            )}
+            {error && <p className="error-message" role="alert">{error}</p>}
             <button className="primary-action" disabled={saving}>
               {saving ? "MENYIMPAN…" : "SIMPAN PROFIL"}
             </button>

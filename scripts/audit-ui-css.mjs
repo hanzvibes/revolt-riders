@@ -316,6 +316,7 @@ if (!fs.existsSync(sharedPageStatePath)) {
 }
 
 const sharedPageStateTargets = [
+  "app/profil/page.tsx",
   "app/agenda/page.tsx",
   "app/garage/page.tsx",
   "app/kas/page.tsx",
@@ -333,6 +334,32 @@ for (const file of sharedPageStateTargets) {
     fatal.push(
       `${file}: use the shared PageState component for page-level empty/error/restricted states`,
     );
+  }
+}
+
+const finalConsistencyContracts = {
+  "app/profil/page.tsx": [
+    "confirmAction",
+    "profile-ride-status",
+    "profile-ride-action",
+    'role="status" aria-live="polite"',
+  ],
+  "app/admin/page.tsx": [
+    "counts_as_mandatory,official_distance_km",
+    "sync_event_official_rides",
+    "invalidateRideDerivedCaches",
+    'role="status"',
+  ],
+};
+
+for (const [file, snippets] of Object.entries(finalConsistencyContracts)) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs)) continue;
+  const content = fs.readFileSync(abs, "utf8");
+  for (const snippet of snippets) {
+    if (!content.includes(snippet)) {
+      fatal.push(`${file}: final consistency contract missing ${snippet}`);
+    }
   }
 }
 
@@ -393,7 +420,9 @@ for (const file of uiFiles) {
     }
   }
 
-  nativeDialogCount += [...content.matchAll(/window\.(?:confirm|prompt|alert)\(/g)].length;
+  nativeDialogCount += [
+    ...content.matchAll(/(?:window\.)?(?:confirm|prompt|alert)\s*\(/g),
+  ].length;
 }
 
 if (inlineTinyTypeCount) {

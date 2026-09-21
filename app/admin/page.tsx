@@ -29,6 +29,10 @@ import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
+type AdminEventRecord = EventRecord & {
+  counts_as_mandatory: boolean;
+  official_distance_km: number | null;
+};
 type PendingRequest = {
   id: string;
   user_id: string;
@@ -117,7 +121,7 @@ export default function AdminPage() {
     invalidateCache,
   } = useDataCache();
   const [account, setAccount] = useState<Account | null>(null);
-  const [events, setEvents] = useState<EventRecord[]>([]);
+  const [events, setEvents] = useState<AdminEventRecord[]>([]);
   const [requests, setRequests] = useState<PendingRequest[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
@@ -145,6 +149,23 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [bulkLoading, setBulkLoading] = useState(false);
   const [agendaFormOpen, setAgendaFormOpen] = useState(false);
+
+  const invalidateAgendaCaches = () => {
+    invalidateCache("admin_dashboard_overview");
+    invalidateCache("admin:events:");
+    invalidateCache("dashboard_upcoming_events");
+    invalidateCache("voyager:");
+  };
+
+  const invalidateRideDerivedCaches = () => {
+    invalidateCache("riding:");
+    invalidateCache("profile:");
+    invalidateCache("dashboard_member_profile_");
+    invalidateCache("dashboard_club_stats");
+    invalidateCache("riding_leaderboard_data");
+    invalidateCache("member_profiles_list");
+    invalidateCache("member_touring:");
+  };
 
   const publishedEvents = useMemo(
     () => events.filter((event) => event.status === "published"),
@@ -222,7 +243,7 @@ export default function AdminPage() {
             supabase
               .from("events")
               .select(
-                "id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status",
+                "id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status,counts_as_mandatory,official_distance_km",
               )
               .order("start_at", { ascending: false }),
             supabase
@@ -250,7 +271,15 @@ export default function AdminPage() {
               : Promise.resolve({ data: [] }),
           ]);
           return {
-            events: (eventResult.data ?? []) as EventRecord[],
+            events: ((eventResult.data ?? []) as AdminEventRecord[]).map(
+              (event) => ({
+                ...event,
+                official_distance_km:
+                  event.official_distance_km === null
+                    ? null
+                    : Number(event.official_distance_km),
+              }),
+            ),
             requests: (requestResult.data ?? []) as PendingRequest[],
             members: (memberResult.data ?? []) as Member[],
             invitations: (invitationResult.data ?? []) as Invitation[],
@@ -339,7 +368,7 @@ export default function AdminPage() {
       setMeetup("");
       setEnd("");
       setAgendaFormOpen(false);
-      invalidateCache("admin_dashboard_overview");
+      invalidateAgendaCaches();
       await load(true);
     }
   };
@@ -549,12 +578,13 @@ export default function AdminPage() {
       return;
     }
     setMessage(`Agenda "${eventRecord.title}" berhasil dihapus secara permanen.`);
-    invalidateCache("admin_dashboard_overview");
+    invalidateAgendaCaches();
+    invalidateRideDerivedCaches();
     await load(true);
   };
 
   const changeEventStatus = async (
-    eventRecord: EventRecord,
+    eventRecord: AdminEventRecord,
     nextStatus: EventRecord["status"],
   ) => {
     if (eventRecord.status === nextStatus) return;
@@ -571,10 +601,40 @@ export default function AdminPage() {
       .update(payload)
       .eq("id", eventRecord.id);
     if (statusError) return setError(statusError.message);
+
+    let syncedMembers = 0;
+    if (
+      nextStatus !== "draft" &&
+      eventRecord.counts_as_mandatory &&
+      eventRecord.official_distance_km &&
+      eventRecord.official_distance_km > 0
+    ) {
+      const { data, error: syncError } = await getSupabaseBrowserClient().rpc(
+        "sync_event_official_rides",
+        { p_event_id: eventRecord.id },
+      );
+
+      if (syncError) {
+        setError(
+          `Status agenda sudah diperbarui, tetapi Official KM belum tersinkron: ${syncError.message}`,
+        );
+        invalidateAgendaCaches();
+        invalidateRideDerivedCaches();
+        await load(true);
+        return;
+      }
+
+      syncedMembers =
+        Number((data as { synced_members?: number } | null)?.synced_members) || 0;
+    }
+
     setMessage(
-      `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}.`,
+      syncedMembers > 0
+        ? `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}. Official KM tersinkron ke ${syncedMembers} member.`
+        : `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}.`,
     );
-    invalidateCache("admin_dashboard_overview");
+    invalidateAgendaCaches();
+    if (syncedMembers > 0) invalidateRideDerivedCaches();
     await load(true);
   };
 
@@ -1230,10 +1290,16 @@ export default function AdminPage() {
             )}
           </section>
         )}
-        {error && <p className="error-message admin-message">{error}</p>}
+        {error && (
+          <p className="error-message admin-message" role="alert">{error}</p>
+        )}
         {message && (
-          <p className="success-message admin-message">
-            <Check />
+          <p
+            className="success-message admin-message"
+            role="status"
+            aria-live="polite"
+          >
+            <Check aria-hidden="true" />
             {message}
           </p>
         )}

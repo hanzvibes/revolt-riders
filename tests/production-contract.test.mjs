@@ -627,3 +627,27 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
   assert.match(approval, /invalidateCache\("admin_dashboard_overview"\)/);
 });
 
+test("Legacy Admin agenda status flow preserves Official KM sync invariant", async () => {
+  const admin = await read("app/admin/page.tsx");
+
+  assert.ok(admin.includes("counts_as_mandatory,official_distance_km"));
+  assert.ok(admin.includes('"sync_event_official_rides"'));
+  assert.ok(admin.includes("invalidateRideDerivedCaches"));
+  assert.ok(
+    admin.includes(
+      "Status agenda sudah diperbarui, tetapi Official KM belum tersinkron",
+    ),
+  );
+});
+
+test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
+  const profile = await read("app/profil/page.tsx");
+
+  assert.ok(profile.includes("confirmAction"));
+  assert.ok(profile.includes("profile-ride-action"));
+  assert.ok(profile.includes("member_touring:"));
+  assert.ok(profile.includes('invalidateCache("riding:")'));
+  assert.ok(!profile.includes("confirm("));
+  assert.ok(!profile.includes("alert("));
+});
+
