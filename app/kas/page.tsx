@@ -68,13 +68,6 @@ const rupiah = (value: number) =>
     currency: "IDR",
     maximumFractionDigits: 0,
   }).format(value);
-const compactRupiah = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
 const isStaffRole = (role?: string) =>
   ["treasurer", "admin", "superadmin"].includes(role || "");
 const monthKey = (transaction: Transaction) =>
