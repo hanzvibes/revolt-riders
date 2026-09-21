@@ -231,7 +231,7 @@
   padding: 12px 13px !important;
   font-size: 0.82rem !important;
   color: #0f172a !important;
-  min-height: 44px !important;
+  min-height: var(--rr-control-lg) !important;
   margin: 0 !important;
   box-shadow: none !important;
 }
