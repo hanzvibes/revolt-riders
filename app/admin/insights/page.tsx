@@ -8,20 +8,18 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Activity, BarChart3, Bike, CalendarDays, CircleDollarSign, ShieldAlert, UsersRound } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Account = { user_id: string; member_external_id: string; role: string; status: string };
+type Account = { user_id: string; member_external_id: string; status: string };
 type MemberProfile = { member_external_id: string; full_name: string; nickname: string | null };
-type Event = { id: string; status: string };
-type Invitation = { event_id: string; member_external_id: string };
 type Rsvp = { event_id: string; member_external_id: string; status: string };
 type Attendance = { event_id: string; member_external_id: string };
-type Ride = { status: string; distance_km: number | string | null };
+type Ride = { distance_km: number | string | null };
 type Cash = { transaction_type: "income" | "expense" | "advance"; amount: number | string };
 type Audit = { id: number; actor_id: string | null; action: string; entity_type: string; entity_id: string | null; created_at: string };
 type InsightsSnapshot = {
   accounts: Account[];
   profiles: MemberProfile[];
-  events: Event[];
-  invitations: Invitation[];
+  publishedEvents: number;
+  invitationCount: number;
   rsvps: Rsvp[];
   attendance: Attendance[];
   rides: Ride[];
@@ -37,8 +35,8 @@ export default function AdminInsightsPage() {
   const { fetchWithCache } = useDataCache();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [profiles, setProfiles] = useState<MemberProfile[]>([]);
-  const [events, setEvents] = useState<Event[]>([]);
-  const [invitations, setInvitations] = useState<Invitation[]>([]);
+  const [publishedEvents, setPublishedEvents] = useState(0);
+  const [invitationCount, setInvitationCount] = useState(0);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
   const [attendance, setAttendance] = useState<Attendance[]>([]);
   const [rides, setRides] = useState<Ride[]>([]);
@@ -65,13 +63,21 @@ export default function AdminInsightsPage() {
         async () => {
           const supabase = getSupabaseBrowserClient();
           const results = await Promise.all([
-            supabase.from("member_accounts").select("user_id,member_external_id,role,status"),
+            supabase.from("member_accounts").select("user_id,member_external_id,status"),
             supabase.from("member_profiles").select("member_external_id,full_name,nickname"),
-            supabase.from("events").select("id,status"),
-            supabase.from("event_invitations").select("event_id,member_external_id"),
+            supabase
+              .from("events")
+              .select("*", { count: "exact", head: true })
+              .eq("status", "published"),
+            supabase
+              .from("event_invitations")
+              .select("*", { count: "exact", head: true }),
             supabase.from("event_rsvps").select("event_id,member_external_id,status"),
             supabase.from("event_attendance").select("event_id,member_external_id"),
-            supabase.from("ride_logs").select("status,distance_km"),
+            supabase
+              .from("ride_logs")
+              .select("distance_km")
+              .eq("status", "approved"),
             supabase.from("cash_transactions").select("transaction_type,amount"),
             supabase.from("club_cash_transactions").select("transaction_type,amount"),
             supabase
@@ -87,8 +93,8 @@ export default function AdminInsightsPage() {
           return {
             accounts: (results[0].data ?? []) as Account[],
             profiles: (results[1].data ?? []) as MemberProfile[],
-            events: (results[2].data ?? []) as Event[],
-            invitations: (results[3].data ?? []) as Invitation[],
+            publishedEvents: results[2].count ?? 0,
+            invitationCount: results[3].count ?? 0,
             rsvps: (results[4].data ?? []) as Rsvp[],
             attendance: (results[5].data ?? []) as Attendance[],
             rides: (results[6].data ?? []) as Ride[],
@@ -101,8 +107,8 @@ export default function AdminInsightsPage() {
 
       setAccounts(snapshot.accounts);
       setProfiles(snapshot.profiles);
-      setEvents(snapshot.events);
-      setInvitations(snapshot.invitations);
+      setPublishedEvents(snapshot.publishedEvents);
+      setInvitationCount(snapshot.invitationCount);
       setRsvps(snapshot.rsvps);
       setAttendance(snapshot.attendance);
       setRides(snapshot.rides);
@@ -127,11 +133,31 @@ export default function AdminInsightsPage() {
     const responses = new Set(rsvps.map((row) => `${row.event_id}:${row.member_external_id}`)).size;
     const attending = new Set(rsvps.filter((row) => row.status === "attending").map((row) => `${row.event_id}:${row.member_external_id}`)).size;
     const checkedIn = new Set(attendance.map((row) => `${row.event_id}:${row.member_external_id}`)).size;
-    const totalKm = rides.filter((row) => row.status === "approved").reduce((total, row) => total + Number(row.distance_km ?? 0), 0);
+    const totalKm = rides.reduce(
+      (total, row) => total + Number(row.distance_km ?? 0),
+      0,
+    );
     const income = cash.filter((row) => row.transaction_type === "income").reduce((total, row) => total + Number(row.amount), 0);
     const expense = cash.filter((row) => row.transaction_type === "expense").reduce((total, row) => total + Number(row.amount), 0);
-    return { activeMembers: accounts.filter((row) => row.status === "active").length, publishedEvents: events.filter((row) => row.status === "published").length, responseRate: invitations.length ? Math.round((responses / invitations.length) * 100) : 0, attendanceRate: attending ? Math.round((checkedIn / attending) * 100) : 0, totalKm, balance: income - expense };
-  }, [accounts, attendance, cash, events, invitations, rides, rsvps]);
+    return {
+      activeMembers: accounts.filter((row) => row.status === "active").length,
+      publishedEvents,
+      responseRate: invitationCount
+        ? Math.round((responses / invitationCount) * 100)
+        : 0,
+      attendanceRate: attending ? Math.round((checkedIn / attending) * 100) : 0,
+      totalKm,
+      balance: income - expense,
+    };
+  }, [
+    accounts,
+    attendance,
+    cash,
+    invitationCount,
+    publishedEvents,
+    rides,
+    rsvps,
+  ]);
 
   const profileByMemberId = useMemo(() => new Map(profiles.map((p) => [p.member_external_id, p])), [profiles]);
   const accountByUserId = useMemo(() => new Map(accounts.map((a) => [a.user_id, a.member_external_id])), [accounts]);

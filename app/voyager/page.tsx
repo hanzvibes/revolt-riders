@@ -209,17 +209,31 @@ export default function VoyagerPage() {
           if (photosRes.error) throw photosRes.error;
 
           const rawPhotos = (photosRes.data ?? []) as GalleryPhoto[];
-          const resolvedPhotos = await Promise.all(
-            rawPhotos.map(async (photo) => {
-              if (/^https?:\/\//i.test(photo.image_url)) {
-                return { ...photo, signedUrl: photo.image_url };
-              }
-              const { data } = await supabase.storage
-                .from("club-activity")
-                .createSignedUrl(photo.image_url, 60 * 60);
-              return { ...photo, signedUrl: data?.signedUrl };
-            }),
+          const privatePhotos = rawPhotos.filter(
+            (photo) => !/^https?:\/\//i.test(photo.image_url),
           );
+          const signedUrlByPath = new Map<string, string>();
+
+          if (privatePhotos.length > 0) {
+            const privatePaths = privatePhotos.map((photo) => photo.image_url);
+            const { data: signedRows, error: signedError } = await supabase.storage
+              .from("club-activity")
+              .createSignedUrls(privatePaths, 60 * 60);
+            if (signedError) throw signedError;
+
+            for (const row of signedRows ?? []) {
+              if (row.path && row.signedUrl) {
+                signedUrlByPath.set(row.path, row.signedUrl);
+              }
+            }
+          }
+
+          const resolvedPhotos = rawPhotos.map((photo) => ({
+            ...photo,
+            signedUrl: /^https?:\/\//i.test(photo.image_url)
+              ? photo.image_url
+              : signedUrlByPath.get(photo.image_url),
+          }));
 
           return {
             events: eventRows,
@@ -270,6 +284,45 @@ export default function VoyagerPage() {
     () => new Set(participants.map((item) => item.member_external_id)).size,
     [participants],
   );
+  const participantIdsByEvent = useMemo(() => {
+    const map = new Map<string, string[]>();
+    for (const participant of participants) {
+      const current = map.get(participant.event_id);
+      if (current) current.push(participant.member_external_id);
+      else map.set(participant.event_id, [participant.member_external_id]);
+    }
+    return map;
+  }, [participants]);
+  const memberById = useMemo(
+    () => new Map(members.map((member) => [member.member_external_id, member])),
+    [members],
+  );
+  const participantsByEvent = useMemo(() => {
+    const map = new Map<string, Member[]>();
+    for (const [eventId, memberIds] of participantIdsByEvent) {
+      map.set(
+        eventId,
+        memberIds
+          .map((memberId) => memberById.get(memberId))
+          .filter((member): member is Member => Boolean(member)),
+      );
+    }
+    return map;
+  }, [memberById, participantIdsByEvent]);
+  const photosByEvent = useMemo(() => {
+    const map = new Map<string, GalleryPhoto[]>();
+    for (const photo of photos) {
+      if (!photo.event_id) continue;
+      const current = map.get(photo.event_id);
+      if (current) current.push(photo);
+      else map.set(photo.event_id, [photo]);
+    }
+    return map;
+  }, [photos]);
+  const eventById = useMemo(
+    () => new Map(events.map((event) => [event.id, event])),
+    [events],
+  );
   const galleryPreview = useMemo(() => photos.slice(0, 4), [photos]);
   const currentMemberVoyagerEvents = useMemo(() => {
     const memberId = activeAccount?.member_external_id;
@@ -292,7 +345,7 @@ export default function VoyagerPage() {
       currentMemberVoyagerEvents.some((event) => event.id === featuredEvent.id),
   );
   const featuredPhotoCount = featuredEvent
-    ? photos.filter((photo) => photo.event_id === featuredEvent.id).length
+    ? (photosByEvent.get(featuredEvent.id)?.length ?? 0)
     : 0;
   const featuredMemberStatus = !featuredEvent
     ? "Belum ada Voyager"
@@ -306,17 +359,13 @@ export default function VoyagerPage() {
     : visibleEvents;
 
   const participantIdsFor = (eventId: string) =>
-    participants
-      .filter((item) => item.event_id === eventId)
-      .map((item) => item.member_external_id);
+    participantIdsByEvent.get(eventId) ?? [];
 
-  const participantsFor = (eventId: string) => {
-    const ids = new Set(participantIdsFor(eventId));
-    return members.filter((member) => ids.has(member.member_external_id));
-  };
+  const participantsFor = (eventId: string) =>
+    participantsByEvent.get(eventId) ?? [];
 
   const photosFor = (eventId: string) =>
-    photos.filter((photo) => photo.event_id === eventId);
+    photosByEvent.get(eventId) ?? [];
 
   const openManage = (event: VoyagerEvent) => {
     setManageEvent(event);
@@ -814,7 +863,9 @@ export default function VoyagerPage() {
           ) : (
             <div className="voyager-gallery-hub-grid voyager-gallery-preview">
               {galleryPreview.map((photo) => {
-                const relatedEvent = events.find((event) => event.id === photo.event_id);
+                const relatedEvent = photo.event_id
+                  ? eventById.get(photo.event_id)
+                  : undefined;
                 const photoLabel = relatedEvent?.title ?? photo.title;
 
                 return (
