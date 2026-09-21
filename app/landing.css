@@ -397,7 +397,7 @@
   display: block;
 }
 
-.hero-desc {
+.landing-page .hero-desc {
   font-family: var(--font-body);
   font-size: clamp(0.95rem, 1.8vw, 1.15rem);
   font-weight: 400;
@@ -543,7 +543,7 @@
   display: block;
 }
 
-.section-title {
+.landing-page .section-title {
   font-size: clamp(2rem, 4.5vw, 3.2rem);
   line-height: 1.05;
   color: #ffffff;

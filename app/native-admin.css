@@ -3560,7 +3560,7 @@ html {
   color: #c2c6ca;
 }
 
-.hero-meta p {
+.app-shell .hero-meta p {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -3569,15 +3569,15 @@ html {
   color: #c2c6ca !important;
 }
 
-.hero-meta p svg,
-.hero-desc svg {
+.app-shell .hero-meta p svg,
+.app-shell .hero-desc svg {
   width: 15px !important;
   height: 15px !important;
   color: var(--rr-red) !important;
   flex-shrink: 0;
 }
 
-.hero-desc {
+.app-shell .hero-desc {
   font-size: 0.72rem !important;
   color: #b0b5b9 !important;
   display: flex;
@@ -3586,7 +3586,7 @@ html {
   margin: 0 !important;
 }
 
-.hero-cta {
+.app-shell .hero-cta {
   align-self: flex-start;
   margin-top: 6px !important;
 }

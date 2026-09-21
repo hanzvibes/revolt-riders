@@ -37,6 +37,31 @@ const legacyTokenPattern = /var\(--(?:red|line|ink|muted|bg|surface)\)/g;
 const fatal = [];
 const warnings = [];
 
+const rootLayoutPath = path.join(ROOT, "app/layout.tsx");
+if (fs.existsSync(rootLayoutPath)) {
+  const rootLayout = fs.readFileSync(rootLayoutPath, "utf8");
+  if (/import\s+["']\.\/landing\.css["'];?/.test(rootLayout)) {
+    fatal.push(
+      "app/layout.tsx imports landing.css globally; keep landing-only CSS scoped to the public landing route",
+    );
+  }
+}
+
+const landingPath = path.join(ROOT, "app/landing.css");
+if (fs.existsSync(landingPath)) {
+  const landingCss = fs.readFileSync(landingPath, "utf8");
+  if (/(^|\n)\s*\.hero-desc\s*\{/m.test(landingCss)) {
+    fatal.push(
+      "app/landing.css contains unscoped .hero-desc; prefix it with .landing-page to avoid cross-surface cascade collisions",
+    );
+  }
+  if (/(^|\n)\s*\.section-title\s*\{/m.test(landingCss)) {
+    fatal.push(
+      "app/landing.css contains unscoped .section-title; prefix it with .landing-page to avoid cross-surface cascade collisions",
+    );
+  }
+}
+
 function walk(dir) {
   const abs = path.join(ROOT, dir);
   if (!fs.existsSync(abs)) return [];

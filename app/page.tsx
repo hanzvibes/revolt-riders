@@ -1,5 +1,6 @@
 "use client";
 
+import "./landing.css";
 import { ModalSheet } from "@/components/modal-sheet";
 import { InstagramIcon } from "@/components/icons/instagram";
 import { useDataCache } from "@/context/data-cache-context";
