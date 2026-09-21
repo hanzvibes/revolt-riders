@@ -11085,3 +11085,408 @@
   }
 }
 
+
+
+/* ==============================================================================
+   Social member profile
+   ============================================================================== */
+
+.app-shell .profile-social-page {
+  max-width: 960px;
+}
+
+.app-shell .profile-social-card {
+  overflow: hidden;
+  margin-bottom: var(--rr-space-4);
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-lg);
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-card);
+}
+
+.app-shell .profile-social-cover {
+  position: relative;
+  display: flex;
+  min-height: 156px;
+  align-items: flex-end;
+  overflow: hidden;
+  padding: var(--rr-space-4) var(--rr-space-5);
+  background: var(--rr-charcoal);
+  color: var(--rr-surface);
+}
+
+.app-shell .profile-social-cover::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: var(--rr-red);
+}
+
+.app-shell .profile-social-cover img {
+  position: absolute;
+  top: 50%;
+  right: clamp(18px, 6vw, 56px);
+  width: 144px;
+  height: 144px;
+  object-fit: cover;
+  border-radius: 50%;
+  opacity: .16;
+  filter: grayscale(1);
+  transform: translateY(-50%);
+}
+
+.app-shell .profile-social-cover span {
+  position: relative;
+  z-index: 1;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: .12em;
+}
+
+.app-shell .profile-social-body {
+  padding: 0 var(--rr-space-5) var(--rr-space-5);
+}
+
+.app-shell .profile-social-avatar-row {
+  display: flex;
+  min-height: 62px;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rr-space-3);
+}
+
+.app-shell .profile-social-avatar {
+  display: grid;
+  width: 104px;
+  height: 104px;
+  margin-top: -52px;
+  place-items: center;
+  border: 4px solid var(--rr-surface);
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: var(--rr-surface);
+  box-shadow: var(--rr-shadow-card);
+  font-size: 1.55rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.04em;
+}
+
+.app-shell .profile-social-edit {
+  display: inline-flex;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  justify-content: center;
+  gap: var(--rr-space-2);
+  margin-top: var(--rr-space-3);
+  padding: 0 var(--rr-space-4);
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-control-radius);
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .profile-social-edit:hover {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .profile-social-edit svg {
+  width: 15px;
+  height: 15px;
+}
+
+.app-shell .profile-social-intro {
+  max-width: 720px;
+}
+
+.app-shell .profile-social-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--rr-space-2);
+}
+
+.app-shell .profile-social-name-row h2 {
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--rr-ink);
+  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1.05;
+  letter-spacing: -.04em;
+}
+
+.app-shell .profile-social-name-row > svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  color: var(--rr-red);
+}
+
+.app-shell .profile-social-full-name {
+  margin: 5px 0 0;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-body);
+}
+
+.app-shell .profile-social-handle-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rr-space-2);
+  margin-top: var(--rr-space-3);
+}
+
+.app-shell .profile-social-handle-row code,
+.app-shell .profile-social-handle-row .member-role-badge,
+.app-shell .profile-social-active {
+  display: inline-flex;
+  min-height: 27px;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0 9px;
+  font-family: inherit;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .profile-social-handle-row code {
+  border: 1px solid var(--rr-red-line);
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .profile-social-handle-row .member-role-badge {
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-muted);
+  color: var(--rr-ink);
+  box-shadow: none;
+}
+
+.app-shell .profile-social-active {
+  gap: 5px;
+  border: 1px solid var(--rr-success-line);
+  background: var(--rr-success-soft);
+  color: var(--rr-success-ink);
+}
+
+.app-shell .profile-social-active svg {
+  width: 12px;
+  height: 12px;
+}
+
+.app-shell .profile-social-bio {
+  margin: var(--rr-space-3) 0 0;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-body);
+  line-height: 1.55;
+}
+
+.app-shell .profile-social-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rr-space-2) var(--rr-space-4);
+  margin-top: var(--rr-space-3);
+  color: var(--rr-muted);
+}
+
+.app-shell .profile-social-meta span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--rr-type-small);
+}
+
+.app-shell .profile-social-meta svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+  color: var(--rr-muted);
+}
+
+.app-shell .profile-social-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: var(--rr-space-5);
+  border-block: 1px solid var(--rr-line);
+}
+
+.app-shell .profile-social-stats a {
+  display: flex;
+  min-width: 0;
+  min-height: var(--rr-control-lg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: var(--rr-space-3);
+  color: var(--rr-ink);
+  text-align: center;
+}
+
+.app-shell .profile-social-stats a + a {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .profile-social-stats a:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .profile-social-stats strong {
+  font-size: var(--rr-type-card);
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .profile-social-stats span {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .profile-social-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--rr-space-2);
+  margin-top: var(--rr-space-4);
+}
+
+.app-shell .profile-social-actions a {
+  display: flex;
+  min-width: 0;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  justify-content: center;
+  gap: var(--rr-space-2);
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-control-radius);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .profile-social-actions a:hover {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .profile-social-actions svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell .profile-social-grid {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: var(--rr-space-3);
+  margin-bottom: var(--rr-space-4);
+}
+
+.app-shell .profile-social-progress,
+.app-shell .profile-social-achievements {
+  border-radius: var(--rr-radius-lg);
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-card);
+}
+
+.app-shell .profile-social-feed,
+.app-shell .profile-social-panel {
+  margin-bottom: var(--rr-space-4);
+  scroll-margin-top: 96px;
+}
+
+.app-shell .profile-social-feed {
+  overflow: hidden;
+}
+
+.app-shell .profile-social-feed > .section-title {
+  margin-bottom: var(--rr-space-2);
+}
+
+@media (max-width: 720px) {
+  .app-shell .profile-social-page {
+    padding-inline: 0;
+  }
+
+  .app-shell .profile-social-card {
+    border-inline: 0;
+    border-radius: 0;
+  }
+
+  .app-shell .profile-social-cover {
+    min-height: 126px;
+    padding: var(--rr-space-3) var(--rr-space-4);
+  }
+
+  .app-shell .profile-social-cover img {
+    right: var(--rr-space-4);
+    width: 112px;
+    height: 112px;
+  }
+
+  .app-shell .profile-social-body {
+    padding: 0 var(--rr-space-4) var(--rr-space-4);
+  }
+
+  .app-shell .profile-social-avatar-row {
+    min-height: 56px;
+  }
+
+  .app-shell .profile-social-avatar {
+    width: 88px;
+    height: 88px;
+    margin-top: -44px;
+    border-width: 3px;
+    font-size: 1.3rem;
+  }
+
+  .app-shell .profile-social-name-row h2 {
+    font-size: 1.45rem;
+  }
+
+  .app-shell .profile-social-meta {
+    flex-direction: column;
+    gap: var(--rr-space-2);
+  }
+
+  .app-shell .profile-social-actions {
+    gap: 6px;
+  }
+
+  .app-shell .profile-social-actions a {
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--rr-space-2);
+    font-size: var(--rr-type-caption);
+  }
+
+  .app-shell .profile-social-grid {
+    grid-template-columns: 1fr;
+    padding-inline: 13px;
+  }
+
+  .app-shell .profile-social-feed,
+  .app-shell .profile-social-panel {
+    margin-inline: 13px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .profile-social-edit {
+    padding-inline: var(--rr-space-3);
+  }
+
+  .app-shell .profile-social-actions span {
+    display: none;
+  }
+
+  .app-shell .profile-social-actions svg {
+    width: 19px;
+    height: 19px;
+  }
+}
