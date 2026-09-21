@@ -26,12 +26,14 @@ test("Member role stays outside privileged navigation and mutations", async () =
 
 test("Road Captain riding review is guarded in UI and database", async () => {
   const page = await read("app/riding/approval/page.tsx");
+  const service = await read("lib/services/ride-log-service.ts");
   const migration = await read(
     "supabase/migrations/20260920153036_extend_ride_log_rpc_flow.sql",
   );
 
   assert.match(page, /const canReview = \(role\?: string\) => \["road_captain", "admin", "superadmin"\]\.includes/);
-  assert.match(page, /rpc\(\s*"review_ride_log"/);
+  assert.match(page, /reviewRideLog/);
+  assert.match(service, /rpc\(\s*"review_ride_log"/);
 
   assert.match(
     migration,
