@@ -990,8 +990,8 @@ b {
   [data-slot="tooltip-content"],
   [data-slot="accordion-content"],
   [data-slot="collapsible-content"] {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
+    transition: none;
   }
 }
 
