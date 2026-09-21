@@ -230,8 +230,8 @@ export default function DashboardPage() {
   });
 
   return (
-    <AppShell active="Home" title="Dashboard">
-      <div className="dashboard-grid dashboard-premium">
+    <AppShell active="Home" title="Beranda">
+      <div className="dashboard-grid dashboard-premium dashboard-socialized">
         <section className="unified-dashboard-hero" aria-labelledby="dashboard-hero-title">
           <div className="unified-hero-top">
             <div className="unified-member">
