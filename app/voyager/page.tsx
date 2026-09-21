@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { PageSkeleton } from "@/components/skeleton";
@@ -98,6 +99,7 @@ const formatKm = (value: number | null | undefined) =>
   new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(value) || 0);
 
 export default function VoyagerPage() {
+  const { confirmAction } = useActionDialog();
   const { account, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache } = useDataCache();
   const [events, setEvents] = useState<VoyagerEvent[]>([]);
@@ -438,7 +440,7 @@ export default function VoyagerPage() {
 
   const removePhoto = async (photo: GalleryPhoto) => {
     if (!canManage) return;
-    if (!window.confirm("Hapus foto dokumentasi ini?")) return;
+    if (!await confirmAction("Hapus foto dokumentasi ini?")) return;
 
     const supabase = getSupabaseBrowserClient();
     setError("");
