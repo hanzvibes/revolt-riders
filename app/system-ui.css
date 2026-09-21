@@ -773,6 +773,82 @@
   box-shadow: none;
 }
 
+.app-shell .checkin-access-notice {
+  margin-top: var(--rr-space-4);
+}
+
+.app-shell .checkin-access-copy {
+  margin: 0 0 var(--rr-space-3);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .checkin-access-action {
+  display: inline-flex;
+  text-decoration: none;
+}
+
+.app-shell .checkin-feedback-card {
+  margin: var(--rr-space-5) 0;
+  padding: var(--rr-space-4);
+  border: 1px solid var(--rr-success-line);
+  background: var(--rr-success-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .checkin-feedback-head {
+  display: flex;
+  align-items: center;
+  gap: var(--rr-space-3);
+  margin-bottom: var(--rr-space-2);
+  color: var(--rr-success-ink);
+}
+
+.app-shell .checkin-feedback-head svg,
+.app-shell .checkin-feedback-meta svg {
+  flex: none;
+  color: var(--rr-success);
+}
+
+.app-shell .checkin-feedback-head h3 {
+  margin: 0;
+  font-size: var(--rr-type-section);
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell .checkin-feedback-meta {
+  display: grid;
+  gap: var(--rr-space-2);
+  margin: var(--rr-space-3) 0;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-body);
+}
+
+.app-shell .checkin-feedback-meta > div {
+  display: flex;
+  align-items: center;
+  gap: var(--rr-space-2);
+}
+
+.app-shell .checkin-feedback-copy {
+  margin: 0;
+  color: var(--rr-success-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-semibold);
+  line-height: 1.5;
+}
+
+.app-shell .checkin-inline-message {
+  margin: var(--rr-space-4) 0;
+}
+
+.app-shell .checkin-scanner-stage {
+  margin-top: var(--rr-space-4);
+}
+
+.app-shell .checkin-camera-message {
+  margin-top: var(--rr-space-3);
+}
+
 .app-shell .scanner-stage {
   border-radius: 14px;
   overflow: hidden;
@@ -973,6 +1049,83 @@
 
 .app-shell .audit-panel {
   box-shadow: none;
+}
+
+.app-shell .admin-audit-panel {
+  margin-top: var(--rr-space-5);
+}
+
+.app-shell .admin-audit-list {
+  display: flex;
+  max-height: 440px;
+  flex-direction: column;
+  gap: 2px;
+  overflow-y: auto;
+  padding-right: var(--rr-space-2);
+}
+
+.app-shell .admin-audit-list article {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rr-space-3);
+  padding: 10px var(--rr-space-3);
+  border-top: 1px solid var(--rr-line);
+  font-size: var(--rr-type-body);
+}
+
+.app-shell .admin-audit-main {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-shell .admin-audit-mark {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: none;
+  place-items: center;
+  border-radius: var(--rr-radius-sm);
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+  font-size: var(--rr-type-meta);
+  font-style: normal;
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell .admin-audit-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.app-shell .admin-audit-title {
+  overflow: hidden;
+  font-size: var(--rr-type-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .admin-audit-meta {
+  margin-top: 1px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .admin-audit-meta strong {
+  color: var(--rr-ink);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .admin-audit-time {
+  flex: none;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  text-align: right;
+  white-space: nowrap;
 }
 
 .app-shell .admin-member-table-card {

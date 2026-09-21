@@ -892,13 +892,17 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .invitation-page-v2 *,
-  .invitation-page-v2 *::before,
-  .invitation-page-v2 *::after {
-    scroll-behavior: auto !important;
-    transition-duration: .01ms !important;
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
+  .invitation-page-v2 {
+    scroll-behavior: auto;
+  }
+
+  .invitation-loading-dot {
+    animation: none;
+  }
+
+  .invitation-location-action-v2:hover,
+  .invitation-card-v2 .invitation-rsvp-actions-v2 button:hover:not(:disabled) {
+    transform: none;
   }
 }
 
@@ -958,22 +962,6 @@ b {
 [data-slot="accordion-content"],
 [data-slot="collapsible-content"] {
   backface-visibility: hidden;
-}
-
-[data-slot="dialog-content"],
-[data-slot="sheet-content"],
-[data-slot="dropdown-menu-content"],
-[data-slot="dropdown-menu-sub-content"],
-[data-slot="popover-content"],
-[data-slot="select-content"],
-[data-slot="tooltip-content"] {
-  will-change: transform, opacity;
-}
-
-[data-slot="dialog-overlay"],
-[data-slot="sheet-overlay"],
-[data-slot="drawer-overlay"] {
-  will-change: opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {

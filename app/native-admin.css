@@ -4312,3 +4312,64 @@ html {
     animation: none !important;
   }
 }
+
+/* Batch 1: tokenized destructive actions on compact admin surfaces. */
+.admin-event-status-list article {
+  grid-template-columns: 48px minmax(0, 1fr) auto;
+}
+
+.admin-event-status-actions {
+  display: flex;
+  grid-column: 3;
+  grid-row: 1 / 3;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--rr-space-2);
+}
+
+.admin-event-status-actions select {
+  width: 118px;
+}
+
+.admin-event-status-actions .admin-icon-danger {
+  display: grid;
+  width: var(--rr-control-lg);
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+  place-items: center;
+  border: 1px solid var(--rr-danger-line);
+  border-radius: var(--rr-radius-sm);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+  padding: 0;
+}
+
+.approval-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--rr-space-2);
+}
+
+.approval-actions .approval-reject-action {
+  display: inline-flex;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  justify-content: center;
+  gap: var(--rr-space-1);
+  border: 1px solid var(--rr-danger-line);
+  border-radius: var(--rr-radius-sm);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+  padding: 0 var(--rr-space-3);
+  font-weight: var(--rr-fw-extrabold);
+}
+
+@media (max-width: 430px) {
+  .admin-event-status-list article {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .admin-event-status-actions select {
+    width: 105px;
+  }
+}

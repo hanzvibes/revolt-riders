@@ -169,6 +169,12 @@ const uiFiles = roots
   .flatMap(walk)
   .filter((file) => /\.(tsx|jsx)$/.test(file));
 
+const strictTokenizedUiTargets = new Set([
+  "app/check-in/page.tsx",
+  "app/admin/insights/page.tsx",
+  "app/admin/page.tsx",
+]);
+
 let inlineTinyTypeCount = 0;
 let nativeDialogCount = 0;
 
@@ -192,6 +198,26 @@ for (const file of uiFiles) {
 
   for (const match of content.matchAll(/fontSize\s*:\s*["']([0-9.]+)rem["']/g)) {
     if (Number(match[1]) < 0.625) inlineTinyTypeCount += 1;
+  }
+
+  if (strictTokenizedUiTargets.has(file)) {
+    for (const match of content.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) {
+      fatal.push(
+        `${file}:${lineOf(content, match.index)} hard-coded hex color ${match[0]}; use a canonical --rr-* token or shared class`,
+      );
+    }
+
+    for (const match of content.matchAll(/rgba?\([^)]*\)/g)) {
+      fatal.push(
+        `${file}:${lineOf(content, match.index)} inline RGB color ${match[0]}; use a canonical --rr-* token or shared class`,
+      );
+    }
+
+    for (const match of content.matchAll(/var\(--(?:red|line|ink|muted|bg|surface)\)/g)) {
+      fatal.push(
+        `${file}:${lineOf(content, match.index)} legacy inline token ${match[0]}; use canonical --rr-* tokens through shared styles`,
+      );
+    }
   }
 
   nativeDialogCount += [...content.matchAll(/window\.(?:confirm|prompt|alert)\(/g)].length;

@@ -60,8 +60,7 @@ export default function DashboardPage() {
       try {
         const supabase = getSupabaseBrowserClient();
 
-        // 1. Fetch upcoming events with cache
-        const eventsData = await fetchWithCache<EventRecord[]>(
+        const eventsPromise = fetchWithCache<EventRecord[]>(
           "dashboard_upcoming_events",
           async () => {
             const { data, error: evErr } = await supabase
@@ -77,8 +76,7 @@ export default function DashboardPage() {
           { ttlMs: 3 * 60 * 1000 },
         );
 
-        // 2. Fetch latest announcement with cache
-        const bulletinData = await fetchWithCache<AnnouncementRecord[]>(
+        const bulletinPromise = fetchWithCache<AnnouncementRecord[]>(
           "dashboard_latest_announcements",
           async () => {
             const { data, error: blErr } = await supabase
@@ -93,11 +91,8 @@ export default function DashboardPage() {
           { ttlMs: 5 * 60 * 1000 },
         );
 
-        // 3. Fetch club stats if available
-        let clubStats: DashboardStats | null = null;
-        if (user) {
-          try {
-            const statsData = await fetchWithCache<DashboardStats | null>(
+        const clubStatsPromise: Promise<DashboardStats | null> = user
+          ? fetchWithCache<DashboardStats | null>(
               "dashboard_club_stats",
               async () => {
                 const { data, error: stErr } = await supabase.rpc("get_member_dashboard_stats");
@@ -105,16 +100,11 @@ export default function DashboardPage() {
                 return (data?.[0] ?? null) as DashboardStats | null;
               },
               { ttlMs: 2 * 60 * 1000 },
-            );
-            clubStats = statsData;
-          } catch {
-            clubStats = null;
-          }
-        }
+            ).catch(() => null)
+          : Promise.resolve(null);
 
-        // 4. Fetch member profile stats fallback from member_profiles
-        try {
-          const profileStats = await fetchWithCache<{ count: number; totalKm: number }>(
+        const profileStatsPromise: Promise<{ count: number; totalKm: number } | null> =
+          fetchWithCache<{ count: number; totalKm: number }>(
             "dashboard_member_profiles_stats",
             async () => {
               const { data, count, error: pErr } = await supabase
@@ -128,62 +118,66 @@ export default function DashboardPage() {
               return { count: count || 0, totalKm: kmSum };
             },
             { ttlMs: 3 * 60 * 1000 },
-          );
-          if (active) {
+          ).catch(() => null);
+
+        const memberPromise: Promise<LoggedInMember | null | undefined> =
+          user && account?.member_external_id
+            ? fetchWithCache<LoggedInMember | null>(
+                `dashboard_member_profile_${account.member_external_id}`,
+                async () => {
+                  const [pRes, dRes, rLogs] = await Promise.all([
+                    supabase
+                      .from("member_profiles")
+                      .select("member_external_id,full_name,nickname,club_role,total_km")
+                      .eq("member_external_id", account.member_external_id)
+                      .maybeSingle(),
+                    supabase
+                      .from("member_details")
+                      .select("nickname_override")
+                      .eq("member_external_id", account.member_external_id)
+                      .maybeSingle(),
+                    supabase
+                      .from("ride_logs")
+                      .select("created_at", { count: "exact" })
+                      .eq("member_external_id", account.member_external_id)
+                      .eq("status", "approved")
+                      .order("created_at", { ascending: false })
+                      .limit(60),
+                  ]);
+                  if (!pRes.data) return null;
+                  return {
+                    member_external_id: pRes.data.member_external_id,
+                    full_name: pRes.data.full_name,
+                    nickname: dRes.data?.nickname_override || pRes.data.nickname || null,
+                    club_role: pRes.data.club_role || null,
+                    total_km: Number(pRes.data.total_km) || 0,
+                    touring_count: rLogs.count || 0,
+                    ride_dates: ((rLogs.data ?? []) as { created_at: string }[]).map(
+                      (ride) => ride.created_at,
+                    ),
+                  };
+                },
+                { ttlMs: 2 * 60 * 1000 },
+              ).catch(() => undefined)
+            : Promise.resolve(undefined);
+
+        const [eventsData, bulletinData, clubStats, profileStats, memberData] =
+          await Promise.all([
+            eventsPromise,
+            bulletinPromise,
+            clubStatsPromise,
+            profileStatsPromise,
+            memberPromise,
+          ]);
+
+        if (active) {
+          if (profileStats) {
             setProfileCount(profileStats.count);
             setProfileTotalKm(profileStats.totalKm);
           }
-        } catch {
-          // ignore
-        }
-
-        // 5. Fetch current logged-in member data
-        if (user && account?.member_external_id) {
-          try {
-            const memberData = await fetchWithCache<LoggedInMember | null>(
-              `dashboard_member_profile_${account.member_external_id}`,
-              async () => {
-                const [pRes, dRes, rLogs] = await Promise.all([
-                  supabase
-                    .from("member_profiles")
-                    .select("member_external_id,full_name,nickname,club_role,total_km")
-                    .eq("member_external_id", account.member_external_id)
-                    .maybeSingle(),
-                  supabase
-                    .from("member_details")
-                    .select("nickname_override")
-                    .eq("member_external_id", account.member_external_id)
-                    .maybeSingle(),
-                  supabase
-                    .from("ride_logs")
-                    .select("created_at", { count: "exact" })
-                    .eq("member_external_id", account.member_external_id)
-                    .eq("status", "approved")
-                    .order("created_at", { ascending: false })
-                    .limit(60),
-                ]);
-                if (!pRes.data) return null;
-                return {
-                  member_external_id: pRes.data.member_external_id,
-                  full_name: pRes.data.full_name,
-                  nickname: dRes.data?.nickname_override || pRes.data.nickname || null,
-                  club_role: pRes.data.club_role || null,
-                  total_km: Number(pRes.data.total_km) || 0,
-                  touring_count: rLogs.count || 0,
-                  ride_dates: ((rLogs.data ?? []) as { created_at: string }[]).map(
-                    (ride) => ride.created_at,
-                  ),
-                };
-              },
-              { ttlMs: 2 * 60 * 1000 },
-            );
-            if (active) setCurrentMember(memberData);
-          } catch {
-            // ignore
+          if (memberData !== undefined) {
+            setCurrentMember(memberData);
           }
-        }
-
-        if (active) {
           setEvents(eventsData);
           setAnnouncements(bulletinData);
           setStats(clubStats);

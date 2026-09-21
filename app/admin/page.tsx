@@ -801,7 +801,7 @@ export default function AdminPage() {
                   >
                     {eventRecord.status}
                   </em>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  <div className="admin-event-status-actions">
                     <select
                       value={eventRecord.status}
                       onChange={(event) =>
@@ -818,19 +818,12 @@ export default function AdminPage() {
                     </select>
                     <button
                       type="button"
-                      className="danger"
+                      className="danger admin-icon-danger"
                       title="Hapus agenda ini secara permanen"
+                      aria-label={`Hapus agenda ${eventRecord.title} secara permanen`}
                       onClick={() => void deleteEventPermanently(eventRecord)}
-                      style={{
-                        padding: "7px 10px",
-                        border: "1px solid #ffd3d6",
-                        background: "#fff",
-                        color: "#dc1b2a",
-                        borderRadius: "7px",
-                        cursor: "pointer",
-                      }}
                     >
-                      <Trash2 size={13} />
+                      <Trash2 size={15} aria-hidden="true" />
                     </button>
                   </div>
                 </article>
@@ -1151,28 +1144,17 @@ export default function AdminPage() {
                   <b>{request.member_external_id}</b>
                   <small>{request.email ?? "Email tidak tersedia"}</small>
                 </span>
-                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                <div className="approval-actions">
                   <button type="button" onClick={() => void approveRequest(request)}>
                     <Check />
                     Setujui
                   </button>
                   <button
                     type="button"
+                    className="approval-reject-action"
                     onClick={() => void rejectRequest(request)}
-                    style={{
-                      background: "#fff",
-                      color: "#dc1b2a",
-                      border: "1px solid #ffd3d6",
-                      borderRadius: "6px",
-                      padding: "8px 12px",
-                      fontWeight: 800,
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "4px",
-                      cursor: "pointer",
-                    }}
                   >
-                    <X size={14} />
+                    <X size={14} aria-hidden="true" />
                     Tolak
                   </button>
                 </div>

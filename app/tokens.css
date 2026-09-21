@@ -17,6 +17,10 @@
   --rr-red: #dc1b2a;
   --rr-red-soft: #fff0f1;
   --rr-green: #18794e;
+  --rr-success: var(--rr-green);
+  --rr-success-ink: #0f5f3f;
+  --rr-success-soft: #eef8f2;
+  --rr-success-line: #b9dec9;
   --rr-danger: #b31221;
   --rr-danger-soft: #fff0f1;
   --rr-danger-line: #f2c5c9;

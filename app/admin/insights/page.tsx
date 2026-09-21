@@ -213,7 +213,7 @@ export default function AdminInsightsPage() {
           </article>
         </section>
 
-        <section className="card audit-panel" style={{ marginTop: "20px" }}>
+        <section className="card audit-panel admin-audit-panel">
           <div className="section-title">
             <span>
               <em>Audit trail</em>
@@ -224,69 +224,26 @@ export default function AdminInsightsPage() {
           {audits.length === 0 ? (
             <p className="system-message">Belum ada aktivitas setelah audit trail diaktifkan.</p>
           ) : (
-            <div
-              className="audit-list"
-              style={{
-                maxHeight: "440px",
-                overflowY: "auto",
-                paddingRight: "6px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "2px",
-              }}
-            >
+            <div className="audit-list admin-audit-list">
               {audits.map((audit) => {
                 const actorLabel = getActorDisplay(audit.actor_id);
                 return (
-                  <article
-                    key={audit.id}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "10px 12px",
-                      borderTop: "1px solid var(--line)",
-                      gap: "12px",
-                      fontSize: "0.78rem",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0, flex: 1 }}>
-                      <i
-                        style={{
-                          width: "28px",
-                          height: "28px",
-                          borderRadius: "6px",
-                          background: "#f1f2f3",
-                          display: "grid",
-                          placeItems: "center",
-                          fontWeight: 800,
-                          fontSize: "0.7rem",
-                          color: "var(--red)",
-                          flexShrink: 0,
-                          fontStyle: "normal",
-                        }}
-                      >
+                  <article key={audit.id}>
+                    <div className="admin-audit-main">
+                      <i className="admin-audit-mark">
                         {audit.action.slice(0, 1).toUpperCase()}
                       </i>
-                      <span style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                        <b style={{ fontSize: "0.75rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      <span className="admin-audit-copy">
+                        <b className="admin-audit-title">
                           {audit.action.toUpperCase()} · {audit.entity_type.replaceAll("_", " ")}
                         </b>
-                        <small style={{ color: "var(--muted)", fontSize: "0.65rem", marginTop: "1px" }}>
-                          Oleh: <strong style={{ color: "var(--ink)", fontWeight: 700 }}>{actorLabel}</strong>
+                        <small className="admin-audit-meta">
+                          Oleh: <strong>{actorLabel}</strong>
                           {audit.entity_id ? ` · Ref: ${audit.entity_id.slice(0, 8)}` : ""}
                         </small>
                       </span>
                     </div>
-                    <time
-                      style={{
-                        fontSize: "0.65rem",
-                        color: "var(--muted)",
-                        whiteSpace: "nowrap",
-                        textAlign: "right",
-                        flexShrink: 0,
-                      }}
-                    >
+                    <time className="admin-audit-time">
                       {new Intl.DateTimeFormat("id-ID", {
                         dateStyle: "medium",
                         timeStyle: "short",

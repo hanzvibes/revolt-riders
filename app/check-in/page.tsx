@@ -218,14 +218,13 @@ function CheckInContent() {
           {accessLoading ? (
             <p className="system-message">Memeriksa status akun member…</p>
           ) : !ready ? (
-            <div className="notice" style={{ marginTop: "16px" }}>
-              <p style={{ margin: "0 0 10px 0", fontWeight: 700 }}>
+            <div className="notice checkin-access-notice">
+              <p className="checkin-access-copy">
                 Akun member aktif diperlukan untuk mencatat kehadiran.
               </p>
               <a
                 href={account ? "/profil" : loginRedirectUrl}
-                className="primary-action"
-                style={{ display: "inline-flex", textDecoration: "none" }}
+                className="primary-action checkin-access-action"
               >
                 <LogIn size={15} />
                 {account ? "Lihat Status Akun" : "Masuk Sekarang untuk Check-in"}
@@ -237,42 +236,32 @@ function CheckInContent() {
               {result && (
                 <div
                   className="checkin-feedback-card"
-                  style={{
-                    margin: "18px 0",
-                    padding: "18px",
-                    borderRadius: "12px",
-                    border: result.already_checked_in
-                      ? "1px solid #bce9d2"
-                      : "1px solid #10b981",
-                    background: result.already_checked_in
-                      ? "linear-gradient(135deg, #f0fdf4, #eaf8f1)"
-                      : "linear-gradient(135deg, #ecfdf5, #d1fae5)",
-                    boxShadow: "0 4px 14px rgba(16, 185, 129, 0.08)",
-                  }}
+                  role="status"
+                  aria-live="polite"
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                  <div className="checkin-feedback-head">
                     {result.already_checked_in ? (
-                      <CheckCircle2 size={24} color="#059669" />
+                      <CheckCircle2 size={24} aria-hidden="true" />
                     ) : (
-                      <PartyPopper size={24} color="#059669" />
+                      <PartyPopper size={24} aria-hidden="true" />
                     )}
-                    <h3 style={{ margin: 0, fontSize: "1.05rem", color: "#065f46", fontWeight: 800 }}>
+                    <h3>
                       {result.already_checked_in
                         ? "Kehadiran Sudah Pernah Tercatat"
                         : "Check-in Berhasil!"}
                     </h3>
                   </div>
-                  <div style={{ margin: "10px 0 12px", display: "grid", gap: "6px", fontSize: "0.8rem", color: "#1f2937" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-                      <ScanLine size={14} color="#059669" />
+                  <div className="checkin-feedback-meta">
+                    <div>
+                      <ScanLine size={14} aria-hidden="true" />
                       <strong>Agenda:</strong> {result.event_title}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-                      <User size={14} color="#059669" />
+                    <div>
+                      <User size={14} aria-hidden="true" />
                       <strong>Member:</strong> {result.member_name}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "7px" }}>
-                      <Clock size={14} color="#059669" />
+                    <div>
+                      <Clock size={14} aria-hidden="true" />
                       <strong>Waktu Check-in:</strong>{" "}
                       {new Intl.DateTimeFormat("id-ID", {
                         dateStyle: "medium",
@@ -282,7 +271,7 @@ function CheckInContent() {
                       WIB
                     </div>
                   </div>
-                  <p style={{ margin: 0, fontSize: "0.74rem", color: "#047857", fontWeight: 600 }}>
+                  <p className="checkin-feedback-copy">
                     {result.already_checked_in
                       ? "Kehadiranmu untuk agenda ini sudah tersimpan dengan aman. Selamat menikmati acara!"
                       : "Kehadiranmu telah resmi tercatat di sistem. Selamat menikmati agenda bersama brotherhood!"}
@@ -291,13 +280,13 @@ function CheckInContent() {
               )}
 
               {error && (
-                <p className="error-message" style={{ margin: "14px 0" }}>
+                <p className="error-message checkin-inline-message">
                   {error}
                 </p>
               )}
 
               {/* In-app scanner & manual input */}
-              <div className="scanner-stage" style={{ marginTop: "14px" }}>
+              <div className="scanner-stage checkin-scanner-stage">
                 <video
                   ref={videoRef}
                   className={cameraOpen ? "camera-live" : ""}
@@ -335,7 +324,7 @@ function CheckInContent() {
               </button>
 
               {cameraMessage && (
-                <p className="system-message" style={{ marginTop: "10px" }}>
+                <p className="system-message checkin-camera-message">
                   {cameraMessage}
                 </p>
               )}
