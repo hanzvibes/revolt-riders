@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   CalendarDays,
@@ -143,7 +144,13 @@ export default function InvitationPage() {
         <header className="invitation-hero-v2">
           <div className="invitation-hero-top-v2">
             <div className="invitation-brand-v2">
-              <img src="/revolt-riders-logo.jpg" alt="Revolt Riders" />
+              <Image
+                src="/revolt-riders-logo.jpg"
+                alt="Revolt Riders"
+                width={72}
+                height={72}
+                priority
+              />
               <span>
                 <strong>REVOLT RIDERS</strong>
                 <small>Personal invitation</small>
