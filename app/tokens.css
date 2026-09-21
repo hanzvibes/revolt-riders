@@ -29,6 +29,15 @@
   --rr-ink-inverse: #ffffff;
   --rr-muted-inverse: #a9afb4;
 
+  /* Invitation / dark editorial surface */
+  --rr-invite-canvas-top: #35383b;
+  --rr-invite-canvas-mid: #202225;
+  --rr-invite-canvas-deep: #111214;
+  --rr-invite-card: #f5f5f3;
+  --rr-invite-muted-strong: #7f878c;
+  --rr-invite-muted: #9aa1a6;
+  --rr-invite-muted-soft: #a8afb4;
+
   --rr-radius-sm: 9px;
   --rr-radius-md: 13px;
   --rr-radius-lg: 16px;

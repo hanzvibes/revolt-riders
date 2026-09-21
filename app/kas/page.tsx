@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
@@ -444,18 +445,30 @@ export default function CashPage() {
           </div>
         </div>
         {message ? (
-          <div className="card empty-state">
-            <CircleDollarSign />
-            <h2>{message}</h2>
-            {(message.startsWith("Masuk") || message.startsWith("Akun")) && (
-              <a
-                className="primary-action"
-                href={account ? "/profil" : "/login"}
-              >
-                {account ? "LIHAT STATUS AKUN" : "MASUK KE AKUN"}
-              </a>
-            )}
-          </div>
+          <PageState
+            tone={
+              message.startsWith("Masuk") || message.startsWith("Akun")
+                ? "restricted"
+                : "error"
+            }
+            icon={<CircleDollarSign />}
+            title={message}
+            description={
+              message.startsWith("Masuk") || message.startsWith("Akun")
+                ? undefined
+                : error
+            }
+            action={
+              message.startsWith("Masuk") || message.startsWith("Akun") ? (
+                <a
+                  className="primary-action"
+                  href={account ? "/profil" : "/login"}
+                >
+                  {account ? "LIHAT STATUS AKUN" : "MASUK KE AKUN"}
+                </a>
+              ) : undefined
+            }
+          />
         ) : (
           <>
             <section className="finance-overview">
@@ -625,9 +638,9 @@ export default function CashPage() {
                     required
                   />
                 </label>
-                {error && <p className="error-message">{error}</p>}
+                {error && <p className="error-message" role="alert">{error}</p>}
                 {success && (
-                  <p className="success-message">
+                  <p className="success-message" role="status" aria-live="polite">
                     <CheckCircle2 />
                     {success}
                   </p>

@@ -5,6 +5,7 @@ import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -253,14 +254,17 @@ export default function GaragePage() {
     return (
       <AppShell active="Garage" title="My Garage">
         <div className="page-wrap">
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akun member aktif diperlukan</h2>
-            <p>Motorcycle Passport hanya tersedia untuk member Revolt Riders yang sudah aktif.</p>
-            <a className="primary-action" href={account ? "/profil" : "/login"}>
-              {account ? "LIHAT STATUS AKUN" : "MASUK"}
-            </a>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<ShieldAlert />}
+            title="Akun member aktif diperlukan"
+            description="Motorcycle Passport hanya tersedia untuk member Revolt Riders yang sudah aktif."
+            action={
+              <a className="primary-action" href={account ? "/profil" : "/login"}>
+                {account ? "LIHAT STATUS AKUN" : "MASUK"}
+              </a>
+            }
+          />
         </div>
       </AppShell>
     );
@@ -301,9 +305,9 @@ export default function GaragePage() {
           </div>
         </section>
 
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message" role="alert">{error}</p>}
         {message && (
-          <p className="success-message">
+          <p className="success-message" role="status" aria-live="polite">
             <Check />
             {message}
           </p>
@@ -318,14 +322,17 @@ export default function GaragePage() {
         </div>
 
         {motorcycles.length === 0 ? (
-          <section className="garage-empty card">
-            <Wrench />
-            <h3>Garage masih kosong</h3>
-            <p>Tambahkan motor pertama. Unit pertama otomatis menjadi primary bike.</p>
-            <button type="button" className="primary-action" onClick={openCreate}>
-              TAMBAH MOTOR
-            </button>
-          </section>
+          <PageState
+            compact
+            icon={<Wrench />}
+            title="Garage masih kosong"
+            description="Tambahkan motor pertama. Unit pertama otomatis menjadi primary bike."
+            action={
+              <button type="button" className="primary-action" onClick={openCreate}>
+                TAMBAH MOTOR
+              </button>
+            }
+          />
         ) : (
           <section className="garage-grid" aria-label="Daftar motor saya">
             {motorcycles.map((motorcycle) => (

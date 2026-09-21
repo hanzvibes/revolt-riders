@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
 import { CountUpNumber } from "@/components/count-up-number";
@@ -76,6 +77,7 @@ const eventDate = (value: string) =>
   }).format(new Date(value));
 
 export default function RidingPage() {
+  const { confirmAction } = useActionDialog();
   const { account, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache } = useDataCache();
   const [profile, setProfile] = useState<MemberProfile | null>(null);
@@ -446,7 +448,7 @@ export default function RidingPage() {
           )}
         </section>
 
-        {error && <p className="error-message" style={{ marginBottom: "16px" }}>{error}</p>}
+        {error && <p className="error-message riding-page-feedback" role="alert">{error}</p>}
         {message && (
           <p className="success-message" style={{ marginBottom: "16px" }}>
             <CheckCircle2 size={18} />
@@ -678,10 +680,12 @@ export default function RidingPage() {
                       </div>
 
                       {ride.source_type !== "official_agenda" && (
-                      <div style={{ display: "flex", gap: "4px" }}>
+                      <div className="ride-row-actions">
                         <button
                           type="button"
+                          className="ride-row-action"
                           title="Edit catatan ini"
+                          aria-label="Edit catatan riding"
                           onClick={() => {
                             setEditModalData({
                               id: ride.id,
@@ -693,42 +697,38 @@ export default function RidingPage() {
                             });
                             setEditModalOpen(true);
                           }}
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            borderRadius: "6px",
-                            border: "1px solid var(--line)",
-                            background: "#fff",
-                            display: "grid",
-                            placeItems: "center",
-                            cursor: "pointer",
-                            color: "var(--ink)",
-                          }}
                         >
                           <Pencil size={12} />
                         </button>
                         <button
                           type="button"
+                          className="ride-row-action danger"
                           title="Hapus catatan ini"
+                          aria-label="Hapus catatan riding"
                           onClick={async () => {
-                            if (!confirm(`Hapus catatan "${ride.title || "Riding"}"?`)) return;
+                            const confirmed = await confirmAction({
+                              title: "Hapus catatan riding?",
+                              description: `Catatan "${ride.title || "Riding"}" akan dihapus permanen.`,
+                              confirmLabel: "Hapus Catatan",
+                              cancelLabel: "Batal",
+                              destructive: true,
+                            });
+                            if (!confirmed) return;
+
+                            setError("");
                             try {
-                              await deleteRideLog(ride.id, activeAccount.member_external_id);
+                              await deleteRideLog(
+                                ride.id,
+                                activeAccount.member_external_id,
+                              );
                               await loadData(true);
-                            } catch (e) {
-                              alert(e instanceof Error ? e.message : "Gagal menghapus");
+                            } catch (cause) {
+                              setError(
+                                cause instanceof Error
+                                  ? cause.message
+                                  : "Gagal menghapus catatan riding.",
+                              );
                             }
-                          }}
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            borderRadius: "6px",
-                            border: "1px solid #ffd3d6",
-                            background: "#fff",
-                            display: "grid",
-                            placeItems: "center",
-                            cursor: "pointer",
-                            color: "#dc1b2a",
                           }}
                         >
                           <Trash2 size={12} />

@@ -558,42 +558,38 @@
   box-shadow: 0 0 0 3px rgba(24, 26, 28, .045);
 }
 
-/* Feedback states */
+/* Feedback and page states */
 .app-shell .system-message,
 .app-shell .error-message,
 .app-shell .success-message,
 .app-shell .notice {
-  border-radius: 11px;
+  border-radius: var(--rr-control-radius);
   padding: 11px 13px;
-  font-size: .68rem;
+  font-size: var(--rr-type-meta);
   line-height: 1.5;
 }
 
-.app-shell .system-message {
-  border: 1px solid #e9eaeb;
-  background: #f7f7f7;
-  color: #747a7e;
+.app-shell .system-message,
+.app-shell .notice {
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted);
 }
 
 .app-shell .error-message {
-  border: 1px solid #f2d0d3;
-  background: #fff7f7;
-  color: #a92b35;
+  border: 1px solid var(--rr-danger-line);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
 }
 
 .app-shell .success-message {
-  border: 1px solid #cee7d9;
-  background: #f3faf6;
-  color: #18724a;
+  border: 1px solid var(--rr-success-line);
+  background: var(--rr-success-soft);
+  color: var(--rr-success-ink);
 }
 
-.app-shell .notice {
-  border: 1px solid #e3e5e6;
-  background: #f8f8f7;
-  color: #62686c;
-}
-
-.app-shell .empty-state {
+.app-shell .empty-state,
+.app-shell .page-state {
   max-width: 620px;
   margin: 28px auto;
   padding: 42px 24px;
@@ -602,19 +598,123 @@
 .app-shell .empty-state > svg {
   width: 38px;
   height: 38px;
-  color: #777d82;
+  color: var(--rr-muted);
 }
 
 .app-shell .empty-state h2 {
   margin: 12px 0 5px;
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: var(--rr-fw-bold);
   letter-spacing: -.025em;
 }
 
 .app-shell .empty-state p {
   color: var(--rr-muted);
-  font-size: .7rem;
+  font-size: var(--rr-type-small);
+}
+
+.app-shell .page-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface);
+  text-align: center;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .page-state-compact {
+  margin-block: var(--rr-space-5);
+  padding: var(--rr-space-8) var(--rr-space-5);
+}
+
+.app-shell .page-state-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  place-items: center;
+  border-radius: var(--rr-radius-md);
+  background: var(--rr-surface-muted);
+  color: var(--rr-muted);
+}
+
+.app-shell .page-state-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.app-shell .page-state-error .page-state-icon {
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+}
+
+.app-shell .page-state-restricted .page-state-icon {
+  background: var(--rr-surface-inverse);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .page-state-copy h2 {
+  margin: var(--rr-space-3) 0 var(--rr-space-1);
+  font-size: var(--rr-type-section);
+  line-height: 1.25;
+}
+
+.app-shell .page-state-copy p {
+  max-width: 52ch;
+  margin: 0;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-small);
+  line-height: 1.55;
+}
+
+.app-shell .page-state-action {
+  margin-top: var(--rr-space-4);
+}
+
+.app-shell .page-skeleton-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rr-space-4);
+  margin-top: var(--rr-space-3);
+}
+
+.app-shell .leaderboard-inline-empty {
+  margin: var(--rr-space-5);
+  text-align: center;
+}
+
+.app-shell .riding-page-feedback {
+  margin-bottom: var(--rr-space-4);
+}
+
+.app-shell .ride-row-actions {
+  display: flex;
+  gap: var(--rr-space-1);
+}
+
+.app-shell .ride-row-action {
+  display: grid;
+  width: var(--rr-control-sm);
+  height: var(--rr-control-sm);
+  place-items: center;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-sm);
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  cursor: pointer;
+}
+
+.app-shell .ride-row-action.danger {
+  border-color: var(--rr-danger-line);
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell .ride-row-action {
+    width: var(--rr-control-lg);
+    height: var(--rr-control-lg);
+  }
 }
 
 /* Tabs and segmented controls */

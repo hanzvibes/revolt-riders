@@ -105,8 +105,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   min-height: 100dvh;
   padding: clamp(18px, 4vw, 42px) 14px;
   background:
-    radial-gradient(circle at 50% -12%, #35383b 0, #202225 34%, #111214 72%);
-  color: #fff;
+    radial-gradient(circle at 50% -12%, var(--rr-invite-canvas-top) 0, var(--rr-invite-canvas-mid) 34%, var(--rr-invite-canvas-deep) 72%);
+  color: var(--rr-ink-inverse);
   place-items: start center;
 }
 
@@ -116,8 +116,8 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   overflow: hidden;
   border: 1px solid rgba(255,255,255,.11);
   border-radius: 26px;
-  background: #f5f5f3;
-  color: #17191b;
+  background: var(--rr-invite-card);
+  color: var(--rr-surface-inverse);
   text-align: left;
   box-shadow: 0 22px 58px rgba(0,0,0,.30);
 }
@@ -133,7 +133,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   background:
     radial-gradient(circle at 88% 20%, rgba(255,255,255,.06), transparent 30%),
     linear-gradient(145deg, #0e1011 0%, #181b1d 58%, #111315 100%);
-  color: #fff;
+  color: var(--rr-ink-inverse);
 }
 
 .invitation-hero-v2::after {
@@ -188,7 +188,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 }
 
 .invitation-brand-v2 strong {
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: .82rem;
   font-weight: 800;
   line-height: 1.05;
@@ -197,7 +197,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 
 .invitation-brand-v2 small {
   margin-top: 4px;
-  color: #7f878c;
+  color: var(--rr-invite-muted-strong);
   font-size: .64rem;
   font-weight: 700;
 }
@@ -207,7 +207,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   border: 1px solid rgba(255,255,255,.11);
   border-radius: 999px;
   background: rgba(255,255,255,.045);
-  color: #a8afb4;
+  color: var(--rr-invite-muted-soft);
   padding: 7px 10px;
   font-size: .67rem;
   font-weight: 800;
@@ -234,7 +234,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .invitation-card-v2 .invitation-heading-v2 h1,
 .invitation-card-v2 .invitation-state-v2 h1 {
   margin: 0;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   font-size: clamp(2rem, 6vw, 3.3rem);
   font-style: normal;
   font-weight: 800;
@@ -247,7 +247,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .invitation-card-v2 .invitation-state-v2 p {
   max-width: 560px;
   margin: 13px auto 0;
-  color: #9aa1a6;
+  color: var(--rr-invite-muted);
   font-size: .82rem;
   line-height: 1.55;
   text-wrap: balance;
@@ -324,7 +324,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
   margin: 11px auto 0;
   border-radius: 10px;
   background: var(--red);
-  color: #fff;
+  color: var(--rr-ink-inverse);
   padding: 0 14px;
   font-size: .7rem;
   font-weight: 800;
@@ -358,7 +358,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .attendee-preview-v2 {
   border: 1px solid #e3e5e6;
   border-radius: 17px;
-  background: #fff;
+  background: var(--rr-ink-inverse);
 }
 
 .invitation-rsvp-panel-v2 {
@@ -484,13 +484,13 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .invitation-card-v2 .invitation-rsvp-actions-v2 button.selected {
   border-color: #ca1725;
   background: #dc1b2a;
-  color: #fff;
+  color: var(--rr-ink-inverse);
   box-shadow: 0 8px 20px rgba(220,27,42,.14);
 }
 
 .invitation-rsvp-actions-v2 button.selected > svg {
   background: rgba(255,255,255,.15);
-  color: #fff;
+  color: var(--rr-ink-inverse);
 }
 
 .invitation-rsvp-actions-v2 button.selected small {
@@ -565,7 +565,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,
 .invitation-extra-v2 select:focus,
 .invitation-extra-v2 textarea:focus {
   border-color: #d39da2;
-  background: #fff;
+  background: var(--rr-ink-inverse);
   box-shadow: 0 0 0 3px rgba(220,27,42,.08);
 }
 

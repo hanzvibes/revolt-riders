@@ -1,8 +1,10 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageState } from "@/components/page-state";
 import {
   RideLogEditModal,
   type RideLogEditData,
@@ -52,6 +54,7 @@ type TouringItem = {
 };
 
 export default function MemberPage() {
+  const { confirmAction } = useActionDialog();
   const {
     user,
     account,
@@ -68,6 +71,7 @@ export default function MemberPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [touringRecords, setTouringRecords] = useState<TouringItem[]>([]);
   const [loadingTouring, setLoadingTouring] = useState(false);
+  const [touringError, setTouringError] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editModalData, setEditModalData] = useState<RideLogEditData | null>(null);
   const detailRequestRef = useRef(0);
@@ -232,6 +236,7 @@ export default function MemberPage() {
     setSelectedMember(member);
     setSheetOpen(true);
     setTouringRecords(cached ?? []);
+    setTouringError("");
     setLoadingTouring(!cached);
 
     if (cached) return;
@@ -507,28 +512,29 @@ export default function MemberPage() {
         </section>
 
         {!user && !authLoading ? (
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akses member internal</h2>
-            <p>
-              Silakan masuk ke akun Anda untuk melihat direktori lengkap member
-              komunitas.
-            </p>
-            <a className="primary-action" href="/login">
-              MASUK KE AKUN
-            </a>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<ShieldAlert />}
+            title="Akses member internal"
+            description="Silakan masuk ke akun Anda untuk melihat direktori lengkap member komunitas."
+            action={
+              <a className="primary-action" href="/login">
+                MASUK KE AKUN
+              </a>
+            }
+          />
         ) : loading ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "12px" }}>
+          <div className="page-skeleton-stack">
             <StatsGridSkeleton count={3} />
             <CardSkeleton height="280px" />
           </div>
         ) : error ? (
-          <section className="empty-state card">
-            <UsersRound />
-            <h2>{error}</h2>
-            <p>Terjadi kendala saat menghubungkan ke database.</p>
-          </section>
+          <PageState
+            tone="error"
+            icon={<UsersRound />}
+            title="Direktori member belum dapat dimuat"
+            description={error}
+          />
         ) : (
           <>
             <div className="search-box member-search-bar">
@@ -541,13 +547,14 @@ export default function MemberPage() {
             </div>
 
             {filtered.length === 0 ? (
-              <section className="empty-state card">
-                <UsersRound />
-                <h2>Tidak ada member ditemukan</h2>
-                <p>
-                  Tidak ada hasil yang sesuai dengan kata kunci &quot;{query}&quot;.
-                </p>
-              </section>
+              <PageState
+                compact
+                icon={<UsersRound />}
+                title="Tidak ada member ditemukan"
+                description={
+                  <>Tidak ada hasil yang sesuai dengan kata kunci &quot;{query}&quot;.</>
+                }
+              />
             ) : (
               <div className="member-grid">
                 {filtered.map((m) => {
@@ -736,8 +743,10 @@ export default function MemberPage() {
                 </div>
               </div>
 
-              {loadingTouring ? (
-                <p className="system-message">Memuat riwayat kegiatan dari Supabase…</p>
+              {touringError ? (
+                <p className="error-message" role="alert">{touringError}</p>
+              ) : loadingTouring ? (
+                <p className="system-message" role="status">Memuat riwayat kegiatan…</p>
               ) : touringRecords.length === 0 ? (
                 <p className="system-message">
                   Belum ada catatan touring resmi atau check-in yang terdata di Supabase untuk member ini.
@@ -825,13 +834,17 @@ export default function MemberPage() {
                                     className="member-tour-action delete"
                                     title="Hapus riwayat touring"
                                     onClick={async () => {
-                                      if (
-                                        !confirm(
-                                          `Yakin ingin menghapus catatan "${item.title}"?`,
-                                        )
-                                      )
-                                        return;
+                                      const confirmed = await confirmAction({
+                                        title: "Hapus riwayat touring?",
+                                        description: `Catatan "${item.title}" akan dihapus permanen.`,
+                                        confirmLabel: "Hapus Riwayat",
+                                        cancelLabel: "Batal",
+                                        destructive: true,
+                                      });
+                                      if (!confirmed) return;
+
                                       const rawId = item.id.replace(/^ride-/, "");
+                                      setTouringError("");
                                       try {
                                         const res = await deleteRideLog(
                                           rawId,
@@ -839,7 +852,7 @@ export default function MemberPage() {
                                         );
                                         handleTourUpdated(res.totalKm);
                                       } catch (err) {
-                                        alert(
+                                        setTouringError(
                                           err instanceof Error
                                             ? err.message
                                             : "Gagal menghapus riwayat.",

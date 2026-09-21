@@ -1,6 +1,7 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
@@ -182,14 +183,17 @@ export default function AdminInsightsPage() {
     return (
       <AppShell active="Analytics" title="Analitik & Audit">
         <div className="page-wrap">
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akses admin diperlukan</h2>
-            <p>Analytics dan audit trail hanya tersedia untuk Admin dan Superadmin aktif.</p>
-            <a className="primary-action" href={account ? "/profil" : "/login"}>
-              {account ? "LIHAT STATUS AKUN" : "MASUK"}
-            </a>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<ShieldAlert />}
+            title="Akses admin diperlukan"
+            description="Analytics dan audit trail hanya tersedia untuk Admin dan Superadmin aktif."
+            action={
+              <a className="primary-action" href={account ? "/profil" : "/login"}>
+                {account ? "LIHAT STATUS AKUN" : "MASUK"}
+              </a>
+            }
+          />
         </div>
       </AppShell>
     );
@@ -205,7 +209,7 @@ export default function AdminInsightsPage() {
             <p>Ringkasan aktivitas komunitas dan perubahan penting yang tercatat otomatis.</p>
           </div>
         </div>
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message" role="alert">{error}</p>}
         <section className="analytics-grid">
           <article className="card">
             <UsersRound />

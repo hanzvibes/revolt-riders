@@ -24,8 +24,8 @@ const canonicalTokenTargets = new Set([
 // Existing legacy debt is budgeted so CI prevents regression while cleanup can
 // move these values downward over time.
 const legacyBudgets = {
-  "app/system-ui.css": { tinyType: 140, hardcodedHex: 468, important: 354 },
-  "app/globals.css": { tinyType: 132, hardcodedHex: 410, important: 17 },
+  "app/system-ui.css": { tinyType: 140, hardcodedHex: 461, important: 354 },
+  "app/globals.css": { tinyType: 132, hardcodedHex: 393, important: 13 },
   "app/native-admin.css": { tinyType: 57, hardcodedHex: 416, important: 77 },
   "app/polish.css": { tinyType: 17, hardcodedHex: 86, important: 83 },
   "app/form-density.css": { tinyType: 0, hardcodedHex: 0, important: 1 },
@@ -242,6 +242,34 @@ if (fs.existsSync(landingPagePath)) {
   }
 }
 
+const sharedPageStatePath = path.join(ROOT, "components/page-state.tsx");
+if (!fs.existsSync(sharedPageStatePath)) {
+  fatal.push(
+    "components/page-state.tsx is required for shared page-level empty/error/restricted states",
+  );
+}
+
+const sharedPageStateTargets = [
+  "app/agenda/page.tsx",
+  "app/garage/page.tsx",
+  "app/kas/page.tsx",
+  "app/member/page.tsx",
+  "app/leaderboard/page.tsx",
+  "app/admin/insights/page.tsx",
+  "app/voyager/page.tsx",
+];
+
+for (const file of sharedPageStateTargets) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs)) continue;
+  const content = fs.readFileSync(abs, "utf8");
+  if (!content.includes("PageState")) {
+    fatal.push(
+      `${file}: use the shared PageState component for page-level empty/error/restricted states`,
+    );
+  }
+}
+
 const uiFiles = roots
   .flatMap(walk)
   .filter((file) => /\.(tsx|jsx)$/.test(file));
@@ -250,6 +278,8 @@ const strictTokenizedUiTargets = new Set([
   "app/check-in/page.tsx",
   "app/admin/insights/page.tsx",
   "app/admin/page.tsx",
+  "app/agenda/page.tsx",
+  "components/page-state.tsx",
 ]);
 
 let inlineTinyTypeCount = 0;

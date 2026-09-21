@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
+import { PageState } from "@/components/page-state";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -148,28 +149,29 @@ export default function LeaderboardPage() {
     <AppShell active="Leaderboard" title="Leaderboard">
       <div className="page-wrap">
         {!user && !authLoading ? (
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akses leaderboard internal</h2>
-            <p>
-              Silakan masuk ke akun Anda untuk melihat klasemen jarak tempuh
-              member Revolt Riders.
-            </p>
-            <a className="primary-action" href="/login">
-              MASUK KE AKUN
-            </a>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<ShieldAlert />}
+            title="Akses leaderboard internal"
+            description="Silakan masuk ke akun Anda untuk melihat klasemen jarak tempuh member Revolt Riders."
+            action={
+              <a className="primary-action" href="/login">
+                MASUK KE AKUN
+              </a>
+            }
+          />
         ) : loading ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginTop: "12px" }}>
+          <div className="page-skeleton-stack">
             <StatsGridSkeleton count={3} />
             <CardSkeleton height="280px" />
           </div>
         ) : error ? (
-          <section className="empty-state card">
-            <Gauge />
-            <h2>{error}</h2>
-            <p>Terjadi kendala saat menyinkronkan data klasemen.</p>
-          </section>
+          <PageState
+            tone="error"
+            icon={<Gauge />}
+            title="Leaderboard belum dapat dimuat"
+            description={error}
+          />
         ) : (
           <>
             <section className="leaderboard-hero" aria-labelledby="leaderboard-hero-title">
@@ -367,11 +369,9 @@ export default function LeaderboardPage() {
               </div>
 
               {remainingRiders.length === 0 ? (
-                <div style={{ padding: "32px", textAlign: "center", color: "var(--muted)" }}>
-                  <p style={{ margin: 0, fontSize: "0.85rem" }}>
-                    Tidak ada rider yang cocok dengan kata kunci &quot;{query}&quot;.
-                  </p>
-                </div>
+                <p className="system-message leaderboard-inline-empty">
+                  Tidak ada rider yang cocok dengan kata kunci &quot;{query}&quot;.
+                </p>
               ) : (
                 <div className="leaderboard-items">
                   {remainingRiders.map((r) => {

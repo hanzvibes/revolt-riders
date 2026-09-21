@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
+import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
@@ -579,11 +580,12 @@ export default function VoyagerPage() {
     return (
       <AppShell active="Voyager" title="Voyager">
         <div className="page-wrap">
-          <section className="empty-state card">
-            <ShieldAlert />
-            <h2>Akun member aktif diperlukan</h2>
-            <p>Voyager hanya tersedia untuk member Revolt Riders yang aktif.</p>
-          </section>
+          <PageState
+            tone="restricted"
+            icon={<ShieldAlert />}
+            title="Akun member aktif diperlukan"
+            description="Voyager hanya tersedia untuk member Revolt Riders yang aktif."
+          />
         </div>
       </AppShell>
     );
@@ -616,7 +618,7 @@ export default function VoyagerPage() {
             {message}
           </p>
         )}
-        {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message" role="alert">{error}</p>}
 
         {featuredEvent ? (
           <section className="voyager-command-card" aria-label="Voyager utama dan status saya">
@@ -1195,7 +1197,7 @@ export default function VoyagerPage() {
               )}
             </section>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <p className="error-message" role="alert">{error}</p>}
             {message && (
               <p className="success-message">
                 <Check />
