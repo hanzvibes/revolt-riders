@@ -355,7 +355,7 @@
 .member-account-controls select {
   width: auto;
   max-width: 145px;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   margin: 0;
 }
 .bulletin-management {
@@ -371,7 +371,7 @@
   -webkit-line-clamp: 3;
 }
 .bulletin-actions button {
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   border-radius: 9px;
 }
 @keyframes sheet-fade {
@@ -2520,7 +2520,7 @@ html {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   padding: 0 14px;
   border-radius: 9px;
   border: 1px solid var(--rr-line);
@@ -3162,7 +3162,7 @@ html {
   background: transparent;
   color: #94989b;
   width: 100%;
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   padding: 0 10px;
   border-radius: 9px;
   display: flex;
@@ -3256,7 +3256,7 @@ html {
 .sidebar-subnav a {
   color: #8c9196 !important;
   border-radius: 8px !important;
-  min-height: 36px !important;
+  min-height: var(--rr-control-sm) !important;
   font-size: 0.76rem !important;
   padding: 0 10px !important;
   gap: 10px !important;
@@ -3865,7 +3865,7 @@ html {
 }
 
 .dashboard-premium .hero-cta {
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   margin-top: 10px !important;
   border: 1px solid #f0f1f2;
   border-radius: var(--rr-control-radius);
@@ -4127,7 +4127,7 @@ html {
 }
 
 .dashboard-premium .rider-status-actions .dark-action {
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   border-radius: var(--rr-control-radius);
   background: #202326;
   font-size: 0.64rem;
