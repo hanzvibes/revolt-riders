@@ -24,7 +24,7 @@ const canonicalTokenTargets = new Set([
 // Existing legacy debt is budgeted so CI prevents regression while cleanup can
 // move these values downward over time.
 const legacyBudgets = {
-  "app/system-ui.css": { tinyType: 166, hardcodedHex: 468, important: 354 },
+  "app/system-ui.css": { tinyType: 140, hardcodedHex: 468, important: 354 },
   "app/globals.css": { tinyType: 132, hardcodedHex: 410, important: 17 },
   "app/native-admin.css": { tinyType: 57, hardcodedHex: 416, important: 77 },
   "app/polish.css": { tinyType: 17, hardcodedHex: 86, important: 83 },
