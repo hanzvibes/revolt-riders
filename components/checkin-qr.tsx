@@ -95,7 +95,7 @@ export function CheckinQr({ code, eventTitle, activeUntil, qrUrl }: CheckinQrPro
       document.body.style.overflow = previousOverflow;
       window.cancelAnimationFrame(focusFrame);
       window.removeEventListener("keydown", onKeyDown);
-      window.requestAnimationFrame(() => openerRef.current?.focus());
+      window.requestAnimationFrame(() => opener?.focus());
     };
   }, [open]);
 
