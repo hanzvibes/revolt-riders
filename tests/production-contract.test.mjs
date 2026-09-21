@@ -451,3 +451,28 @@ test("Audit next pass keeps active admin microcopy and touch targets readable", 
   assert.match(css, /qr-close[\s\S]*min-height: var\(--rr-control-lg\)/);
   assert.match(css, /sidebar-accordion-header[\s\S]*min-height: var\(--rr-control-lg\)/);
 });
+
+
+test("Shared action dialogs replace native browser prompts", async () => {
+  const provider = await read("components/action-dialog-provider.tsx");
+  const layout = await read("app/layout.tsx");
+  const auditedPages = [
+    "app/admin/events/page.tsx",
+    "app/admin/page.tsx",
+    "app/garage/page.tsx",
+    "app/kas/page.tsx",
+    "app/voyager/page.tsx",
+  ];
+
+  assert.match(layout, /ActionDialogProvider/);
+  assert.match(provider, /AlertDialog/);
+  assert.match(provider, /DialogContent/);
+  assert.match(provider, /confirmAction/);
+  assert.match(provider, /promptAction/);
+  assert.match(provider, /min-h-11/);
+
+  for (const file of auditedPages) {
+    const source = await read(file);
+    assert.doesNotMatch(source, /window\.(?:confirm|prompt|alert)\(/);
+  }
+});
