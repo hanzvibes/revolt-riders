@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
 import { ModalSheet } from "@/components/modal-sheet";
@@ -108,6 +109,7 @@ function downloadLinks(links: BulkLink[], eventTitle: string) {
 }
 
 export default function AdminPage() {
+  const { confirmAction } = useActionDialog();
   const {
     account: cachedAccount,
     loading: authLoading,
@@ -375,7 +377,7 @@ export default function AdminPage() {
     ).length;
     if (
       existing > 0 &&
-      !window.confirm(
+      !await confirmAction(
         `Agenda ini sudah memiliki ${existing} undangan. Generate ulang akan menonaktifkan link lama. Lanjutkan?`,
       )
     )
@@ -467,7 +469,7 @@ export default function AdminPage() {
 
   const rejectRequest = async (request: PendingRequest) => {
     if (
-      !window.confirm(
+      !await confirmAction(
         `Tolak pendaftaran untuk ${request.member_external_id} (${request.email})? ID RR ini akan segera dibuka kembali agar dapat didaftarkan ulang.`,
       )
     )
@@ -499,7 +501,7 @@ export default function AdminPage() {
   ) => {
     if (managedAccount.role === nextRole) return;
     if (
-      !window.confirm(
+      !await confirmAction(
         `Ubah role ${managedAccount.member_external_id} menjadi ${nextRole.replaceAll("_", " ")}?`,
       )
     )
@@ -520,7 +522,7 @@ export default function AdminPage() {
 
   const deleteEventPermanently = async (eventRecord: EventRecord) => {
     if (
-      !window.confirm(
+      !await confirmAction(
         `Hapus agenda "${eventRecord.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan.`,
       )
     )
