@@ -1,3 +1,4 @@
+import { ActionDialogProvider } from "@/components/action-dialog-provider";
 import { PwaRegister } from "@/components/pwa-register";
 import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
@@ -55,9 +56,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <html lang="id">
       <body>
         <DataCacheProvider>
-          {children}
-          <PwaRegister />
-          <Analytics />
+          <ActionDialogProvider>
+            {children}
+            <PwaRegister />
+            <Analytics />
+          </ActionDialogProvider>
         </DataCacheProvider>
       </body>
     </html>
