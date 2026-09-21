@@ -69,8 +69,6 @@ export default function AdminJoinRequestsPage() {
   const [search, setSearch] = useState("");
   const [tab, setTab] = useState<"all" | "pending" | "accepted" | "confirmed" | "active" | "archived">("pending");
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   useEffect(() => {
@@ -199,11 +197,10 @@ export default function AdminJoinRequestsPage() {
     setActionLoading(true);
 
     try {
-      const supabase = getSupabaseBrowserClient();
-
-      const { data, error: rpcErr } = await supabase.rpc("accept_join_request", {
-        p_request_id: item.id,
-      });
+      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
+        "accept_join_request",
+        { p_request_id: item.id },
+      );
 
       if (rpcErr) throw rpcErr;
 
@@ -212,29 +209,10 @@ export default function AdminJoinRequestsPage() {
       invalidateCache("shell:pending-join-count");
       void loadRequests(true);
     } catch (err) {
-      // Fallback direct update
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const token = item.confirmation_token || Math.random().toString(36).substring(2) + Date.now().toString(36);
-        const { error: updErr } = await supabase
-          .from("join_requests")
-          .update({
-            status: "accepted",
-            accepted_at: new Date().toISOString(),
-            confirmation_token: token,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", item.id);
-
-        if (updErr) throw updErr;
-
-        showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
-        invalidateCache("admin:join-requests");
-      invalidateCache("shell:pending-join-count");
-      void loadRequests(true);
-      } catch (innerErr) {
-        showToast(innerErr instanceof Error ? innerErr.message : "Gagal menyetujui pendaftaran.", "error");
-      }
+      showToast(
+        err instanceof Error ? err.message : "Gagal menyetujui pendaftaran.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -245,12 +223,13 @@ export default function AdminJoinRequestsPage() {
     setActionLoading(true);
 
     try {
-      const supabase = getSupabaseBrowserClient();
-
-      const { error: rpcErr } = await supabase.rpc("reject_join_request", {
-        p_request_id: rejectItem.id,
-        p_reason: rejectReason.trim() || null,
-      });
+      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
+        "reject_join_request",
+        {
+          p_request_id: rejectItem.id,
+          p_reason: rejectReason.trim() || null,
+        },
+      );
 
       if (rpcErr) throw rpcErr;
 
@@ -261,30 +240,10 @@ export default function AdminJoinRequestsPage() {
       invalidateCache("shell:pending-join-count");
       void loadRequests(true);
     } catch (err) {
-      // Fallback direct update
-      try {
-        const supabase = getSupabaseBrowserClient();
-        const { error: updErr } = await supabase
-          .from("join_requests")
-          .update({
-            status: "rejected",
-            rejected_at: new Date().toISOString(),
-            rejection_reason: rejectReason.trim() || null,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", rejectItem.id);
-
-        if (updErr) throw updErr;
-
-        showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
-        setRejectItem(null);
-        setRejectReason("");
-        invalidateCache("admin:join-requests");
-      invalidateCache("shell:pending-join-count");
-      void loadRequests(true);
-      } catch (innerErr) {
-        showToast(innerErr instanceof Error ? innerErr.message : "Gagal menolak pendaftaran.", "error");
-      }
+      showToast(
+        err instanceof Error ? err.message : "Gagal menolak pendaftaran.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -302,60 +261,29 @@ export default function AdminJoinRequestsPage() {
     setActionLoading(true);
 
     try {
-      const supabase = getSupabaseBrowserClient();
-
-      const { data, error: rpcErr } = await supabase.rpc("activate_join_request", {
-        p_request_id: activateItem.id,
-        p_member_id: memberIdToAssign,
-      });
+      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
+        "activate_join_request",
+        {
+          p_request_id: activateItem.id,
+          p_member_id: memberIdToAssign,
+        },
+      );
 
       if (rpcErr) throw rpcErr;
 
-      showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
+      showToast(
+        `Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`,
+        "success",
+      );
       setActivateItem(null);
       invalidateCache("admin:join-requests");
       invalidateCache("shell:pending-join-count");
       void loadRequests(true);
     } catch (err) {
-      // Fallback direct update + insert
-      try {
-        const supabase = getSupabaseBrowserClient();
-
-        // 1. Insert into member_profiles
-        const { error: insErr } = await supabase.from("member_profiles").insert({
-          member_external_id: memberIdToAssign,
-          full_name: activateItem.full_name,
-          nickname: activateItem.full_name.split(" ")[0],
-          city: activateItem.city,
-          join_date: new Date().toISOString().split("T")[0],
-          club_role: "VIRGIN",
-          total_km: 0,
-          source_file: "JOIN_REQUEST",
-        });
-
-        if (insErr) throw insErr;
-
-        // 2. Update join request to active
-        const { error: updErr } = await supabase
-          .from("join_requests")
-          .update({
-            status: "active",
-            activated_at: new Date().toISOString(),
-            assigned_member_id: memberIdToAssign,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", activateItem.id);
-
-        if (updErr) throw updErr;
-
-        showToast(`Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`, "success");
-        setActivateItem(null);
-        invalidateCache("admin:join-requests");
-      invalidateCache("shell:pending-join-count");
-      void loadRequests(true);
-      } catch (innerErr) {
-        showToast(innerErr instanceof Error ? innerErr.message : "Gagal mengaktivasi member.", "error");
-      }
+      showToast(
+        err instanceof Error ? err.message : "Gagal mengaktivasi member.",
+        "error",
+      );
     } finally {
       setActionLoading(false);
     }
@@ -436,6 +364,7 @@ export default function AdminJoinRequestsPage() {
             <h2>Verifikasi Calon Member</h2>
             <p>Alur seleksi: Pending → Disetujui (Accepted) → Konfirmasi Calon (Confirmed) → Aktivasi Resmi (Active).</p>
           </div>
+        {error && <p className="error-message">{error}</p>}
 
           <button onClick={() => void loadRequests(true)} disabled={loading}>
             <RefreshCw className={loading ? "spin" : ""} size={16} />
