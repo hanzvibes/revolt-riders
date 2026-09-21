@@ -210,7 +210,15 @@ export default function GaragePage() {
   };
 
   const deleteMotorcycle = async (motorcycle: Motorcycle) => {
-    if (!await confirmAction(`Hapus ${motorcycle.nickname || `${motorcycle.brand} ${motorcycle.model}`} dari Garage?`)) {
+    if (
+      !await confirmAction({
+        title: "Hapus motor dari Garage?",
+        description: `${motorcycle.nickname || `${motorcycle.brand} ${motorcycle.model}`} akan dihapus dari profil Garage kamu.`,
+        confirmLabel: "Hapus Motor",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
+    ) {
       return;
     }
 
