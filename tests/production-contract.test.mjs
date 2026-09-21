@@ -401,7 +401,8 @@ test("Fullscreen check-in QR behaves like an accessible modal", async () => {
   assert.match(qr, /aria-modal="true"/);
   assert.match(qr, /aria-labelledby=\{titleId\}/);
   assert.match(qr, /tabIndex=\{-1\}/);
-  assert.match(qr, /openerRef\.current\?\.focus\(\)/);
+  assert.match(qr, /const opener = openerRef\.current/);
+  assert.match(qr, /opener\?\.focus\(\)/);
 });
 
 test("High-traffic admin workspaces reuse shared access and cache state", async () => {
