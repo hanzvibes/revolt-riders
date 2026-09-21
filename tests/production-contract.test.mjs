@@ -557,3 +557,30 @@ test("Destructive action dialogs use explicit safe labels", async () => {
   assert.match(combined, /Hapus Foto/);
   assert.match(combined, /Koreksi Transaksi/);
 });
+
+
+test("Join request admin mutations stay behind scoped RPCs", async () => {
+  const page = await read("app/admin/join-requests/page.tsx");
+
+  assert.match(page, /rpc\(\s*"accept_join_request"/);
+  assert.match(page, /rpc\(\s*"reject_join_request"/);
+  assert.match(page, /rpc\(\s*"activate_join_request"/);
+  assert.doesNotMatch(page, /from\("join_requests"\)\s*\.update\(/);
+  assert.doesNotMatch(page, /from\("member_profiles"\)\s*\.insert\(/);
+});
+
+test("Static and Voyager gallery images use Next Image", async () => {
+  const voyager = await read("app/voyager/page.tsx");
+  const invitation = await read("app/undangan/[token]/page.tsx");
+  const setup = await read("app/setup/page.tsx");
+  const offline = await read("app/offline/page.tsx");
+  const config = await read("next.config.ts");
+
+  for (const source of [voyager, invitation, setup, offline]) {
+    assert.match(source, /from "next\/image"/);
+    assert.doesNotMatch(source, /<img\b/);
+  }
+
+  assert.match(config, /uloqjgwgupuaatdixvsa\.supabase\.co/);
+  assert.match(voyager, /sizes="\(max-width: 520px\) 50vw, 320px"/);
+});
