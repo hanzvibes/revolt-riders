@@ -668,7 +668,7 @@
 }
 
 .app-shell .page-state-action {
-  margin-top: var(--rr-space-4);
+  margin-top: var(--rr-space-3);
 }
 
 .app-shell .page-skeleton-stack {
@@ -1800,7 +1800,7 @@
 
 @media (max-width: 390px) {
   .app-shell .dashboard-premium .quick-action-btn {
-    min-height: 56px;
+    min-height: 44px;
     padding: 7px 9px;
   }
 
@@ -11092,7 +11092,7 @@
    ============================================================================== */
 
 .app-shell .profile-social-page {
-  max-width: 960px;
+  max-width: 820px;
 }
 
 .app-shell .profile-social-card {
@@ -11107,7 +11107,7 @@
 .app-shell .profile-social-cover {
   position: relative;
   display: flex;
-  min-height: 156px;
+  min-height: 124px;
   align-items: flex-end;
   overflow: hidden;
   padding: var(--rr-space-4) var(--rr-space-5);
@@ -11145,22 +11145,24 @@
 }
 
 .app-shell .profile-social-body {
-  padding: 0 var(--rr-space-5) var(--rr-space-5);
+  padding: 0 var(--rr-space-4) var(--rr-space-4);
 }
 
 .app-shell .profile-social-avatar-row {
   display: flex;
-  min-height: 62px;
+  min-height: 50px;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--rr-space-3);
 }
 
 .app-shell .profile-social-avatar {
+  position: relative;
+  z-index: 2;
   display: grid;
-  width: 104px;
-  height: 104px;
-  margin-top: -52px;
+  width: 92px;
+  height: 92px;
+  margin-top: -46px;
   place-items: center;
   border: 4px solid var(--rr-surface);
   border-radius: 50%;
@@ -11178,7 +11180,7 @@
   align-items: center;
   justify-content: center;
   gap: var(--rr-space-2);
-  margin-top: var(--rr-space-3);
+  margin-top: var(--rr-space-2);
   padding: 0 var(--rr-space-4);
   border: 1px solid var(--rr-line);
   border-radius: var(--rr-control-radius);
@@ -11278,7 +11280,7 @@
 }
 
 .app-shell .profile-social-bio {
-  margin: var(--rr-space-3) 0 0;
+  margin: var(--rr-space-2) 0 0;
   color: var(--rr-ink);
   font-size: var(--rr-type-body);
   line-height: 1.55;
@@ -11288,7 +11290,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--rr-space-2) var(--rr-space-4);
-  margin-top: var(--rr-space-3);
+  margin-top: var(--rr-space-2);
   color: var(--rr-muted);
 }
 
@@ -11310,7 +11312,7 @@
 .app-shell .profile-social-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: var(--rr-space-5);
+  margin-top: var(--rr-space-4);
   border-block: 1px solid var(--rr-line);
 }
 
@@ -11414,23 +11416,24 @@
   }
 
   .app-shell .profile-social-card {
-    border-inline: 0;
-    border-radius: 0;
+    margin-inline: 13px;
+    border-inline: 1px solid var(--rr-line);
+    border-radius: 18px;
   }
 
   .app-shell .profile-social-cover {
-    min-height: 126px;
+    min-height: 108px;
     padding: var(--rr-space-3) var(--rr-space-4);
   }
 
   .app-shell .profile-social-cover img {
     right: var(--rr-space-4);
-    width: 112px;
-    height: 112px;
+    width: 92px;
+    height: 92px;
   }
 
   .app-shell .profile-social-body {
-    padding: 0 var(--rr-space-4) var(--rr-space-4);
+    padding: 0 var(--rr-space-3) var(--rr-space-3);
   }
 
   .app-shell .profile-social-avatar-row {
@@ -11438,9 +11441,9 @@
   }
 
   .app-shell .profile-social-avatar {
-    width: 88px;
-    height: 88px;
-    margin-top: -44px;
+    width: 78px;
+    height: 78px;
+    margin-top: -39px;
     border-width: 3px;
     font-size: 1.3rem;
   }
@@ -11450,8 +11453,7 @@
   }
 
   .app-shell .profile-social-meta {
-    flex-direction: column;
-    gap: var(--rr-space-2);
+    gap: var(--rr-space-2) var(--rr-space-3);
   }
 
   .app-shell .profile-social-actions {
@@ -11477,6 +11479,11 @@
 }
 
 @media (max-width: 390px) {
+  .app-shell .profile-social-meta {
+    flex-direction: column;
+    gap: var(--rr-space-2);
+  }
+
   .app-shell .profile-social-edit {
     padding-inline: var(--rr-space-3);
   }
