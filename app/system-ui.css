@@ -8002,7 +8002,7 @@
 .app-shell .voyager-hero em {
   display: block;
   color: #aeb3b7;
-  font-size: .56rem;
+  font-size: var(--rr-type-caption);
   font-style: normal;
   font-weight: 800;
   letter-spacing: .13em;
@@ -8035,7 +8035,7 @@
 .app-shell .voyager-km span {
   display: block;
   color: #999fa4;
-  font-size: .55rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-km small {
@@ -8065,13 +8065,13 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  min-height: var(--rr-control-md);
+  min-height: var(--rr-control-lg);
   border: 0;
   border-radius: 9px;
   background: transparent;
   padding: 0 11px;
   color: var(--rr-muted);
-  font-size: .62rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
   cursor: pointer;
 }
@@ -8088,7 +8088,7 @@
   border-radius: 999px;
   background: #e4e6e8;
   color: #62676b;
-  font-size: .54rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-tabs button.active {
@@ -8145,7 +8145,7 @@
 .app-shell .voyager-date small {
   margin-top: 4px;
   color: var(--rr-muted);
-  font-size: .5rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8156,7 +8156,7 @@
 .app-shell .voyager-card-copy em {
   display: block;
   color: var(--rr-red);
-  font-size: .5rem;
+  font-size: var(--rr-type-caption);
   font-style: normal;
   font-weight: 800;
   letter-spacing: .08em;
@@ -8179,7 +8179,7 @@
   margin-top: 5px;
   overflow: hidden;
   color: var(--rr-muted);
-  font-size: .6rem;
+  font-size: var(--rr-type-caption);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -8223,7 +8223,7 @@
 
 .app-shell .voyager-card-meta small {
   color: var(--rr-muted);
-  font-size: .48rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-card-foot {
@@ -8249,7 +8249,7 @@
   background: #fff0f1;
   padding: 0 8px;
   color: #ad1420;
-  font-size: .5rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8259,13 +8259,13 @@
 }
 
 .app-shell .voyager-card-foot > button {
-  min-height: 30px;
+  min-height: var(--rr-control-lg);
   border: 1px solid var(--rr-line);
   border-radius: 8px;
   background: #fff;
   padding: 0 9px;
   color: var(--rr-ink);
-  font-size: .54rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
   cursor: pointer;
 }
@@ -8296,7 +8296,7 @@
 .app-shell .voyager-detail-head small {
   display: block;
   color: var(--rr-muted);
-  font-size: .48rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
   letter-spacing: .06em;
 }
@@ -8343,7 +8343,7 @@
   display: inline-flex;
   margin-top: 4px;
   color: var(--rr-red);
-  font-size: .62rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8369,7 +8369,7 @@
 
 .app-shell .voyager-support small {
   color: #8f969a;
-  font-size: .52rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
   letter-spacing: .09em;
 }
@@ -8405,7 +8405,7 @@
   border-radius: 9px;
   background: #202225;
   color: #fff;
-  font-size: .58rem;
+  font-size: var(--rr-type-caption);
   font-style: normal;
   font-weight: 800;
 }
@@ -8424,7 +8424,7 @@
 
 .app-shell .voyager-participant-list small {
   color: var(--rr-muted);
-  font-size: .5rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-gallery,
@@ -8458,7 +8458,7 @@
   height: 100%;
   place-items: center;
   color: var(--rr-muted);
-  font-size: .55rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-admin-gallery button {
@@ -8466,8 +8466,8 @@
   top: 6px;
   right: 6px;
   display: grid;
-  width: 30px;
-  height: 30px;
+  width: var(--rr-control-lg);
+  height: var(--rr-control-lg);
   place-items: center;
   border: 1px solid rgba(255, 255, 255, .65);
   border-radius: 8px;
@@ -8489,7 +8489,7 @@
   display: grid;
   gap: 6px;
   color: var(--rr-ink);
-  font-size: .62rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8514,7 +8514,7 @@
 .app-shell .voyager-manage-section label > small,
 .app-shell .voyager-manage-section > small {
   color: var(--rr-muted);
-  font-size: .53rem;
+  font-size: var(--rr-type-caption);
   font-weight: 500;
   line-height: 1.45;
 }
@@ -8536,7 +8536,7 @@
   border-radius: 0 9px 9px 0;
   background: #f0f2f3;
   color: var(--rr-muted);
-  font-size: .58rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8570,7 +8570,7 @@
 
 .app-shell .voyager-switch small {
   color: var(--rr-muted);
-  font-size: .52rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-member-search {
@@ -8645,7 +8645,7 @@
 
 .app-shell .voyager-member-picker small {
   color: var(--rr-muted);
-  font-size: .52rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-upload {
@@ -8678,7 +8678,7 @@
 
 .app-shell .voyager-upload small {
   color: var(--rr-muted);
-  font-size: .5rem;
+  font-size: var(--rr-type-caption);
 }
 
 .app-shell .voyager-upload input {
@@ -8707,7 +8707,7 @@
   display: block;
   margin-top: 3px;
   color: var(--rr-red);
-  font-size: .62rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
@@ -8786,14 +8786,14 @@
   display: grid;
   gap: 6px;
   color: var(--rr-ink);
-  font-size: .62rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
 }
 
 .app-shell .voyager-admin-distance > small,
 .app-shell .voyager-admin-helper {
   color: var(--rr-muted);
-  font-size: .53rem;
+  font-size: var(--rr-type-caption);
   font-weight: 500;
   line-height: 1.45;
 }
@@ -8809,7 +8809,7 @@
   background: #171819;
   padding: 0 14px;
   color: #fff;
-  font-size: .58rem;
+  font-size: var(--rr-type-caption);
   font-weight: 800;
   cursor: pointer;
 }
