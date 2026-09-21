@@ -54,6 +54,7 @@ const expectedRoutes = [
   "app/api/sheets/[dataset]/route.ts",
   "app/bulletin/page.tsx",
   "app/check-in/page.tsx",
+  "app/garage/page.tsx",
   "app/history/page.tsx",
   "app/join/confirm/[token]/page.tsx",
   "app/kas/page.tsx",
@@ -67,9 +68,10 @@ const expectedRoutes = [
   "app/riding/approval/page.tsx",
   "app/setup/page.tsx",
   "app/undangan/[token]/page.tsx",
+  "app/voyager/page.tsx",
 ];
 
-test("All 27 production routes exist and contain default export", async () => {
+test("All production routes exist and contain the expected export", async () => {
   for (const route of expectedRoutes) {
     const exists = await fileExists(route);
     assert.ok(exists, `Route file ${route} must exist`);
