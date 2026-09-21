@@ -79,7 +79,7 @@ const eventDate = (value: string) =>
 export default function RidingPage() {
   const { confirmAction } = useActionDialog();
   const { account, loading: accessLoading } = useMemberAccess();
-  const { fetchWithCache } = useDataCache();
+  const { fetchWithCache, invalidateCache } = useDataCache();
   const [profile, setProfile] = useState<MemberProfile | null>(null);
   const [rides, setRides] = useState<UserRide[]>([]);
   const [events, setEvents] = useState<RideEvent[]>([]);
@@ -190,6 +190,17 @@ export default function RidingPage() {
     if (!accessLoading) void loadData();
   }, [accessLoading, loadData]);
 
+  const invalidateRideDerivedCaches = useCallback(() => {
+    invalidateCache("riding:");
+    invalidateCache("profile:");
+    invalidateCache("dashboard_member_profile_");
+    invalidateCache("dashboard_club_stats");
+    invalidateCache("riding_leaderboard_data");
+    invalidateCache("member_profiles_list");
+    invalidateCache("member_touring:");
+    invalidateCache("admin_dashboard_overview");
+  }, [invalidateCache]);
+
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (!activeAccount) return;
@@ -235,6 +246,7 @@ export default function RidingPage() {
       setStart("");
       setEnd("");
       setShowForm(false);
+      invalidateRideDerivedCaches();
       await loadData(true);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "Ride log belum dapat dikirim.");
@@ -721,6 +733,7 @@ export default function RidingPage() {
                                 ride.id,
                                 activeAccount.member_external_id,
                               );
+                              invalidateRideDerivedCaches();
                               await loadData(true);
                             } catch (cause) {
                               setError(
@@ -748,8 +761,14 @@ export default function RidingPage() {
         open={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         data={editModalData}
-        onSaved={() => void loadData(true)}
-        onDeleted={() => void loadData(true)}
+        onSaved={() => {
+          invalidateRideDerivedCaches();
+          void loadData(true);
+        }}
+        onDeleted={() => {
+          invalidateRideDerivedCaches();
+          void loadData(true);
+        }}
       />
     </AppShell>
   );

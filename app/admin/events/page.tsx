@@ -340,16 +340,43 @@ export default function AdminEventsPage() {
     });
 
     if (activityError) {
-      setError(`Agenda tersimpan, tetapi pengaturan aktivitas gagal: ${activityError.message}`);
+      setError(
+        `Agenda tersimpan, tetapi pengaturan aktivitas gagal: ${activityError.message}`,
+      );
       setSaving(false);
       invalidateAgendaCaches();
-    await load(true);
+      await load(true);
       return;
+    }
+
+    let syncedMembers = 0;
+    if (editing) {
+      try {
+        syncedMembers = await syncOfficialRidesIfReady({
+          eventId: targetId,
+          status: editing.status,
+          mandatory: countsAsMandatory,
+          distanceKm: parsedDistance,
+          participantIds: selectedParticipants,
+        });
+      } catch (caught) {
+        setError(
+          `Agenda tersimpan, tetapi Official KM belum tersinkron: ${
+            caught instanceof Error ? caught.message : "Sinkronisasi gagal."
+          }`,
+        );
+        setSaving(false);
+        invalidateAgendaCaches();
+        await load(true);
+        return;
+      }
     }
 
     setMessage(
       editing
-        ? "Agenda berhasil diperbarui."
+        ? syncedMembers > 0
+          ? `Agenda berhasil diperbarui. Official KM tersinkron ke ${syncedMembers} member.`
+          : "Agenda berhasil diperbarui."
         : "Draft agenda berhasil dibuat. Publikasikan saat siap.",
     );
     reset();
@@ -374,6 +401,44 @@ export default function AdminEventsPage() {
         .includes(term),
     );
   }, [members, participantQuery]);
+
+  const syncOfficialRidesIfReady = useCallback(
+    async ({
+      eventId,
+      status,
+      mandatory,
+      distanceKm,
+      participantIds,
+    }: {
+      eventId: string;
+      status: EventStatus;
+      mandatory: boolean;
+      distanceKm: number | null;
+      participantIds: string[];
+    }) => {
+      if (
+        status === "draft" ||
+        !mandatory ||
+        !distanceKm ||
+        distanceKm <= 0 ||
+        participantIds.length === 0
+      ) {
+        return 0;
+      }
+
+      const { data, error: syncError } = await getSupabaseBrowserClient().rpc(
+        "sync_event_official_rides",
+        { p_event_id: eventId },
+      );
+
+      if (syncError) throw syncError;
+
+      return (
+        Number((data as { synced_members?: number } | null)?.synced_members) || 0
+      );
+    },
+    [],
+  );
 
   const syncOfficialKm = async () => {
     if (!editing) return;
@@ -413,17 +478,26 @@ export default function AdminEventsPage() {
       return;
     }
 
-    const { data, error: syncError } = await supabase.rpc(
-      "sync_event_official_rides",
-      { p_event_id: editing.id },
-    );
-    setSyncing(false);
-    if (syncError) {
-      setError(syncError.message);
+    let count = 0;
+    try {
+      count = await syncOfficialRidesIfReady({
+        eventId: editing.id,
+        status: editing.status,
+        mandatory: true,
+        distanceKm: parsedDistance,
+        participantIds: selectedParticipants,
+      });
+    } catch (caught) {
+      setSyncing(false);
+      setError(
+        caught instanceof Error
+          ? caught.message
+          : "Sinkronisasi Official KM gagal.",
+      );
       return;
     }
+    setSyncing(false);
 
-    const count = Number((data as { synced_members?: number } | null)?.synced_members) || 0;
     setMessage(`Official KM berhasil disinkronkan ke ${count} member.`);
     invalidateAgendaCaches();
     await load(true);
@@ -484,16 +558,47 @@ export default function AdminEventsPage() {
       .from("events")
       .update(patch)
       .eq("id", event.id);
-    if (updateError) setError(updateError.message);
-    else {
-      setMessage(
-        status === "completed"
-          ? "Agenda masuk History komunitas."
-          : "Agenda dipublikasikan.",
+
+    if (updateError) {
+      setError(updateError.message);
+      return;
+    }
+
+    const participantIds = participants
+      .filter((item) => item.event_id === event.id)
+      .map((item) => item.member_external_id);
+
+    let syncedMembers = 0;
+    try {
+      syncedMembers = await syncOfficialRidesIfReady({
+        eventId: event.id,
+        status,
+        mandatory: event.counts_as_mandatory,
+        distanceKm: event.official_distance_km,
+        participantIds,
+      });
+    } catch (caught) {
+      setError(
+        `Status agenda berhasil diperbarui, tetapi Official KM belum tersinkron: ${
+          caught instanceof Error ? caught.message : "Sinkronisasi gagal."
+        }`,
       );
       invalidateAgendaCaches();
-    await load(true);
+      await load(true);
+      return;
     }
+
+    setMessage(
+      status === "completed"
+        ? syncedMembers > 0
+          ? `Agenda masuk History komunitas. Official KM tersinkron ke ${syncedMembers} member.`
+          : "Agenda masuk History komunitas."
+        : syncedMembers > 0
+          ? `Agenda dipublikasikan. Official KM tersinkron ke ${syncedMembers} member.`
+          : "Agenda dipublikasikan.",
+    );
+    invalidateAgendaCaches();
+    await load(true);
   };
   const visible = useMemo(
     () =>

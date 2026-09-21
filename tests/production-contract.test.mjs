@@ -585,3 +585,45 @@ test("Static and Voyager gallery images use Next Image", async () => {
   assert.match(config, /uloqjgwgupuaatdixvsa\.supabase\.co/);
   assert.match(voyager, /sizes="\(max-width: 520px\) 50vw, 320px"/);
 });
+test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () => {
+  const admin = await read("app/admin/events/page.tsx");
+
+  assert.match(admin, /const syncOfficialRidesIfReady = useCallback/);
+  assert.match(admin, /status === "draft"/);
+  assert.match(admin, /Official KM tersinkron ke/);
+
+  const calls = admin.match(/await syncOfficialRidesIfReady\(/g) ?? [];
+  assert.ok(
+    calls.length >= 3,
+    "save, manual sync, and publish/complete lifecycle must share the sync guard",
+  );
+});
+
+test("Ride mutations invalidate derived KM caches", async () => {
+  const riding = await read("app/riding/page.tsx");
+
+  for (const key of [
+    "riding:",
+    "profile:",
+    "dashboard_member_profile_",
+    "dashboard_club_stats",
+    "riding_leaderboard_data",
+    "member_profiles_list",
+    "member_touring:",
+    "admin_dashboard_overview",
+  ]) {
+    assert.ok(riding.includes('invalidateCache("'+key+'")'), "missing invalidation for " + key);
+  }
+
+  assert.match(riding, /invalidateRideDerivedCaches\(\)/);
+});
+
+test("Ride approval refreshes Member Directory and member detail caches", async () => {
+  const approval = await read("app/riding/approval/page.tsx");
+
+  assert.match(approval, /invalidateCache\("member_profiles_list"\)/);
+  assert.ok(approval.includes("member_touring:${ride.member_external_id}"));
+  assert.match(approval, /invalidateCache\("riding_leaderboard_data"\)/);
+  assert.match(approval, /invalidateCache\("admin_dashboard_overview"\)/);
+});
+

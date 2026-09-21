@@ -137,6 +137,9 @@ export default function RideApprovalPage() {
       invalidateCache("dashboard_member_profile_");
       invalidateCache("dashboard_club_stats");
       invalidateCache("riding_leaderboard_data");
+      invalidateCache("member_profiles_list");
+      invalidateCache(`member_touring:${ride.member_external_id}`);
+      invalidateCache("admin_dashboard_overview");
       await load(true);
     } catch (caught) {
       setError(caught instanceof Error ? caught.message : "Ride belum dapat diperbarui.");
