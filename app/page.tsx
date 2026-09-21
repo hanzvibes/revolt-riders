@@ -312,6 +312,8 @@ export default function PublicLandingPage() {
           type="button"
           className="dark-mobile-btn"
           aria-label={isMobileMenuOpen ? "Tutup menu" : "Buka menu"}
+          aria-controls="landing-mobile-drawer"
+          aria-expanded={isMobileMenuOpen}
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         >
           {isMobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
@@ -319,7 +321,12 @@ export default function PublicLandingPage() {
       </nav>
 
       {/* Mobile Drawer */}
-      <div className={`dark-mobile-drawer ${isMobileMenuOpen ? "open" : ""}`}>
+      <div
+        id="landing-mobile-drawer"
+        className={`dark-mobile-drawer ${isMobileMenuOpen ? "open" : ""}`}
+        aria-hidden={!isMobileMenuOpen}
+        inert={!isMobileMenuOpen ? true : undefined}
+      >
         <a href="#about" onClick={() => setIsMobileMenuOpen(false)}>ABOUT</a>
         <a href="#brotherhood" onClick={() => setIsMobileMenuOpen(false)}>BROTHERHOOD</a>
         <a href="#values" onClick={() => setIsMobileMenuOpen(false)}>CORE VALUES</a>
@@ -939,7 +946,7 @@ export default function PublicLandingPage() {
       >
         <div className="join-modal-body">
           {formSuccess ? (
-            <div className="join-success-card">
+            <div className="join-success-card" role="status" aria-live="polite">
               <CheckCircle2 size={52} />
               <h3>Pendaftaran Berhasil Dikirim</h3>
               <p>
@@ -961,15 +968,20 @@ export default function PublicLandingPage() {
                 Silakan lengkapi data pendaftaran di bawah ini. Pengurus akan memverifikasi data dan menghubungi Anda melalui WhatsApp.
               </p>
 
-              <form className="join-form-stack" onSubmit={handleSubmitJoin}>
+              <form
+                className="join-form-stack"
+                onSubmit={handleSubmitJoin}
+                aria-busy={formSubmitting}
+              >
                 <div className="join-field-group">
-                  <label className="join-field-label">
+                  <label className="join-field-label" htmlFor="join-full-name">
                     <span>Nama Lengkap</span>
                     <small>Sesuai KTP/SIM</small>
                   </label>
                   <div className="join-input-wrap">
                     <User />
                     <input
+                      id="join-full-name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Contoh: Budi Santoso"
@@ -981,12 +993,13 @@ export default function PublicLandingPage() {
 
                 <div className="join-form-row">
                   <div className="join-field-group">
-                    <label className="join-field-label">
+                    <label className="join-field-label" htmlFor="join-birth-place">
                       <span>Tempat Lahir</span>
                     </label>
                     <div className="join-input-wrap">
                       <MapPin />
                       <input
+                        id="join-birth-place"
                         value={birthPlace}
                         onChange={(e) => setBirthPlace(e.target.value)}
                         placeholder="Situbondo"
@@ -996,12 +1009,13 @@ export default function PublicLandingPage() {
                   </div>
 
                   <div className="join-field-group">
-                    <label className="join-field-label">
+                    <label className="join-field-label" htmlFor="join-birth-date">
                       <span>Tanggal Lahir</span>
                     </label>
                     <div className="join-input-wrap">
                       <CalendarDays />
                       <input
+                        id="join-birth-date"
                         type="date"
                         value={birthDate}
                         onChange={(e) => setBirthDate(e.target.value)}
@@ -1013,12 +1027,13 @@ export default function PublicLandingPage() {
 
                 <div className="join-form-row">
                   <div className="join-field-group">
-                    <label className="join-field-label">
+                    <label className="join-field-label" htmlFor="join-city">
                       <span>Domisili / Kota</span>
                     </label>
                     <div className="join-input-wrap">
                       <MapPin />
                       <input
+                        id="join-city"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
                         placeholder="Contoh: Situbondo Kota"
@@ -1028,12 +1043,13 @@ export default function PublicLandingPage() {
                   </div>
 
                   <div className="join-field-group">
-                    <label className="join-field-label">
+                    <label className="join-field-label" htmlFor="join-instagram">
                       <span>Akun Instagram</span>
                     </label>
                     <div className="join-input-wrap">
                       <InstagramIcon />
                       <input
+                        id="join-instagram"
                         value={instagram}
                         onChange={(e) => setInstagram(e.target.value)}
                         placeholder="@username"
@@ -1044,13 +1060,14 @@ export default function PublicLandingPage() {
                 </div>
 
                 <div className="join-field-group">
-                  <label className="join-field-label">
+                  <label className="join-field-label" htmlFor="join-whatsapp">
                     <span>Nomor WhatsApp Aktif</span>
                     <small>Untuk verifikasi pengurus</small>
                   </label>
                   <div className="join-input-wrap">
                     <Phone />
                     <input
+                      id="join-whatsapp"
                       type="tel"
                       value={whatsapp}
                       onChange={(e) => setWhatsapp(e.target.value)}
@@ -1075,7 +1092,7 @@ export default function PublicLandingPage() {
                 </div>
 
                 {formError && (
-                  <div className="error-message">
+                  <div className="error-message" role="alert">
                     {formError}
                   </div>
                 )}

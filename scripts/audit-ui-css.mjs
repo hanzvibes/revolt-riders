@@ -198,6 +198,50 @@ for (const file of cssTargets) {
   }
 }
 
+const accessibilityControlContracts = {
+  "app/login/page.tsx": ["auth-member-id", "auth-email", "auth-password"],
+  "app/page.tsx": [
+    "join-full-name",
+    "join-birth-place",
+    "join-birth-date",
+    "join-city",
+    "join-instagram",
+    "join-whatsapp",
+  ],
+};
+
+for (const [file, controlIds] of Object.entries(accessibilityControlContracts)) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs)) continue;
+  const content = fs.readFileSync(abs, "utf8");
+
+  for (const controlId of controlIds) {
+    if (
+      !content.includes(`id="${controlId}"`) ||
+      !content.includes(`htmlFor="${controlId}"`)
+    ) {
+      fatal.push(
+        `${file}: form control ${controlId} must keep an explicit id/htmlFor label association`,
+      );
+    }
+  }
+}
+
+const landingPagePath = path.join(ROOT, "app/page.tsx");
+if (fs.existsSync(landingPagePath)) {
+  const landingPage = fs.readFileSync(landingPagePath, "utf8");
+  if (
+    !landingPage.includes('id="landing-mobile-drawer"') ||
+    !landingPage.includes('aria-controls="landing-mobile-drawer"') ||
+    !landingPage.includes("aria-expanded={isMobileMenuOpen}") ||
+    !landingPage.includes("inert={!isMobileMenuOpen ? true : undefined}")
+  ) {
+    fatal.push(
+      "app/page.tsx: mobile landing drawer must keep aria-expanded/control linkage and remain inert while closed",
+    );
+  }
+}
+
 const uiFiles = roots
   .flatMap(walk)
   .filter((file) => /\.(tsx|jsx)$/.test(file));

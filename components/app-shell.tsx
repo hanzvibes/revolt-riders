@@ -402,6 +402,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
                   href="/notifications"
                   className="sidebar-user-btn"
                   title="Pengaturan Notifikasi"
+                  aria-label="Pengaturan notifikasi"
                   onClick={() => setOpen(false)}
                 >
                   <BellRing size={15} />
@@ -410,6 +411,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
                   href="/"
                   className="sidebar-user-btn"
                   title="Kunjungi Web Publik"
+                  aria-label="Buka website publik Revolt Riders di tab baru"
                   target="_blank"
                   rel="noreferrer"
                 >

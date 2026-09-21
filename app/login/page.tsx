@@ -103,11 +103,10 @@ function LoginContent() {
         </div>
 
         {/* Tab switch */}
-        <div className="auth-tabs" role="tablist">
+        <div className="auth-tabs" aria-label="Mode autentikasi">
           <button
             type="button"
-            role="tab"
-            aria-selected={mode === "login"}
+            aria-pressed={mode === "login"}
             className={mode === "login" ? "active" : ""}
             onClick={() => {
               setMode("login");
@@ -119,8 +118,7 @@ function LoginContent() {
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={mode === "register"}
+            aria-pressed={mode === "register"}
             className={mode === "register" ? "active" : ""}
             onClick={() => {
               setMode("register");
@@ -144,16 +142,17 @@ function LoginContent() {
             : "Member ID akan dicocokkan dengan basis data keanggotaan resmi."}
         </p>
 
-        <form onSubmit={submit}>
+        <form onSubmit={submit} aria-busy={loading}>
           {mode === "register" && (
             <div className="auth-field">
-              <label>
+              <label htmlFor="auth-member-id">
                 <span>Member ID Resmi</span>
                 <small>Contoh: RR-028</small>
               </label>
               <div className="auth-input-wrap">
                 <UserPlus />
                 <input
+                  id="auth-member-id"
                   value={memberId}
                   onChange={(event) => setMemberId(event.target.value.toUpperCase())}
                   placeholder="RR-XXX"
@@ -166,12 +165,13 @@ function LoginContent() {
           )}
 
           <div className="auth-field">
-            <label>
+            <label htmlFor="auth-email">
               <span>Email Akun</span>
             </label>
             <div className="auth-input-wrap">
               <Mail />
               <input
+                id="auth-email"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
@@ -183,13 +183,14 @@ function LoginContent() {
           </div>
 
           <div className="auth-field">
-            <label>
+            <label htmlFor="auth-password">
               <span>Password</span>
               {mode === "register" && <small>Minimal 8 karakter</small>}
             </label>
             <div className="auth-input-wrap">
               <LockKeyhole />
               <input
+                id="auth-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
@@ -217,8 +218,8 @@ function LoginContent() {
           )}
 
           {message && (
-            <p className="success-message" role="status">
-              <ShieldCheck />
+            <p className="success-message" role="status" aria-live="polite">
+              <ShieldCheck aria-hidden="true" />
               <span>{message}</span>
             </p>
           )}

@@ -229,6 +229,7 @@
 
 .btn-nav-portal {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 6px;
   font-family: var(--font-heading);
@@ -252,6 +253,7 @@
 
 .btn-nav-join {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 6px;
   font-family: var(--font-heading);
@@ -267,6 +269,19 @@
   transition: all 0.25s ease;
 }
 
+.landing-page :where(a, button):focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 4px rgba(220, 27, 42, 0.38);
+}
+
+.dark-mobile-drawer > a,
+.dark-mobile-drawer > button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+
 .btn-nav-join:hover {
   background: #e5e7eb;
   transform: translateY(-1px);
@@ -276,6 +291,8 @@
 /* Mobile Hamburger Toggle */
 .dark-mobile-btn {
   display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -302,7 +319,10 @@
   justify-content: center;
   align-items: center;
   gap: 24px;
-  padding: 32px;
+  padding-top: max(32px, env(safe-area-inset-top));
+  padding-right: max(32px, env(safe-area-inset-right));
+  padding-bottom: max(32px, env(safe-area-inset-bottom));
+  padding-left: max(32px, env(safe-area-inset-left));
   transform: translateX(100%);
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -417,6 +437,7 @@
 
 .btn-hero-primary {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -441,6 +462,7 @@
 
 .btn-hero-secondary {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -466,6 +488,7 @@
 
 .btn-hero-portal {
   display: inline-flex;
+  min-height: 44px;
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -1607,6 +1630,7 @@
 
 .join-input-wrap input {
   width: 100%;
+  min-height: 44px;
   padding: 12px 14px 12px 42px;
   background: #1c1d22;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1682,6 +1706,7 @@
 
 .btn-join-submit {
   width: 100%;
+  min-height: 44px;
   padding: 14px 24px;
   font-family: var(--font-heading);
   font-size: 0.95rem;
