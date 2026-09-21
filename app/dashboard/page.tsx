@@ -231,340 +231,198 @@ export default function DashboardPage() {
 
   return (
     <AppShell active="Home" title="Beranda">
-      <div className="dashboard-grid dashboard-premium dashboard-socialized">
-        <section className="unified-dashboard-hero" aria-labelledby="dashboard-hero-title">
-          <div className="unified-hero-top">
-            <div className="unified-member">
-              <div className="unified-member-avatar" aria-hidden="true">{userInitials}</div>
-              <div className="unified-member-copy">
-                <small>{hasActiveMember ? "Member aktif" : "Portal member"}</small>
-                <strong>{memberName}</strong>
-                <div className="unified-member-chips">
-                  <span>{hasActiveMember ? memberId : "REVOLT RIDERS"}</span>
-                  <span>{hasActiveMember ? memberRole : "SITUBONDO"}</span>
-                </div>
-              </div>
+      <div className="dashboard-social-home-v2">
+        <section className="home-profile-card" aria-labelledby="home-member-name">
+          <div className="home-profile-main">
+            <div className="home-profile-avatar" aria-hidden="true">{userInitials}</div>
+            <div className="home-profile-copy">
+              <small>{hasActiveMember ? "Member Revolt Riders" : "Revolt Riders Member Network"}</small>
+              <h2 id="home-member-name">{memberName}</h2>
+              <p>{hasActiveMember ? "@" + memberId + " · " + memberRole : "Masuk untuk membuka aktivitas dan identitas member."}</p>
             </div>
-
-            {nextEvent ? (
-              <div className="unified-hero-badge unified-event-badge" aria-label="Tanggal agenda terdekat">
-                <small>{formatShortDate(nextEvent.start_at).month}</small>
-                <b>{formatShortDate(nextEvent.start_at).day}</b>
-                <span>Terdekat</span>
-              </div>
-            ) : (
-              <div className="unified-hero-badge unified-crest-badge" aria-label="Revolt Riders">
-                <Image
-                  src="/revolt-riders-logo.jpg"
-                  alt="Logo Revolt Riders"
-                  width={44}
-                  height={44}
-                  className="unified-crest-logo"
-                />
-                <span>2026</span>
-              </div>
-            )}
+            <Link className="home-profile-button" href={hasActiveMember ? "/profil" : "/login"}>
+              {hasActiveMember ? "Profil" : "Masuk"} <ChevronRight aria-hidden="true" />
+            </Link>
           </div>
 
-          <div className="unified-hero-main">
-            <div className="unified-hero-copy">
-              <div className="unified-hero-eyebrow">
-                <span>REVOLT RIDERS</span>
-                <em>{nextEvent ? "Agenda terdekat" : "Member hub"}</em>
-              </div>
-              <h2 id="dashboard-hero-title">{nextEvent?.title ?? "Ruang anggota Revolt Riders"}</h2>
-              {nextEvent ? (
-                <div className="unified-hero-meta">
-                  <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
-                  <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
-                </div>
-              ) : (
-                <p className="unified-hero-desc"><ShieldCheck aria-hidden="true" />Satu aspal, satu persaudaraan.</p>
-              )}
-              <div className="unified-hero-actions">
-                <Link className="unified-primary-action" href="/agenda">
-                  Buka agenda <ChevronRight aria-hidden="true" />
-                </Link>
-                <Link className="unified-secondary-action" href={hasActiveMember ? "/profil" : "/login"}>
-                  {hasActiveMember ? "Lihat profil" : "Masuk member"}
-                </Link>
-              </div>
-            </div>
-            <div className="unified-hero-watermark" aria-hidden="true">
-              <Image
-                src="/revolt-riders-logo.jpg"
-                alt=""
-                width={220}
-                height={220}
-                className="unified-hero-watermark-logo"
-              />
-            </div>
-          </div>
-
-          <div className="unified-hero-data">
-            <div className="unified-personal-stats" aria-label="Statistik member">
-              <div className="unified-personal-stat">
-                <Bike aria-hidden="true" />
-                <span>
-                  <small>Jarak riding</small>
-                  <b>
-                    {hasActiveMember ? (
-                      <CountUpNumber
-                        value={currentMember?.total_km ?? 0}
-                        maximumFractionDigits={1}
-                        suffix=" KM"
-                      />
-                    ) : (
-                      "Privat"
-                    )}
-                  </b>
-                </span>
-              </div>
-              <div className="unified-personal-stat">
-                <CalendarDays aria-hidden="true" />
-                <span>
-                  <small>Kegiatan terverifikasi</small>
-                  <b>
-                    {hasActiveMember ? (
-                      <CountUpNumber value={currentMember?.touring_count ?? 0} suffix=" Agenda" />
-                    ) : (
-                      "Privat"
-                    )}
-                  </b>
-                </span>
-              </div>
-            </div>
-
-            <div className="unified-community-stats" aria-label="Ringkasan komunitas">
-              <div className="unified-community-stat">
-                <UsersRound aria-hidden="true" />
-                <span>
-                  <small>Member resmi</small>
-                  <b><CountUpNumber value={totalRidersCount} suffix=" member" /></b>
-                </span>
-              </div>
-              <div className="unified-community-stat">
-                <Gauge aria-hidden="true" />
-                <span>
-                  <small>Total kilometer</small>
-                  <b><CountUpNumber value={totalKmAccumulated} suffix=" KM" /></b>
-                </span>
-              </div>
-              <div className="unified-community-stat">
-                <CircleDollarSign aria-hidden="true" />
-                <span>
-                  <small>Saldo kas</small>
-                  <b>
-                    {stats || user ? (
-                      <CountUpNumber
-                        value={Number(stats?.cash_balance ?? 0)}
-                        maximumFractionDigits={1}
-                        formatOptions={{
-                          style: "currency",
-                          currency: "IDR",
-                          notation: "compact",
-                          maximumFractionDigits: 1,
-                        }}
-                      />
-                    ) : (
-                      "Privat"
-                    )}
-                  </b>
-                </span>
-              </div>
-            </div>
+          <div className="home-personal-stats" aria-label="Ringkasan rider">
+            <span>
+              <strong>{hasActiveMember ? <CountUpNumber value={currentMember?.total_km ?? 0} maximumFractionDigits={1} /> : "—"}</strong>
+              <small>KM riding</small>
+            </span>
+            <span>
+              <strong>{hasActiveMember ? <CountUpNumber value={currentMember?.touring_count ?? 0} /> : "—"}</strong>
+              <small>Ride resmi</small>
+            </span>
+            <span>
+              <strong>{hasActiveMember ? String(riderProgress.level.level).padStart(2, "0") : "—"}</strong>
+              <small>Road level</small>
+            </span>
           </div>
         </section>
 
-        {hasActiveMember && (
-          <section className="dashboard-rider-progress" aria-label="Road progression member">
-            <div className="dashboard-rider-progress-copy">
-              <span className="dashboard-rider-level">
-                <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
-                <strong>{riderProgress.level.title}</strong>
-              </span>
-              <span className="dashboard-rider-streak">
-                <Flame aria-hidden="true" />
-                <b>{riderProgress.streakMonths}</b>
-                <small>bulan streak</small>
-              </span>
-            </div>
+        <nav className="home-story-row" aria-label="Akses cepat">
+          <Link href="/check-in"><span><ScanLine aria-hidden="true" /></span><small>Check-in</small></Link>
+          <Link href="/riding"><span><Bike aria-hidden="true" /></span><small>Riding</small></Link>
+          <Link href="/member"><span><UsersRound aria-hidden="true" /></span><small>Member</small></Link>
+          <Link href="/leaderboard"><span><Trophy aria-hidden="true" /></span><small>Ranking</small></Link>
+        </nav>
 
-            <div className="dashboard-rider-progress-track" aria-hidden="true">
-              <i style={{ width: `${riderProgress.levelProgress}%` }} />
-            </div>
-
-            <div className="dashboard-rider-progress-foot">
-              <small>
-                {riderProgress.level.nextKm
-                  ? `${new Intl.NumberFormat("id-ID").format(riderProgress.remainingKm)} KM ke level berikutnya`
-                  : "Road level tertinggi tercapai"}
-              </small>
-              <Link href="/profil">
-                {riderProgress.unlockedBadges.length} badge terbuka
-                <ChevronRight aria-hidden="true" />
-              </Link>
-            </div>
-          </section>
-        )}
-
-        <div className="left-column">
-          {/* Quick Actions */}
-          <section className="dashboard-actions-panel" aria-labelledby="dashboard-actions-title">
-            <div className="dashboard-panel-heading">
-              <span>
-                <em>Akses cepat</em>
-                <h3 id="dashboard-actions-title">Operasional utama</h3>
-              </span>
-              <small>4 pintasan</small>
-            </div>
-            <div className="dashboard-quick-actions">
-              <Link className="quick-action-btn" href="/check-in">
-                <div className="quick-action-icon">
-                  <ScanLine aria-hidden="true" />
-                </div>
-                <div className="quick-action-info">
-                  <span className="quick-action-title">Check-in</span>
-                  <span className="quick-action-desc">Agenda & kopdar</span>
-                </div>
-                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
-              </Link>
-              <Link className="quick-action-btn" href="/riding">
-                <div className="quick-action-icon">
-                  <Bike aria-hidden="true" />
-                </div>
-                <div className="quick-action-info">
-                  <span className="quick-action-title">Catat KM</span>
-                  <span className="quick-action-desc">Tambah ride log</span>
-                </div>
-                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
-              </Link>
-              <Link className="quick-action-btn" href="/member">
-                <div className="quick-action-icon">
-                  <UsersRound aria-hidden="true" />
-                </div>
-                <div className="quick-action-info">
-                  <span className="quick-action-title">Direktori</span>
-                  <span className="quick-action-desc">{totalRidersCount ? `${totalRidersCount} member` : "Member club"}</span>
-                </div>
-                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
-              </Link>
-              <Link className="quick-action-btn" href="/leaderboard">
-                <div className="quick-action-icon">
-                  <Trophy aria-hidden="true" />
-                </div>
-                <div className="quick-action-info">
-                  <span className="quick-action-title">Leaderboard</span>
-                  <span className="quick-action-desc">Kilometer riding</span>
-                </div>
-                <ChevronRight className="quick-action-arrow" aria-hidden="true" />
-              </Link>
-            </div>
-          </section>
-
-          {/* Agenda Terdekat */}
-          <section className="card agenda-card">
-            <div className="section-title">
-              <span>
-                <em>Agenda</em>
-                <h3>Jadwal terdekat</h3>
-              </span>
-              <Link href="/agenda">
-                Lihat semua <ChevronRight aria-hidden="true" />
-              </Link>
-            </div>
-
-            {loading && <p className="system-message" role="status" aria-live="polite">Memuat agenda terbaru…</p>}
-            {error && <p className="error-message" role="alert">{error}</p>}
-            {!loading && !error && events.length === 0 && (
-              <div className="inline-empty">
-                <Database aria-hidden="true" />
+        <div className="home-feed-layout">
+          <main className="home-feed" aria-label="Feed Revolt Riders">
+            <article className="home-feed-card home-event-post">
+              <header className="home-post-header">
+                <Image src="/revolt-riders-logo.jpg" alt="" width={44} height={44} className="home-post-avatar" />
                 <span>
-                  <b>Belum ada agenda yang dipublikasikan.</b>
-                  <small>Agenda touring atau kopdar baru akan tampil otomatis di sini.</small>
+                  <strong>Revolt Riders</strong>
+                  <small><ShieldCheck aria-hidden="true" /> Agenda komunitas</small>
                 </span>
-              </div>
+                <Link href="/agenda" aria-label="Lihat semua agenda"><ChevronRight aria-hidden="true" /></Link>
+              </header>
+
+              {nextEvent ? (
+                <>
+                  <Link className="home-featured-event" href={"/agenda#" + nextEvent.slug}>
+                    <div className="home-event-date">
+                      <small>{formatShortDate(nextEvent.start_at).month}</small>
+                      <strong>{formatShortDate(nextEvent.start_at).day}</strong>
+                    </div>
+                    <div className="home-event-copy">
+                      <small>{nextEvent.type}</small>
+                      <h3>{nextEvent.title}</h3>
+                      <p><MapPin aria-hidden="true" />{nextEvent.location_name ?? "Lokasi segera diumumkan"}</p>
+                      <p><CalendarDays aria-hidden="true" />{formatEventDate(nextEvent.start_at)}</p>
+                    </div>
+                    <ChevronRight aria-hidden="true" />
+                  </Link>
+                  <footer className="home-post-actions">
+                    <Link href={"/agenda#" + nextEvent.slug}>Buka agenda</Link>
+                    <Link href={hasActiveMember ? "/profil" : "/login"}>{hasActiveMember ? "Lihat profil" : "Masuk member"}</Link>
+                  </footer>
+                </>
+              ) : (
+                <div className="home-feed-empty">
+                  <Database aria-hidden="true" />
+                  <span><b>Belum ada agenda baru.</b><small>Agenda berikutnya akan tampil otomatis di beranda.</small></span>
+                </div>
+              )}
+            </article>
+
+            {announcements[0] ? (
+              <article className="home-feed-card home-bulletin-post">
+                <header className="home-post-header">
+                  <span className="home-post-icon"><ShieldCheck aria-hidden="true" /></span>
+                  <span><strong>Buletin resmi</strong><small>Informasi komunitas</small></span>
+                  <Link href="/bulletin" aria-label="Buka buletin"><ChevronRight aria-hidden="true" /></Link>
+                </header>
+                <Link className="home-bulletin-body" href="/bulletin">
+                  <h3>{announcements[0].title}</h3>
+                  <p>{announcements[0].body}</p>
+                  <span>Baca selengkapnya <ChevronRight aria-hidden="true" /></span>
+                </Link>
+              </article>
+            ) : (
+              <article className="home-feed-card home-bulletin-post">
+                <header className="home-post-header">
+                  <span className="home-post-icon"><ShieldCheck aria-hidden="true" /></span>
+                  <span><strong>Buletin resmi</strong><small>Informasi komunitas</small></span>
+                </header>
+                <div className="home-feed-empty">
+                  <Database aria-hidden="true" />
+                  <span><b>Belum ada pengumuman baru.</b><small>Info resmi komunitas akan tampil di sini.</small></span>
+                </div>
+              </article>
             )}
 
-            {events.map((event, idx) => {
-              const d = formatShortDate(event.start_at);
-              return (
-                <a className="event" href={`/agenda#${event.slug}`} key={event.id}>
-                  <time>
-                    <b>{d.day}</b>
-                    <small>{d.month}</small>
-                  </time>
-                  <div className="event-info">
-                    <div className="event-header-row">
-                      <em>{event.type.toUpperCase()}</em>
-                      {idx === 0 && <span className="event-soon-pill">Terdekat</span>}
-                    </div>
-                    <h4>{event.title}</h4>
-                    <p><CalendarDays aria-hidden="true" size={13} style={{ verticalAlign: "middle", marginRight: 4 }} />{formatEventDate(event.start_at)}</p>
-                  </div>
-                  <ChevronRight className="event-arrow" aria-hidden="true" />
-                </a>
-              );
-            })}
-          </section>
-        </div>
+            <section className="home-feed-card home-agenda-list" aria-labelledby="home-agenda-title">
+              <header className="home-post-header">
+                <span className="home-post-icon"><CalendarDays aria-hidden="true" /></span>
+                <span>
+                  <strong id="home-agenda-title">Agenda berikutnya</strong>
+                  <small>{events.length ? events.length + " agenda aktif" : "Belum ada agenda"}</small>
+                </span>
+                <Link href="/agenda" aria-label="Lihat semua agenda"><ChevronRight aria-hidden="true" /></Link>
+              </header>
 
-        {/* Right Sidebar Column */}
-        <div className="right-column">
-          {/* Bulletin Pengumuman */}
-          {announcements[0] ? (
-            <a className="bullet-card" href="/bulletin">
-              <div className="bullet-header">
-                <span className="bullet-badge">Buletin resmi</span>
-                <ChevronRight size={15} />
-              </div>
-              <h3>{announcements[0].title}</h3>
-              <p>{announcements[0].body}</p>
-            </a>
-          ) : (
-            <a className="bullet-card" href="/bulletin">
-              <div className="bullet-header">
-                <span className="bullet-badge">Buletin resmi</span>
-                <ChevronRight size={15} />
-              </div>
-              <h3>Belum ada pengumuman baru</h3>
-              <p>Informasi resmi komunitas akan tampil di sini.</p>
-            </a>
-          )}
+              {loading && <p className="home-feed-message" role="status" aria-live="polite">Memuat agenda terbaru…</p>}
+              {error && <p className="error-message" role="alert">{error}</p>}
+              {!loading && !error && events.length === 0 && (
+                <div className="home-feed-empty">
+                  <Database aria-hidden="true" />
+                  <span><b>Belum ada agenda yang dipublikasikan.</b><small>Touring dan kopdar akan muncul otomatis di sini.</small></span>
+                </div>
+              )}
 
-          {/* Official Support */}
-          <section className="support card">
-            <div className="section-title">
-              <span>
-                <em>Partner komunitas</em>
-                <h3>Support & partner</h3>
-              </span>
-            </div>
-            <div className="support-grid">
-              <figure className="bold-riders">
-                <div className="support-logo">
-                  <Image
-                    src="/bold-riders-situbondo.jpg"
-                    alt="Bold Riders Situbondo"
-                    fill
-                    sizes="(max-width: 720px) 45vw, 180px"
-                  />
+              {!loading && !error && events.map((event, idx) => {
+                const d = formatShortDate(event.start_at);
+                return (
+                  <Link className="home-agenda-row" href={"/agenda#" + event.slug} key={event.id}>
+                    <time><strong>{d.day}</strong><small>{d.month}</small></time>
+                    <span>
+                      <small>{idx === 0 ? "Terdekat · " : ""}{event.type}</small>
+                      <b>{event.title}</b>
+                      <em>{formatEventDate(event.start_at)}</em>
+                    </span>
+                    <ChevronRight aria-hidden="true" />
+                  </Link>
+                );
+              })}
+            </section>
+
+            {hasActiveMember && (
+              <section className="home-feed-card home-road-progress" aria-labelledby="home-road-title">
+                <header className="home-post-header">
+                  <span className="home-post-icon"><Flame aria-hidden="true" /></span>
+                  <span><strong id="home-road-title">Road progress</strong><small>Perjalanan rider kamu</small></span>
+                  <Link href="/profil" aria-label="Buka achievements"><ChevronRight aria-hidden="true" /></Link>
+                </header>
+                <div className="home-road-main">
+                  <span>
+                    <small>ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}</small>
+                    <strong>{riderProgress.level.title}</strong>
+                  </span>
+                  <b>{Math.round(riderProgress.levelProgress)}%</b>
                 </div>
-                <figcaption>Bold Riders Situbondo</figcaption>
-              </figure>
-              <figure className="frtn">
-                <div className="support-logo">
-                  <Image
-                    src="/frtn.jpg"
-                    alt="FRTN"
-                    fill
-                    sizes="(max-width: 720px) 45vw, 180px"
-                  />
+                <div className="home-road-track" role="progressbar" aria-label="Progress road level" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(riderProgress.levelProgress)}>
+                  <i style={{ width: String(riderProgress.levelProgress) + "%" }} />
                 </div>
-                <figcaption>FRTN</figcaption>
-              </figure>
-            </div>
-          </section>
+                <div className="home-road-meta">
+                  <span><Flame aria-hidden="true" /> {riderProgress.streakMonths} bulan streak</span>
+                  <span>{riderProgress.level.nextKm ? new Intl.NumberFormat("id-ID").format(riderProgress.remainingKm) + " KM lagi" : "Level tertinggi"}</span>
+                  <Link href="/profil">{riderProgress.unlockedBadges.length} badge <ChevronRight aria-hidden="true" /></Link>
+                </div>
+              </section>
+            )}
+          </main>
+
+          <aside className="home-side-rail" aria-label="Ringkasan komunitas">
+            <section className="home-side-card">
+              <header><strong>Komunitas</strong><small>Revolt Riders sekarang</small></header>
+              <div className="home-community-list">
+                <span><UsersRound aria-hidden="true" /><b><CountUpNumber value={totalRidersCount} /></b><small>Member resmi</small></span>
+                <span><Gauge aria-hidden="true" /><b><CountUpNumber value={totalKmAccumulated} maximumFractionDigits={0} /></b><small>Total KM</small></span>
+                <span>
+                  <CircleDollarSign aria-hidden="true" />
+                  <b>{stats || user ? <CountUpNumber value={Number(stats?.cash_balance ?? 0)} maximumFractionDigits={1} formatOptions={{ style: "currency", currency: "IDR", notation: "compact", maximumFractionDigits: 1 }} /> : "Privat"}</b>
+                  <small>Saldo kas</small>
+                </span>
+              </div>
+            </section>
+
+            <section className="home-side-card home-partner-card">
+              <header><strong>Support & partner</strong><small>Ekosistem komunitas</small></header>
+              <div className="home-partner-list">
+                <figure>
+                  <div><Image src="/bold-riders-situbondo.jpg" alt="Bold Riders Situbondo" fill sizes="56px" /></div>
+                  <figcaption>Bold Riders Situbondo</figcaption>
+                </figure>
+                <figure>
+                  <div><Image src="/frtn.jpg" alt="FRTN" fill sizes="56px" /></div>
+                  <figcaption>FRTN</figcaption>
+                </figure>
+              </div>
+            </section>
+          </aside>
         </div>
       </div>
     </AppShell>
