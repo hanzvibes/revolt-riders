@@ -799,7 +799,7 @@ export default function ManageMembersPage() {
                             display: "inline-flex",
                             alignItems: "center",
                             gap: 4,
-                            fontSize: "0.62rem",
+                            fontSize: "var(--rr-type-caption)",
                             fontWeight: 700,
                             padding: "1px 5px",
                             borderRadius: "4px",
@@ -828,7 +828,7 @@ export default function ManageMembersPage() {
                       ) : (
                         <span
                           style={{
-                            fontSize: "0.62rem",
+                            fontSize: "var(--rr-type-caption)",
                             fontWeight: 600,
                             padding: "1px 5px",
                             borderRadius: "4px",
@@ -1067,7 +1067,7 @@ export default function ManageMembersPage() {
                   <span
                     style={{
                       marginLeft: "auto",
-                      fontSize: "0.62rem",
+                      fontSize: "var(--rr-type-caption)",
                       background: "#f0fdf4",
                       color: "#166534",
                       padding: "2px 7px",
