@@ -144,7 +144,7 @@
 }
 
 .app-shell .sidebar-accordion-header {
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   padding: 0 10px;
   border-radius: 9px;
   color: #7f8589;
@@ -176,7 +176,7 @@
 }
 
 .app-shell > aside .sidebar-subnav a {
-  min-height: 36px !important;
+  min-height: var(--rr-control-sm) !important;
   padding: 0 9px !important;
   border-radius: 8px !important;
   color: #858b90 !important;
@@ -1175,7 +1175,7 @@
   }
 
   .app-shell .login-link {
-    min-height: 36px;
+    min-height: var(--rr-control-sm);
     padding: 0 10px;
     font-size: .59rem;
   }
@@ -2902,7 +2902,7 @@
 .app-shell .unified-primary-action,
 .app-shell .unified-secondary-action {
   display: inline-flex;
-  min-height: 40px;
+  min-height: var(--rr-control-md);
   align-items: center;
   justify-content: center;
   gap: 5px;
@@ -3868,7 +3868,7 @@
   }
 
   .app-shell .profile-emboss-action {
-    min-height: 44px;
+    min-height: var(--rr-control-lg);
     padding: 0 11px;
     font-size: .62rem;
   }
@@ -4809,7 +4809,7 @@
   justify-self: end;
   align-self: center;
   margin-top: 0 !important;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   white-space: nowrap;
 }
 
@@ -4930,7 +4930,7 @@
 
 .app-shell .leaderboard-hero-refresh {
   display: inline-flex;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   align-items: center;
   justify-content: center;
   gap: 7px;
@@ -6797,7 +6797,7 @@
   }
 
   .app-shell .member-passport-footer .profile-emboss-action {
-    min-height: 40px;
+    min-height: var(--rr-control-md);
   }
 }
 
@@ -6840,7 +6840,7 @@
 .app-shell .role-panel .role-list select {
   width: 118px;
   max-width: 118px;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   padding: 0 30px 0 10px;
   border: 1px solid #dfe2e4;
   border-radius: 9px;
@@ -6861,7 +6861,7 @@
   .app-shell .role-panel .role-list select {
     width: 112px;
     max-width: 112px;
-    min-height: 36px;
+    min-height: var(--rr-control-sm);
     padding-left: 9px;
     font-size: .8125rem !important;
     font-weight: 600 !important;
@@ -9250,7 +9250,7 @@
 
 .app-shell .voyager-structured-empty > a {
   display: inline-flex;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   align-items: center;
   justify-content: center;
   border-radius: 9px;
@@ -9411,7 +9411,7 @@
 
 .app-shell .voyager-gallery-empty > button {
   display: inline-flex;
-  min-height: 36px;
+  min-height: var(--rr-control-sm);
   align-items: center;
   gap: 6px;
   margin-top: 11px;
