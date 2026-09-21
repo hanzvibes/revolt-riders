@@ -727,7 +727,7 @@ export default function ProfilePage() {
                             <small
                               style={{
                                 color: "#6c757d",
-                                fontSize: "0.62rem",
+                                fontSize: "var(--rr-type-caption)",
                                 background: "#f1f3f5",
                                 padding: "1px 5px",
                                 border: "1px solid #e9ecef",
@@ -741,7 +741,7 @@ export default function ProfilePage() {
                             <small
                               style={{
                                 color: "var(--red)",
-                                fontSize: "0.62rem",
+                                fontSize: "var(--rr-type-caption)",
                                 background: "#fff5f5",
                                 padding: "1px 5px",
                                 border: "1px solid #ffe3e3",
@@ -764,7 +764,7 @@ export default function ProfilePage() {
                     <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>
                       <span
                         style={{
-                          fontSize: "0.6rem",
+                          fontSize: "var(--rr-type-caption)",
                           fontWeight: 800,
                           borderRadius: "12px",
                           padding: "3px 8px",
