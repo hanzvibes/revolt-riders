@@ -50,6 +50,7 @@ export function CheckinQr({ code, eventTitle, activeUntil, qrUrl }: CheckinQrPro
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
+    const opener = openerRef.current;
     document.body.style.overflow = "hidden";
     const focusFrame = window.requestAnimationFrame(() => dialogRef.current?.focus());
 
@@ -94,7 +95,7 @@ export function CheckinQr({ code, eventTitle, activeUntil, qrUrl }: CheckinQrPro
       document.body.style.overflow = previousOverflow;
       window.cancelAnimationFrame(focusFrame);
       window.removeEventListener("keydown", onKeyDown);
-      window.requestAnimationFrame(() => openerRef.current?.focus());
+      window.requestAnimationFrame(() => opener?.focus());
     };
   }, [open]);
 
