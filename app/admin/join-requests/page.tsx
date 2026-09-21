@@ -364,13 +364,13 @@ export default function AdminJoinRequestsPage() {
             <h2>Verifikasi Calon Member</h2>
             <p>Alur seleksi: Pending → Disetujui (Accepted) → Konfirmasi Calon (Confirmed) → Aktivasi Resmi (Active).</p>
           </div>
-        {error && <p className="error-message">{error}</p>}
 
           <button onClick={() => void loadRequests(true)} disabled={loading}>
             <RefreshCw className={loading ? "spin" : ""} size={16} />
             <span>Segarkan</span>
           </button>
         </section>
+        {error && <p className="error-message">{error}</p>}
 
         {/* 1. Status Filter Tabs (Segmented & Responsive) */}
         <div className="admin-member-tabs" role="tablist" aria-label="Filter status pendaftaran">
