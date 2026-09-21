@@ -8051,6 +8051,118 @@
   letter-spacing: -.035em;
 }
 
+.app-shell .voyager-member-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid #303338;
+  border-radius: 15px;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .voyager-member-progress-copy {
+  min-width: 0;
+  padding: 4px 5px;
+}
+
+.app-shell .voyager-member-progress-copy small {
+  display: block;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .09em;
+}
+
+.app-shell .voyager-member-progress-copy strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.12rem;
+  line-height: 1.15;
+}
+
+.app-shell .voyager-member-progress-copy p {
+  margin: 6px 0 0;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-meta);
+  line-height: 1.5;
+}
+
+.app-shell .voyager-member-progress-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.app-shell .voyager-member-progress-metrics > span,
+.app-shell .voyager-member-progress-metrics > button {
+  min-width: 0;
+  min-height: var(--rr-control-lg);
+  border: 1px solid #383b40;
+  border-radius: 11px;
+  background: var(--rr-charcoal-2);
+  padding: 9px;
+  color: var(--rr-ink-inverse);
+  text-align: left;
+}
+
+.app-shell .voyager-member-progress-metrics > button {
+  cursor: pointer;
+}
+
+.app-shell .voyager-member-progress-metrics > button:hover {
+  border-color: #555a60;
+}
+
+.app-shell .voyager-member-progress-metrics svg {
+  width: 16px;
+  height: 16px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-member-progress-metrics small,
+.app-shell .voyager-member-progress-metrics b {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .voyager-member-progress-metrics small {
+  margin-top: 6px;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  line-height: 1.15;
+}
+
+.app-shell .voyager-member-progress-metrics b {
+  margin-top: 4px;
+  font-size: var(--rr-type-small);
+  line-height: 1.2;
+}
+
+@media (max-width: 760px) {
+  .app-shell .voyager-member-progress {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .voyager-member-progress {
+    padding: 12px;
+  }
+
+  .app-shell .voyager-member-progress-metrics {
+    gap: 5px;
+  }
+
+  .app-shell .voyager-member-progress-metrics > span,
+  .app-shell .voyager-member-progress-metrics > button {
+    padding: 8px 6px;
+  }
+}
+
 .app-shell .voyager-tabs {
   display: inline-flex;
   gap: 4px;
