@@ -713,14 +713,14 @@ export default function MemberPage() {
                             <div style={{ fontWeight: 600 }}>{item.title}</div>
                             <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", alignItems: "center", marginTop: "2px" }}>
                               {item.date && (
-                                <small style={{ color: "var(--muted)", fontSize: "0.6rem" }}>
+                                <small style={{ color: "var(--muted)", fontSize: "var(--rr-type-caption)" }}>
                                   {new Intl.DateTimeFormat("id-ID", {
                                     dateStyle: "medium",
                                   }).format(new Date(item.date))}
                                 </small>
                               )}
                               {item.odometer_start !== null && item.odometer_end !== null && item.odometer_start !== undefined && item.odometer_end !== undefined && (
-                                <small style={{ color: "#6c757d", fontSize: "0.6rem", background: "#f8f9fa", padding: "0 4px", borderRadius: "3px", border: "1px solid #e9ecef" }}>
+                                <small style={{ color: "#6c757d", fontSize: "var(--rr-type-caption)", background: "#f8f9fa", padding: "0 4px", borderRadius: "3px", border: "1px solid #e9ecef" }}>
                                   Odo: {item.odometer_start} → {item.odometer_end}
                                 </small>
                               )}
@@ -800,7 +800,7 @@ export default function MemberPage() {
                                 <span
                                   title="Berasal dari check-in agenda"
                                   style={{
-                                    fontSize: "0.58rem",
+                                    fontSize: "var(--rr-type-caption)",
                                     color: "var(--muted)",
                                   }}
                                 >
