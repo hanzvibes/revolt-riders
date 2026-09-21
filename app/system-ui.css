@@ -668,7 +668,7 @@
 }
 
 .app-shell .page-state-action {
-  margin-top: var(--rr-space-3);
+  margin-top: var(--rr-space-4);
 }
 
 .app-shell .page-skeleton-stack {
@@ -1800,7 +1800,7 @@
 
 @media (max-width: 390px) {
   .app-shell .dashboard-premium .quick-action-btn {
-    min-height: 44px;
+    min-height: 56px;
     padding: 7px 9px;
   }
 
@@ -11353,7 +11353,7 @@
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--rr-space-2);
-  margin-top: var(--rr-space-4);
+  margin-top: var(--rr-space-3);
 }
 
 .app-shell .profile-social-actions a {
@@ -11437,7 +11437,7 @@
   }
 
   .app-shell .profile-social-avatar-row {
-    min-height: 56px;
+    min-height: 44px;
   }
 
   .app-shell .profile-social-avatar {
