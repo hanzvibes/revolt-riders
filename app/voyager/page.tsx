@@ -301,6 +301,9 @@ export default function VoyagerPage() {
         ? "Selesai"
         : "Tercatat"
       : "Belum tercatat";
+  const journalEvents = featuredEvent
+    ? visibleEvents.filter((event) => event.id !== featuredEvent.id)
+    : visibleEvents;
 
   const participantIdsFor = (eventId: string) =>
     participants
@@ -692,7 +695,7 @@ export default function VoyagerPage() {
             role="tabpanel"
             aria-labelledby={view === "active" ? "voyager-tab-active" : "voyager-tab-history"}
           >
-            {visibleEvents.filter((event) => event.id !== featuredEvent?.id).length === 0 ? (
+            {journalEvents.length === 0 ? (
               <div className="voyager-list-empty">
                 <History />
                 <span>
@@ -711,9 +714,7 @@ export default function VoyagerPage() {
                 </span>
               </div>
             ) : (
-              visibleEvents
-                .filter((event) => event.id !== featuredEvent?.id)
-                .map((event) => {
+              journalEvents.map((event) => {
                   const eventParticipants = participantsFor(event.id);
                   const eventPhotos = photosFor(event.id);
                   const joined = eventParticipants.some(
