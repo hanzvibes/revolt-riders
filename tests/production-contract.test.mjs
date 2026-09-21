@@ -492,3 +492,36 @@ test("Voyager makes member status and evidence visible", async () => {
   assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(css, /@media \(max-width: 390px\)/);
 });
+
+
+test("Event deletion stays behind the authorized RPC", async () => {
+  const eventsAdmin = await read("app/admin/events/page.tsx");
+  const adminDashboard = await read("app/admin/page.tsx");
+  const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
+
+  for (const source of [eventsAdmin, adminDashboard]) {
+    assert.match(source, /rpc\("delete_event"/);
+    assert.doesNotMatch(source, /from\("events"\)\.delete/);
+    assert.doesNotMatch(source, /from\("ride_logs"\)\.(?:delete|update)/);
+  }
+
+  assert.match(migration, /delete from public\.ride_logs/);
+  assert.match(migration, /delete from public\.events/);
+  assert.match(migration, /event\.delete/);
+});
+
+test("Database performance hardening is migration-tracked", async () => {
+  const migration = await read(
+    "supabase/migrations/20260921030223_optimize_rls_and_foreign_key_indexes.sql",
+  );
+
+  assert.match(migration, /cash_transactions_import_batch_id_idx/);
+  assert.match(migration, /club_cash_transactions_created_by_idx/);
+  assert.match(migration, /member_motorcycles_updated_by_idx/);
+  assert.match(migration, /member_name_aliases_member_external_id_idx/);
+  assert.match(migration, /imported_rides_own_or_staff_read/);
+  assert.match(migration, /member_dues_own_or_staff_read/);
+  assert.match(migration, /Staff can manage club gallery/);
+  assert.match(migration, /Staff can view and manage join requests/);
+  assert.match(migration, /\(select auth\.uid\(\)\)/);
+});
