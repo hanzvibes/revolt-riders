@@ -11107,7 +11107,7 @@
 .app-shell .profile-social-cover {
   position: relative;
   display: flex;
-  min-height: 124px;
+  min-height: 116px;
   align-items: flex-end;
   overflow: hidden;
   padding: var(--rr-space-4) var(--rr-space-5);
@@ -11129,9 +11129,9 @@
   right: clamp(18px, 6vw, 56px);
   width: 144px;
   height: 144px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 50%;
-  opacity: .16;
+  opacity: .2;
   filter: grayscale(1);
   transform: translateY(-50%);
 }
@@ -11150,7 +11150,7 @@
 
 .app-shell .profile-social-avatar-row {
   display: flex;
-  min-height: 50px;
+  min-height: 48px;
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--rr-space-3);
@@ -11160,9 +11160,9 @@
   position: relative;
   z-index: 2;
   display: grid;
-  width: 92px;
-  height: 92px;
-  margin-top: -46px;
+  width: 88px;
+  height: 88px;
+  margin-top: -44px;
   place-items: center;
   border: 4px solid var(--rr-surface);
   border-radius: 50%;
@@ -11214,7 +11214,7 @@
   margin: 0;
   overflow-wrap: anywhere;
   color: var(--rr-ink);
-  font-size: clamp(1.45rem, 4vw, 2rem);
+  font-size: clamp(1.4rem, 4vw, 1.85rem);
   font-weight: var(--rr-fw-extrabold);
   line-height: 1.05;
   letter-spacing: -.04em;
@@ -11313,7 +11313,10 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: var(--rr-space-4);
-  border-block: 1px solid var(--rr-line);
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-control-radius);
+  background: var(--rr-surface-soft);
 }
 
 .app-shell .profile-social-stats a {
@@ -11324,7 +11327,7 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  padding: var(--rr-space-3);
+  padding: var(--rr-space-2) var(--rr-space-3);
   color: var(--rr-ink);
   text-align: center;
 }
@@ -11371,6 +11374,14 @@
   font-weight: var(--rr-fw-bold);
 }
 
+.app-shell .profile-social-actions a svg {
+  color: var(--rr-red);
+}
+
+.app-shell .profile-social-actions a:active {
+  transform: scale(.98);
+}
+
 .app-shell .profile-social-actions a:hover {
   border-color: var(--rr-red-line);
   background: var(--rr-red-soft);
@@ -11410,6 +11421,56 @@
   margin-bottom: var(--rr-space-2);
 }
 
+.app-shell .profile-social-meta span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .profile-social-progress,
+.app-shell .profile-social-achievements {
+  border: 1px solid var(--rr-line);
+  padding: var(--rr-space-4);
+}
+
+.app-shell .profile-social-grid .member-passport-progress-head small,
+.app-shell .profile-social-grid .member-passport-achievements-head small,
+.app-shell .profile-social-grid .member-passport-progress-scale small,
+.app-shell .profile-social-grid .member-passport-progress-callout small,
+.app-shell .profile-social-grid .member-passport-badges article > span small {
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .profile-social-grid .member-passport-badges {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell .profile-social-grid .member-passport-badges article > span b,
+.app-shell .profile-social-grid .member-passport-badges article > span small {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.app-shell .profile-social-grid .member-passport-badges article {
+  min-height: 58px;
+  background: var(--rr-surface);
+}
+
+.app-shell .profile-social-grid .member-passport-badges article.is-unlocked {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+}
+
+.app-shell .profile-social-feed .section-title em,
+.app-shell .profile-social-panel .section-title em {
+  display: none;
+}
+
+.app-shell .profile-social-feed .section-title h3,
+.app-shell .profile-social-panel .section-title h3 {
+  margin-top: 0;
+}
+
 @media (max-width: 720px) {
   .app-shell .profile-social-page {
     padding-inline: 0;
@@ -11422,7 +11483,7 @@
   }
 
   .app-shell .profile-social-cover {
-    min-height: 108px;
+    min-height: 100px;
     padding: var(--rr-space-3) var(--rr-space-4);
   }
 
@@ -11449,7 +11510,7 @@
   }
 
   .app-shell .profile-social-name-row h2 {
-    font-size: 1.45rem;
+    font-size: 1.3rem;
   }
 
   .app-shell .profile-social-meta {
@@ -11479,6 +11540,10 @@
 }
 
 @media (max-width: 390px) {
+  .app-shell .profile-social-grid .member-passport-badges {
+    grid-template-columns: 1fr;
+  }
+
   .app-shell .profile-social-meta {
     flex-direction: column;
     gap: var(--rr-space-2);
@@ -11488,12 +11553,16 @@
     padding-inline: var(--rr-space-3);
   }
 
-  .app-shell .profile-social-actions span {
-    display: none;
+  .app-shell .profile-social-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .profile-social-actions a {
+    flex-direction: row;
   }
 
   .app-shell .profile-social-actions svg {
-    width: 19px;
-    height: 19px;
+    width: 17px;
+    height: 17px;
   }
 }
