@@ -154,8 +154,8 @@ for (const file of cssTargets) {
   }
 
   if (rawControlHeightCount) {
-    warnings.push(
-      `${file}: ${rawControlHeightCount} interactive control rules still use raw 36/40/44px heights; prefer --rr-control-sm/md/lg tokens`,
+    fatal.push(
+      `${file}: ${rawControlHeightCount} interactive control rules use raw 36/40/44px heights; use --rr-control-sm/md/lg tokens`,
     );
   }
   if (sub44TouchCount) {
@@ -198,8 +198,8 @@ for (const file of uiFiles) {
 }
 
 if (inlineTinyTypeCount) {
-  warnings.push(
-    `TSX: ${inlineTinyTypeCount} inline fontSize declarations remain below 0.625rem; move active cases toward shared typography tokens`,
+  fatal.push(
+    `TSX: ${inlineTinyTypeCount} inline fontSize declarations are below 0.625rem; use shared typography tokens`,
   );
 }
 
