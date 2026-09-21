@@ -8059,7 +8059,7 @@
   align-items: stretch;
   margin-bottom: 16px;
   padding: 14px;
-  border: 1px solid #303338;
+  border: 1px solid rgba(255, 255, 255, .10);
   border-radius: 15px;
   background: var(--rr-charcoal);
   color: var(--rr-ink-inverse);
@@ -8102,7 +8102,7 @@
 .app-shell .voyager-member-progress-metrics > button {
   min-width: 0;
   min-height: var(--rr-control-lg);
-  border: 1px solid #383b40;
+  border: 1px solid rgba(255, 255, 255, .12);
   border-radius: 11px;
   background: var(--rr-charcoal-2);
   padding: 9px;
@@ -8115,7 +8115,7 @@
 }
 
 .app-shell .voyager-member-progress-metrics > button:hover {
-  border-color: #555a60;
+  border-color: rgba(255, 255, 255, .24);
 }
 
 .app-shell .voyager-member-progress-metrics svg {
