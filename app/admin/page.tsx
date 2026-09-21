@@ -377,9 +377,12 @@ export default function AdminPage() {
     ).length;
     if (
       existing > 0 &&
-      !await confirmAction(
-        `Agenda ini sudah memiliki ${existing} undangan. Generate ulang akan menonaktifkan link lama. Lanjutkan?`,
-      )
+      !await confirmAction({
+        title: "Generate ulang undangan?",
+        description: `Agenda ini sudah memiliki ${existing} undangan. Link lama akan dinonaktifkan dan diganti dengan link baru.`,
+        confirmLabel: "Generate Ulang",
+        cancelLabel: "Batal",
+      })
     )
       return;
     setBulkLoading(true);
@@ -469,9 +472,13 @@ export default function AdminPage() {
 
   const rejectRequest = async (request: PendingRequest) => {
     if (
-      !await confirmAction(
-        `Tolak pendaftaran untuk ${request.member_external_id} (${request.email})? ID RR ini akan segera dibuka kembali agar dapat didaftarkan ulang.`,
-      )
+      !await confirmAction({
+        title: "Tolak pendaftaran?",
+        description: `${request.member_external_id} (${request.email}) akan ditolak dan ID RR dibuka kembali untuk pendaftaran ulang.`,
+        confirmLabel: "Tolak Pendaftaran",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
     )
       return;
     setError("");
@@ -482,11 +489,8 @@ export default function AdminPage() {
       { p_request_id: request.id },
     );
     if (rpcError) {
-      const { error: delError } = await supabase
-        .from("member_account_requests")
-        .delete()
-        .eq("id", request.id);
-      if (delError) return setError(delError.message);
+      setError(rpcError.message);
+      return;
     }
     setMessage(
       `Pendaftaran ${request.member_external_id} dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.`,
@@ -501,9 +505,12 @@ export default function AdminPage() {
   ) => {
     if (managedAccount.role === nextRole) return;
     if (
-      !await confirmAction(
-        `Ubah role ${managedAccount.member_external_id} menjadi ${nextRole.replaceAll("_", " ")}?`,
-      )
+      !await confirmAction({
+        title: "Ubah role member?",
+        description: `${managedAccount.member_external_id} akan memiliki role ${nextRole.replaceAll("_", " ")}.`,
+        confirmLabel: "Ubah Role",
+        cancelLabel: "Batal",
+      })
     )
       return;
     setError("");
@@ -522,9 +529,13 @@ export default function AdminPage() {
 
   const deleteEventPermanently = async (eventRecord: EventRecord) => {
     if (
-      !await confirmAction(
-        `Hapus agenda "${eventRecord.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan.`,
-      )
+      !await confirmAction({
+        title: "Hapus agenda permanen?",
+        description: `Agenda "${eventRecord.title}" beserta undangan dan respons terkait akan dibersihkan dari sistem.`,
+        confirmLabel: "Hapus Permanen",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
     )
       return;
     setError("");
