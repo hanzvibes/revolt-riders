@@ -357,11 +357,19 @@ export default function CashPage() {
 
   const voidTransaction = async (transaction: Transaction) => {
     if (transaction.source !== "production" || transaction.voided_at) return;
-    const reason = await promptAction(
-      `Koreksi transaksi “${transaction.description}”. Transaksi tidak akan dihapus dari audit trail.`,
-      "",
-    );
+    const reason = await promptAction({
+      title: "Koreksi transaksi?",
+      description: `Transaksi “${transaction.description}” tidak akan dihapus dari audit trail. Jelaskan alasan koreksinya.`,
+      confirmLabel: "Koreksi Transaksi",
+      cancelLabel: "Batal",
+      destructive: true,
+      placeholder: "Alasan koreksi...",
+    });
     if (reason === null) return;
+    if (!reason.trim()) {
+      setError("Alasan koreksi wajib diisi.");
+      return;
+    }
     setError("");
     setSuccess("");
     try {
