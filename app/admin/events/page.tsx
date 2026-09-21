@@ -649,12 +649,14 @@ export default function AdminEventsPage() {
           </div>
         </div>
         {message && (
-          <p className="success-message">
-            <Check />
+          <p className="success-message" role="status" aria-live="polite">
+            <Check aria-hidden="true" />
             {message}
           </p>
         )}
-        {!formOpen && error && <p className="error-message">{error}</p>}
+        {!formOpen && error && (
+          <p className="error-message" role="alert">{error}</p>
+        )}
         <section className="card event-management">
           <div className="ledger-head">
             <div>
@@ -667,12 +669,14 @@ export default function AdminEventsPage() {
             <label className="finance-search">
               <Search />
               <input
+                aria-label="Cari agenda"
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Cari agenda"
               />
             </label>
             <select
+              aria-label="Filter status agenda"
               value={filter}
               onChange={(event) =>
                 setFilter(event.target.value as "all" | EventStatus)
@@ -684,6 +688,7 @@ export default function AdminEventsPage() {
               <option value="completed">Selesai</option>
             </select>
             <select
+              aria-label="Filter RSVP agenda"
               value={rsvpFilter}
               onChange={(event) =>
                 setRsvpFilter(event.target.value as "all" | Rsvp["status"])
@@ -907,6 +912,7 @@ export default function AdminEventsPage() {
                   <label className="voyager-member-search">
                     <Search />
                     <input
+                      aria-label="Cari participant agenda"
                       value={participantQuery}
                       onChange={(event) => setParticipantQuery(event.target.value)}
                       placeholder="Cari participant berdasarkan nama atau ID RR"
@@ -957,7 +963,7 @@ export default function AdminEventsPage() {
               )}
             </section>
 
-            {error && <p className="error-message">{error}</p>}
+            {error && <p className="error-message" role="alert">{error}</p>}
             <div className="sheet-actions">
               <button className="primary-action" disabled={saving}>
                 {saving ? (

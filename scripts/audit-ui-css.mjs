@@ -242,6 +242,72 @@ if (fs.existsSync(landingPagePath)) {
   }
 }
 
+const mobileA11yContracts = {
+  "app/admin/events/page.tsx": [
+    'aria-label="Cari agenda"',
+    'aria-label="Filter status agenda"',
+    'aria-label="Filter RSVP agenda"',
+    'aria-label="Cari participant agenda"',
+    'role="status" aria-live="polite"',
+    'className="error-message" role="alert"',
+  ],
+  "app/voyager/page.tsx": [
+    'aria-label="Cari participant Voyager"',
+  ],
+};
+
+for (const [file, requiredSnippets] of Object.entries(mobileA11yContracts)) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs)) continue;
+  const content = fs.readFileSync(abs, "utf8");
+
+  for (const snippet of requiredSnippets) {
+    if (!content.includes(snippet)) {
+      fatal.push(`${file}: mobile accessibility contract missing ${snippet}`);
+    }
+  }
+}
+
+const nativeAdminPath = path.join(ROOT, "app/native-admin.css");
+if (fs.existsSync(nativeAdminPath)) {
+  const nativeAdmin = fs.readFileSync(nativeAdminPath, "utf8");
+  const handleBlock =
+    nativeAdmin.match(/\.native-sheet-handle\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+  if (
+    !handleBlock.includes("height: var(--rr-control-lg)") &&
+    !handleBlock.includes("min-height: var(--rr-control-lg)")
+  ) {
+    fatal.push(
+      "app/native-admin.css: native sheet drag handle must keep a 44px touch target",
+    );
+  }
+}
+
+const systemUiPath = path.join(ROOT, "app/system-ui.css");
+if (fs.existsSync(systemUiPath)) {
+  const systemUi = fs.readFileSync(systemUiPath, "utf8");
+  const mobileActionTypography = `.app-shell .voyager-create-action,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button {
+  font-size: var(--rr-type-meta);
+}`;
+
+  if (!systemUi.includes(mobileActionTypography)) {
+    fatal.push(
+      "app/system-ui.css: mobile Voyager/Admin action labels must keep shared meta typography",
+    );
+  }
+
+  const handleBlock =
+    systemUi.match(/\.app-shell \.native-sheet-handle\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+  if (!handleBlock.includes("min-height: var(--rr-control-lg)")) {
+    fatal.push(
+      "app/system-ui.css: native sheet drag handle must keep the 44px app-shell touch override",
+    );
+  }
+}
+
 const sharedPageStatePath = path.join(ROOT, "components/page-state.tsx");
 if (!fs.existsSync(sharedPageStatePath)) {
   fatal.push(

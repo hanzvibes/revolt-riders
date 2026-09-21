@@ -9940,8 +9940,13 @@
 }
 
 .app-shell .native-sheet-handle {
-  min-height: 28px;
+  min-height: var(--rr-control-lg);
   touch-action: none;
+}
+
+.app-shell .native-sheet-handle::after {
+  top: 50%;
+  transform: translate(-50%, -50%);
 }
 
 @media (max-width: 720px) {
@@ -10085,6 +10090,13 @@
 .app-shell .unified-primary-action,
 .app-shell .unified-secondary-action,
 .app-shell .profile-emboss-action {
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-create-action,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button {
   font-size: var(--rr-type-meta);
 }
 

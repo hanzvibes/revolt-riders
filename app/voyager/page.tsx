@@ -1115,6 +1115,7 @@ export default function VoyagerPage() {
               <label className="voyager-member-search">
                 <Search />
                 <input
+                  aria-label="Cari participant Voyager"
                   value={memberQuery}
                   onChange={(event) => setMemberQuery(event.target.value)}
                   placeholder="Cari nama atau ID RR"
