@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
@@ -70,6 +71,7 @@ const toInputDate = (value: string | null) =>
   value ? new Date(value).toISOString().slice(0, 16) : "";
 
 export default function AdminEventsPage() {
+  const { confirmAction } = useActionDialog();
   const { user, account, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache, invalidateCache } = useDataCache();
   const [events, setEvents] = useState<Event[]>([]);
@@ -429,7 +431,7 @@ export default function AdminEventsPage() {
 
   const deletePermanently = async (event: Event) => {
     if (
-      !window.confirm(
+      !await confirmAction(
         `Hapus agenda "${event.title}" secara permanen? Data undangan dan respons agenda ini akan dibersihkan dari sistem.`,
       )
     )
@@ -461,7 +463,7 @@ export default function AdminEventsPage() {
   const changeStatus = async (event: Event, status: EventStatus) => {
     if (!user) return;
     if (
-      !window.confirm(
+      !await confirmAction(
         `${status === "completed" ? "Tandai agenda ini selesai?" : "Publikasikan agenda ini?"}`,
       )
     )
