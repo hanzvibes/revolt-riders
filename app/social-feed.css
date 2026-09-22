@@ -1653,3 +1653,227 @@
     animation: none;
   }
 }
+
+
+/* Voyager feed attachment */
+.app-shell .community-voyager-attachment {
+  display: grid;
+  gap: 11px;
+  margin: 13px 14px 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  padding: 12px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-voyager-attachment:hover {
+  border-color: var(--rr-red-line);
+  background: color-mix(in srgb, var(--rr-surface-soft) 88%, var(--rr-red-soft));
+}
+
+.app-shell .community-voyager-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.app-shell .community-voyager-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .community-voyager-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell .community-voyager-head > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.app-shell .community-voyager-head small {
+  color: var(--rr-red);
+  font-size: .58rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: .055em;
+}
+
+.app-shell .community-voyager-head strong {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-body);
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .community-voyager-head > b {
+  border: 1px solid var(--rr-line-strong);
+  border-radius: 999px;
+  color: var(--rr-muted);
+  padding: 5px 7px;
+  font-size: .58rem;
+  font-weight: var(--rr-fw-bold);
+  white-space: nowrap;
+}
+
+.app-shell .community-voyager-meta {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .community-voyager-meta > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+}
+
+.app-shell .community-voyager-meta svg {
+  width: 13px;
+  height: 13px;
+  flex: none;
+}
+
+.app-shell .community-voyager-progress {
+  display: flex;
+  align-items: stretch;
+  border-top: 1px solid var(--rr-line);
+  border-bottom: 1px solid var(--rr-line);
+  padding-block: 9px;
+}
+
+.app-shell .community-voyager-progress > span {
+  display: grid;
+  min-width: 0;
+  flex: 1;
+  grid-template-columns: auto auto;
+  align-items: center;
+  justify-content: start;
+  column-gap: 5px;
+  row-gap: 1px;
+  padding-inline: 10px;
+}
+
+.app-shell .community-voyager-progress > span:first-child {
+  padding-left: 0;
+}
+
+.app-shell .community-voyager-progress > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .community-voyager-progress svg {
+  width: 14px;
+  height: 14px;
+  color: var(--rr-muted);
+}
+
+.app-shell .community-voyager-progress b {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .community-voyager-progress small {
+  grid-column: 1 / -1;
+  color: var(--rr-muted);
+  font-size: .58rem;
+  font-weight: var(--rr-fw-medium);
+}
+
+.app-shell .community-voyager-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .community-voyager-cta svg {
+  width: 15px;
+  height: 15px;
+  color: var(--rr-red);
+  transition: transform 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-voyager-attachment:hover .community-voyager-cta svg {
+  transform: translateX(2px);
+}
+
+.app-shell .community-voyager-attachment:focus-visible {
+  outline: 2px solid var(--rr-red);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-voyager-attachment {
+    margin-inline: 14px;
+  }
+
+  .app-shell .community-voyager-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .app-shell .community-voyager-head > b {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 1px;
+  }
+
+  .app-shell .community-voyager-meta {
+    display: grid;
+    gap: 5px;
+  }
+
+  .app-shell .community-voyager-progress {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .app-shell .community-voyager-progress::-webkit-scrollbar {
+    display: none;
+  }
+
+  .app-shell .community-voyager-progress > span {
+    min-width: 88px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .community-voyager-attachment {
+    padding-inline: 10px;
+  }
+
+  .app-shell .community-voyager-progress > span {
+    min-width: 82px;
+    padding-inline: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-voyager-attachment,
+  .app-shell .community-voyager-cta svg {
+    transition: none;
+  }
+}
