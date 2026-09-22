@@ -2,9 +2,12 @@
 
 import {
   CalendarDays,
+  Camera,
   ChevronLeft,
   ChevronRight,
   MapPin,
+  Route,
+  UsersRound,
   X,
 } from "lucide-react";
 import Image from "next/image";
@@ -26,7 +29,15 @@ export type CommunityFeedEvent = {
   type: string;
   location_name: string | null;
   start_at: string;
+  end_at?: string | null;
   status: "published" | "completed";
+  counts_as_mandatory?: boolean;
+  official_distance_km?: number | string | null;
+  official_support?: string | null;
+  activity_summary?: string | null;
+  completed_at?: string | null;
+  participantCount?: number;
+  photoCount?: number;
 };
 
 export function OfficialFeedAvatar({ small = false }: { small?: boolean }) {
@@ -80,6 +91,99 @@ export function CommunityAgendaAttachment({
     </Link>
   );
 }
+
+export function CommunityVoyagerAttachment({
+  event,
+}: {
+  event: CommunityFeedEvent;
+}) {
+  const date = new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(event.start_at));
+
+  const participantCount = event.participantCount ?? 0;
+  const photoCount = event.photoCount ?? 0;
+  const statusLabel =
+    event.status === "completed"
+      ? "Selesai"
+      : photoCount > 0
+        ? "Bukti masuk"
+        : participantCount > 0
+          ? "Peserta tercatat"
+          : "Aktif";
+
+  return (
+    <Link
+      className="community-voyager-attachment"
+      href={`/voyager#${event.slug}`}
+    >
+      <span className="community-voyager-head">
+        <span className="community-voyager-icon" aria-hidden="true">
+          <Route />
+        </span>
+        <span>
+          <small>VOYAGER</small>
+          <strong>{event.title}</strong>
+        </span>
+        <b>{statusLabel}</b>
+      </span>
+
+      <span className="community-voyager-meta">
+        <span>
+          <CalendarDays aria-hidden="true" />
+          {date}
+        </span>
+        <span>
+          <MapPin aria-hidden="true" />
+          {event.location_name || "Lokasi menyusul"}
+        </span>
+      </span>
+
+      <span className="community-voyager-progress">
+        <span>
+          <UsersRound aria-hidden="true" />
+          <b>{participantCount}</b>
+          <small>peserta</small>
+        </span>
+        <span>
+          <Camera aria-hidden="true" />
+          <b>{photoCount}</b>
+          <small>bukti foto</small>
+        </span>
+        {event.official_distance_km ? (
+          <span>
+            <Route aria-hidden="true" />
+            <b>{Number(event.official_distance_km).toLocaleString("id-ID", {
+              maximumFractionDigits: 1,
+            })}</b>
+            <small>KM resmi</small>
+          </span>
+        ) : null}
+      </span>
+
+      <span className="community-voyager-cta">
+        Lihat aktivitas Voyager
+        <ChevronRight aria-hidden="true" />
+      </span>
+    </Link>
+  );
+}
+
+export function CommunityEventAttachment({
+  event,
+}: {
+  event: CommunityFeedEvent;
+}) {
+  return event.type === "voyager" ? (
+    <CommunityVoyagerAttachment event={event} />
+  ) : (
+    <CommunityAgendaAttachment event={event} />
+  );
+}
+
 
 export function CommunityMediaGallery({
   media,
