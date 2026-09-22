@@ -1877,3 +1877,192 @@
     transition: none;
   }
 }
+
+
+/* Composer live preview */
+.app-shell .community-composer-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 4px;
+}
+
+.app-shell .community-composer-mode button {
+  min-height: 40px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+  transition:
+    background-color 160ms var(--rr-ease-out),
+    color 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-composer-mode button.active {
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
+}
+
+.app-shell .community-composer-fields {
+  display: grid;
+  gap: 16px;
+}
+
+.app-shell .community-composer-fields > label {
+  display: grid;
+  gap: 7px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .community-composer-fields textarea,
+.app-shell .community-composer-fields input[type="url"],
+.app-shell .community-composer-fields select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: var(--rr-control-radius);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  padding: 10px 12px;
+  font: inherit;
+  font-size: var(--rr-type-small);
+}
+
+.app-shell .community-composer-fields textarea {
+  min-height: 146px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.app-shell .community-composer-fields textarea:focus,
+.app-shell .community-composer-fields input:focus,
+.app-shell .community-composer-fields select:focus {
+  border-color: var(--rr-red);
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .community-composer-fields .community-upload-control > label {
+  min-height: 44px;
+}
+
+.app-shell .community-composer-preview {
+  display: grid;
+  gap: 9px;
+}
+
+.app-shell .community-composer-preview-label {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+
+.app-shell .community-composer-preview > .community-post {
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+  box-shadow: none;
+}
+
+.app-shell .community-composer-preview .community-post-copy p.is-placeholder {
+  color: var(--rr-muted);
+  font-style: italic;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-1 {
+  aspect-ratio: 4 / 5;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-1 figure {
+  min-height: 0;
+  height: 100%;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-2 {
+  aspect-ratio: 1 / 1;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-2 figure {
+  min-height: 0;
+  height: 100%;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-3,
+.app-shell .community-composer-preview .community-feed-media.count-4 {
+  aspect-ratio: 4 / 3;
+}
+
+.app-shell .community-composer-preview .community-feed-media.count-3 figure,
+.app-shell .community-composer-preview .community-feed-media.count-4 figure {
+  min-height: 0;
+}
+
+.app-shell .community-composer-preview .community-post-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .community-composer-preview .community-post-actions > span {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .community-composer-preview .community-post-actions > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .community-composer-preview .community-post-actions svg {
+  width: 17px;
+  height: 17px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-composer-mode button {
+    min-height: 44px;
+  }
+
+  .app-shell .community-composer-preview > .community-post {
+    border-radius: 14px;
+  }
+
+  .app-shell .community-composer-preview .community-voyager-attachment,
+  .app-shell .community-composer-preview .community-agenda-attachment,
+  .app-shell .community-composer-preview .community-link-preview {
+    margin-inline: 12px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .community-composer-preview .community-post-header {
+    padding-inline: 11px;
+  }
+
+  .app-shell .community-composer-preview .community-post-copy,
+  .app-shell .community-composer-preview .community-post-counts {
+    padding-inline: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-composer-mode button {
+    transition: none;
+  }
+}
