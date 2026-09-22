@@ -1581,6 +1581,40 @@
     line-height: 1.55;
   }
 
+  .app-shell .desktop-feed-rail-loading {
+    display: grid;
+    gap: 7px;
+    padding: 2px 0 3px;
+  }
+
+  .app-shell .desktop-feed-rail-loading i {
+    display: block;
+    height: 9px;
+    border-radius: 999px;
+    background:
+      linear-gradient(
+        100deg,
+        var(--rr-surface-muted) 20%,
+        var(--rr-surface-soft) 38%,
+        var(--rr-surface-muted) 56%
+      );
+    background-size: 220% 100%;
+    animation: community-skeleton-shimmer 1.35s ease-in-out infinite;
+  }
+
+  .app-shell .desktop-feed-rail-loading i:nth-child(1) {
+    width: 76%;
+    height: 12px;
+  }
+
+  .app-shell .desktop-feed-rail-loading i:nth-child(2) {
+    width: 92%;
+  }
+
+  .app-shell .desktop-feed-rail-loading i:nth-child(3) {
+    width: 68%;
+  }
+
   .app-shell .desktop-feed-support-logo {
     position: relative;
     width: 100%;
@@ -1613,5 +1647,9 @@
 @media (prefers-reduced-motion: reduce) {
   .app-shell .desktop-feed-rail-event > small svg {
     transition: none;
+  }
+
+  .app-shell .desktop-feed-rail-loading i {
+    animation: none;
   }
 }
