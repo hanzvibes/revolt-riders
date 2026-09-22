@@ -261,6 +261,35 @@ function PostMediaGrid({ media }: { media: FeedMedia[] }) {
   );
 }
 
+function FeedSkeleton() {
+  return (
+    <div className="community-feed-skeleton" aria-label="Memuat Feed" aria-live="polite">
+      {[0, 1, 2].map((item) => (
+        <article className="community-post-skeleton" key={item} aria-hidden="true">
+          <header>
+            <span className="community-skeleton-avatar" />
+            <span>
+              <i />
+              <i />
+            </span>
+          </header>
+          <div className="community-skeleton-copy">
+            <i />
+            <i />
+            <i />
+          </div>
+          {item !== 1 ? <div className="community-skeleton-media" /> : null}
+          <footer>
+            <i />
+            <i />
+          </footer>
+        </article>
+      ))}
+      <span className="sr-only">Memuat kabar terbaru…</span>
+    </div>
+  );
+}
+
 function FeedAgendaAttachment({ event }: { event: FeedEvent }) {
   const date = new Intl.DateTimeFormat("id-ID", {
     weekday: "short",
@@ -618,7 +647,7 @@ export function CommunityFeed({
         <>
           {newPostsAvailable && <button className="community-new-posts" type="button" onClick={refreshFromBanner}><Sparkles aria-hidden="true" /> Post baru tersedia</button>}
           {error && <p className="community-feed-error" role="alert">{error}</p>}
-          {loading ? <div className="community-feed-loading" aria-live="polite"><LoaderCircle aria-hidden="true" /> Memuat kabar terbaru…</div> : (
+          {loading ? <FeedSkeleton /> : (
             <div className="community-feed-list">
               {pinnedPost && <FeedPostCard post={pinnedPost} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(post) => router.push(`/post/${post.id}`)} onManage={managePost} onDeleteComment={deleteComment} />}
               {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
