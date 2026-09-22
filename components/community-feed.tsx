@@ -63,9 +63,9 @@ type FeedPost = {
 };
 
 type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "likedByMe"> & {
+  like_count: number;
+  comment_count: number;
   feed_post_media?: FeedMedia[];
-  feed_post_likes?: { count: number }[];
-  feed_post_comments?: { count: number }[];
 };
 
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -244,7 +244,7 @@ export function CommunityFeed({
       const supabase = getSupabaseBrowserClient();
       const { data: rawPosts, error: postError } = await supabase
         .from("feed_posts")
-        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,feed_post_media(id,object_path,alt_text,sort_order),feed_post_likes(count),feed_post_comments(count)")
+        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)")
         .eq("status", "published")
         .order("is_pinned", { ascending: false })
         .order("published_at", { ascending: false })
@@ -289,8 +289,8 @@ export function CommunityFeed({
             ...item,
             signedUrl: mediaUrlByPath.get(item.object_path),
           })),
-        likeCount: post.feed_post_likes?.[0]?.count ?? 0,
-        commentCount: post.feed_post_comments?.[0]?.count ?? 0,
+        likeCount: post.like_count ?? 0,
+        commentCount: post.comment_count ?? 0,
         likedByMe: likedIds.has(post.id),
       }));
 
