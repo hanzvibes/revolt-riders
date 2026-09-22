@@ -12436,3 +12436,94 @@
 @media (min-width:1000px){.app-shell .community-feed-page{padding-bottom:56px}.app-shell .community-feed-heading{margin-bottom:24px}}
 @media (max-width:720px){.app-shell .community-feed-page{padding:14px 12px calc(var(--rr-mobile-dashboard-clearance) + 26px + env(safe-area-inset-bottom))}.app-shell .community-feed-heading{margin:2px 2px 16px}.app-shell .community-feed-heading h2{font-size:1.55rem}.app-shell .community-post{border-radius:16px}.app-shell .community-post-header{padding:13px 13px 9px}.app-shell .community-post-copy{padding:0 13px}.app-shell .community-link-preview{margin:13px 13px 0}.app-shell .community-post-counts{padding:0 13px}.app-shell .community-comment-preview{padding:12px 13px 14px}.app-shell .community-comments-locked{padding:11px 13px}.app-shell .community-feed-media figure{min-height:142px}.app-shell .community-feed-media.count-1 figure{min-height:min(420px,84vw)}.app-shell .community-upload-control{align-items:flex-start;flex-direction:column}.app-shell .community-composer-actions{grid-template-columns:1fr}.app-shell .community-discussion-list{max-height:42dvh}}
 @media (max-width:370px){.app-shell .community-post-actions button{font-size:.68rem;gap:5px}.app-shell .community-link-preview b{display:none}.app-shell .community-link-preview{grid-template-columns:minmax(0,1fr) auto}.app-shell .community-link-preview>svg{display:none}}
+
+
+/* Dashboard Social Home v3 · feed integration */
+.app-shell .dashboard-social-home-v3 .home-feed > .community-feed-page {
+  width: 100%;
+  margin: 0;
+  padding: 0 0 8px;
+}
+
+.app-shell .dashboard-social-home-v3 .community-feed-heading {
+  margin: 3px 2px 14px;
+}
+
+.app-shell .dashboard-social-home-v3 .community-feed-heading h2 {
+  font-size: clamp(1.25rem, 2.4vw, 1.55rem);
+  letter-spacing: -.035em;
+}
+
+.app-shell .dashboard-social-home-v3 .community-feed-heading > svg {
+  width: 38px;
+  height: 38px;
+  padding: 9px;
+}
+
+.app-shell .dashboard-social-home-v3 .community-feed-list {
+  gap: 12px;
+}
+
+.app-shell .dashboard-social-home-v3 .community-post {
+  border-radius: 18px;
+  box-shadow: var(--rr-shadow-card);
+}
+
+@media (min-width: 821px) {
+  .app-shell .dashboard-social-home-v3 .home-side-rail {
+    position: sticky;
+    top: 18px;
+  }
+}
+
+@media (max-width: 820px) {
+  .app-shell .dashboard-social-home-v3 .home-side-rail {
+    position: static;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-home-v3 {
+    padding-top: 8px;
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-feed-heading {
+    margin: 4px 2px 12px;
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-feed-heading h2 {
+    font-size: 1.18rem;
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-feed-heading p {
+    margin-top: 5px;
+    font-size: var(--rr-type-caption);
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-feed-heading > svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-post {
+    border-radius: 16px;
+  }
+
+  .app-shell .dashboard-social-home-v3 .home-side-rail {
+    margin-top: 2px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-social-home-v3 .home-story-row {
+    grid-template-columns: repeat(4, minmax(68px, 1fr));
+  }
+
+  .app-shell .dashboard-social-home-v3 .home-story-row small {
+    font-size: .58rem;
+  }
+
+  .app-shell .dashboard-social-home-v3 .community-feed-heading > svg {
+    display: none;
+  }
+}
