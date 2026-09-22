@@ -12112,12 +12112,46 @@
 
 .app-shell .home-road-progress { padding-bottom: 14px; }
 
+.app-shell .home-road-progress--hero {
+  border-color: var(--rr-charcoal);
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .home-road-progress--hero .home-post-header {
+  border-bottom: 1px solid rgba(255, 255, 255, .12);
+}
+
+.app-shell .home-road-progress--hero .home-post-header > span strong,
+.app-shell .home-road-progress--hero .home-road-main strong,
+.app-shell .home-road-progress--hero .home-road-main > b {
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .home-road-progress--hero .home-post-header > span small,
+.app-shell .home-road-progress--hero .home-road-meta,
+.app-shell .home-road-progress--hero .home-road-summary small {
+  color: var(--rr-muted-inverse);
+}
+
+.app-shell .home-road-progress--hero .home-post-header > a { color: var(--rr-muted-inverse); }
+.app-shell .home-road-progress--hero .home-post-header > a:hover { background: var(--rr-charcoal-2); color: var(--rr-ink-inverse); }
+.app-shell .home-road-progress--hero .home-post-icon { background: var(--rr-red); }
+
+.app-shell .home-road-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(170px, .7fr);
+  align-items: end;
+  gap: 18px;
+  padding: 5px 13px 13px;
+}
+
 .app-shell .home-road-main {
   display: flex;
   align-items: end;
   justify-content: space-between;
   gap: 12px;
-  padding: 3px 13px 10px;
+  padding: 3px 0 0;
 }
 
 .app-shell .home-road-main > span {
@@ -12132,6 +12166,35 @@
   font-size: var(--rr-type-caption);
   font-weight: var(--rr-fw-extrabold);
 }
+
+.app-shell .home-road-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.app-shell .home-road-summary span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+  padding: 9px 10px;
+  border: 1px solid rgba(255, 255, 255, .14);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .06);
+}
+
+.app-shell .home-road-summary strong {
+  overflow: hidden;
+  color: var(--rr-ink-inverse);
+  font-size: var(--rr-type-card);
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .home-road-summary small { font-size: var(--rr-type-caption); line-height: 1.25; }
 
 .app-shell .home-road-main strong {
   color: var(--rr-ink);
@@ -12153,7 +12216,7 @@
   margin: 0 13px;
   overflow: hidden;
   border-radius: 999px;
-  background: var(--rr-bg);
+  background: rgba(255, 255, 255, .16);
 }
 
 .app-shell .home-road-track > i {
@@ -12326,6 +12389,9 @@
   .app-shell .home-feed-card,
   .app-shell .home-side-card { border-radius: 16px; }
 
+  .app-shell .home-road-hero-grid { grid-template-columns: 1fr; gap: 12px; }
+  .app-shell .home-road-main { padding-top: 2px; }
+
   .app-shell .home-side-rail { grid-template-columns: 1fr; }
   .app-shell .home-post-header { min-height: 62px; padding: 10px 12px; }
   .app-shell .home-featured-event { padding: 12px; }
@@ -12337,7 +12403,7 @@
 @media (max-width: 390px) {
   .app-shell .home-profile-main { grid-template-columns: auto minmax(0, 1fr); }
   .app-shell .home-profile-button { grid-column: 1 / -1; width: 100%; }
-  .app-shell .home-story-row { grid-template-columns: repeat(4, 72px); }
+  .app-shell .home-story-row { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .app-shell .home-featured-event { grid-template-columns: auto minmax(0, 1fr); }
   .app-shell .home-featured-event > svg { display: none; }
 }
