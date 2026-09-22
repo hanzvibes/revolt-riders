@@ -63,8 +63,10 @@ export function DesktopFeedRail() {
   const [nextAgenda, setNextAgenda] = useState<RailEvent | null>(null);
   const [nextVoyager, setNextVoyager] = useState<RailEvent | null>(null);
   const [enabled, setEnabled] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
+    setLoading(true);
     const supabase = getSupabaseBrowserClient();
     const now = new Date().toISOString();
 
@@ -94,6 +96,7 @@ export function DesktopFeedRail() {
 
     if (voyagerResult.error) {
       console.error("Voyager right rail gagal dimuat.", voyagerResult.error);
+      setLoading(false);
       return;
     }
 
@@ -109,6 +112,7 @@ export function DesktopFeedRail() {
       )[0];
 
     setNextVoyager(started ?? upcoming ?? null);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -155,7 +159,13 @@ export function DesktopFeedRail() {
           <Link href="/agenda">Lihat semua</Link>
         </header>
 
-        {nextAgenda ? (
+        {loading ? (
+          <div className="desktop-feed-rail-loading" aria-label="Memuat agenda">
+            <i />
+            <i />
+            <i />
+          </div>
+        ) : nextAgenda ? (
           <RailEventItem
             event={nextAgenda}
             href={`/agenda#${nextAgenda.slug}`}
@@ -176,7 +186,13 @@ export function DesktopFeedRail() {
           <Link href="/voyager">Buka</Link>
         </header>
 
-        {nextVoyager ? (
+        {loading ? (
+          <div className="desktop-feed-rail-loading" aria-label="Memuat Voyager">
+            <i />
+            <i />
+            <i />
+          </div>
+        ) : nextVoyager ? (
           <RailEventItem event={nextVoyager} href="/voyager" />
         ) : (
           <p className="desktop-feed-rail-empty">
