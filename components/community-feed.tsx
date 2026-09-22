@@ -464,10 +464,12 @@ export function CommunityFeed({
     from = 0,
     append = false,
     pageSize = FEED_PAGE_SIZE,
+    quiet = false,
   }: {
     from?: number;
     append?: boolean;
     pageSize?: number;
+    quiet?: boolean;
   } = {}) => {
     if (!activeMember || !user) {
       setPosts([]);
@@ -478,7 +480,7 @@ export function CommunityFeed({
     }
 
     if (append) setLoadingMore(true);
-    else setLoading(true);
+    else if (!quiet) setLoading(true);
     setError("");
 
     try {
@@ -570,7 +572,7 @@ export function CommunityFeed({
       setError(feedErrorMessage(cause));
     } finally {
       if (append) setLoadingMore(false);
-      else setLoading(false);
+      else if (!quiet) setLoading(false);
     }
   }, [activeMember, user]);
 
@@ -614,8 +616,8 @@ export function CommunityFeed({
     const supabase = getSupabaseBrowserClient();
     const channel = supabase.channel("community-feed-live")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "feed_posts" }, () => setNewPostsAvailable(true))
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_comments" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_likes" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_comments" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_likes" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true }))
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
   }, [activeMember, loadFeed]);
@@ -655,14 +657,14 @@ export function CommunityFeed({
       : await supabase.from("feed_post_likes").insert({ post_id: post.id, user_id: user.id });
     if (result.error) {
       setError(result.error.message);
-      void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
+      void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
     }
   };
 
   const deleteComment = async (comment: FeedComment) => {
     const { error: deleteError } = await getSupabaseBrowserClient().from("feed_post_comments").delete().eq("id", comment.id);
     if (deleteError) setError(deleteError.message);
-    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
+    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
   };
 
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
@@ -704,7 +706,7 @@ export function CommunityFeed({
       .eq("id", post.id);
 
     if (updateError) setError(updateError.message);
-    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
+    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
   };
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
