@@ -326,6 +326,8 @@ export function CommunityFeed({
       return;
     }
 
+    if (!composerOpen) return;
+
     let active = true;
     const loadEvents = async () => {
       const { data, error: eventError } = await getSupabaseBrowserClient()
@@ -349,7 +351,7 @@ export function CommunityFeed({
     return () => {
       active = false;
     };
-  }, [isStaff]);
+  }, [composerOpen, isStaff]);
 
   useEffect(() => {
     if (!activeMember) return;
