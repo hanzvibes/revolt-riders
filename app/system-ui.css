@@ -12527,3 +12527,452 @@
     display: none;
   }
 }
+
+
+/* Dashboard Social Home v4 · social-first hierarchy */
+.app-shell .dashboard-social-home-v4 {
+  width: min(100%, 1080px);
+  padding: 10px 18px calc(34px + env(safe-area-inset-bottom));
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-card--social {
+  overflow: visible;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-main {
+  gap: 13px;
+  padding: 8px 2px 12px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-avatar {
+  width: 64px;
+  height: 64px;
+  border: 3px solid var(--rr-surface);
+  outline: 2px solid var(--rr-red);
+  outline-offset: 1px;
+  box-shadow: var(--rr-shadow-sm);
+  font-size: 1.05rem;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-copy > small {
+  margin-bottom: 3px;
+  color: var(--rr-red);
+  font-size: .62rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-copy h2 {
+  font-size: clamp(1.15rem, 3vw, 1.38rem);
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-copy p {
+  margin-top: 4px;
+  font-size: .7rem;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-button {
+  min-height: 38px;
+  border-radius: 999px;
+  padding-inline: 12px 9px;
+  background: transparent;
+}
+
+.app-shell .dashboard-social-home-v4 .home-profile-button:hover {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-social-home-v4 .home-personal-stats {
+  border-top: 0;
+  padding: 0 2px 10px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-personal-stats > span {
+  min-height: 46px;
+  padding: 4px 8px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-personal-stats > span + span {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-home-v4 .home-personal-stats strong {
+  font-size: .95rem;
+}
+
+.app-shell .dashboard-social-home-v4 .home-personal-stats small {
+  font-size: .61rem;
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row {
+  margin: 10px 0 12px;
+  padding: 1px 0 13px;
+  border-bottom: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row a {
+  min-height: 72px;
+  border-radius: 12px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row a > span {
+  width: 46px;
+  height: 46px;
+  border: 0;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+  box-shadow: none;
+  transition:
+    transform 220ms var(--rr-ease-out),
+    background-color 220ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row a:hover {
+  background: transparent;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row a:hover > span {
+  background: var(--rr-red);
+  transform: translateY(-2px);
+}
+
+.app-shell .dashboard-social-home-v4 .home-story-row a:active > span {
+  transform: scale(.96);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-strip {
+  overflow: hidden;
+  margin: 0 0 16px;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-main {
+  display: grid;
+  min-height: 62px;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px 8px;
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-main:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-copy strong {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-body);
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-copy small {
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-main > b {
+  color: var(--rr-red);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-track {
+  height: 5px;
+  margin: 0 12px 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--rr-surface-muted);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-track > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--rr-red);
+  transition: width 700ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta > span {
+  display: grid;
+  min-width: 0;
+  min-height: 42px;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 10px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta svg {
+  width: 13px;
+  height: 13px;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta b {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .dashboard-social-home-v4 .home-progress-meta small {
+  overflow: hidden;
+  font-size: .58rem;
+  font-weight: var(--rr-fw-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-home-v4 .home-feed-layout {
+  grid-template-columns: minmax(0, 1.65fr) minmax(250px, .68fr);
+  gap: 18px;
+}
+
+.app-shell .dashboard-social-home-v4 .community-feed-heading {
+  margin: 2px 2px 13px;
+}
+
+.app-shell .dashboard-social-home-v4 .community-feed-heading h2 {
+  font-size: clamp(1.2rem, 2.4vw, 1.48rem);
+}
+
+.app-shell .dashboard-social-home-v4 .community-feed-heading > svg {
+  width: 36px;
+  height: 36px;
+  padding: 9px;
+}
+
+.app-shell .dashboard-social-home-v4 .community-feed-list {
+  gap: 12px;
+}
+
+.app-shell .dashboard-social-home-v4 .community-post,
+.app-shell .dashboard-social-home-v4 .home-side-card {
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-home-v4 .community-post {
+  border-color: var(--rr-line);
+}
+
+.app-shell .dashboard-social-home-v4 .home-side-card {
+  padding: 13px;
+}
+
+.app-shell .dashboard-social-home-v4 a:focus-visible,
+.app-shell .dashboard-social-home-v4 button:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+@media (min-width: 821px) {
+  .app-shell .dashboard-social-home-v4 .home-side-rail {
+    position: sticky;
+    top: 18px;
+  }
+}
+
+@media (max-width: 820px) {
+  .app-shell .dashboard-social-home-v4 .home-feed-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-side-rail {
+    position: static;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-home-v4 {
+    padding: 6px 12px calc(var(--rr-mobile-dashboard-clearance) + 22px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-main {
+    padding-top: 5px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-personal-stats {
+    padding-bottom: 8px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-story-row {
+    grid-template-columns: repeat(4, minmax(68px, 1fr));
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-story-row a {
+    min-height: 68px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-story-row a > span {
+    width: 44px;
+    height: 44px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-strip {
+    margin-bottom: 14px;
+    border-radius: 14px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-main {
+    min-height: 58px;
+    padding: 9px 10px 7px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-track {
+    margin-inline: 10px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-meta > span {
+    min-height: 40px;
+    grid-template-columns: auto auto;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-meta small {
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-side-rail {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .dashboard-social-home-v4 .community-feed-heading {
+    margin: 2px 2px 11px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .community-post {
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-social-home-v4 .home-profile-main {
+    grid-template-columns: auto minmax(0, 1fr) 40px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-button {
+    grid-column: auto;
+    width: 40px;
+    min-height: 40px;
+    overflow: hidden;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-button svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-copy h2 {
+    font-size: 1.08rem;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-profile-copy p {
+    font-size: .64rem;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-story-row {
+    grid-template-columns: repeat(4, minmax(62px, 1fr));
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-story-row small {
+    font-size: .56rem;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-main {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-chevron {
+    display: none;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-meta > span {
+    padding-inline: 5px;
+  }
+
+  .app-shell .dashboard-social-home-v4 .home-progress-meta small {
+    font-size: .53rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-home-v4 .home-story-row a > span,
+  .app-shell .dashboard-social-home-v4 .home-progress-track > i {
+    transition: none;
+  }
+}
