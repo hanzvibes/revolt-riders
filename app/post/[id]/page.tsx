@@ -327,26 +327,86 @@ export default function ThreadPage() {
     if (!post || !commentBody.trim() || post.comments_locked) return;
 
     setCommentSaving(true);
-    const { error: insertError } = await getSupabaseBrowserClient()
-      .from("feed_post_comments")
-      .insert({
-        post_id: post.id,
-        parent_comment_id: replyTarget?.id ?? null,
-        body: commentBody.trim(),
-      });
+    setError("");
+
+    const { data: createdComment, error: insertError } =
+      await getSupabaseBrowserClient()
+        .from("feed_post_comments")
+        .insert({
+          post_id: post.id,
+          parent_comment_id: replyTarget?.id ?? null,
+          body: commentBody.trim(),
+        })
+        .select(
+          "id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at",
+        )
+        .single();
 
     setCommentSaving(false);
-    if (insertError) {
-      setError(insertError.message);
+    if (insertError || !createdComment) {
+      setError(insertError?.message ?? "Komentar belum dapat dikirim.");
       return;
     }
 
+    const nextComment = createdComment as ThreadComment;
+    setComments((current) => {
+      if (current.some((comment) => comment.id === nextComment.id)) {
+        return current;
+      }
+
+      return [...current, nextComment].sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() -
+          new Date(b.created_at).getTime(),
+      );
+    });
+    setPost((current) =>
+      current
+        ? {
+            ...current,
+            commentCount: current.commentCount + 1,
+          }
+        : current,
+    );
     setCommentBody("");
     setReplyTarget(null);
-    await loadThread({ quiet: true });
   };
 
   const deleteComment = async (comment: ThreadComment) => {
+    const removedIds = new Set<string>([comment.id]);
+    let changed = true;
+
+    while (changed) {
+      changed = false;
+      for (const item of comments) {
+        if (
+          item.parent_comment_id &&
+          removedIds.has(item.parent_comment_id) &&
+          !removedIds.has(item.id)
+        ) {
+          removedIds.add(item.id);
+          changed = true;
+        }
+      }
+    }
+
+    const removedCount = Math.max(1, removedIds.size);
+    setComments((current) =>
+      current.filter((item) => !removedIds.has(item.id)),
+    );
+    setPost((current) =>
+      current
+        ? {
+            ...current,
+            commentCount: Math.max(
+              0,
+              current.commentCount - removedCount,
+            ),
+          }
+        : current,
+    );
+    setError("");
+
     const { error: deleteError } = await getSupabaseBrowserClient()
       .from("feed_post_comments")
       .delete()
@@ -354,10 +414,8 @@ export default function ThreadPage() {
 
     if (deleteError) {
       setError(deleteError.message);
-      return;
+      void loadThread({ quiet: true });
     }
-
-    await loadThread({ quiet: true });
   };
 
   const rootComments = useMemo(
