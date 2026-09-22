@@ -137,7 +137,11 @@ export default function DashboardPage() {
       setStats(clubStats);
       setProfileCount(profileStats.count);
       setProfileTotalKm(profileStats.totalKm);
-      if (member !== undefined) setCurrentMember(member);
+      if (member !== undefined) {
+        setCurrentMember(member);
+      } else if (!user || !account?.member_external_id) {
+        setCurrentMember(null);
+      }
     }
 
     void loadSocialHome();
