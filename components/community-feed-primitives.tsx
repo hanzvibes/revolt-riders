@@ -97,12 +97,17 @@ export function CommunityVoyagerAttachment({
 }: {
   event: CommunityFeedEvent;
 }) {
-  const date = new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(event.start_at));
+  const formatPeriodDate = (value: string) =>
+    new Intl.DateTimeFormat("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+      timeZone: "Asia/Jakarta",
+    }).format(new Date(value));
+
+  const period = event.end_at
+    ? `${formatPeriodDate(event.start_at)} – ${formatPeriodDate(event.end_at)}`
+    : formatPeriodDate(event.start_at);
 
   const participantCount = event.participantCount ?? 0;
   const photoCount = event.photoCount ?? 0;
@@ -134,7 +139,7 @@ export function CommunityVoyagerAttachment({
       <span className="community-voyager-meta">
         <span>
           <CalendarDays aria-hidden="true" />
-          {date}
+          {period}
         </span>
         <span>
           <MapPin aria-hidden="true" />
