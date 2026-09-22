@@ -190,8 +190,8 @@ export default function DashboardPage() {
 
   return (
     <AppShell active="Home" title="Beranda">
-      <div className="dashboard-social-home-v2 dashboard-social-home-v3">
-        <section className="home-profile-card" aria-labelledby="home-member-name">
+      <div className="dashboard-social-home-v2 dashboard-social-home-v3 dashboard-social-home-v4">
+        <section className="home-profile-card home-profile-card--social" aria-labelledby="home-member-name">
           <div className="home-profile-main">
             <div className="home-profile-avatar" aria-hidden="true">
               {userInitials}
@@ -255,89 +255,6 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {hasActiveMember && (
-          <section
-            className="home-feed-card home-road-progress home-road-progress--hero"
-            aria-labelledby="home-road-title"
-          >
-            <header className="home-post-header">
-              <span className="home-post-icon">
-                <Flame aria-hidden="true" />
-              </span>
-              <span>
-                <strong id="home-road-title">Road progress</strong>
-                <small>Perjalanan rider kamu</small>
-              </span>
-              <Link href="/profil" aria-label="Buka achievements">
-                <ChevronRight aria-hidden="true" />
-              </Link>
-            </header>
-
-            <div className="home-road-hero-grid">
-              <div className="home-road-main">
-                <span>
-                  <small>
-                    ROAD LEVEL {String(riderProgress.level.level).padStart(2, "0")}
-                  </small>
-                  <strong>{riderProgress.level.title}</strong>
-                </span>
-                <b>{Math.round(riderProgress.levelProgress)}%</b>
-              </div>
-
-              <div
-                className="home-road-summary"
-                aria-label="Ringkasan progress pribadi"
-              >
-                <span>
-                  <strong>
-                    <CountUpNumber
-                      value={currentMember?.total_km ?? 0}
-                      maximumFractionDigits={1}
-                    />
-                  </strong>
-                  <small>KM resmi</small>
-                </span>
-                <span>
-                  <strong>
-                    {riderProgress.level.nextKm
-                      ? new Intl.NumberFormat("id-ID").format(
-                          riderProgress.remainingKm,
-                        )
-                      : "MAX"}
-                  </strong>
-                  <small>
-                    {riderProgress.level.nextKm
-                      ? "KM menuju level"
-                      : "Level tertinggi"}
-                  </small>
-                </span>
-              </div>
-            </div>
-
-            <div
-              className="home-road-track"
-              role="progressbar"
-              aria-label="Progress road level"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={Math.round(riderProgress.levelProgress)}
-            >
-              <i style={{ width: `${riderProgress.levelProgress}%` }} />
-            </div>
-
-            <div className="home-road-meta">
-              <span>
-                <Flame aria-hidden="true" /> {riderProgress.streakMonths} bulan
-                streak
-              </span>
-              <Link href="/profil">
-                {riderProgress.unlockedBadges.length} badge
-                <ChevronRight aria-hidden="true" />
-              </Link>
-            </div>
-          </section>
-        )}
-
         <nav className="home-story-row" aria-label="Akses cepat">
           <Link href="/check-in">
             <span>
@@ -364,6 +281,61 @@ export default function DashboardPage() {
             <small>Ranking</small>
           </Link>
         </nav>
+
+        {hasActiveMember && (
+          <section className="home-progress-strip" aria-labelledby="home-road-title">
+            <Link className="home-progress-main" href="/profil">
+              <span className="home-progress-icon" aria-hidden="true">
+                <Flame />
+              </span>
+              <span className="home-progress-copy">
+                <strong id="home-road-title">{riderProgress.level.title}</strong>
+                <small>
+                  Road level {String(riderProgress.level.level).padStart(2, "0")}
+                  {riderProgress.level.nextKm
+                    ? ` · ${new Intl.NumberFormat("id-ID").format(riderProgress.remainingKm)} KM lagi`
+                    : " · level tertinggi"}
+                </small>
+              </span>
+              <b>{Math.round(riderProgress.levelProgress)}%</b>
+              <ChevronRight className="home-progress-chevron" aria-hidden="true" />
+            </Link>
+
+            <div
+              className="home-progress-track"
+              role="progressbar"
+              aria-label="Progress road level"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(riderProgress.levelProgress)}
+            >
+              <i style={{ width: `${riderProgress.levelProgress}%` }} />
+            </div>
+
+            <div className="home-progress-meta" aria-label="Ringkasan progress rider">
+              <span>
+                <Gauge aria-hidden="true" />
+                <b>
+                  <CountUpNumber
+                    value={currentMember?.total_km ?? 0}
+                    maximumFractionDigits={1}
+                  />
+                </b>
+                <small>KM resmi</small>
+              </span>
+              <span>
+                <Flame aria-hidden="true" />
+                <b>{riderProgress.streakMonths}</b>
+                <small>bulan streak</small>
+              </span>
+              <span>
+                <Trophy aria-hidden="true" />
+                <b>{riderProgress.unlockedBadges.length}</b>
+                <small>badge</small>
+              </span>
+            </div>
+          </section>
+        )}
 
         <div className="home-feed-layout">
           <main className="home-feed" aria-label="Feed Revolt Riders">
