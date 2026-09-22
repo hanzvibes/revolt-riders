@@ -309,7 +309,7 @@ export function AppShell({
   );
 
   return (
-    <main className="app-shell">
+    <main className={socialHeader ? "app-shell social-shell" : "app-shell"}>
       <aside
         ref={asideRef}
         id="app-mobile-drawer"
