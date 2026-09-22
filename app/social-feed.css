@@ -1133,7 +1133,7 @@
 }
 
 .app-shell .social-header-create {
-  color: var(--rr-red);
+  color: var(--rr-ink);
 }
 
 @media (min-width: 721px) {
@@ -2401,5 +2401,89 @@
 @media (prefers-reduced-motion: reduce) {
   .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
     transition: none;
+  }
+}
+
+
+/* Threads-inspired header and loading polish */
+.app-shell .content > header.social-app-header {
+  border-bottom-color: var(--rr-line);
+  box-shadow: none;
+}
+
+.app-shell .content > header.social-app-header h1 {
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.025em;
+}
+
+.app-shell .social-header-create svg,
+.app-shell .content > header.social-app-header .header-bell-btn svg {
+  stroke-width: 1.9;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  column-gap: 12px;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header {
+  display: contents;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > .community-skeleton-avatar {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > span:last-child {
+  grid-column: 2;
+  align-self: start;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-copy,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  grid-column: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-copy {
+  margin-top: 11px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media {
+  margin-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .content > header.social-app-header h1 {
+    font-size: .92rem !important;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 11px;
+    padding: 14px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > .community-skeleton-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media {
+    width: 100%;
+    margin-inline: 0;
+    border-radius: 12px;
   }
 }
