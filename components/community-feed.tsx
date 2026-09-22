@@ -353,14 +353,82 @@ export function CommunityFeed({
 
   useEffect(() => {
     if (!activeMember) return;
+
     const supabase = getSupabaseBrowserClient();
-    const channel = supabase.channel("community-feed-live")
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "feed_posts" }, () => setNewPostsAvailable(true))
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_comments" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true }))
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_likes" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true }))
+    const channel = supabase
+      .channel("community-feed-live")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "feed_posts" },
+        (payload) => {
+          const record = payload.new as Record<string, unknown>;
+          const status = record.status;
+          const authorId = record.author_id;
+
+          if (
+            status === "published" &&
+            authorId !== user?.id
+          ) {
+            setNewPostsAvailable(true);
+          }
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "feed_posts" },
+        (payload) => {
+          const record = payload.new as Record<string, unknown>;
+          const id = typeof record.id === "string" ? record.id : "";
+          if (!id) return;
+
+          if (
+            typeof record.status === "string" &&
+            record.status !== "published"
+          ) {
+            setPosts((current) =>
+              current.filter((post) => post.id !== id),
+            );
+            return;
+          }
+
+          setPosts((current) =>
+            current.map((post) =>
+              post.id === id
+                ? {
+                    ...post,
+                    likeCount:
+                      typeof record.like_count === "number"
+                        ? record.like_count
+                        : post.likeCount,
+                    commentCount:
+                      typeof record.comment_count === "number"
+                        ? record.comment_count
+                        : post.commentCount,
+                  }
+                : post,
+            ),
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "DELETE", schema: "public", table: "feed_posts" },
+        (payload) => {
+          const record = payload.old as Record<string, unknown>;
+          const id = typeof record.id === "string" ? record.id : "";
+          if (!id) return;
+
+          setPosts((current) =>
+            current.filter((post) => post.id !== id),
+          );
+        },
+      )
       .subscribe();
-    return () => { void supabase.removeChannel(channel); };
-  }, [activeMember, loadFeed]);
+
+    return () => {
+      void supabase.removeChannel(channel);
+    };
+  }, [activeMember, user?.id]);
 
   useEffect(() => {
     if (!activeMember || loading || loadingMore || !hasMore) return;
