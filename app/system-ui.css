@@ -13527,3 +13527,411 @@
     transition: none;
   }
 }
+
+
+/* Community Feed v3 · agenda attachments + thread page */
+.app-shell .community-agenda-attachment {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 76px;
+  margin: 13px 14px 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  padding: 11px 12px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-agenda-attachment:hover {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+}
+
+.app-shell .community-agenda-icon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .community-agenda-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell .community-agenda-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.app-shell .community-agenda-copy > small {
+  color: var(--rr-red);
+  font-size: .58rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.app-shell .community-agenda-copy > strong {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-body);
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .community-agenda-copy > span {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .community-agenda-copy > span em {
+  font-style: normal;
+}
+
+.app-shell .community-agenda-copy > span > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-shell .community-agenda-copy > span svg {
+  width: 12px;
+  height: 12px;
+  flex: none;
+}
+
+.app-shell .community-agenda-attachment > svg {
+  width: 17px;
+  height: 17px;
+  color: var(--rr-muted);
+}
+
+.app-shell .community-composer select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: var(--rr-control-radius);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  padding: 0 12px;
+  font: inherit;
+  font-size: var(--rr-type-small);
+}
+
+.app-shell .community-composer select:focus {
+  border-color: var(--rr-red);
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .community-thread-page {
+  width: min(100%, 680px);
+  margin-inline: auto;
+}
+
+.app-shell .community-thread-back {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 7px;
+  margin: 0 2px 8px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .community-thread-back:hover {
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-back svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell .community-thread-origin {
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .community-thread-discussion {
+  padding: 18px 14px 0;
+}
+
+.app-shell .community-thread-discussion-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.app-shell .community-thread-discussion-head h2 {
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: 1rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.02em;
+}
+
+.app-shell .community-thread-discussion-head > span {
+  display: grid;
+  min-width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted);
+  padding-inline: 8px;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell .community-thread-list {
+  display: grid;
+}
+
+.app-shell .thread-comment-root {
+  position: relative;
+  padding: 0 0 16px;
+}
+
+.app-shell .thread-comment-root + .thread-comment-root {
+  border-top: 1px solid var(--rr-line);
+  padding-top: 16px;
+}
+
+.app-shell .thread-comment-line {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+}
+
+.app-shell .thread-comment-content {
+  min-width: 0;
+}
+
+.app-shell .thread-comment-content > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+}
+
+.app-shell .thread-comment-content > header strong {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell .thread-comment-content > header span,
+.app-shell .thread-comment-content > header time {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .thread-comment-content > header span {
+  color: var(--rr-red);
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .thread-comment-content > p {
+  margin: 5px 0 0;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.app-shell .thread-comment-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 7px;
+}
+
+.app-shell .thread-comment-actions button {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .thread-comment-actions button:hover {
+  color: var(--rr-ink);
+}
+
+.app-shell .thread-comment-actions button.danger:hover {
+  color: var(--rr-danger);
+}
+
+.app-shell .thread-comment-actions svg {
+  width: 13px;
+  height: 13px;
+}
+
+.app-shell .thread-replies {
+  position: relative;
+  display: grid;
+  gap: 13px;
+  margin: 13px 0 0 15px;
+  padding-left: 25px;
+}
+
+.app-shell .thread-replies::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  bottom: 12px;
+  left: 0;
+  width: 1px;
+  background: var(--rr-line-strong);
+}
+
+.app-shell .community-thread-composer {
+  position: sticky;
+  z-index: 4;
+  bottom: calc(var(--rr-mobile-dashboard-clearance) + env(safe-area-inset-bottom));
+  margin: 8px -14px 0;
+  border-top: 1px solid var(--rr-line);
+  background: var(--rr-surface);
+  padding: 10px 14px;
+}
+
+.app-shell .community-thread-composer > div:last-child {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: end;
+  gap: 8px;
+}
+
+.app-shell .community-thread-composer textarea {
+  width: 100%;
+  min-height: 44px;
+  max-height: 130px;
+  resize: vertical;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  padding: 11px 12px;
+  font: inherit;
+  font-size: var(--rr-type-small);
+  line-height: 1.45;
+}
+
+.app-shell .community-thread-composer textarea:focus {
+  border-color: var(--rr-red);
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .community-thread-composer > div:last-child > button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: #fff;
+}
+
+.app-shell .community-thread-composer > div:last-child > button:disabled {
+  opacity: .42;
+}
+
+.app-shell .community-thread-composer svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell .community-reply-target {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .community-reply-target b {
+  color: var(--rr-ink);
+}
+
+.app-shell .community-reply-target > button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-muted);
+}
+
+.app-shell .community-reply-target > button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .agenda-detail:target {
+  border-color: var(--rr-red-line);
+  box-shadow: var(--rr-focus-ring);
+}
+
+@media (min-width: 721px) {
+  .app-shell .community-thread-composer {
+    bottom: 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-agenda-attachment {
+    margin-inline: 14px;
+  }
+
+  .app-shell .community-thread-page {
+    padding-top: 4px;
+  }
+
+  .app-shell .community-thread-back {
+    margin-inline: 14px;
+  }
+
+  .app-shell .community-thread-discussion {
+    padding-inline: 14px;
+  }
+
+  .app-shell .community-thread-composer {
+    margin-inline: -14px;
+  }
+}
