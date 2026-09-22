@@ -76,9 +76,22 @@ type ThreadPostRow = Omit<
   ThreadPost,
   "media" | "likeCount" | "commentCount" | "likedByMe"
 > & {
+  like_count: number;
+  comment_count: number;
   feed_post_media?: ThreadMedia[];
-  feed_post_likes?: { count: number }[];
-  feed_post_comments?: { count: number }[];
+};
+
+type ThreadRealtimePostRow = {
+  id?: string;
+  status?: string;
+  body?: string;
+  link_url?: string | null;
+  comments_locked?: boolean;
+  author_name?: string;
+  author_role?: AppRole;
+  published_at?: string | null;
+  like_count?: number;
+  comment_count?: number;
 };
 
 export default function ThreadPage() {
@@ -114,7 +127,7 @@ export default function ThreadPage() {
       const { data: rawPost, error: postError } = await supabase
         .from("feed_posts")
         .select(
-          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),comments_locked,author_id,author_name,author_role,published_at,created_at,feed_post_media(id,object_path,alt_text,sort_order),feed_post_likes(count),feed_post_comments(count)",
+          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)",
         )
         .eq("id", postId)
         .eq("status", "published")
@@ -175,8 +188,8 @@ export default function ThreadPage() {
           ...item,
           signedUrl: mediaUrlByPath.get(item.object_path),
         })),
-        likeCount: row.feed_post_likes?.[0]?.count ?? 0,
-        commentCount: row.feed_post_comments?.[0]?.count ?? 0,
+        likeCount: row.like_count ?? 0,
+        commentCount: row.comment_count ?? 0,
         likedByMe: Boolean(likeResult.data),
       });
       setComments((commentResult.data ?? []) as ThreadComment[]);
@@ -196,28 +209,63 @@ export default function ThreadPage() {
 
   useEffect(() => {
     if (!activeMember || !postId) return;
+
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
       .channel(`feed-thread-${postId}`)
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "INSERT",
           schema: "public",
           table: "feed_post_comments",
           filter: `post_id=eq.${postId}`,
         },
-        () => void loadThread({ quiet: true }),
+        (payload) => {
+          const next = payload.new as ThreadComment;
+          if (!next.id || next.post_id !== postId) return;
+          setComments((current) => {
+            if (current.some((comment) => comment.id === next.id)) return current;
+            return [...current, next].sort(
+              (a, b) =>
+                new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime(),
+            );
+          });
+        },
       )
       .on(
         "postgres_changes",
         {
-          event: "*",
+          event: "UPDATE",
           schema: "public",
-          table: "feed_post_likes",
+          table: "feed_post_comments",
           filter: `post_id=eq.${postId}`,
         },
-        () => void loadThread({ quiet: true }),
+        (payload) => {
+          const next = payload.new as ThreadComment;
+          if (!next.id || next.post_id !== postId) return;
+          setComments((current) =>
+            current.map((comment) =>
+              comment.id === next.id ? next : comment,
+            ),
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "DELETE",
+          schema: "public",
+          table: "feed_post_comments",
+        },
+        (payload) => {
+          const previous = payload.old as { id?: string };
+          if (!previous.id) return;
+          setComments((current) =>
+            current.filter((comment) => comment.id !== previous.id),
+          );
+        },
       )
       .on(
         "postgres_changes",
@@ -227,14 +275,59 @@ export default function ThreadPage() {
           table: "feed_posts",
           filter: `id=eq.${postId}`,
         },
-        () => void loadThread({ quiet: true }),
+        (payload) => {
+          const next = payload.new as ThreadRealtimePostRow;
+          if (!next.id) return;
+
+          if (next.status && next.status !== "published") {
+            setPost(null);
+            setError("Post ini sudah tidak tersedia.");
+            return;
+          }
+
+          setPost((current) => {
+            if (!current || current.id !== next.id) return current;
+            return {
+              ...current,
+              body:
+                typeof next.body === "string"
+                  ? next.body
+                  : current.body,
+              link_url:
+                next.link_url === undefined
+                  ? current.link_url
+                  : next.link_url,
+              comments_locked:
+                typeof next.comments_locked === "boolean"
+                  ? next.comments_locked
+                  : current.comments_locked,
+              author_name:
+                typeof next.author_name === "string"
+                  ? next.author_name
+                  : current.author_name,
+              author_role: next.author_role ?? current.author_role,
+              published_at:
+                next.published_at === undefined
+                  ? current.published_at
+                  : next.published_at,
+              likeCount:
+                typeof next.like_count === "number"
+                  ? next.like_count
+                  : current.likeCount,
+              commentCount:
+                typeof next.comment_count === "number"
+                  ? next.comment_count
+                  : current.commentCount,
+            };
+          });
+        },
       )
       .subscribe();
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [activeMember, loadThread, postId]);
+  }, [activeMember, postId]);
 
   const toggleLike = async () => {
     if (!post || !user || !activeMember) return;
@@ -268,26 +361,79 @@ export default function ThreadPage() {
     if (!post || !commentBody.trim() || post.comments_locked) return;
 
     setCommentSaving(true);
-    const { error: insertError } = await getSupabaseBrowserClient()
-      .from("feed_post_comments")
-      .insert({
-        post_id: post.id,
-        parent_comment_id: replyTarget?.id ?? null,
-        body: commentBody.trim(),
-      });
+    const { data: createdComment, error: insertError } =
+      await getSupabaseBrowserClient()
+        .from("feed_post_comments")
+        .insert({
+          post_id: post.id,
+          parent_comment_id: replyTarget?.id ?? null,
+          body: commentBody.trim(),
+        })
+        .select(
+          "id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at",
+        )
+        .single();
 
     setCommentSaving(false);
-    if (insertError) {
-      setError(insertError.message);
+    if (insertError || !createdComment) {
+      setError(insertError?.message ?? "Komentar belum dapat dikirim.");
       return;
     }
 
+    const nextComment = createdComment as ThreadComment;
+    setComments((current) => {
+      if (current.some((comment) => comment.id === nextComment.id)) {
+        return current;
+      }
+      return [...current, nextComment].sort(
+        (a, b) =>
+          new Date(a.created_at).getTime() -
+          new Date(b.created_at).getTime(),
+      );
+    });
+    setPost((current) =>
+      current
+        ? { ...current, commentCount: current.commentCount + 1 }
+        : current,
+    );
     setCommentBody("");
     setReplyTarget(null);
-    await loadThread({ quiet: true });
   };
 
   const deleteComment = async (comment: ThreadComment) => {
+    const removedIds = new Set<string>([comment.id]);
+    let changed = true;
+
+    while (changed) {
+      changed = false;
+      for (const item of comments) {
+        if (
+          item.parent_comment_id &&
+          removedIds.has(item.parent_comment_id) &&
+          !removedIds.has(item.id)
+        ) {
+          removedIds.add(item.id);
+          changed = true;
+        }
+      }
+    }
+
+    const removedCount = Math.max(1, removedIds.size);
+    setComments((current) =>
+      current.filter((item) => !removedIds.has(item.id)),
+    );
+    setPost((current) =>
+      current
+        ? {
+            ...current,
+            commentCount: Math.max(
+              0,
+              current.commentCount - removedCount,
+            ),
+          }
+        : current,
+    );
+
     const { error: deleteError } = await getSupabaseBrowserClient()
       .from("feed_post_comments")
       .delete()
@@ -295,10 +441,8 @@ export default function ThreadPage() {
 
     if (deleteError) {
       setError(deleteError.message);
-      return;
+      void loadThread({ quiet: true });
     }
-
-    await loadThread({ quiet: true });
   };
 
   const rootComments = useMemo(
