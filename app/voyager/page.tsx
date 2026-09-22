@@ -263,6 +263,19 @@ export default function VoyagerPage() {
     if (!accessLoading) void load();
   }, [accessLoading, load]);
 
+  useEffect(() => {
+    if (events.length === 0 || typeof window === "undefined") return;
+
+    const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!slug) return;
+
+    const target = events.find((event) => event.slug === slug);
+    if (!target) return;
+
+    setView(target.status === "completed" ? "history" : "active");
+    setDetailEvent(target);
+  }, [events]);
+
   const activeEvents = useMemo(
     () => events.filter((event) => event.status !== "completed"),
     [events],
