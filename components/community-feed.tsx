@@ -359,27 +359,37 @@ export function CommunityFeed({
       .channel("community-feed-live")
       .on(
         "postgres_changes",
-        { event: "INSERT", schema: "public", table: "feed_posts" },
-        (payload) => {
-          const record = payload.new as Record<string, unknown>;
-          const status = record.status;
-          const authorId = record.author_id;
-
-          if (
-            status === "published" &&
-            authorId !== user?.id
-          ) {
-            setNewPostsAvailable(true);
-          }
+        {
+          event: "*",
+          schema: "public",
+          table: "feed_posts",
         },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "feed_posts" },
-        (payload) => {
-          const record = payload.new as Record<string, unknown>;
-          const id = typeof record.id === "string" ? record.id : "";
-          if (!id) return;
+        (payload: any) => {
+          if (payload.eventType === "INSERT") {
+            const record = payload.new ?? {};
+            if (
+              record.status === "published" &&
+              record.author_id !== user?.id
+            ) {
+              setNewPostsAvailable(true);
+            }
+            return;
+          }
+
+          if (payload.eventType === "DELETE") {
+            const id = payload.old?.id;
+            if (typeof id !== "string") return;
+            setPosts((current) =>
+              current.filter((post) => post.id !== id),
+            );
+            return;
+          }
+
+          if (payload.eventType !== "UPDATE") return;
+
+          const record = payload.new ?? {};
+          const id = record.id;
+          if (typeof id !== "string") return;
 
           if (
             typeof record.status === "string" &&
@@ -407,19 +417,6 @@ export function CommunityFeed({
                   }
                 : post,
             ),
-          );
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "DELETE", schema: "public", table: "feed_posts" },
-        (payload) => {
-          const record = payload.old as Record<string, unknown>;
-          const id = typeof record.id === "string" ? record.id : "";
-          if (!id) return;
-
-          setPosts((current) =>
-            current.filter((post) => post.id !== id),
           );
         },
       )
