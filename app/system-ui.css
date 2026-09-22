@@ -14229,3 +14229,46 @@
     animation: none;
   }
 }
+
+
+/* Dashboard Social Feed Pagination v1 */
+.app-shell .community-feed-sentinel {
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .community-feed-sentinel > span:only-child {
+  width: 1px;
+  height: 1px;
+}
+
+.app-shell .community-feed-sentinel svg {
+  width: 16px;
+  height: 16px;
+  color: var(--rr-red);
+}
+
+.app-shell .community-feed-end {
+  margin: 0;
+  padding: 18px 14px 8px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  line-height: 1.45;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-feed-sentinel {
+    min-height: 58px;
+  }
+
+  .app-shell .community-feed-end {
+    padding-bottom: 2px;
+  }
+}
