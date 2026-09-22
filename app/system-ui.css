@@ -14272,3 +14272,15 @@
     padding-bottom: 2px;
   }
 }
+
+
+/* Dashboard Social QA v1 · thread spacing */
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page {
+    padding-bottom: calc(58px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    bottom: calc(58px + env(safe-area-inset-bottom));
+  }
+}
