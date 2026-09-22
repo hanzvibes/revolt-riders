@@ -143,6 +143,17 @@
 .join-detail-container {
   padding-bottom: 24px;
 }
+
+@media (max-width: 720px) {
+  .sheet-form,
+  .member-sheet-form,
+  .event-create-form,
+  .bulletin-sheet-form,
+  .cash-sheet-form,
+  .join-detail-container {
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  }
+}
 .sheet-form {
   display: grid;
   grid-template-columns: 1fr 1fr;
