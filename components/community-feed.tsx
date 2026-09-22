@@ -30,7 +30,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
 type FeedMedia = {
   id: string;
@@ -89,6 +89,7 @@ type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "like
 
 const STAFF_ROLES: AppRole[] = ["road_captain", "admin", "superadmin"];
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const FEED_PAGE_SIZE = 12;
 
 const roleLabel: Record<AppRole, string> = {
   member: "Member",
@@ -432,6 +433,10 @@ export function CommunityFeed({
   const { user, account, loading: accessLoading, invalidateCache } = useDataCache();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const loadedCountRef = useRef(FEED_PAGE_SIZE);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
   const [error, setError] = useState("");
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
   const [internalComposerOpen, setInternalComposerOpen] = useState(false);
@@ -455,14 +460,27 @@ export function CommunityFeed({
   const activeMember = account?.status === "active";
   const isStaff = account?.status === "active" && STAFF_ROLES.includes(account.role);
 
-  const loadFeed = useCallback(async () => {
+  const loadFeed = useCallback(async ({
+    from = 0,
+    append = false,
+    pageSize = FEED_PAGE_SIZE,
+  }: {
+    from?: number;
+    append?: boolean;
+    pageSize?: number;
+  } = {}) => {
     if (!activeMember || !user) {
       setPosts([]);
+      setHasMore(false);
       setLoading(false);
+      setLoadingMore(false);
       return;
     }
-    setLoading(true);
+
+    if (append) setLoadingMore(true);
+    else setLoading(true);
     setError("");
+
     try {
       const supabase = getSupabaseBrowserClient();
       const { data: rawPosts, error: postError } = await supabase
@@ -471,25 +489,42 @@ export function CommunityFeed({
         .eq("status", "published")
         .order("is_pinned", { ascending: false })
         .order("published_at", { ascending: false })
-        .limit(30);
+        .range(from, from + pageSize - 1);
       if (postError) throw postError;
 
       const rows = (rawPosts ?? []) as FeedPostRow[];
       const postIds = rows.map((post) => post.id);
       const media = rows.flatMap((post) => post.feed_post_media ?? []);
       const mediaUrlByPath = new Map<string, string>();
+
       if (media.length > 0) {
         const { data: signedMedia, error: mediaError } = await supabase.storage
           .from("community-feed")
           .createSignedUrls(media.map((item) => item.object_path), 60 * 60);
         if (mediaError) throw mediaError;
-        for (const item of signedMedia ?? []) if (item.path && item.signedUrl) mediaUrlByPath.set(item.path, item.signedUrl);
+        for (const item of signedMedia ?? []) {
+          if (item.path && item.signedUrl) {
+            mediaUrlByPath.set(item.path, item.signedUrl);
+          }
+        }
       }
 
-      const [likesResult, commentsResult] = postIds.length > 0 ? await Promise.all([
-        supabase.from("feed_post_likes").select("post_id").in("post_id", postIds).eq("user_id", user.id),
-        supabase.from("feed_post_comments").select("id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at").in("post_id", postIds).order("created_at", { ascending: false }).limit(120),
-      ]) : [{ data: [], error: null }, { data: [], error: null }];
+      const [likesResult, commentsResult] = postIds.length > 0
+        ? await Promise.all([
+            supabase
+              .from("feed_post_likes")
+              .select("post_id")
+              .in("post_id", postIds)
+              .eq("user_id", user.id),
+            supabase
+              .from("feed_post_comments")
+              .select("id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at")
+              .in("post_id", postIds)
+              .order("created_at", { ascending: false })
+              .limit(Math.max(120, postIds.length * 10)),
+          ])
+        : [{ data: [], error: null }, { data: [], error: null }];
+
       if (likesResult.error) throw likesResult.error;
       if (commentsResult.error) throw commentsResult.error;
 
@@ -502,23 +537,46 @@ export function CommunityFeed({
         current.push(comment);
         commentsByPost.set(comment.post_id, current);
       }
-      setPosts(rows.map((post) => ({
+
+      const hydrated = rows.map((post) => ({
         ...post,
-        media: (post.feed_post_media ?? []).sort((a, b) => a.sort_order - b.sort_order).map((item) => ({ ...item, signedUrl: mediaUrlByPath.get(item.object_path) })),
+        media: (post.feed_post_media ?? [])
+          .sort((a, b) => a.sort_order - b.sort_order)
+          .map((item) => ({
+            ...item,
+            signedUrl: mediaUrlByPath.get(item.object_path),
+          })),
         likeCount: post.feed_post_likes?.[0]?.count ?? 0,
         commentCount: post.feed_post_comments?.[0]?.count ?? 0,
         likedByMe: likedIds.has(post.id),
         comments: commentsByPost.get(post.id) ?? [],
-      })));
+      }));
+
+      if (append) {
+        const incomingIds = new Set(hydrated.map((post) => post.id));
+        setPosts((current) => [
+          ...current.filter((post) => !incomingIds.has(post.id)),
+          ...hydrated,
+        ]);
+        loadedCountRef.current = from + rows.length;
+      } else {
+        setPosts(hydrated);
+        loadedCountRef.current = rows.length;
+      }
+
+      setHasMore(rows.length === pageSize);
     } catch (cause) {
       console.error("Gagal memuat Kabar Revolt.", cause);
       setError(feedErrorMessage(cause));
     } finally {
-      setLoading(false);
+      if (append) setLoadingMore(false);
+      else setLoading(false);
     }
   }, [activeMember, user]);
 
-  useEffect(() => { if (!accessLoading) void loadFeed(); }, [accessLoading, loadFeed]);
+  useEffect(() => {
+    if (!accessLoading) void loadFeed();
+  }, [accessLoading, loadFeed]);
 
   useEffect(() => {
     if (!isStaff) {
@@ -556,11 +614,31 @@ export function CommunityFeed({
     const supabase = getSupabaseBrowserClient();
     const channel = supabase.channel("community-feed-live")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "feed_posts" }, () => setNewPostsAvailable(true))
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_comments" }, () => void loadFeed())
-      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_likes" }, () => void loadFeed())
+      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_comments" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) }))
+      .on("postgres_changes", { event: "*", schema: "public", table: "feed_post_likes" }, () => void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) }))
       .subscribe();
     return () => { void supabase.removeChannel(channel); };
   }, [activeMember, loadFeed]);
+
+  useEffect(() => {
+    if (!activeMember || loading || loadingMore || !hasMore) return;
+
+    const node = loadMoreRef.current;
+    if (!node) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        observer.disconnect();
+        void loadFeed({ from: posts.length, append: true });
+      },
+      { rootMargin: "320px 0px" },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [activeMember, hasMore, loadFeed, loading, loadingMore, posts.length]);
+
 
   const refreshFromBanner = () => {
     setNewPostsAvailable(false);
@@ -577,21 +655,21 @@ export function CommunityFeed({
       : await supabase.from("feed_post_likes").insert({ post_id: post.id, user_id: user.id });
     if (result.error) {
       setError(result.error.message);
-      void loadFeed();
+      void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
     }
   };
 
   const deleteComment = async (comment: FeedComment) => {
     const { error: deleteError } = await getSupabaseBrowserClient().from("feed_post_comments").delete().eq("id", comment.id);
     if (deleteError) setError(deleteError.message);
-    else void loadFeed();
+    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
   };
 
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
     const payload = action === "pin" ? { is_pinned: !post.is_pinned } : action === "comments" ? { comments_locked: !post.comments_locked } : { status: "archived" };
     const { error: updateError } = await getSupabaseBrowserClient().from("feed_posts").update(payload).eq("id", post.id);
     if (updateError) setError(updateError.message);
-    else void loadFeed();
+    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
   };
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
@@ -633,7 +711,10 @@ export function CommunityFeed({
 
   const emptyCopy = isStaff ? "Belum ada post. Bagikan kabar pertama untuk member Revolt Riders." : "Belum ada kabar dari pengurus. Post terbaru akan muncul di sini.";
   const visiblePosts = useMemo(() => posts.filter((post) => !post.is_pinned), [posts]);
-  const pinnedPost = posts.find((post) => post.is_pinned) ?? null;
+  const pinnedPosts = useMemo(
+    () => posts.filter((post) => post.is_pinned).slice(0, 2),
+    [posts],
+  );
 
   return (
     <section className="community-feed-page" aria-labelledby="community-feed-title">
@@ -649,9 +730,15 @@ export function CommunityFeed({
           {error && <p className="community-feed-error" role="alert">{error}</p>}
           {loading ? <FeedSkeleton /> : (
             <div className="community-feed-list">
-              {pinnedPost && <FeedPostCard post={pinnedPost} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(post) => router.push(`/post/${post.id}`)} onManage={managePost} onDeleteComment={deleteComment} />}
+              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
               {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
               {posts.length === 0 && <section className="community-feed-empty"><MessageCircle aria-hidden="true" /><h3>Belum ada kabar</h3><p>{emptyCopy}</p>{isStaff && <button type="button" onClick={() => setComposerOpen(true)}><Plus aria-hidden="true" /> Buat post pertama</button>}</section>}
+              {posts.length > 0 && hasMore ? (
+                <div ref={loadMoreRef} className="community-feed-sentinel" aria-live="polite">
+                  {loadingMore ? <><LoaderCircle className="spin" aria-hidden="true" /> Memuat kabar lainnya…</> : <span aria-hidden="true" />}
+                </div>
+              ) : null}
+              {posts.length > 0 && !hasMore ? <p className="community-feed-end">Semua kabar sudah dilihat.</p> : null}
             </div>
           )}
         </>
