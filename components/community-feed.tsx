@@ -9,6 +9,13 @@ import {
   type CommunityFeedEvent,
   type CommunityFeedMedia,
 } from "@/components/community-feed-primitives";
+import {
+  getSocialUrlDetails,
+  socialInitials,
+  socialRelativeDate,
+  socialRoleLabel,
+  SOCIAL_FEED_STAFF_ROLES,
+} from "@/components/community-feed-utils";
 import { ModalSheet } from "@/components/modal-sheet";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -74,17 +81,8 @@ type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "like
   feed_post_comments?: { count: number }[];
 };
 
-const STAFF_ROLES: AppRole[] = ["road_captain", "admin", "superadmin"];
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const FEED_PAGE_SIZE = 12;
-
-const roleLabel: Record<AppRole, string> = {
-  member: "Member",
-  road_captain: "Road Captain",
-  treasurer: "Bendahara",
-  admin: "Admin",
-  superadmin: "Superadmin",
-};
 
 function feedErrorMessage(cause: unknown) {
   const message = typeof cause === "object" && cause !== null && "message" in cause
@@ -96,33 +94,6 @@ function feedErrorMessage(cause: unknown) {
   }
 
   return "Kabar Revolt belum dapat dimuat. Coba muat ulang halaman.";
-}
-
-function initials(name: string) {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  return (words.length > 1 ? `${words[0][0]}${words[1][0]}` : words[0]?.slice(0, 2) || "RR").toUpperCase();
-}
-
-function relativeDate(value: string | null) {
-  if (!value) return "Baru saja";
-  const difference = Date.now() - new Date(value).getTime();
-  const minutes = Math.floor(difference / 60_000);
-  if (minutes < 1) return "Baru saja";
-  if (minutes < 60) return `${minutes} mnt`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} jam`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} hari`;
-  return new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
-}
-
-function getUrlDetails(value: string) {
-  try {
-    const url = new URL(value);
-    return { hostname: url.hostname.replace(/^www\./, ""), url: url.toString() };
-  } catch {
-    return null;
-  }
 }
 
 function FeedSkeleton() {
@@ -163,12 +134,12 @@ function CommentLine({ comment, canModerate, currentUserId, onDelete }: {
   const canDelete = canModerate || comment.author_id === currentUserId;
   return (
     <article className="community-comment">
-      <span className="community-avatar small" aria-hidden="true">{initials(comment.author_name)}</span>
+      <span className="community-avatar small" aria-hidden="true">{socialInitials(comment.author_name)}</span>
       <div>
         <header>
           <strong>{comment.author_name}</strong>
-          <span>{roleLabel[comment.author_role]}</span>
-          <time dateTime={comment.created_at}>{relativeDate(comment.created_at)}</time>
+          <span>{socialRoleLabel[comment.author_role]}</span>
+          <time dateTime={comment.created_at}>{socialRelativeDate(comment.created_at)}</time>
         </header>
         <p>{comment.body}</p>
       </div>
@@ -193,7 +164,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
 }) {
   const [expanded, setExpanded] = useState(false);
   const longPost = post.body.length > 420;
-  const link = post.link_url ? getUrlDetails(post.link_url) : null;
+  const link = post.link_url ? getSocialUrlDetails(post.link_url) : null;
   const canManage = isStaff && (post.author_id === currentUserId || currentRole === "admin" || currentRole === "superadmin");
   const comments = post.comments.filter((comment) => !comment.parent_comment_id).slice(0, 2);
 
@@ -204,7 +175,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
         <OfficialFeedAvatar />
         <span className="community-post-author">
           <strong>{post.author_name}</strong>
-          <small><b>{roleLabel[post.author_role]}</b><span aria-hidden="true">·</span><time dateTime={post.published_at ?? post.created_at}>{relativeDate(post.published_at ?? post.created_at)}</time></small>
+          <small><b>{socialRoleLabel[post.author_role]}</b><span aria-hidden="true">·</span><time dateTime={post.published_at ?? post.created_at}>{socialRelativeDate(post.published_at ?? post.created_at)}</time></small>
         </span>
         {canManage && (
           <details className="community-post-menu">
@@ -292,7 +263,7 @@ export function CommunityFeed({
   const [lockComments, setLockComments] = useState(false);
 
   const activeMember = account?.status === "active";
-  const isStaff = account?.status === "active" && STAFF_ROLES.includes(account.role);
+  const isStaff = account?.status === "active" && SOCIAL_FEED_STAFF_ROLES.includes(account.role);
 
   const loadFeed = useCallback(async ({
     from = 0,
