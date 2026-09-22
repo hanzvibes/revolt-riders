@@ -2,7 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import {
-  CommunityAgendaAttachment,
+  CommunityEventAttachment,
   CommunityMediaGallery,
   OfficialFeedAvatar,
   type CommunityFeedEvent,
@@ -114,7 +114,7 @@ export default function ThreadPage() {
       const { data: rawPost, error: postError } = await supabase
         .from("feed_posts")
         .select(
-          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)",
+          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at),comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)",
         )
         .eq("id", postId)
         .eq("status", "published")
@@ -150,27 +150,60 @@ export default function ThreadPage() {
         }
       }
 
-      const [likeResult, commentResult] = await Promise.all([
-        supabase
-          .from("feed_post_likes")
-          .select("post_id")
-          .eq("post_id", postId)
-          .eq("user_id", user.id)
-          .maybeSingle(),
-        supabase
-          .from("feed_post_comments")
-          .select(
-            "id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at",
-          )
-          .eq("post_id", postId)
-          .order("created_at", { ascending: true }),
-      ]);
+      const voyagerEventId =
+        row.attached_event?.type === "voyager"
+          ? row.attached_event.id
+          : null;
+
+      const [likeResult, commentResult, participantsResult, photosResult] =
+        await Promise.all([
+          supabase
+            .from("feed_post_likes")
+            .select("post_id")
+            .eq("post_id", postId)
+            .eq("user_id", user.id)
+            .maybeSingle(),
+          supabase
+            .from("feed_post_comments")
+            .select(
+              "id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at",
+            )
+            .eq("post_id", postId)
+            .order("created_at", { ascending: true }),
+          voyagerEventId
+            ? supabase
+                .from("event_participants")
+                .select("event_id")
+                .eq("event_id", voyagerEventId)
+            : Promise.resolve({ data: [], error: null }),
+          voyagerEventId
+            ? supabase
+                .from("club_gallery")
+                .select("event_id")
+                .eq("event_id", voyagerEventId)
+            : Promise.resolve({ data: [], error: null }),
+        ]);
 
       if (likeResult.error) throw likeResult.error;
       if (commentResult.error) throw commentResult.error;
+      if (participantsResult.error) throw participantsResult.error;
+      if (photosResult.error) throw photosResult.error;
 
       setPost({
         ...row,
+        attached_event: row.attached_event
+          ? {
+              ...row.attached_event,
+              participantCount:
+                row.attached_event.type === "voyager"
+                  ? (participantsResult.data ?? []).length
+                  : undefined,
+              photoCount:
+                row.attached_event.type === "voyager"
+                  ? (photosResult.data ?? []).length
+                  : undefined,
+            }
+          : null,
         media: media.map((item) => ({
           ...item,
           signedUrl: mediaUrlByPath.get(item.object_path),
@@ -506,7 +539,7 @@ export default function ThreadPage() {
           </div>
 
           {post.attached_event ? (
-            <CommunityAgendaAttachment event={post.attached_event} />
+            <CommunityEventAttachment event={post.attached_event} />
           ) : null}
 
           {post.link_url && getSocialUrlDetails(post.link_url) ? (
