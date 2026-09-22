@@ -124,57 +124,159 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
   const [expanded, setExpanded] = useState(false);
   const longPost = post.body.length > 420;
   const link = post.link_url ? getSocialUrlDetails(post.link_url) : null;
-  const canManage = isStaff && (post.author_id === currentUserId || currentRole === "admin" || currentRole === "superadmin");
+  const canManage =
+    isStaff &&
+    (post.author_id === currentUserId ||
+      currentRole === "admin" ||
+      currentRole === "superadmin");
 
   return (
-    <article className={`community-post ${post.is_pinned ? "is-pinned" : ""}`}>
-      {post.is_pinned && <div className="community-pin-label"><Pin aria-hidden="true" /> Disematkan</div>}
-      <header className="community-post-header">
-        <OfficialFeedAvatar />
-        <span className="community-post-author">
-          <strong>{post.author_name}</strong>
-          <small><b>{socialRoleLabel[post.author_role]}</b><span aria-hidden="true">·</span><time dateTime={post.published_at ?? post.created_at}>{socialRelativeDate(post.published_at ?? post.created_at)}</time></small>
-        </span>
-        {canManage && (
-          <details className="community-post-menu">
-            <summary aria-label={`Kelola post ${post.author_name}`}><MoreHorizontal aria-hidden="true" /></summary>
-            <div>
-              <button type="button" onClick={() => onManage(post, "pin")}><Pin aria-hidden="true" />{post.is_pinned ? "Lepas sematan" : "Sematkan"}</button>
-              <button type="button" onClick={() => onManage(post, "comments")}>
-                {post.comments_locked ? <UnlockKeyhole aria-hidden="true" /> : <LockKeyhole aria-hidden="true" />}
-                {post.comments_locked ? "Buka komentar" : "Tutup komentar"}
-              </button>
-              <button type="button" className="danger" onClick={() => onManage(post, "archive")}><Archive aria-hidden="true" />Arsipkan post</button>
-            </div>
-          </details>
-        )}
-      </header>
-
-      <div className="community-post-copy">
-        <p className={longPost && !expanded ? "is-clamped" : ""}>{post.body}</p>
-        {longPost && <button type="button" className="community-expand" onClick={() => setExpanded((value) => !value)}>{expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}<ChevronDown aria-hidden="true" /></button>}
-      </div>
-
-      {post.attached_event && <CommunityEventAttachment event={post.attached_event} />}
-      {link && (
-        <a className="community-link-preview" href={link.url} target="_blank" rel="noreferrer">
-          <span><Link2 aria-hidden="true" /><small>{link.hostname}</small></span>
-          <b>Buka tautan</b><ExternalLink aria-hidden="true" />
-        </a>
-      )}
-      <CommunityMediaGallery media={post.media} />
-
-      <footer className="community-post-footer">
-        <div className="community-post-counts"><span>{post.likeCount} suka</span><button type="button" onClick={() => onOpenDiscussion(post)}>{post.commentCount} komentar</button></div>
-        <div className="community-post-actions">
-          <button type="button" className={post.likedByMe ? "is-liked" : ""} onClick={() => onToggleLike(post)} aria-pressed={post.likedByMe}>
-            <Heart aria-hidden="true" fill={post.likedByMe ? "currentColor" : "none"} /> {post.likedByMe ? "Disukai" : "Suka"}
-          </button>
-          <button type="button" onClick={() => onOpenDiscussion(post)}><MessageCircle aria-hidden="true" /> Komentar</button>
+    <article
+      className={`community-post community-threads-post ${post.is_pinned ? "is-pinned" : ""}`}
+    >
+      <div className="community-threads-layout">
+        <div className="community-threads-rail" aria-hidden="true">
+          <OfficialFeedAvatar />
+          <span className="community-threads-connector" />
         </div>
-      </footer>
 
-      {post.comments_locked && <p className="community-comments-locked"><LockKeyhole aria-hidden="true" /> Diskusi untuk post ini ditutup oleh pengurus.</p>}
+        <div className="community-threads-body">
+          {post.is_pinned ? (
+            <div className="community-pin-label">
+              <Pin aria-hidden="true" />
+              Disematkan
+            </div>
+          ) : null}
+
+          <header className="community-post-header">
+            <span className="community-post-author">
+              <strong>{post.author_name}</strong>
+              <small>
+                <b>{socialRoleLabel[post.author_role]}</b>
+                <span aria-hidden="true">·</span>
+                <time dateTime={post.published_at ?? post.created_at}>
+                  {socialRelativeDate(post.published_at ?? post.created_at)}
+                </time>
+              </small>
+            </span>
+
+            {canManage ? (
+              <details className="community-post-menu">
+                <summary aria-label={`Kelola post ${post.author_name}`}>
+                  <MoreHorizontal aria-hidden="true" />
+                </summary>
+                <div>
+                  <button type="button" onClick={() => onManage(post, "pin")}>
+                    <Pin aria-hidden="true" />
+                    {post.is_pinned ? "Lepas sematan" : "Sematkan"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onManage(post, "comments")}
+                  >
+                    {post.comments_locked ? (
+                      <UnlockKeyhole aria-hidden="true" />
+                    ) : (
+                      <LockKeyhole aria-hidden="true" />
+                    )}
+                    {post.comments_locked ? "Buka komentar" : "Tutup komentar"}
+                  </button>
+                  <button
+                    type="button"
+                    className="danger"
+                    onClick={() => onManage(post, "archive")}
+                  >
+                    <Archive aria-hidden="true" />
+                    Arsipkan post
+                  </button>
+                </div>
+              </details>
+            ) : null}
+          </header>
+
+          <div className="community-post-copy">
+            <p className={longPost && !expanded ? "is-clamped" : ""}>
+              {post.body}
+            </p>
+            {longPost ? (
+              <button
+                type="button"
+                className="community-expand"
+                onClick={() => setExpanded((value) => !value)}
+              >
+                {expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}
+                <ChevronDown aria-hidden="true" />
+              </button>
+            ) : null}
+          </div>
+
+          {post.attached_event ? (
+            <CommunityEventAttachment event={post.attached_event} />
+          ) : null}
+
+          {link ? (
+            <a
+              className="community-link-preview"
+              href={link.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>
+                <Link2 aria-hidden="true" />
+                <small>{link.hostname}</small>
+              </span>
+              <b>Buka tautan</b>
+              <ExternalLink aria-hidden="true" />
+            </a>
+          ) : null}
+
+          <CommunityMediaGallery media={post.media} />
+
+          <footer className="community-post-footer">
+            <div className="community-post-actions community-threads-actions">
+              <button
+                type="button"
+                className={post.likedByMe ? "is-liked" : ""}
+                onClick={() => onToggleLike(post)}
+                aria-pressed={post.likedByMe}
+                aria-label={post.likedByMe ? "Batalkan suka" : "Sukai post"}
+              >
+                <Heart
+                  aria-hidden="true"
+                  fill={post.likedByMe ? "currentColor" : "none"}
+                />
+                <span className="sr-only">
+                  {post.likedByMe ? "Batalkan suka" : "Suka"}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onOpenDiscussion(post)}
+                aria-label="Buka balasan"
+              >
+                <MessageCircle aria-hidden="true" />
+                <span className="sr-only">Balas</span>
+              </button>
+            </div>
+
+            <div className="community-post-counts community-threads-counts">
+              <button type="button" onClick={() => onOpenDiscussion(post)}>
+                {post.commentCount} balasan
+              </button>
+              <span aria-hidden="true">·</span>
+              <span>{post.likeCount} suka</span>
+            </div>
+          </footer>
+
+          {post.comments_locked ? (
+            <p className="community-comments-locked">
+              <LockKeyhole aria-hidden="true" />
+              Diskusi untuk post ini ditutup oleh pengurus.
+            </p>
+          ) : null}
+        </div>
+      </div>
     </article>
   );
 }
