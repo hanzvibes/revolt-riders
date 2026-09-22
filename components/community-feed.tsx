@@ -666,8 +666,43 @@ export function CommunityFeed({
   };
 
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
-    const payload = action === "pin" ? { is_pinned: !post.is_pinned } : action === "comments" ? { comments_locked: !post.comments_locked } : { status: "archived" };
-    const { error: updateError } = await getSupabaseBrowserClient().from("feed_posts").update(payload).eq("id", post.id);
+    const supabase = getSupabaseBrowserClient();
+
+    if (action === "pin" && !post.is_pinned) {
+      const otherPinned = posts
+        .filter((item) => item.is_pinned && item.id !== post.id)
+        .sort(
+          (a, b) =>
+            new Date(b.published_at ?? b.created_at).getTime() -
+            new Date(a.published_at ?? a.created_at).getTime(),
+        );
+
+      if (otherPinned.length >= 2) {
+        const oldestPinned = otherPinned[otherPinned.length - 1];
+        const { error: unpinError } = await supabase
+          .from("feed_posts")
+          .update({ is_pinned: false })
+          .eq("id", oldestPinned.id);
+
+        if (unpinError) {
+          setError(unpinError.message);
+          return;
+        }
+      }
+    }
+
+    const payload =
+      action === "pin"
+        ? { is_pinned: !post.is_pinned }
+        : action === "comments"
+          ? { comments_locked: !post.comments_locked }
+          : { status: "archived" };
+
+    const { error: updateError } = await supabase
+      .from("feed_posts")
+      .update(payload)
+      .eq("id", post.id);
+
     if (updateError) setError(updateError.message);
     else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current) });
   };
@@ -710,11 +745,14 @@ export function CommunityFeed({
   };
 
   const emptyCopy = isStaff ? "Belum ada post. Bagikan kabar pertama untuk member Revolt Riders." : "Belum ada kabar dari pengurus. Post terbaru akan muncul di sini.";
-  const visiblePosts = useMemo(() => posts.filter((post) => !post.is_pinned), [posts]);
   const pinnedPosts = useMemo(
     () => posts.filter((post) => post.is_pinned).slice(0, 2),
     [posts],
   );
+  const visiblePosts = useMemo(() => {
+    const pinnedIds = new Set(pinnedPosts.map((post) => post.id));
+    return posts.filter((post) => !pinnedIds.has(post.id));
+  }, [pinnedPosts, posts]);
 
   return (
     <section className="community-feed-page" aria-labelledby="community-feed-title">
@@ -744,7 +782,7 @@ export function CommunityFeed({
         </>
       )}
 
-      <ModalSheet open={composerOpen} onClose={closeComposer} title="Buat post" eyebrow="">
+      <ModalSheet open={Boolean(isStaff && composerOpen)} onClose={closeComposer} title="Buat post" eyebrow="">
         <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
           <label>Isi post<textarea value={postBody} onChange={(event) => setPostBody(event.target.value)} maxLength={4000} rows={7} placeholder="Bagikan kabar, agenda, atau dokumentasi perjalanan…" required /></label>
           <label>Tautan opsional<input type="url" value={postLink} onChange={(event) => setPostLink(event.target.value)} placeholder="https://…" /></label>
