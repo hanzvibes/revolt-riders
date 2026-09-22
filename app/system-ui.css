@@ -13935,3 +13935,120 @@
     margin-inline: -14px;
   }
 }
+
+
+/* Dashboard Social Header v1 · Instagram/Threads style */
+.app-shell .content > header.social-app-header {
+  position: sticky;
+  z-index: 40;
+  top: 0;
+  height: 64px;
+  border-bottom: 1px solid var(--rr-line);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell .content > header.social-app-header > div:first-of-type {
+  min-width: 0;
+}
+
+.app-shell .content > header.social-app-header h1 {
+  margin: 0;
+  font-size: 1rem !important;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.02em;
+}
+
+.app-shell .content > header.social-app-header .tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.app-shell .social-header-create,
+.app-shell .content > header.social-app-header .header-bell-btn {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-ink);
+  padding: 0;
+  box-shadow: none;
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 160ms var(--rr-ease-out);
+}
+
+.app-shell .social-header-create:hover,
+.app-shell .content > header.social-app-header .header-bell-btn:hover {
+  border-color: transparent;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .social-header-create:active,
+.app-shell .content > header.social-app-header .header-bell-btn:active {
+  transform: scale(.94);
+}
+
+.app-shell .social-header-create svg,
+.app-shell .content > header.social-app-header .header-bell-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.app-shell .social-header-create {
+  color: var(--rr-red);
+}
+
+@media (min-width: 721px) {
+  .app-shell .content > header.social-app-header {
+    height: 68px;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .content > header.social-app-header {
+    height: 58px;
+    padding: 0 10px;
+  }
+
+  .app-shell .content > header.social-app-header .hamb {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+    margin-right: 7px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  .app-shell .content > header.social-app-header h1 {
+    overflow: hidden;
+    font-size: .94rem !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .app-shell .social-header-create,
+  .app-shell .content > header.social-app-header .header-bell-btn {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .social-header-create,
+  .app-shell .content > header.social-app-header .header-bell-btn {
+    transition: none;
+  }
+}
