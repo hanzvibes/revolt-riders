@@ -1,25 +1,27 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
+import {
+  CommunityAgendaAttachment,
+  CommunityMediaGallery,
+  OfficialFeedAvatar,
+  type CommunityFeedEvent,
+  type CommunityFeedMedia,
+} from "@/components/community-feed-primitives";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   ArrowLeft,
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   ExternalLink,
   Heart,
   Link2,
   LockKeyhole,
-  MapPin,
   MessageCircle,
   Send,
   Trash2,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
@@ -30,23 +32,9 @@ import {
   type FormEvent,
 } from "react";
 
-type ThreadMedia = {
-  id: string;
-  object_path: string;
-  alt_text: string;
-  sort_order: number;
-  signedUrl?: string;
-};
+type ThreadMedia = CommunityFeedMedia;
 
-type ThreadEvent = {
-  id: string;
-  title: string;
-  slug: string;
-  type: string;
-  location_name: string | null;
-  start_at: string;
-  status: "published" | "completed";
-};
+type ThreadEvent = CommunityFeedEvent;
 
 type ThreadComment = {
   id: string;
@@ -132,159 +120,6 @@ function initials(name: string) {
       ? `${words[0][0]}${words[1][0]}`
       : words[0]?.slice(0, 2) || "RR"
   ).toUpperCase();
-}
-
-function OfficialAvatar() {
-  return (
-    <span className="community-avatar community-avatar-logo" aria-hidden="true">
-      <Image
-        src="/revolt-riders-logo.jpg"
-        alt=""
-        fill
-        sizes="42px"
-      />
-    </span>
-  );
-}
-
-function AgendaAttachment({ event }: { event: ThreadEvent }) {
-  const date = new Intl.DateTimeFormat("id-ID", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(event.start_at));
-
-  return (
-    <Link className="community-agenda-attachment" href={`/agenda#${event.slug}`}>
-      <span className="community-agenda-icon" aria-hidden="true">
-        <CalendarDays />
-      </span>
-      <span className="community-agenda-copy">
-        <small>{event.type}</small>
-        <strong>{event.title}</strong>
-        <span>
-          <time dateTime={event.start_at}>{date} WIB</time>
-          <em aria-hidden="true">·</em>
-          <span>
-            <MapPin aria-hidden="true" />
-            {event.location_name || "Lokasi menyusul"}
-          </span>
-        </span>
-      </span>
-      <ChevronRight aria-hidden="true" />
-    </Link>
-  );
-}
-
-function ThreadMediaGallery({ media }: { media: ThreadMedia[] }) {
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const visible = media.slice(0, 4);
-  const activeMedia = activeIndex === null ? null : media[activeIndex];
-
-  const closeViewer = useCallback(() => setActiveIndex(null), []);
-  const previous = useCallback(() => {
-    setActiveIndex((current) => {
-      if (current === null) return null;
-      return current === 0 ? media.length - 1 : current - 1;
-    });
-  }, [media.length]);
-  const next = useCallback(() => {
-    setActiveIndex((current) => {
-      if (current === null) return null;
-      return current === media.length - 1 ? 0 : current + 1;
-    });
-  }, [media.length]);
-
-  useEffect(() => {
-    if (activeIndex === null) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeViewer();
-      if (event.key === "ArrowLeft" && media.length > 1) previous();
-      if (event.key === "ArrowRight" && media.length > 1) next();
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [activeIndex, closeViewer, media.length, next, previous]);
-
-  if (media.length === 0) return null;
-
-  return (
-    <>
-      <div
-        className={`community-feed-media count-${visible.length}`}
-        aria-label={`${media.length} foto dokumentasi`}
-      >
-        {visible.map((item, index) => (
-          <figure key={item.id} className={index === 0 ? "feature" : ""}>
-            <button
-              type="button"
-              className="community-media-open"
-              onClick={() => setActiveIndex(index)}
-              aria-label={`Buka foto ${index + 1} dari ${media.length}`}
-            >
-              {item.signedUrl ? (
-                <Image
-                  src={item.signedUrl}
-                  alt={item.alt_text}
-                  fill
-                  sizes="(max-width: 720px) 100vw, 660px"
-                />
-              ) : null}
-              {index === 3 && media.length > 4 ? (
-                <b>+{media.length - 4}</b>
-              ) : null}
-            </button>
-          </figure>
-        ))}
-      </div>
-
-      {activeMedia?.signedUrl ? (
-        <div className="community-media-viewer" role="dialog" aria-modal="true">
-          <header>
-            <span>{activeIndex! + 1} / {media.length}</span>
-            <button type="button" onClick={closeViewer} aria-label="Tutup foto" autoFocus>
-              <X aria-hidden="true" />
-            </button>
-          </header>
-          <div className="community-media-viewer-stage">
-            {media.length > 1 ? (
-              <button
-                type="button"
-                className="community-media-viewer-nav previous"
-                onClick={previous}
-                aria-label="Foto sebelumnya"
-              >
-                <ChevronLeft aria-hidden="true" />
-              </button>
-            ) : null}
-            <figure>
-              <Image src={activeMedia.signedUrl} alt={activeMedia.alt_text} fill sizes="100vw" priority />
-            </figure>
-            {media.length > 1 ? (
-              <button
-                type="button"
-                className="community-media-viewer-nav next"
-                onClick={next}
-                aria-label="Foto berikutnya"
-              >
-                <ChevronRight aria-hidden="true" />
-              </button>
-            ) : null}
-          </div>
-        </div>
-      ) : null}
-    </>
-  );
 }
 
 export default function ThreadPage() {
@@ -577,7 +412,7 @@ export default function ThreadPage() {
 
         <article className="community-post community-thread-origin">
           <header className="community-post-header">
-            <OfficialAvatar />
+            <OfficialFeedAvatar />
             <span className="community-post-author">
               <strong>{post.author_name}</strong>
               <small>
@@ -595,7 +430,7 @@ export default function ThreadPage() {
           </div>
 
           {post.attached_event ? (
-            <AgendaAttachment event={post.attached_event} />
+            <CommunityAgendaAttachment event={post.attached_event} />
           ) : null}
 
           {post.link_url && getUrlDetails(post.link_url) ? (
@@ -614,7 +449,7 @@ export default function ThreadPage() {
             </a>
           ) : null}
 
-          <ThreadMediaGallery media={post.media} />
+          <CommunityMediaGallery media={post.media} />
 
           <footer className="community-post-footer">
             <div className="community-post-counts">
