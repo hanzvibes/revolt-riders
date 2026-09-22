@@ -52,6 +52,31 @@ export default function AgendaPage() {
     };
   }, [load]);
 
+  useEffect(() => {
+    if (events.length === 0 || typeof window === "undefined") return;
+
+    const slug = decodeURIComponent(window.location.hash.replace(/^#/, ""));
+    if (!slug) return;
+
+    const target = events.find((event) => event.slug === slug);
+    if (!target) return;
+
+    const targetView =
+      target.status === "completed" || new Date(target.start_at).getTime() < Date.now()
+        ? "history"
+        : "upcoming";
+
+    setView(targetView);
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        document.getElementById(slug)?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      });
+    });
+  }, [events]);
+
   const { upcoming, history } = useMemo(() => {
     const now = Date.now();
     const upcomingEvents = events.filter(
