@@ -82,6 +82,18 @@ const roleLabel: Record<AppRole, string> = {
   superadmin: "Superadmin",
 };
 
+function feedErrorMessage(cause: unknown) {
+  const message = typeof cause === "object" && cause !== null && "message" in cause
+    ? String(cause.message)
+    : "";
+
+  if (/permission denied|row-level security|not authorized/i.test(message)) {
+    return "Akses feed belum tersedia untuk akun ini. Muat ulang halaman atau hubungi pengurus bila masalah berlanjut.";
+  }
+
+  return "Kabar Revolt belum dapat dimuat. Coba muat ulang halaman.";
+}
+
 function initials(name: string) {
   const words = name.trim().split(/\s+/).filter(Boolean);
   return (words.length > 1 ? `${words[0][0]}${words[1][0]}` : words[0]?.slice(0, 2) || "RR").toUpperCase();
@@ -306,7 +318,8 @@ export function CommunityFeed() {
         comments: commentsByPost.get(post.id) ?? [],
       })));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Kabar Revolt belum dapat dimuat.");
+      console.error("Gagal memuat Kabar Revolt.", cause);
+      setError(feedErrorMessage(cause));
     } finally {
       setLoading(false);
     }
