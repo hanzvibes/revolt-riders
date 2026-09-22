@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/set-state-in-effect */
 
 import {
-  CommunityAgendaAttachment,
+  CommunityEventAttachment,
   CommunityMediaGallery,
   OfficialFeedAvatar,
   type CommunityFeedEvent,
@@ -155,7 +155,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
         {longPost && <button type="button" className="community-expand" onClick={() => setExpanded((value) => !value)}>{expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}<ChevronDown aria-hidden="true" /></button>}
       </div>
 
-      {post.attached_event && <CommunityAgendaAttachment event={post.attached_event} />}
+      {post.attached_event && <CommunityEventAttachment event={post.attached_event} />}
       {link && (
         <a className="community-link-preview" href={link.url} target="_blank" rel="noreferrer">
           <span><Link2 aria-hidden="true" /><small>{link.hostname}</small></span>
@@ -244,7 +244,7 @@ export function CommunityFeed({
       const supabase = getSupabaseBrowserClient();
       const { data: rawPosts, error: postError } = await supabase
         .from("feed_posts")
-        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)")
+        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)")
         .eq("status", "published")
         .order("is_pinned", { ascending: false })
         .order("published_at", { ascending: false })
@@ -268,21 +268,78 @@ export function CommunityFeed({
         }
       }
 
-      const likesResult = postIds.length > 0
-        ? await supabase
-            .from("feed_post_likes")
-            .select("post_id")
-            .in("post_id", postIds)
-            .eq("user_id", user.id)
-        : { data: [], error: null };
+      const voyagerEventIds = Array.from(
+        new Set(
+          rows
+            .map((post) => post.attached_event)
+            .filter(
+              (event): event is FeedEvent =>
+                Boolean(event && event.type === "voyager"),
+            )
+            .map((event) => event.id),
+        ),
+      );
+
+      const [likesResult, participantsResult, photosResult] = await Promise.all([
+        postIds.length > 0
+          ? supabase
+              .from("feed_post_likes")
+              .select("post_id")
+              .in("post_id", postIds)
+              .eq("user_id", user.id)
+          : Promise.resolve({ data: [], error: null }),
+        voyagerEventIds.length > 0
+          ? supabase
+              .from("event_participants")
+              .select("event_id")
+              .in("event_id", voyagerEventIds)
+          : Promise.resolve({ data: [], error: null }),
+        voyagerEventIds.length > 0
+          ? supabase
+              .from("club_gallery")
+              .select("event_id")
+              .in("event_id", voyagerEventIds)
+          : Promise.resolve({ data: [], error: null }),
+      ]);
 
       if (likesResult.error) throw likesResult.error;
+      if (participantsResult.error) throw participantsResult.error;
+      if (photosResult.error) throw photosResult.error;
 
       const likedIds = new Set(
         ((likesResult.data ?? []) as { post_id: string }[]).map((like) => like.post_id),
       );
+      const participantCountByEvent = new Map<string, number>();
+      for (const row of (participantsResult.data ?? []) as { event_id: string }[]) {
+        participantCountByEvent.set(
+          row.event_id,
+          (participantCountByEvent.get(row.event_id) ?? 0) + 1,
+        );
+      }
+
+      const photoCountByEvent = new Map<string, number>();
+      for (const row of (photosResult.data ?? []) as { event_id: string | null }[]) {
+        if (!row.event_id) continue;
+        photoCountByEvent.set(
+          row.event_id,
+          (photoCountByEvent.get(row.event_id) ?? 0) + 1,
+        );
+      }
       const hydrated = rows.map((post) => ({
         ...post,
+        attached_event: post.attached_event
+          ? {
+              ...post.attached_event,
+              participantCount:
+                post.attached_event.type === "voyager"
+                  ? participantCountByEvent.get(post.attached_event.id) ?? 0
+                  : undefined,
+              photoCount:
+                post.attached_event.type === "voyager"
+                  ? photoCountByEvent.get(post.attached_event.id) ?? 0
+                  : undefined,
+            }
+          : null,
         media: (post.feed_post_media ?? [])
           .sort((a, b) => a.sort_order - b.sort_order)
           .map((item) => ({
@@ -330,21 +387,40 @@ export function CommunityFeed({
 
     let active = true;
     const loadEvents = async () => {
-      const { data, error: eventError } = await getSupabaseBrowserClient()
-        .from("events")
-        .select("id,title,slug,type,location_name,start_at,status")
-        .eq("status", "published")
-        .gte("start_at", new Date().toISOString())
-        .order("start_at", { ascending: true })
-        .limit(20);
+      const supabase = getSupabaseBrowserClient();
+      const now = new Date().toISOString();
+
+      const [agendaResult, voyagerResult] = await Promise.all([
+        supabase
+          .from("events")
+          .select("id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at")
+          .eq("status", "published")
+          .neq("type", "voyager")
+          .gte("start_at", now)
+          .order("start_at", { ascending: true })
+          .limit(12),
+        supabase
+          .from("events")
+          .select("id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at")
+          .eq("status", "published")
+          .eq("type", "voyager")
+          .order("start_at", { ascending: false })
+          .limit(8),
+      ]);
 
       if (!active) return;
-      if (eventError) {
-        console.error("Agenda untuk composer gagal dimuat.", eventError);
+      if (agendaResult.error || voyagerResult.error) {
+        console.error(
+          "Agenda/Voyager untuk composer gagal dimuat.",
+          agendaResult.error ?? voyagerResult.error,
+        );
         return;
       }
 
-      setAvailableEvents((data ?? []) as FeedEvent[]);
+      setAvailableEvents([
+        ...((agendaResult.data ?? []) as FeedEvent[]),
+        ...((voyagerResult.data ?? []) as FeedEvent[]),
+      ]);
     };
 
     void loadEvents();
@@ -590,11 +666,13 @@ export function CommunityFeed({
           <label>Isi post<textarea value={postBody} onChange={(event) => setPostBody(event.target.value)} maxLength={4000} rows={7} placeholder="Bagikan kabar, agenda, atau dokumentasi perjalanan…" required /></label>
           <label>Tautan opsional<input type="url" value={postLink} onChange={(event) => setPostLink(event.target.value)} placeholder="https://…" /></label>
           <label>
-            Lampirkan agenda
+            Lampirkan Agenda / Voyager
             <select value={postEventId} onChange={(event) => setPostEventId(event.target.value)}>
-              <option value="">Tanpa agenda</option>
+              <option value="">Tanpa lampiran event</option>
               {availableEvents.map((event) => (
-                <option key={event.id} value={event.id}>{event.title}</option>
+                <option key={event.id} value={event.id}>
+                  {event.type === "voyager" ? "Voyager" : "Agenda"} · {event.title}
+                </option>
               ))}
             </select>
           </label>
