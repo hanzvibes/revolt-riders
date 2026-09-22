@@ -304,7 +304,7 @@ export default function ThreadPage() {
   const isStaff =
     account?.status === "active" && STAFF_ROLES.includes(account.role);
 
-  const loadThread = useCallback(async () => {
+  const loadThread = useCallback(async ({ quiet = false }: { quiet?: boolean } = {}) => {
     if (!postId || !user || !activeMember) {
       setPost(null);
       setComments([]);
@@ -312,7 +312,7 @@ export default function ThreadPage() {
       return;
     }
 
-    setLoading(true);
+    if (!quiet) setLoading(true);
     setError("");
 
     try {
@@ -392,7 +392,7 @@ export default function ThreadPage() {
         cause instanceof Error ? cause.message : "Thread belum dapat dimuat.",
       );
     } finally {
-      setLoading(false);
+      if (!quiet) setLoading(false);
     }
   }, [activeMember, postId, user]);
 
@@ -413,7 +413,7 @@ export default function ThreadPage() {
           table: "feed_post_comments",
           filter: `post_id=eq.${postId}`,
         },
-        () => void loadThread(),
+        () => void loadThread({ quiet: true }),
       )
       .on(
         "postgres_changes",
@@ -423,7 +423,7 @@ export default function ThreadPage() {
           table: "feed_post_likes",
           filter: `post_id=eq.${postId}`,
         },
-        () => void loadThread(),
+        () => void loadThread({ quiet: true }),
       )
       .on(
         "postgres_changes",
@@ -433,7 +433,7 @@ export default function ThreadPage() {
           table: "feed_posts",
           filter: `id=eq.${postId}`,
         },
-        () => void loadThread(),
+        () => void loadThread({ quiet: true }),
       )
       .subscribe();
 
@@ -465,7 +465,7 @@ export default function ThreadPage() {
 
     if (result.error) {
       setError(result.error.message);
-      void loadThread();
+      void loadThread({ quiet: true });
     }
   };
 
@@ -490,7 +490,7 @@ export default function ThreadPage() {
 
     setCommentBody("");
     setReplyTarget(null);
-    await loadThread();
+    await loadThread({ quiet: true });
   };
 
   const deleteComment = async (comment: ThreadComment) => {
@@ -504,7 +504,7 @@ export default function ThreadPage() {
       return;
     }
 
-    await loadThread();
+    await loadThread({ quiet: true });
   };
 
   const rootComments = useMemo(
@@ -525,7 +525,7 @@ export default function ThreadPage() {
 
   if (accessLoading || loading) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null}>
+      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
         <PageSkeleton title="Memuat Thread..." />
       </AppShell>
     );
@@ -533,7 +533,7 @@ export default function ThreadPage() {
 
   if (!activeMember) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null}>
+      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
         <div className="community-thread-page">
           <section className="community-feed-gate">
             <LockKeyhole aria-hidden="true" />
@@ -547,7 +547,7 @@ export default function ThreadPage() {
 
   if (!post) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null}>
+      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
         <div className="community-thread-page">
           <Link className="community-thread-back" href="/dashboard">
             <ArrowLeft aria-hidden="true" />
@@ -564,7 +564,7 @@ export default function ThreadPage() {
   }
 
   return (
-    <AppShell active="Home" title="Thread" eyebrow={null}>
+    <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
       <div className="community-thread-page dashboard-social-feed-v1">
         <Link className="community-thread-back" href="/dashboard">
           <ArrowLeft aria-hidden="true" />
