@@ -11,7 +11,6 @@ import {
 } from "@/components/community-feed-primitives";
 import {
   getSocialUrlDetails,
-  socialInitials,
   socialRelativeDate,
   socialRoleLabel,
   SOCIAL_FEED_STAFF_ROLES,
@@ -42,17 +41,6 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, ty
 
 type FeedMedia = CommunityFeedMedia;
 
-type FeedComment = {
-  id: string;
-  post_id: string;
-  parent_comment_id: string | null;
-  body: string;
-  author_id: string;
-  author_name: string;
-  author_role: AppRole;
-  created_at: string;
-};
-
 type FeedEvent = CommunityFeedEvent;
 
 type FeedPost = {
@@ -72,10 +60,9 @@ type FeedPost = {
   likeCount: number;
   commentCount: number;
   likedByMe: boolean;
-  comments: FeedComment[];
 };
 
-type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "likedByMe" | "comments"> & {
+type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "likedByMe"> & {
   feed_post_media?: FeedMedia[];
   feed_post_likes?: { count: number }[];
   feed_post_comments?: { count: number }[];
@@ -125,34 +112,7 @@ function FeedSkeleton() {
   );
 }
 
-function CommentLine({ comment, canModerate, currentUserId, onDelete }: {
-  comment: FeedComment;
-  canModerate: boolean;
-  currentUserId?: string;
-  onDelete: (comment: FeedComment) => void;
-}) {
-  const canDelete = canModerate || comment.author_id === currentUserId;
-  return (
-    <article className="community-comment">
-      <span className="community-avatar small" aria-hidden="true">{socialInitials(comment.author_name)}</span>
-      <div>
-        <header>
-          <strong>{comment.author_name}</strong>
-          <span>{socialRoleLabel[comment.author_role]}</span>
-          <time dateTime={comment.created_at}>{socialRelativeDate(comment.created_at)}</time>
-        </header>
-        <p>{comment.body}</p>
-      </div>
-      {canDelete && (
-        <button className="community-comment-delete" type="button" onClick={() => onDelete(comment)} aria-label={`Hapus komentar ${comment.author_name}`}>
-          <X aria-hidden="true" />
-        </button>
-      )}
-    </article>
-  );
-}
-
-function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike, onOpenDiscussion, onManage, onDeleteComment }: {
+function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike, onOpenDiscussion, onManage }: {
   post: FeedPost;
   isStaff: boolean;
   currentRole?: AppRole;
@@ -160,13 +120,11 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
   onToggleLike: (post: FeedPost) => void;
   onOpenDiscussion: (post: FeedPost) => void;
   onManage: (post: FeedPost, action: "pin" | "comments" | "archive") => void;
-  onDeleteComment: (comment: FeedComment) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
   const longPost = post.body.length > 420;
   const link = post.link_url ? getSocialUrlDetails(post.link_url) : null;
   const canManage = isStaff && (post.author_id === currentUserId || currentRole === "admin" || currentRole === "superadmin");
-  const comments = post.comments.filter((comment) => !comment.parent_comment_id).slice(0, 2);
 
   return (
     <article className={`community-post ${post.is_pinned ? "is-pinned" : ""}`}>
@@ -216,12 +174,6 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
         </div>
       </footer>
 
-      {comments.length > 0 && (
-        <div className="community-comment-preview">
-          {comments.map((comment) => <CommentLine key={comment.id} comment={comment} canModerate={isStaff} currentUserId={currentUserId} onDelete={onDeleteComment} />)}
-          {post.commentCount > comments.length && <button type="button" className="community-all-comments" onClick={() => onOpenDiscussion(post)}>Lihat semua komentar</button>}
-        </div>
-      )}
       {post.comments_locked && <p className="community-comments-locked"><LockKeyhole aria-hidden="true" /> Diskusi untuk post ini ditutup oleh pengurus.</p>}
     </article>
   );
@@ -316,35 +268,19 @@ export function CommunityFeed({
         }
       }
 
-      const [likesResult, commentsResult] = postIds.length > 0
-        ? await Promise.all([
-            supabase
-              .from("feed_post_likes")
-              .select("post_id")
-              .in("post_id", postIds)
-              .eq("user_id", user.id),
-            supabase
-              .from("feed_post_comments")
-              .select("id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at")
-              .in("post_id", postIds)
-              .order("created_at", { ascending: false })
-              .limit(Math.max(120, postIds.length * 10)),
-          ])
-        : [{ data: [], error: null }, { data: [], error: null }];
+      const likesResult = postIds.length > 0
+        ? await supabase
+            .from("feed_post_likes")
+            .select("post_id")
+            .in("post_id", postIds)
+            .eq("user_id", user.id)
+        : { data: [], error: null };
 
       if (likesResult.error) throw likesResult.error;
-      if (commentsResult.error) throw commentsResult.error;
 
       const likedIds = new Set(
         ((likesResult.data ?? []) as { post_id: string }[]).map((like) => like.post_id),
       );
-      const commentsByPost = new Map<string, FeedComment[]>();
-      for (const comment of (commentsResult.data ?? []) as FeedComment[]) {
-        const current = commentsByPost.get(comment.post_id) ?? [];
-        current.push(comment);
-        commentsByPost.set(comment.post_id, current);
-      }
-
       const hydrated = rows.map((post) => ({
         ...post,
         media: (post.feed_post_media ?? [])
@@ -356,7 +292,6 @@ export function CommunityFeed({
         likeCount: post.feed_post_likes?.[0]?.count ?? 0,
         commentCount: post.feed_post_comments?.[0]?.count ?? 0,
         likedByMe: likedIds.has(post.id),
-        comments: commentsByPost.get(post.id) ?? [],
       }));
 
       if (append) {
@@ -466,12 +401,6 @@ export function CommunityFeed({
     }
   };
 
-  const deleteComment = async (comment: FeedComment) => {
-    const { error: deleteError } = await getSupabaseBrowserClient().from("feed_post_comments").delete().eq("id", comment.id);
-    if (deleteError) setError(deleteError.message);
-    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
-  };
-
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
     const supabase = getSupabaseBrowserClient();
 
@@ -575,8 +504,8 @@ export function CommunityFeed({
           {error && <p className="community-feed-error" role="alert">{error}</p>}
           {loading ? <FeedSkeleton /> : (
             <div className="community-feed-list">
-              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
-              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
+              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} />)}
+              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} />)}
               {posts.length === 0 && <section className="community-feed-empty"><MessageCircle aria-hidden="true" /><h3>Belum ada kabar</h3><p>{emptyCopy}</p>{isStaff && <button type="button" onClick={() => setComposerOpen(true)}><Plus aria-hidden="true" /> Buat post pertama</button>}</section>}
               {posts.length > 0 && hasMore ? (
                 <div ref={loadMoreRef} className="community-feed-sentinel" aria-live="polite">
