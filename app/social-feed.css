@@ -440,8 +440,8 @@
 }
 
 .app-shell .community-media-viewer > header button {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
 }
 
 .app-shell .community-media-viewer > header button svg {
@@ -535,8 +535,8 @@
     position: absolute;
     z-index: 2;
     top: 50%;
-    width: 42px;
-    height: 42px;
+    width: 44px;
+    height: 44px;
     transform: translateY(-50%);
     background: rgba(0,0,0,.54);
   }
@@ -682,7 +682,7 @@
 
 .app-shell .community-thread-back {
   display: inline-flex;
-  min-height: 42px;
+  min-height: 44px;
   align-items: center;
   gap: 7px;
   margin: 0 2px 8px;
@@ -859,7 +859,7 @@
 
 .app-shell .community-thread-composer > div:last-child {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 42px;
+  grid-template-columns: minmax(0, 1fr) 44px;
   align-items: end;
   gap: 8px;
 }
@@ -887,8 +887,8 @@
 
 .app-shell .community-thread-composer > div:last-child > button {
   display: grid;
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   place-items: center;
   border: 0;
   border-radius: 50%;
@@ -1047,16 +1047,17 @@
 
 @media (max-width: 720px) {
   .app-shell .content > header.social-app-header {
-    height: 58px;
-    padding: 0 10px;
+    min-height: calc(58px + env(safe-area-inset-top));
+    height: auto;
+    padding: env(safe-area-inset-top) 10px 0;
   }
 
   .app-shell .content > header.social-app-header .hamb {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
-    margin-right: 7px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    margin-right: 4px;
     border: 0;
     border-radius: 50%;
     background: transparent;
@@ -1071,10 +1072,10 @@
 
   .app-shell .social-header-create,
   .app-shell .content > header.social-app-header .header-bell-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
@@ -1206,6 +1207,9 @@
     padding: 4px 5px env(safe-area-inset-bottom);
     box-shadow: none;
     backdrop-filter: blur(18px);
+    transition:
+      transform 180ms var(--rr-ease-out),
+      opacity 160ms var(--rr-ease-out);
   }
 
   .app-shell.social-shell .bottom a {
@@ -1314,5 +1318,26 @@
 
   .app-shell.social-shell .community-thread-composer {
     bottom: calc(58px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell:has(.community-thread-composer textarea:focus) .bottom {
+    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .app-shell.social-shell:has(.community-thread-composer textarea:focus) .community-thread-composer {
+    bottom: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary,
+  .app-shell .community-reply-target > button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .app-shell .community-post-menu button,
+  .app-shell .thread-comment-actions button {
+    min-height: 44px;
   }
 }
