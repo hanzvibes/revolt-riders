@@ -213,6 +213,8 @@ export function CommunityFeed({
   const [postFiles, setPostFiles] = useState<File[]>([]);
   const [pinPost, setPinPost] = useState(false);
   const [lockComments, setLockComments] = useState(false);
+  const [composerMode, setComposerMode] = useState<"edit" | "preview">("edit");
+  const [previewAuthorName, setPreviewAuthorName] = useState("Pengurus Revolt Riders");
 
   const activeMember = account?.status === "active";
   const isStaff = account?.status === "active" && SOCIAL_FEED_STAFF_ROLES.includes(account.role);
@@ -390,7 +392,7 @@ export function CommunityFeed({
       const supabase = getSupabaseBrowserClient();
       const now = new Date().toISOString();
 
-      const [agendaResult, voyagerResult] = await Promise.all([
+      const [agendaResult, voyagerResult, profileResult] = await Promise.all([
         supabase
           .from("events")
           .select("id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at")
@@ -406,6 +408,13 @@ export function CommunityFeed({
           .eq("type", "voyager")
           .order("start_at", { ascending: false })
           .limit(8),
+        account?.member_external_id
+          ? supabase
+              .from("member_profiles")
+              .select("full_name,nickname")
+              .eq("member_external_id", account.member_external_id)
+              .maybeSingle()
+          : Promise.resolve({ data: null, error: null }),
       ]);
 
       if (!active) return;
@@ -417,17 +426,71 @@ export function CommunityFeed({
         return;
       }
 
+      if (!profileResult.error && profileResult.data) {
+        const profile = profileResult.data as {
+          full_name: string;
+          nickname: string | null;
+        };
+        setPreviewAuthorName(profile.nickname || profile.full_name);
+      }
+
+      const agendaRows = (agendaResult.data ?? []) as FeedEvent[];
+      const voyagerRows = (voyagerResult.data ?? []) as FeedEvent[];
+      const voyagerIds = voyagerRows.map((event) => event.id);
+
+      if (voyagerIds.length === 0) {
+        setAvailableEvents([...agendaRows, ...voyagerRows]);
+        return;
+      }
+
+      const [participantsResult, photosResult] = await Promise.all([
+        supabase
+          .from("event_participants")
+          .select("event_id")
+          .in("event_id", voyagerIds),
+        supabase
+          .from("club_gallery")
+          .select("event_id")
+          .in("event_id", voyagerIds),
+      ]);
+
+      if (!active) return;
+
+      const participantCountByEvent = new Map<string, number>();
+      if (!participantsResult.error) {
+        for (const row of (participantsResult.data ?? []) as { event_id: string }[]) {
+          participantCountByEvent.set(
+            row.event_id,
+            (participantCountByEvent.get(row.event_id) ?? 0) + 1,
+          );
+        }
+      }
+
+      const photoCountByEvent = new Map<string, number>();
+      if (!photosResult.error) {
+        for (const row of (photosResult.data ?? []) as { event_id: string | null }[]) {
+          if (!row.event_id) continue;
+          photoCountByEvent.set(
+            row.event_id,
+            (photoCountByEvent.get(row.event_id) ?? 0) + 1,
+          );
+        }
+      }
+
       setAvailableEvents([
-        ...((agendaResult.data ?? []) as FeedEvent[]),
-        ...((voyagerResult.data ?? []) as FeedEvent[]),
+        ...agendaRows,
+        ...voyagerRows.map((event) => ({
+          ...event,
+          participantCount: participantCountByEvent.get(event.id) ?? 0,
+          photoCount: photoCountByEvent.get(event.id) ?? 0,
+        })),
       ]);
     };
-
     void loadEvents();
     return () => {
       active = false;
     };
-  }, [composerOpen, isStaff]);
+  }, [account?.member_external_id, composerOpen, isStaff]);
 
   useEffect(() => {
     if (!activeMember) return;
@@ -596,7 +659,7 @@ export function CommunityFeed({
   };
 
   const closeComposer = () => {
-    setComposerOpen(false); setPostBody(""); setPostLink(""); setPostFiles([]); setPostEventId(""); setPinPost(false); setLockComments(false);
+    setComposerOpen(false); setPostBody(""); setPostLink(""); setPostFiles([]); setPostEventId(""); setPinPost(false); setLockComments(false); setComposerMode("edit");
   };
 
   const submitPost = async (event: FormEvent, publish: boolean) => {
