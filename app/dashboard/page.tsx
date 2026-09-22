@@ -2,6 +2,7 @@
 
 import { AppShell } from "@/components/app-shell";
 import { CommunityFeed } from "@/components/community-feed";
+import { DesktopFeedRail } from "@/components/desktop-feed-rail";
 import { useDataCache } from "@/context/data-cache-context";
 import { Plus } from "lucide-react";
 import { useState } from "react";
@@ -42,6 +43,7 @@ export default function DashboardPage() {
             onComposerOpenChange={setComposerOpen}
           />
         </main>
+        <DesktopFeedRail />
       </div>
     </AppShell>
   );
