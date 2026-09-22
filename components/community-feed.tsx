@@ -179,6 +179,104 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
   );
 }
 
+function ComposerPostPreview({
+  body,
+  linkUrl,
+  event,
+  media,
+  authorName,
+  authorRole,
+  pinned,
+  commentsLocked,
+}: {
+  body: string;
+  linkUrl: string;
+  event: FeedEvent | null;
+  media: FeedMedia[];
+  authorName: string;
+  authorRole: AppRole;
+  pinned: boolean;
+  commentsLocked: boolean;
+}) {
+  const link = linkUrl.trim() ? getSocialUrlDetails(linkUrl.trim()) : null;
+
+  return (
+    <div className="community-composer-preview">
+      <span className="community-composer-preview-label">Preview post</span>
+      <article className={`community-post${pinned ? " is-pinned" : ""}`}>
+        {pinned ? (
+          <div className="community-pin-label">
+            <Pin aria-hidden="true" />
+            Disematkan
+          </div>
+        ) : null}
+
+        <header className="community-post-header">
+          <OfficialFeedAvatar />
+          <span className="community-post-author">
+            <strong>{authorName}</strong>
+            <small>
+              <b>{socialRoleLabel[authorRole]}</b>
+              <span aria-hidden="true">·</span>
+              <time>Baru saja</time>
+            </small>
+          </span>
+        </header>
+
+        <div className="community-post-copy">
+          <p className={!body.trim() ? "is-placeholder" : ""}>
+            {body.trim() || "Isi post akan muncul di sini."}
+          </p>
+        </div>
+
+        {event ? <CommunityEventAttachment event={event} /> : null}
+
+        {link ? (
+          <a
+            className="community-link-preview"
+            href={link.url}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <span>
+              <Link2 aria-hidden="true" />
+              <small>{link.hostname}</small>
+            </span>
+            <b>Buka tautan</b>
+            <ExternalLink aria-hidden="true" />
+          </a>
+        ) : null}
+
+        <CommunityMediaGallery media={media} />
+
+        <footer className="community-post-footer">
+          <div className="community-post-counts">
+            <span>0 suka</span>
+            <span>0 komentar</span>
+          </div>
+          <div className="community-post-actions" aria-hidden="true">
+            <span>
+              <Heart aria-hidden="true" />
+              Suka
+            </span>
+            <span>
+              <MessageCircle aria-hidden="true" />
+              Komentar
+            </span>
+          </div>
+        </footer>
+
+        {commentsLocked ? (
+          <p className="community-comments-locked">
+            <LockKeyhole aria-hidden="true" />
+            Diskusi untuk post ini ditutup oleh pengurus.
+          </p>
+        ) : null}
+      </article>
+    </div>
+  );
+}
+
 export function CommunityFeed({
   composerOpen: controlledComposerOpen,
   onComposerOpenChange,
@@ -215,6 +313,30 @@ export function CommunityFeed({
   const [lockComments, setLockComments] = useState(false);
   const [composerMode, setComposerMode] = useState<"edit" | "preview">("edit");
   const [previewAuthorName, setPreviewAuthorName] = useState("Pengurus Revolt Riders");
+  const [previewMedia, setPreviewMedia] = useState<FeedMedia[]>([]);
+
+  useEffect(() => {
+    const next = postFiles.map((file, index) => ({
+      id: `preview-${index}-${file.name}`,
+      object_path: "",
+      alt_text: `Preview foto ${index + 1}`,
+      sort_order: index,
+      signedUrl: URL.createObjectURL(file),
+    }));
+
+    setPreviewMedia(next);
+
+    return () => {
+      for (const item of next) {
+        if (item.signedUrl) URL.revokeObjectURL(item.signedUrl);
+      }
+    };
+  }, [postFiles]);
+
+  const selectedPreviewEvent = useMemo(
+    () => availableEvents.find((event) => event.id === postEventId) ?? null,
+    [availableEvents, postEventId],
+  );
 
   const activeMember = account?.status === "active";
   const isStaff = account?.status === "active" && SOCIAL_FEED_STAFF_ROLES.includes(account.role);
@@ -726,23 +848,177 @@ export function CommunityFeed({
 
       <ModalSheet open={Boolean(isStaff && composerOpen)} onClose={closeComposer} title="Buat post" eyebrow="">
         <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
-          <label>Isi post<textarea value={postBody} onChange={(event) => setPostBody(event.target.value)} maxLength={4000} rows={7} placeholder="Bagikan kabar, agenda, atau dokumentasi perjalanan…" required /></label>
-          <label>Tautan opsional<input type="url" value={postLink} onChange={(event) => setPostLink(event.target.value)} placeholder="https://…" /></label>
-          <label>
-            Lampirkan Agenda / Voyager
-            <select value={postEventId} onChange={(event) => setPostEventId(event.target.value)}>
-              <option value="">Tanpa lampiran event</option>
-              {availableEvents.map((event) => (
-                <option key={event.id} value={event.id}>
-                  {event.type === "voyager" ? "Voyager" : "Agenda"} · {event.title}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="community-upload-control"><span>Foto dokumentasi <small>Maks. 4 foto · JPG, PNG, atau WEBP</small></span><label><ImagePlus aria-hidden="true" /> Tambah foto<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleFiles} /></label></div>
-          {postFiles.length > 0 && <div className="community-file-list">{postFiles.map((file, index) => <span key={`${file.name}-${index}`}>{file.name}<button type="button" aria-label={`Hapus ${file.name}`} onClick={() => setPostFiles((files) => files.filter((_, itemIndex) => itemIndex !== index))}><X aria-hidden="true" /></button></span>)}</div>}
-          <div className="community-composer-settings"><label><input type="checkbox" checked={pinPost} onChange={(event) => setPinPost(event.target.checked)} /> <Pin aria-hidden="true" /> Sematkan post</label><label><input type="checkbox" checked={lockComments} onChange={(event) => setLockComments(event.target.checked)} /> <LockKeyhole aria-hidden="true" /> Tutup komentar</label></div>
-          <div className="community-composer-actions"><button type="button" className="outline-action" disabled={postSaving} onClick={(event) => void submitPost(event as unknown as FormEvent, false)}>Simpan draft</button><button className="primary-action" disabled={postSaving}>{postSaving ? <><LoaderCircle className="spin" aria-hidden="true" /> Menyimpan…</> : <><Check aria-hidden="true" /> Terbitkan</>}</button></div>
+          <div className="community-composer-mode" role="tablist" aria-label="Mode composer">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={composerMode === "edit"}
+              className={composerMode === "edit" ? "active" : ""}
+              onClick={() => setComposerMode("edit")}
+            >
+              Edit
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={composerMode === "preview"}
+              className={composerMode === "preview" ? "active" : ""}
+              onClick={() => setComposerMode("preview")}
+            >
+              Preview
+            </button>
+          </div>
+
+          {composerMode === "edit" ? (
+            <div className="community-composer-fields">
+              <label>
+                Isi post
+                <textarea
+                  value={postBody}
+                  onChange={(event) => setPostBody(event.target.value)}
+                  maxLength={4000}
+                  rows={7}
+                  placeholder="Bagikan kabar, agenda, atau dokumentasi perjalanan…"
+                  required
+                />
+              </label>
+
+              <label>
+                Tautan opsional
+                <input
+                  type="url"
+                  value={postLink}
+                  onChange={(event) => setPostLink(event.target.value)}
+                  placeholder="https://…"
+                />
+              </label>
+
+              <label>
+                Lampirkan Agenda / Voyager
+                <select
+                  value={postEventId}
+                  onChange={(event) => setPostEventId(event.target.value)}
+                >
+                  <option value="">Tanpa lampiran event</option>
+                  {availableEvents.map((event) => (
+                    <option key={event.id} value={event.id}>
+                      {event.type === "voyager" ? "Voyager" : "Agenda"} · {event.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <div className="community-upload-control">
+                <span>
+                  Foto dokumentasi
+                  <small>Maks. 4 foto · JPG, PNG, atau WEBP</small>
+                </span>
+                <label>
+                  <ImagePlus aria-hidden="true" />
+                  Tambah foto
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleFiles}
+                  />
+                </label>
+              </div>
+
+              {postFiles.length > 0 ? (
+                <div className="community-file-list">
+                  {postFiles.map((file, index) => (
+                    <span key={`${file.name}-${index}`}>
+                      {file.name}
+                      <button
+                        type="button"
+                        aria-label={`Hapus ${file.name}`}
+                        onClick={() =>
+                          setPostFiles((files) =>
+                            files.filter((_, itemIndex) => itemIndex !== index),
+                          )
+                        }
+                      >
+                        <X aria-hidden="true" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="community-composer-settings">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={pinPost}
+                    onChange={(event) => setPinPost(event.target.checked)}
+                  />
+                  <Pin aria-hidden="true" />
+                  Sematkan post
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={lockComments}
+                    onChange={(event) => setLockComments(event.target.checked)}
+                  />
+                  <LockKeyhole aria-hidden="true" />
+                  Tutup komentar
+                </label>
+              </div>
+            </div>
+          ) : (
+            <ComposerPostPreview
+              body={postBody}
+              linkUrl={postLink}
+              event={selectedPreviewEvent}
+              media={previewMedia}
+              authorName={previewAuthorName}
+              authorRole={account?.role ?? "member"}
+              pinned={pinPost}
+              commentsLocked={lockComments}
+            />
+          )}
+
+          <div className="community-composer-actions">
+            {composerMode === "preview" ? (
+              <button
+                type="button"
+                className="outline-action"
+                onClick={() => setComposerMode("edit")}
+              >
+                Kembali edit
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="outline-action"
+                disabled={postSaving}
+                onClick={(event) =>
+                  void submitPost(event as unknown as FormEvent, false)
+                }
+              >
+                Simpan draft
+              </button>
+            )}
+
+            <button
+              className="primary-action"
+              disabled={postSaving || !postBody.trim()}
+            >
+              {postSaving ? (
+                <>
+                  <LoaderCircle className="spin" aria-hidden="true" />
+                  Menyimpan…
+                </>
+              ) : (
+                <>
+                  <Check aria-hidden="true" />
+                  Terbitkan
+                </>
+              )}
+            </button>
+          </div>
         </form>
       </ModalSheet>
     </section>
