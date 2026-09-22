@@ -12976,3 +12976,241 @@
     transition: none;
   }
 }
+
+
+/* Dashboard Social Feed v1 · pure feed surface */
+.app-shell .dashboard-social-feed-v1 {
+  width: min(100%, 680px);
+  margin-inline: auto;
+  padding: 8px 18px calc(34px + env(safe-area-inset-bottom));
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-page {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-heading {
+  display: block;
+  margin: 4px 2px 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-heading h2 {
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: clamp(1.3rem, 2.8vw, 1.58rem);
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.035em;
+  line-height: 1.1;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  display: block;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post {
+  overflow: visible;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post:first-child {
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post.is-pinned {
+  border-color: var(--rr-line);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-pin-label {
+  min-height: 0;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 12px 14px 0;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-header {
+  padding: 14px 14px 9px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-avatar-logo {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+  overflow: hidden;
+  border: 1px solid var(--rr-line-strong);
+  background: #050505;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-avatar-logo.small {
+  width: 30px;
+  height: 30px;
+  flex-basis: 30px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-avatar-logo img {
+  object-fit: cover;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author {
+  gap: 2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author strong {
+  font-size: var(--rr-type-body);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author small {
+  gap: 4px;
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author small b {
+  color: var(--rr-muted);
+  font-size: inherit;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-copy {
+  padding: 0 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-copy p {
+  font-size: var(--rr-type-body);
+  line-height: 1.55;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-expand {
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview {
+  margin: 13px 14px 0;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media {
+  margin-top: 13px;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #050505;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media figure {
+  background: #080808;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-footer {
+  padding-top: 8px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-counts {
+  min-height: 28px;
+  padding: 0 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-actions {
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-actions button + button {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-actions button {
+  min-height: 44px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-comment-preview {
+  border-top: 1px solid var(--rr-line);
+  background: transparent;
+  padding: 12px 14px 15px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-comments-locked {
+  padding-inline: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts {
+  position: sticky;
+  z-index: 3;
+  top: 10px;
+  margin: 0 auto 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-loading,
+.app-shell .dashboard-social-feed-v1 .community-feed-gate,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty {
+  border-radius: 16px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 a:focus-visible,
+.app-shell .dashboard-social-feed-v1 button:focus-visible,
+.app-shell .dashboard-social-feed-v1 summary:focus-visible {
+  outline: 2px solid var(--rr-red);
+  outline-offset: 2px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    width: 100%;
+    padding: 2px 0 calc(var(--rr-mobile-dashboard-clearance) + 20px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-heading {
+    margin: 0;
+    padding: 12px 14px 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-heading h2 {
+    font-size: 1.32rem;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-header {
+    padding: 13px 14px 9px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-copy {
+    padding-inline: 14px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-link-preview {
+    margin-inline: 14px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media {
+    border-radius: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-counts,
+  .app-shell .dashboard-social-feed-v1 .community-comment-preview,
+  .app-shell .dashboard-social-feed-v1 .community-comments-locked {
+    padding-inline: 14px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-loading,
+  .app-shell .dashboard-social-feed-v1 .community-feed-gate,
+  .app-shell .dashboard-social-feed-v1 .community-feed-empty,
+  .app-shell .dashboard-social-feed-v1 .community-feed-error {
+    margin-inline: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-media img {
+    transition: none;
+  }
+}
