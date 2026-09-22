@@ -123,7 +123,17 @@ const activeAliases: Record<string, readonly string[]> = {
 const isItemActive = (label: string, currentActive: string) =>
   (activeAliases[label] ?? [label]).includes(currentActive);
 
-export function AppShell({ active, title, children }: { active: string; title: string; children: ReactNode }) {
+export function AppShell({
+  active,
+  title,
+  eyebrow = "REVOLT RIDERS · MEMBER HUB",
+  children,
+}: {
+  active: string;
+  title: string;
+  eyebrow?: string | null;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
   const [isMobileDrawer, setIsMobileDrawer] = useState(false);
   const [pendingJoinCount, setPendingJoinCount] = useState(0);
@@ -465,7 +475,7 @@ export function AppShell({ active, title, children }: { active: string; title: s
             <Menu />
           </button>
           <div>
-            <small>REVOLT RIDERS · MEMBER HUB</small>
+            {eyebrow ? <small>{eyebrow}</small> : null}
             <h1>{title}</h1>
           </div>
           <div className="tools">
