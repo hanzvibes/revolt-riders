@@ -10,6 +10,8 @@ import {
   Archive,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ExternalLink,
   Heart,
   ImagePlus,
@@ -137,21 +139,110 @@ function getUrlDetails(value: string) {
 }
 
 function PostMediaGrid({ media }: { media: FeedMedia[] }) {
-  if (media.length === 0) return null;
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const visible = media.slice(0, 4);
+  const activeMedia = activeIndex === null ? null : media[activeIndex];
+
+  const closeViewer = useCallback(() => setActiveIndex(null), []);
+  const showPrevious = useCallback(() => {
+    setActiveIndex((current) => {
+      if (current === null) return null;
+      return current === 0 ? media.length - 1 : current - 1;
+    });
+  }, [media.length]);
+  const showNext = useCallback(() => {
+    setActiveIndex((current) => {
+      if (current === null) return null;
+      return current === media.length - 1 ? 0 : current + 1;
+    });
+  }, [media.length]);
+
+  useEffect(() => {
+    if (activeIndex === null) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeViewer();
+      if (event.key === "ArrowLeft" && media.length > 1) showPrevious();
+      if (event.key === "ArrowRight" && media.length > 1) showNext();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [activeIndex, closeViewer, media.length, showNext, showPrevious]);
+
+  if (media.length === 0) return null;
+
   return (
-    <div className={`community-feed-media count-${visible.length}`} aria-label={`${media.length} foto dokumentasi`}>
-      {visible.map((item, index) => (
-        <figure key={item.id} className={index === 0 ? "feature" : ""}>
-          {item.signedUrl ? (
-            <Image src={item.signedUrl} alt={item.alt_text} fill sizes="(max-width: 720px) 100vw, 660px" />
-          ) : (
-            <span className="community-feed-media-placeholder" aria-hidden="true" />
-          )}
-          {index === 3 && media.length > 4 && <b>+{media.length - 4}</b>}
-        </figure>
-      ))}
-    </div>
+    <>
+      <div className={`community-feed-media count-${visible.length}`} aria-label={`${media.length} foto dokumentasi`}>
+        {visible.map((item, index) => (
+          <figure key={item.id} className={index === 0 ? "feature" : ""}>
+            <button
+              type="button"
+              className="community-media-open"
+              onClick={() => setActiveIndex(index)}
+              aria-label={`Buka foto ${index + 1} dari ${media.length}`}
+            >
+              {item.signedUrl ? (
+                <Image src={item.signedUrl} alt={item.alt_text} fill sizes="(max-width: 720px) 100vw, 660px" />
+              ) : (
+                <span className="community-feed-media-placeholder" aria-hidden="true" />
+              )}
+              {index === 3 && media.length > 4 && <b>+{media.length - 4}</b>}
+            </button>
+          </figure>
+        ))}
+      </div>
+
+      {activeMedia?.signedUrl && (
+        <div
+          className="community-media-viewer"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Foto ${activeIndex! + 1} dari ${media.length}`}
+          onPointerDown={(event) => {
+            if (event.target === event.currentTarget) closeViewer();
+          }}
+        >
+          <header>
+            <span>{activeIndex! + 1} / {media.length}</span>
+            <button type="button" onClick={closeViewer} aria-label="Tutup foto" autoFocus>
+              <X aria-hidden="true" />
+            </button>
+          </header>
+
+          <div className="community-media-viewer-stage">
+            {media.length > 1 && (
+              <button type="button" className="community-media-viewer-nav previous" onClick={showPrevious} aria-label="Foto sebelumnya">
+                <ChevronLeft aria-hidden="true" />
+              </button>
+            )}
+
+            <figure>
+              <Image
+                src={activeMedia.signedUrl}
+                alt={activeMedia.alt_text}
+                fill
+                sizes="100vw"
+                priority
+              />
+            </figure>
+
+            {media.length > 1 && (
+              <button type="button" className="community-media-viewer-nav next" onClick={showNext} aria-label="Foto berikutnya">
+                <ChevronRight aria-hidden="true" />
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
