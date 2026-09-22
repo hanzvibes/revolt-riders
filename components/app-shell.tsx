@@ -127,11 +127,15 @@ export function AppShell({
   active,
   title,
   eyebrow = "REVOLT RIDERS · MEMBER HUB",
+  headerAction,
+  socialHeader = false,
   children,
 }: {
   active: string;
   title: string;
   eyebrow?: string | null;
+  headerAction?: ReactNode;
+  socialHeader?: boolean;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -463,7 +467,7 @@ export function AppShell({
         className="content"
         inert={isMobileDrawer && open ? true : undefined}
       >
-        <header>
+        <header className={socialHeader ? "social-app-header" : undefined}>
           <button
             ref={menuButtonRef}
             className="hamb"
@@ -479,6 +483,7 @@ export function AppShell({
             <h1>{title}</h1>
           </div>
           <div className="tools">
+            {headerAction}
             <Link
               href="/notifications"
               className="header-bell-btn"
@@ -487,12 +492,14 @@ export function AppShell({
             >
               <Bell size={16} />
             </Link>
-            <Link
-              className={`login-link${account?.status && account.status !== "active" ? " account-warning" : ""}`}
-              href={user ? "/profil" : "/login"}
-            >
-              {accountLabel}
-            </Link>
+            {!socialHeader ? (
+              <Link
+                className={`login-link${account?.status && account.status !== "active" ? " account-warning" : ""}`}
+                href={user ? "/profil" : "/login"}
+              >
+                {accountLabel}
+              </Link>
+            ) : null}
           </div>
         </header>
         {children}
