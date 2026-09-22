@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type RailEvent = {
   id: string;
@@ -20,7 +20,6 @@ type RailEvent = {
   location_name: string | null;
   start_at: string;
   status: "published" | "completed";
-  official_support?: string | null;
 };
 
 function formatRailDate(value: string) {
@@ -61,26 +60,55 @@ function RailEventItem({
 }
 
 export function DesktopFeedRail() {
-  const [events, setEvents] = useState<RailEvent[]>([]);
+  const [nextAgenda, setNextAgenda] = useState<RailEvent | null>(null);
+  const [nextVoyager, setNextVoyager] = useState<RailEvent | null>(null);
   const [enabled, setEnabled] = useState(false);
 
   const load = useCallback(async () => {
-    const { data, error } = await getSupabaseBrowserClient()
-      .from("events")
-      .select(
-        "id,title,slug,type,location_name,start_at,status,official_support",
-      )
-      .eq("status", "published")
-      .gte("start_at", new Date().toISOString())
-      .order("start_at", { ascending: true })
-      .limit(12);
+    const supabase = getSupabaseBrowserClient();
+    const now = new Date().toISOString();
 
-    if (error) {
-      console.error("Right rail dashboard gagal dimuat.", error);
+    const [agendaResult, voyagerResult] = await Promise.all([
+      supabase
+        .from("events")
+        .select("id,title,slug,type,location_name,start_at,status")
+        .eq("status", "published")
+        .neq("type", "voyager")
+        .gte("start_at", now)
+        .order("start_at", { ascending: true })
+        .limit(1),
+      supabase
+        .from("events")
+        .select("id,title,slug,type,location_name,start_at,status")
+        .eq("status", "published")
+        .eq("type", "voyager")
+        .order("start_at", { ascending: false })
+        .limit(6),
+    ]);
+
+    if (agendaResult.error) {
+      console.error("Agenda right rail gagal dimuat.", agendaResult.error);
+    } else {
+      setNextAgenda(((agendaResult.data ?? [])[0] as RailEvent | undefined) ?? null);
+    }
+
+    if (voyagerResult.error) {
+      console.error("Voyager right rail gagal dimuat.", voyagerResult.error);
       return;
     }
 
-    setEvents((data ?? []) as RailEvent[]);
+    const voyagerRows = (voyagerResult.data ?? []) as RailEvent[];
+    const started = voyagerRows.find(
+      (event) => new Date(event.start_at).getTime() <= Date.now(),
+    );
+    const upcoming = [...voyagerRows]
+      .filter((event) => new Date(event.start_at).getTime() > Date.now())
+      .sort(
+        (a, b) =>
+          new Date(a.start_at).getTime() - new Date(b.start_at).getTime(),
+      )[0];
+
+    setNextVoyager(started ?? upcoming ?? null);
   }, []);
 
   useEffect(() => {
@@ -113,16 +141,6 @@ export function DesktopFeedRail() {
       void supabase.removeChannel(channel);
     };
   }, [enabled, load]);
-
-  const nextAgenda = useMemo(
-    () => events.find((event) => event.type !== "voyager") ?? null,
-    [events],
-  );
-
-  const nextVoyager = useMemo(
-    () => events.find((event) => event.type === "voyager") ?? null,
-    [events],
-  );
 
   if (!enabled) return null;
 
