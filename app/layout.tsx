@@ -9,6 +9,7 @@ import "./checkin-qr.css";
 import "./form-density.css";
 import "./native-admin.css";
 import "./system-ui.css";
+import "./social-feed.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.revoltriders.my.id"),
