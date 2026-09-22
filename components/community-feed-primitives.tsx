@@ -260,6 +260,7 @@ export function CommunityMediaGallery({
                   alt={item.alt_text}
                   fill
                   sizes="(max-width: 720px) 100vw, 660px"
+                  unoptimized={item.signedUrl.startsWith("blob:")}
                 />
               ) : (
                 <span
@@ -316,6 +317,7 @@ export function CommunityMediaGallery({
                 fill
                 sizes="100vw"
                 priority
+                unoptimized={activeMedia.signedUrl.startsWith("blob:")}
               />
             </figure>
 
