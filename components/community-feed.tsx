@@ -24,7 +24,6 @@ import {
   MoreHorizontal,
   Pin,
   Plus,
-  Send,
   Sparkles,
   UnlockKeyhole,
   X,
