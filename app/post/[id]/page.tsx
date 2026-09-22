@@ -196,6 +196,7 @@ export default function ThreadPage() {
 
   useEffect(() => {
     if (!activeMember || !postId) return;
+
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
       .channel(`feed-thread-${postId}`)
@@ -205,19 +206,45 @@ export default function ThreadPage() {
           event: "*",
           schema: "public",
           table: "feed_post_comments",
-          filter: `post_id=eq.${postId}`,
         },
-        () => void loadThread({ quiet: true }),
-      )
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "feed_post_likes",
-          filter: `post_id=eq.${postId}`,
+        (payload: any) => {
+          if (payload.eventType === "DELETE") {
+            const id = payload.old?.id;
+            if (typeof id !== "string") return;
+            setComments((current) =>
+              current.filter((comment) => comment.id !== id),
+            );
+            return;
+          }
+
+          const record = payload.new;
+          if (!record || record.post_id !== postId) return;
+
+          if (payload.eventType === "INSERT") {
+            setComments((current) => {
+              if (current.some((comment) => comment.id === record.id)) {
+                return current;
+              }
+
+              return [...current, record as ThreadComment].sort(
+                (a, b) =>
+                  new Date(a.created_at).getTime() -
+                  new Date(b.created_at).getTime(),
+              );
+            });
+            return;
+          }
+
+          if (payload.eventType === "UPDATE") {
+            setComments((current) =>
+              current.map((comment) =>
+                comment.id === record.id
+                  ? (record as ThreadComment)
+                  : comment,
+              ),
+            );
+          }
         },
-        () => void loadThread({ quiet: true }),
       )
       .on(
         "postgres_changes",
@@ -227,14 +254,46 @@ export default function ThreadPage() {
           table: "feed_posts",
           filter: `id=eq.${postId}`,
         },
-        () => void loadThread({ quiet: true }),
+        (payload: any) => {
+          const record = payload.new;
+          if (!record || record.id !== postId) return;
+
+          if (
+            typeof record.status === "string" &&
+            record.status !== "published"
+          ) {
+            setPost(null);
+            setError("Post ini sudah tidak tersedia.");
+            return;
+          }
+
+          setPost((current) =>
+            current
+              ? {
+                  ...current,
+                  likeCount:
+                    typeof record.like_count === "number"
+                      ? record.like_count
+                      : current.likeCount,
+                  commentCount:
+                    typeof record.comment_count === "number"
+                      ? record.comment_count
+                      : current.commentCount,
+                  comments_locked:
+                    typeof record.comments_locked === "boolean"
+                      ? record.comments_locked
+                      : current.comments_locked,
+                }
+              : current,
+          );
+        },
       )
       .subscribe();
 
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [activeMember, loadThread, postId]);
+  }, [activeMember, postId]);
 
   const toggleLike = async () => {
     if (!post || !user || !activeMember) return;
