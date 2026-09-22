@@ -1393,7 +1393,10 @@
 
   .app-shell > aside {
     width: min(284px, 86vw);
-    padding: 18px 13px 14px;
+    padding:
+      max(18px, calc(env(safe-area-inset-top) + 10px))
+      13px
+      max(14px, calc(env(safe-area-inset-bottom) + 10px));
     transform: translateX(-104%);
     box-shadow: 16px 0 40px rgba(0,0,0,.18);
   }
@@ -1407,14 +1410,17 @@
   }
 
   .app-shell .content > header {
-    height: 66px;
-    padding: 0 13px;
+    min-height: calc(66px + env(safe-area-inset-top));
+    height: auto;
+    padding: env(safe-area-inset-top) 13px 0;
   }
 
   .app-shell .hamb {
-    width: 38px;
-    height: 38px;
-    margin-right: 9px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    margin-right: 7px;
     border-radius: 10px;
   }
 
@@ -1423,12 +1429,14 @@
   }
 
   .app-shell .header-bell-btn {
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
 
   .app-shell .login-link {
-    min-height: var(--rr-control-sm);
+    min-height: 44px;
     padding: 0 10px;
     font-size: .59rem;
   }
