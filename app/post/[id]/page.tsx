@@ -8,6 +8,13 @@ import {
   type CommunityFeedEvent,
   type CommunityFeedMedia,
 } from "@/components/community-feed-primitives";
+import {
+  getSocialUrlDetails,
+  socialInitials,
+  socialRelativeDate,
+  socialRoleLabel,
+  SOCIAL_FEED_STAFF_ROLES,
+} from "@/components/community-feed-utils";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -74,54 +81,6 @@ type ThreadPostRow = Omit<
   feed_post_comments?: { count: number }[];
 };
 
-const STAFF_ROLES: AppRole[] = ["road_captain", "admin", "superadmin"];
-
-const roleLabel: Record<AppRole, string> = {
-  member: "Member",
-  road_captain: "Road Captain",
-  treasurer: "Bendahara",
-  admin: "Admin",
-  superadmin: "Superadmin",
-};
-
-function relativeDate(value: string | null) {
-  if (!value) return "Baru saja";
-  const difference = Date.now() - new Date(value).getTime();
-  const minutes = Math.floor(difference / 60_000);
-  if (minutes < 1) return "Baru saja";
-  if (minutes < 60) return `${minutes} mnt`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} jam`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days} hari`;
-  return new Intl.DateTimeFormat("id-ID", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(value));
-}
-
-function getUrlDetails(value: string) {
-  try {
-    const url = new URL(value);
-    return {
-      hostname: url.hostname.replace(/^www\./, ""),
-      url: url.toString(),
-    };
-  } catch {
-    return null;
-  }
-}
-
-function initials(name: string) {
-  const words = name.trim().split(/\s+/).filter(Boolean);
-  return (
-    words.length > 1
-      ? `${words[0][0]}${words[1][0]}`
-      : words[0]?.slice(0, 2) || "RR"
-  ).toUpperCase();
-}
-
 export default function ThreadPage() {
   const params = useParams<{ id: string }>();
   const postId = Array.isArray(params.id) ? params.id[0] : params.id;
@@ -137,7 +96,7 @@ export default function ThreadPage() {
 
   const activeMember = account?.status === "active";
   const isStaff =
-    account?.status === "active" && STAFF_ROLES.includes(account.role);
+    account?.status === "active" && SOCIAL_FEED_STAFF_ROLES.includes(account.role);
 
   const loadThread = useCallback(async ({ quiet = false }: { quiet?: boolean } = {}) => {
     if (!postId || !user || !activeMember) {
@@ -416,10 +375,10 @@ export default function ThreadPage() {
             <span className="community-post-author">
               <strong>{post.author_name}</strong>
               <small>
-                <b>{roleLabel[post.author_role]}</b>
+                <b>{socialRoleLabel[post.author_role]}</b>
                 <span aria-hidden="true">·</span>
                 <time dateTime={post.published_at ?? post.created_at}>
-                  {relativeDate(post.published_at ?? post.created_at)}
+                  {socialRelativeDate(post.published_at ?? post.created_at)}
                 </time>
               </small>
             </span>
@@ -433,16 +392,16 @@ export default function ThreadPage() {
             <CommunityAgendaAttachment event={post.attached_event} />
           ) : null}
 
-          {post.link_url && getUrlDetails(post.link_url) ? (
+          {post.link_url && getSocialUrlDetails(post.link_url) ? (
             <a
               className="community-link-preview"
-              href={getUrlDetails(post.link_url)!.url}
+              href={getSocialUrlDetails(post.link_url)!.url}
               target="_blank"
               rel="noreferrer"
             >
               <span>
                 <Link2 aria-hidden="true" />
-                <small>{getUrlDetails(post.link_url)!.hostname}</small>
+                <small>{getSocialUrlDetails(post.link_url)!.hostname}</small>
               </span>
               <b>Buka tautan</b>
               <ExternalLink aria-hidden="true" />
@@ -505,14 +464,14 @@ export default function ThreadPage() {
                   <article className="thread-comment-root" key={comment.id}>
                     <div className="thread-comment-line">
                       <span className="community-avatar small" aria-hidden="true">
-                        {initials(comment.author_name)}
+                        {socialInitials(comment.author_name)}
                       </span>
                       <div className="thread-comment-content">
                         <header>
                           <strong>{comment.author_name}</strong>
-                          <span>{roleLabel[comment.author_role]}</span>
+                          <span>{socialRoleLabel[comment.author_role]}</span>
                           <time dateTime={comment.created_at}>
-                            {relativeDate(comment.created_at)}
+                            {socialRelativeDate(comment.created_at)}
                           </time>
                         </header>
                         <p>{comment.body}</p>
@@ -556,14 +515,14 @@ export default function ThreadPage() {
                           return (
                             <div className="thread-comment-line" key={reply.id}>
                               <span className="community-avatar small" aria-hidden="true">
-                                {initials(reply.author_name)}
+                                {socialInitials(reply.author_name)}
                               </span>
                               <div className="thread-comment-content">
                                 <header>
                                   <strong>{reply.author_name}</strong>
-                                  <span>{roleLabel[reply.author_role]}</span>
+                                  <span>{socialRoleLabel[reply.author_role]}</span>
                                   <time dateTime={reply.created_at}>
-                                    {relativeDate(reply.created_at)}
+                                    {socialRelativeDate(reply.created_at)}
                                   </time>
                                 </header>
                                 <p>{reply.body}</p>
