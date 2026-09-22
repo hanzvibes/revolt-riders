@@ -28,7 +28,7 @@ export function ModalSheet({
 }: {
   open: boolean;
   onClose: () => void;
-  eyebrow: string;
+  eyebrow?: string;
   title: string;
   children: ReactNode;
 }) {
@@ -219,7 +219,7 @@ export function ModalSheet({
         />
         <header>
           <span>
-            <em>{eyebrow}</em>
+            {eyebrow && <em>{eyebrow}</em>}
             <h2 id={titleId}>{title}</h2>
           </span>
           <button type="button" onClick={requestClose} aria-label="Tutup">
