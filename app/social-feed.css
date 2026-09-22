@@ -2066,3 +2066,340 @@
     transition: none;
   }
 }
+
+
+/* Threads-inspired social timeline */
+.app-shell .dashboard-social-feed-v1 .community-feed-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  border-top: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post:first-child {
+  border-top: 0;
+}
+
+.app-shell .community-threads-layout {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 16px 18px;
+}
+
+.app-shell .community-threads-rail {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-shell .community-threads-rail .community-avatar-logo {
+  z-index: 2;
+  margin: 0;
+  box-shadow: 0 0 0 3px var(--rr-surface);
+}
+
+.app-shell .community-threads-connector {
+  position: absolute;
+  top: 50px;
+  bottom: 2px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rr-line-strong) 78%, transparent);
+}
+
+.app-shell .community-threads-body {
+  min-width: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+  padding: 0 0 7px;
+  font-size: .67rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-header {
+  min-height: 42px;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 1px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author {
+  gap: 1px;
+  padding-top: 1px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author strong {
+  color: var(--rr-ink);
+  font-size: .94rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.018em;
+  line-height: 1.2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author small {
+  gap: 5px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author small b {
+  color: var(--rr-muted);
+  font-weight: var(--rr-fw-medium);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu {
+  margin-left: auto;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary {
+  width: 40px;
+  height: 40px;
+  margin-top: -6px;
+  margin-right: -8px;
+  border-radius: 50%;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary svg {
+  width: 19px;
+  height: 19px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-copy {
+  padding: 3px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-copy p {
+  max-width: none;
+  font-size: .9rem;
+  line-height: 1.5;
+  letter-spacing: -.006em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-expand {
+  margin-top: 5px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  margin: 11px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media {
+  margin: 12px 0 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+  display: grid;
+  gap: 4px;
+  padding: 8px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-ink);
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button + button {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+  transform: scale(.94);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked {
+  color: var(--rr-danger);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions svg {
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.8;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+  stroke-width: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+  color: inherit;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button:hover {
+  color: var(--rr-ink);
+  text-decoration: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-comments-locked {
+  margin-top: 8px;
+  border-top: 0;
+  border-radius: 9px;
+  background: var(--rr-surface-soft);
+  padding: 9px 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-end {
+  padding: 22px 16px 28px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    padding-top: 0;
+  }
+
+  .app-shell .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 11px;
+    padding: 14px 14px 16px;
+  }
+
+  .app-shell .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .app-shell .community-threads-connector {
+    top: 48px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-header {
+    min-height: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary {
+    width: 44px;
+    height: 44px;
+    margin-top: -8px;
+    margin-right: -10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media {
+    margin-inline: 0;
+    border-inline: 1px solid var(--rr-line);
+    border-radius: 12px;
+  }
+
+  .app-shell.social-shell .bottom {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-height: calc(60px + env(safe-area-inset-bottom)) !important;
+    transform: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-top: 1px solid var(--rr-line) !important;
+    border-radius: 0 !important;
+    background: color-mix(in srgb, var(--rr-surface) 97%, transparent) !important;
+    padding: 4px 6px env(safe-area-inset-bottom) !important;
+    box-shadow: none !important;
+    backdrop-filter: blur(18px);
+  }
+
+  .app-shell.social-shell .bottom a {
+    min-width: 0 !important;
+    min-height: 52px !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 5px 2px 4px !important;
+  }
+
+  .app-shell.social-shell .bottom a.active {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .community-threads-layout {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+    padding-inline: 11px;
+  }
+
+  .app-shell .community-threads-rail .community-avatar-logo {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .app-shell .community-threads-connector {
+    top: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    transition: none;
+  }
+}
