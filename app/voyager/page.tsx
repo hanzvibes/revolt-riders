@@ -381,6 +381,18 @@ export default function VoyagerPage() {
   const photosFor = (eventId: string) =>
     photosByEvent.get(eventId) ?? [];
 
+  const closeDetail = () => {
+    setDetailEvent(null);
+
+    if (typeof window !== "undefined" && window.location.hash) {
+      window.history.replaceState(
+        null,
+        "",
+        `${window.location.pathname}${window.location.search}`,
+      );
+    }
+  };
+
   const openManage = (event: VoyagerEvent) => {
     setManageEvent(event);
     setCountsAsMandatory(event.counts_as_mandatory);
@@ -919,7 +931,7 @@ export default function VoyagerPage() {
 
       <ModalSheet
         open={Boolean(detailEvent)}
-        onClose={() => setDetailEvent(null)}
+        onClose={closeDetail}
         eyebrow="VOYAGER DETAIL"
         title={detailEvent?.title ?? "Voyager"}
       >
@@ -1037,7 +1049,7 @@ export default function VoyagerPage() {
                 className="primary-action"
                 onClick={() => {
                   const current = detailEvent;
-                  setDetailEvent(null);
+                  closeDetail();
                   openManage(current);
                 }}
               >
