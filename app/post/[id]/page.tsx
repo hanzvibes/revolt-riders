@@ -76,9 +76,9 @@ type ThreadPostRow = Omit<
   ThreadPost,
   "media" | "likeCount" | "commentCount" | "likedByMe"
 > & {
+  like_count: number;
+  comment_count: number;
   feed_post_media?: ThreadMedia[];
-  feed_post_likes?: { count: number }[];
-  feed_post_comments?: { count: number }[];
 };
 
 export default function ThreadPage() {
@@ -114,7 +114,7 @@ export default function ThreadPage() {
       const { data: rawPost, error: postError } = await supabase
         .from("feed_posts")
         .select(
-          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),comments_locked,author_id,author_name,author_role,published_at,created_at,feed_post_media(id,object_path,alt_text,sort_order),feed_post_likes(count),feed_post_comments(count)",
+          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)",
         )
         .eq("id", postId)
         .eq("status", "published")
@@ -175,8 +175,8 @@ export default function ThreadPage() {
           ...item,
           signedUrl: mediaUrlByPath.get(item.object_path),
         })),
-        likeCount: row.feed_post_likes?.[0]?.count ?? 0,
-        commentCount: row.feed_post_comments?.[0]?.count ?? 0,
+        likeCount: row.like_count ?? 0,
+        commentCount: row.comment_count ?? 0,
         likedByMe: Boolean(likeResult.data),
       });
       setComments((commentResult.data ?? []) as ThreadComment[]);
