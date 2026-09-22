@@ -8,6 +8,7 @@ import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Archive,
+  CalendarDays,
   Check,
   ChevronDown,
   ChevronLeft,
@@ -18,6 +19,7 @@ import {
   Link2,
   LoaderCircle,
   LockKeyhole,
+  MapPin,
   MessageCircle,
   MoreHorizontal,
   Pin,
@@ -28,6 +30,8 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 
 type FeedMedia = {
@@ -41,6 +45,7 @@ type FeedMedia = {
 type FeedComment = {
   id: string;
   post_id: string;
+  parent_comment_id: string | null;
   body: string;
   author_id: string;
   author_name: string;
@@ -48,10 +53,22 @@ type FeedComment = {
   created_at: string;
 };
 
+type FeedEvent = {
+  id: string;
+  title: string;
+  slug: string;
+  type: string;
+  location_name: string | null;
+  start_at: string;
+  status: "published" | "completed";
+};
+
 type FeedPost = {
   id: string;
   body: string;
   link_url: string | null;
+  event_id: string | null;
+  attached_event: FeedEvent | null;
   is_pinned: boolean;
   comments_locked: boolean;
   author_id: string;
@@ -246,6 +263,35 @@ function PostMediaGrid({ media }: { media: FeedMedia[] }) {
   );
 }
 
+function FeedAgendaAttachment({ event }: { event: FeedEvent }) {
+  const date = new Intl.DateTimeFormat("id-ID", {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(event.start_at));
+
+  return (
+    <Link className="community-agenda-attachment" href={`/agenda#${event.slug}`}>
+      <span className="community-agenda-icon" aria-hidden="true">
+        <CalendarDays />
+      </span>
+      <span className="community-agenda-copy">
+        <small>{event.type}</small>
+        <strong>{event.title}</strong>
+        <span>
+          <time dateTime={event.start_at}>{date} WIB</time>
+          <em aria-hidden="true">·</em>
+          <span><MapPin aria-hidden="true" />{event.location_name || "Lokasi menyusul"}</span>
+        </span>
+      </span>
+      <ChevronRight aria-hidden="true" />
+    </Link>
+  );
+}
+
 function CommentLine({ comment, canModerate, currentUserId, onDelete }: {
   comment: FeedComment;
   canModerate: boolean;
@@ -287,7 +333,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
   const longPost = post.body.length > 420;
   const link = post.link_url ? getUrlDetails(post.link_url) : null;
   const canManage = isStaff && (post.author_id === currentUserId || currentRole === "admin" || currentRole === "superadmin");
-  const comments = post.comments.slice(0, 2);
+  const comments = post.comments.filter((comment) => !comment.parent_comment_id).slice(0, 2);
 
   return (
     <article className={`community-post ${post.is_pinned ? "is-pinned" : ""}`}>
@@ -318,6 +364,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
         {longPost && <button type="button" className="community-expand" onClick={() => setExpanded((value) => !value)}>{expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}<ChevronDown aria-hidden="true" /></button>}
       </div>
 
+      {post.attached_event && <FeedAgendaAttachment event={post.attached_event} />}
       {link && (
         <a className="community-link-preview" href={link.url} target="_blank" rel="noreferrer">
           <span><Link2 aria-hidden="true" /><small>{link.hostname}</small></span>
@@ -348,15 +395,15 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
 }
 
 export function CommunityFeed() {
+  const router = useRouter();
   const { user, account, loading: accessLoading, invalidateCache } = useDataCache();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState<string | null>(null);
   const [composerOpen, setComposerOpen] = useState(false);
-  const [commentBody, setCommentBody] = useState("");
-  const [commentSaving, setCommentSaving] = useState(false);
+  const [availableEvents, setAvailableEvents] = useState<FeedEvent[]>([]);
+  const [postEventId, setPostEventId] = useState("");
   const [postSaving, setPostSaving] = useState(false);
   const [postBody, setPostBody] = useState("");
   const [postLink, setPostLink] = useState("");
@@ -366,7 +413,6 @@ export function CommunityFeed() {
 
   const activeMember = account?.status === "active";
   const isStaff = account?.status === "active" && STAFF_ROLES.includes(account.role);
-  const selectedPost = posts.find((post) => post.id === selectedPostId) ?? null;
 
   const loadFeed = useCallback(async () => {
     if (!activeMember || !user) {
@@ -380,7 +426,7 @@ export function CommunityFeed() {
       const supabase = getSupabaseBrowserClient();
       const { data: rawPosts, error: postError } = await supabase
         .from("feed_posts")
-        .select("id,body,link_url,is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,feed_post_media(id,object_path,alt_text,sort_order),feed_post_likes(count),feed_post_comments(count)")
+        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,status),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,feed_post_media(id,object_path,alt_text,sort_order),feed_post_likes(count),feed_post_comments(count)")
         .eq("status", "published")
         .order("is_pinned", { ascending: false })
         .order("published_at", { ascending: false })
@@ -401,7 +447,7 @@ export function CommunityFeed() {
 
       const [likesResult, commentsResult] = postIds.length > 0 ? await Promise.all([
         supabase.from("feed_post_likes").select("post_id").in("post_id", postIds).eq("user_id", user.id),
-        supabase.from("feed_post_comments").select("id,post_id,body,author_id,author_name,author_role,created_at").in("post_id", postIds).order("created_at", { ascending: false }).limit(120),
+        supabase.from("feed_post_comments").select("id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at").in("post_id", postIds).order("created_at", { ascending: false }).limit(120),
       ]) : [{ data: [], error: null }, { data: [], error: null }];
       if (likesResult.error) throw likesResult.error;
       if (commentsResult.error) throw commentsResult.error;
@@ -432,6 +478,37 @@ export function CommunityFeed() {
   }, [activeMember, user]);
 
   useEffect(() => { if (!accessLoading) void loadFeed(); }, [accessLoading, loadFeed]);
+
+  useEffect(() => {
+    if (!isStaff) {
+      setAvailableEvents([]);
+      return;
+    }
+
+    let active = true;
+    const loadEvents = async () => {
+      const { data, error: eventError } = await getSupabaseBrowserClient()
+        .from("events")
+        .select("id,title,slug,type,location_name,start_at,status")
+        .eq("status", "published")
+        .gte("start_at", new Date().toISOString())
+        .order("start_at", { ascending: true })
+        .limit(20);
+
+      if (!active) return;
+      if (eventError) {
+        console.error("Agenda untuk composer gagal dimuat.", eventError);
+        return;
+      }
+
+      setAvailableEvents((data ?? []) as FeedEvent[]);
+    };
+
+    void loadEvents();
+    return () => {
+      active = false;
+    };
+  }, [isStaff]);
 
   useEffect(() => {
     if (!activeMember) return;
@@ -469,16 +546,6 @@ export function CommunityFeed() {
     else void loadFeed();
   };
 
-  const submitComment = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!selectedPost || !commentBody.trim()) return;
-    setCommentSaving(true);
-    const { error: insertError } = await getSupabaseBrowserClient().from("feed_post_comments").insert({ post_id: selectedPost.id, body: commentBody.trim() });
-    setCommentSaving(false);
-    if (insertError) setError(insertError.message);
-    else { setCommentBody(""); void loadFeed(); }
-  };
-
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
     const payload = action === "pin" ? { is_pinned: !post.is_pinned } : action === "comments" ? { comments_locked: !post.comments_locked } : { status: "archived" };
     const { error: updateError } = await getSupabaseBrowserClient().from("feed_posts").update(payload).eq("id", post.id);
@@ -496,7 +563,7 @@ export function CommunityFeed() {
   };
 
   const closeComposer = () => {
-    setComposerOpen(false); setPostBody(""); setPostLink(""); setPostFiles([]); setPinPost(false); setLockComments(false);
+    setComposerOpen(false); setPostBody(""); setPostLink(""); setPostFiles([]); setPostEventId(""); setPinPost(false); setLockComments(false);
   };
 
   const submitPost = async (event: FormEvent, publish: boolean) => {
@@ -506,7 +573,7 @@ export function CommunityFeed() {
     const supabase = getSupabaseBrowserClient();
     try {
       const { data: post, error: createError } = await supabase.from("feed_posts").insert({
-        body: postBody.trim(), link_url: postLink.trim() || null, status: publish ? "published" : "draft", is_pinned: pinPost, comments_locked: lockComments,
+        body: postBody.trim(), link_url: postLink.trim() || null, event_id: postEventId || null, status: publish ? "published" : "draft", is_pinned: pinPost, comments_locked: lockComments,
       }).select("id").single();
       if (createError || !post) throw createError ?? new Error("Post tidak dapat dibuat.");
       for (const [index, file] of postFiles.entries()) {
@@ -541,8 +608,8 @@ export function CommunityFeed() {
           {error && <p className="community-feed-error" role="alert">{error}</p>}
           {loading ? <div className="community-feed-loading" aria-live="polite"><LoaderCircle aria-hidden="true" /> Memuat kabar terbaru…</div> : (
             <div className="community-feed-list">
-              {pinnedPost && <FeedPostCard post={pinnedPost} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(post) => setSelectedPostId(post.id)} onManage={managePost} onDeleteComment={deleteComment} />}
-              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => setSelectedPostId(item.id)} onManage={managePost} onDeleteComment={deleteComment} />)}
+              {pinnedPost && <FeedPostCard post={pinnedPost} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(post) => router.push(`/post/${post.id}`)} onManage={managePost} onDeleteComment={deleteComment} />}
+              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} onDeleteComment={deleteComment} />)}
               {posts.length === 0 && <section className="community-feed-empty"><MessageCircle aria-hidden="true" /><h3>Belum ada kabar</h3><p>{emptyCopy}</p>{isStaff && <button type="button" onClick={() => setComposerOpen(true)}><Plus aria-hidden="true" /> Buat post pertama</button>}</section>}
             </div>
           )}
@@ -551,20 +618,19 @@ export function CommunityFeed() {
 
       {isStaff && <FloatingActionButton label="Buat post" onClick={() => setComposerOpen(true)} />}
 
-      <ModalSheet open={Boolean(selectedPost)} onClose={() => setSelectedPostId(null)} title="Diskusi" eyebrow="">
-        {selectedPost && <div className="community-discussion">
-          <div className="community-discussion-origin"><OfficialFeedAvatar small /><div><strong>{selectedPost.author_name}</strong><p>{selectedPost.body}</p></div></div>
-          <div className="community-discussion-list">
-            {selectedPost.comments.length === 0 ? <p className="community-no-comments">Belum ada komentar. Mulai percakapan dengan tetap saling menghargai.</p> : selectedPost.comments.map((comment) => <CommentLine key={comment.id} comment={comment} canModerate={isStaff} currentUserId={user?.id} onDelete={deleteComment} />)}
-          </div>
-          {selectedPost.comments_locked ? <p className="community-comments-locked"><LockKeyhole aria-hidden="true" /> Pengurus telah menutup komentar untuk post ini.</p> : <form className="community-comment-form" onSubmit={submitComment}><textarea value={commentBody} onChange={(event) => setCommentBody(event.target.value)} maxLength={1000} placeholder="Tulis komentar yang membangun…" required /><button type="submit" disabled={commentSaving}>{commentSaving ? <LoaderCircle className="spin" aria-hidden="true" /> : <Send aria-hidden="true" />}<span className="sr-only">Kirim komentar</span></button></form>}
-        </div>}
-      </ModalSheet>
-
       <ModalSheet open={composerOpen} onClose={closeComposer} title="Buat post" eyebrow="">
         <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
           <label>Isi post<textarea value={postBody} onChange={(event) => setPostBody(event.target.value)} maxLength={4000} rows={7} placeholder="Bagikan kabar, agenda, atau dokumentasi perjalanan…" required /></label>
           <label>Tautan opsional<input type="url" value={postLink} onChange={(event) => setPostLink(event.target.value)} placeholder="https://…" /></label>
+          <label>
+            Lampirkan agenda
+            <select value={postEventId} onChange={(event) => setPostEventId(event.target.value)}>
+              <option value="">Tanpa agenda</option>
+              {availableEvents.map((event) => (
+                <option key={event.id} value={event.id}>{event.title}</option>
+              ))}
+            </select>
+          </label>
           <div className="community-upload-control"><span>Foto dokumentasi <small>Maks. 4 foto · JPG, PNG, atau WEBP</small></span><label><ImagePlus aria-hidden="true" /> Tambah foto<input type="file" accept="image/jpeg,image/png,image/webp" multiple onChange={handleFiles} /></label></div>
           {postFiles.length > 0 && <div className="community-file-list">{postFiles.map((file, index) => <span key={`${file.name}-${index}`}>{file.name}<button type="button" aria-label={`Hapus ${file.name}`} onClick={() => setPostFiles((files) => files.filter((_, itemIndex) => itemIndex !== index))}><X aria-hidden="true" /></button></span>)}</div>}
           <div className="community-composer-settings"><label><input type="checkbox" checked={pinPost} onChange={(event) => setPinPost(event.target.checked)} /> <Pin aria-hidden="true" /> Sematkan post</label><label><input type="checkbox" checked={lockComments} onChange={(event) => setLockComments(event.target.checked)} /> <LockKeyhole aria-hidden="true" /> Tutup komentar</label></div>
