@@ -9,7 +9,9 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
+  ExternalLink,
   Heart,
+  Link2,
   LockKeyhole,
   MapPin,
   MessageCircle,
@@ -109,6 +111,18 @@ function relativeDate(value: string | null) {
     month: "short",
     year: "numeric",
   }).format(new Date(value));
+}
+
+function getUrlDetails(value: string) {
+  try {
+    const url = new URL(value);
+    return {
+      hostname: url.hostname.replace(/^www\./, ""),
+      url: url.toString(),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function initials(name: string) {
@@ -582,6 +596,22 @@ export default function ThreadPage() {
 
           {post.attached_event ? (
             <AgendaAttachment event={post.attached_event} />
+          ) : null}
+
+          {post.link_url && getUrlDetails(post.link_url) ? (
+            <a
+              className="community-link-preview"
+              href={getUrlDetails(post.link_url)!.url}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>
+                <Link2 aria-hidden="true" />
+                <small>{getUrlDetails(post.link_url)!.hostname}</small>
+              </span>
+              <b>Buka tautan</b>
+              <ExternalLink aria-hidden="true" />
+            </a>
           ) : null}
 
           <ThreadMediaGallery media={post.media} />
