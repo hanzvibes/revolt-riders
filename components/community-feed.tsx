@@ -8,7 +8,6 @@ import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Archive,
-  BellRing,
   Check,
   ChevronDown,
   ExternalLink,
@@ -99,6 +98,22 @@ function initials(name: string) {
   return (words.length > 1 ? `${words[0][0]}${words[1][0]}` : words[0]?.slice(0, 2) || "RR").toUpperCase();
 }
 
+function OfficialFeedAvatar({ small = false }: { small?: boolean }) {
+  return (
+    <span
+      className={`community-avatar community-avatar-logo${small ? " small" : ""}`}
+      aria-hidden="true"
+    >
+      <Image
+        src="/revolt-riders-logo.jpg"
+        alt=""
+        fill
+        sizes={small ? "30px" : "42px"}
+      />
+    </span>
+  );
+}
+
 function relativeDate(value: string | null) {
   if (!value) return "Baru saja";
   const difference = Date.now() - new Date(value).getTime();
@@ -187,7 +202,7 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
     <article className={`community-post ${post.is_pinned ? "is-pinned" : ""}`}>
       {post.is_pinned && <div className="community-pin-label"><Pin aria-hidden="true" /> Disematkan</div>}
       <header className="community-post-header">
-        <span className="community-avatar" aria-hidden="true">{initials(post.author_name)}</span>
+        <OfficialFeedAvatar />
         <span className="community-post-author">
           <strong>{post.author_name}</strong>
           <small><b>{roleLabel[post.author_role]}</b><span aria-hidden="true">·</span><time dateTime={post.published_at ?? post.created_at}>{relativeDate(post.published_at ?? post.created_at)}</time></small>
@@ -424,8 +439,7 @@ export function CommunityFeed() {
   return (
     <section className="community-feed-page" aria-labelledby="community-feed-title">
       <header className="community-feed-heading">
-        <div><h2 id="community-feed-title">Kabar Revolt</h2><p><span className="community-live-dot" aria-hidden="true" />Terhubung dengan komunitas</p></div>
-        <BellRing aria-hidden="true" />
+        <h2 id="community-feed-title">Feed</h2>
       </header>
 
       {!activeMember && !accessLoading ? (
@@ -448,7 +462,7 @@ export function CommunityFeed() {
 
       <ModalSheet open={Boolean(selectedPost)} onClose={() => setSelectedPostId(null)} title="Diskusi" eyebrow="">
         {selectedPost && <div className="community-discussion">
-          <div className="community-discussion-origin"><span className="community-avatar small" aria-hidden="true">{initials(selectedPost.author_name)}</span><div><strong>{selectedPost.author_name}</strong><p>{selectedPost.body}</p></div></div>
+          <div className="community-discussion-origin"><OfficialFeedAvatar small /><div><strong>{selectedPost.author_name}</strong><p>{selectedPost.body}</p></div></div>
           <div className="community-discussion-list">
             {selectedPost.comments.length === 0 ? <p className="community-no-comments">Belum ada komentar. Mulai percakapan dengan tetap saling menghargai.</p> : selectedPost.comments.map((comment) => <CommentLine key={comment.id} comment={comment} canModerate={isStaff} currentUserId={user?.id} onDelete={deleteComment} />)}
           </div>
