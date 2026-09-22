@@ -41,7 +41,12 @@ export function ModalSheet({
   const sheetRef = useRef<HTMLElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const closeTimerRef = useRef<number | null>(null);
+  const onCloseRef = useRef(onClose);
   const titleId = useId();
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   const finishClose = useCallback(() => {
     closingRef.current = false;
@@ -49,13 +54,13 @@ export function ModalSheet({
     dragOffsetRef.current = 0;
     setDragOffset(0);
     setIsDragging(false);
-    onClose();
+    onCloseRef.current();
 
     window.requestAnimationFrame(() => {
       previousFocusRef.current?.focus();
       previousFocusRef.current = null;
     });
-  }, [onClose]);
+  }, []);
 
   const requestClose = useCallback(() => {
     if (closingRef.current) return;

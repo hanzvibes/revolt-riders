@@ -271,6 +271,17 @@ test("ModalSheet traps focus and restores the opener", async () => {
   );
 });
 
+test("ModalSheet keeps input focus across parent renders", async () => {
+  const sheet = await read("components/modal-sheet.tsx");
+
+  assert.match(sheet, /const onCloseRef = useRef\(onClose\)/);
+  assert.match(sheet, /onCloseRef\.current = onClose/);
+  assert.match(sheet, /onCloseRef\.current\(\)/);
+  assert.match(sheet, /const finishClose = useCallback\(\(\) => \{/);
+  assert.match(sheet, /\}, \[\]\);[\r\n]+[\r\n]+  const requestClose/);
+  assert.match(sheet, /\}, \[open, requestClose\]\);/);
+});
+
 test("Mobile navigation is inert while the drawer is hidden", async () => {
   const shell = await read("components/app-shell.tsx");
 
