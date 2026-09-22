@@ -2,7 +2,6 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -393,14 +392,28 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
   );
 }
 
-export function CommunityFeed() {
+export function CommunityFeed({
+  composerOpen: controlledComposerOpen,
+  onComposerOpenChange,
+}: {
+  composerOpen?: boolean;
+  onComposerOpenChange?: (open: boolean) => void;
+} = {}) {
   const router = useRouter();
   const { user, account, loading: accessLoading, invalidateCache } = useDataCache();
   const [posts, setPosts] = useState<FeedPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [newPostsAvailable, setNewPostsAvailable] = useState(false);
-  const [composerOpen, setComposerOpen] = useState(false);
+  const [internalComposerOpen, setInternalComposerOpen] = useState(false);
+  const composerOpen = controlledComposerOpen ?? internalComposerOpen;
+
+  const setComposerOpen = useCallback((open: boolean) => {
+    if (controlledComposerOpen === undefined) {
+      setInternalComposerOpen(open);
+    }
+    onComposerOpenChange?.(open);
+  }, [controlledComposerOpen, onComposerOpenChange]);
   const [availableEvents, setAvailableEvents] = useState<FeedEvent[]>([]);
   const [postEventId, setPostEventId] = useState("");
   const [postSaving, setPostSaving] = useState(false);
@@ -614,8 +627,6 @@ export function CommunityFeed() {
           )}
         </>
       )}
-
-      {isStaff && <FloatingActionButton label="Buat post" onClick={() => setComposerOpen(true)} />}
 
       <ModalSheet open={composerOpen} onClose={closeComposer} title="Buat post" eyebrow="">
         <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
