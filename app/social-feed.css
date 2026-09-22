@@ -1438,3 +1438,180 @@
     min-height: 44px;
   }
 }
+
+
+/* Desktop feed context rail */
+.app-shell .dashboard-social-feed-main {
+  min-width: 0;
+}
+
+.app-shell .desktop-feed-rail {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .app-shell .dashboard-social-feed-v1 {
+    display: grid;
+    width: min(calc(100% - 36px), 988px);
+    grid-template-columns: minmax(0, 680px) 280px;
+    align-items: start;
+    gap: 28px;
+    margin-inline: auto;
+    padding: 8px 0 calc(34px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .desktop-feed-rail {
+    position: sticky;
+    top: 86px;
+    display: block;
+    max-height: calc(100dvh - 104px);
+    overflow-y: auto;
+    border-left: 1px solid var(--rr-line);
+    padding-left: 22px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rr-line-strong) transparent;
+  }
+
+  .app-shell .desktop-feed-rail-section {
+    padding: 18px 0 20px;
+    border-bottom: 1px solid var(--rr-line);
+  }
+
+  .app-shell .desktop-feed-rail-section:first-child {
+    padding-top: 4px;
+  }
+
+  .app-shell .desktop-feed-rail-section:last-child {
+    border-bottom: 0;
+  }
+
+  .app-shell .desktop-feed-rail-section > header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .app-shell .desktop-feed-rail-section > header > span {
+    display: inline-flex;
+    min-width: 0;
+    align-items: center;
+    gap: 7px;
+    color: var(--rr-ink);
+    font-size: .74rem;
+    font-weight: var(--rr-fw-extrabold);
+    letter-spacing: -.01em;
+  }
+
+  .app-shell .desktop-feed-rail-section > header > span svg {
+    width: 15px;
+    height: 15px;
+    flex: none;
+    color: var(--rr-red);
+  }
+
+  .app-shell .desktop-feed-rail-section > header > a {
+    flex: none;
+    color: var(--rr-muted);
+    font-size: var(--rr-type-caption);
+    font-weight: var(--rr-fw-semibold);
+  }
+
+  .app-shell .desktop-feed-rail-section > header > a:hover {
+    color: var(--rr-ink);
+  }
+
+  .app-shell .desktop-feed-rail-event {
+    display: grid;
+    gap: 6px;
+    color: var(--rr-ink);
+    padding: 2px 0;
+  }
+
+  .app-shell .desktop-feed-rail-event > strong {
+    font-size: .9rem;
+    font-weight: var(--rr-fw-extrabold);
+    line-height: 1.28;
+    letter-spacing: -.018em;
+  }
+
+  .app-shell .desktop-feed-rail-event > span {
+    display: flex;
+    min-width: 0;
+    align-items: flex-start;
+    gap: 6px;
+    color: var(--rr-muted);
+    font-size: var(--rr-type-caption);
+    line-height: 1.45;
+  }
+
+  .app-shell .desktop-feed-rail-event > span svg {
+    width: 13px;
+    height: 13px;
+    flex: none;
+    margin-top: 1px;
+  }
+
+  .app-shell .desktop-feed-rail-event > small {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    width: fit-content;
+    margin-top: 2px;
+    color: var(--rr-red);
+    font-size: var(--rr-type-caption);
+    font-weight: var(--rr-fw-bold);
+  }
+
+  .app-shell .desktop-feed-rail-event > small svg {
+    width: 13px;
+    height: 13px;
+    transition: transform 160ms var(--rr-ease-out);
+  }
+
+  .app-shell .desktop-feed-rail-event:hover > small svg {
+    transform: translateX(2px);
+  }
+
+  .app-shell .desktop-feed-rail-empty {
+    margin: 0;
+    color: var(--rr-muted);
+    font-size: var(--rr-type-small);
+    line-height: 1.55;
+  }
+
+  .app-shell .desktop-feed-support-logo {
+    position: relative;
+    width: 100%;
+    height: 92px;
+    overflow: hidden;
+    border: 1px solid var(--rr-line);
+    border-radius: 12px;
+    background: #080808;
+  }
+
+  .app-shell .desktop-feed-support-logo img {
+    object-fit: cover;
+    object-position: center 54%;
+  }
+
+  .app-shell .desktop-feed-support > p {
+    margin: 9px 0 0;
+    color: var(--rr-muted);
+    font-size: var(--rr-type-caption);
+    line-height: 1.5;
+  }
+
+  .app-shell .desktop-feed-rail a:focus-visible {
+    outline: 2px solid var(--rr-red);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .desktop-feed-rail-event > small svg {
+    transition: none;
+  }
+}
