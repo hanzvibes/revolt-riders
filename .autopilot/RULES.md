@@ -21,15 +21,15 @@ If required: mark `BLOCKED_BACKEND`, explain why, and continue independent safe 
 
 ## Hourly sprint policy
 - One hourly builder invocation means one multi-task sprint, not one task.
-- Target exactly 8 safe unfinished tasks per sprint when 8 safe tasks are available.
-- Do not stop after the first successful task.
-- Stop before 8 only when fewer tasks remain or a genuine hard blocker makes further independent work unsafe.
-- Each successful 8-task sprint is one integration batch.
+- Target up to 8 safe unfinished tasks per sprint; aim for 8 when feasible without forcing retries or request bursts.
 - Keep one product task per commit.
-- Intermediate task commits may trigger GitHub Actions in the background. Do not wait for each intermediate remote CI run before continuing.
-- A cancelled intermediate workflow that was superseded by a later sprint commit is not itself a failure.
-- Validate the cumulative sprint head with Full QA before declaring the sprint successful.
-- When 8 tasks are completed and final Full QA is green, mark the lane `READY_FOR_INTEGRATION`.
+- For an 8-task sprint, product commits 1-7 MUST include `[skip ci]`. The final product commit MUST NOT include `[skip ci]`; it is the single remote UI Quality trigger for the cumulative sprint tree.
+- If a sprint ends early because fewer tasks remain or a real blocker stops safe work, the last completed product commit becomes the final CI-triggering commit and must omit `[skip ci]`.
+- Tracker-only commits under `.autopilot/**` never count as QA and are ignored by UI Quality.
+- Do not poll GitHub Actions after every task. Check remote CI only after the final CI-triggering commit.
+- Run focused/local QA while implementing tasks so obvious regressions are caught before the final remote CI.
+- A cancelled historical/intermediate workflow is not a task failure when the final cumulative tree passes.
+- When the sprint target is complete and final UI Quality is green, mark the lane `READY_FOR_INTEGRATION`.
 
 ## Sprint lock and recovery
 Before a builder starts:
@@ -66,10 +66,8 @@ Run:
 6. production-server HTTP smoke
 
 Full QA is mandatory:
-- after every 4 completed tasks inside the sprint
-- after any repair
-- for medium/high-risk interaction, form, navigation, shared UI, loading/error, or structural responsive work
-- at the final 8-task sprint head
+- locally/checkpoint-style after any repair or medium/high-risk interaction, form, navigation, shared UI, loading/error, or structural responsive work
+- remotely once at the final cumulative sprint head
 - before READY_FOR_INTEGRATION
 - before integration/release
 
@@ -87,10 +85,13 @@ If Quick QA reveals a regression, repair it and upgrade the validation to Full Q
 - Never overwrite another lane's work just to make a merge pass.
 
 ## Integration gate
-- A builder's integration batch is its completed 8-task sprint.
+- A builder's integration batch is its completed sprint with final remote UI Quality GREEN.
 - Integration Guard may process both ready lanes in one run, but strictly one lane at a time.
+- `diverged`, ahead/behind counts, or a stale mergeability calculation are NOT conflicts by themselves.
+- GitHub PR `mergeable=true` is authoritative for a safe merge. If mergeability is unknown/pending, re-read it once after GitHub computes it. Only an actual `mergeable=false`/conflicting PR blocks automatic integration.
 - Re-run/confirm main Full QA after each merge.
-- After merging one lane, synchronize/rebase the other ready lane safely against the new main before merging it.
+- After a successful merge, fast-forward the merged builder branch to current main and reset that lane tracker to ACTIVE/next task before its next sprint.
+- If another ready lane remains, evaluate its PR against the new main; never overwrite its owned work.
 - Production deploy is triggered only by a main commit containing `[deploy]`.
 - Builders never create `[deploy]` commits.
 - After release, verify production and scan runtime errors when available.
@@ -110,3 +111,10 @@ When all tasks for a lane are complete:
 - no speculative polish
 - inspect only real CI/runtime/regression evidence
 - make no code change if everything is healthy
+
+
+## Rate-limit protection
+- A 429, Too Many Requests, or explicit provider rate-limit response is a hard stop for that provider during the current run.
+- Do not immediate-retry the same provider in a loop.
+- Preserve completed work, record RATE_LIMIT_PAUSE if needed, and let the next scheduled run recover.
+- Avoid redundant reads of unchanged tracker/branch state and avoid per-task Slack updates.
