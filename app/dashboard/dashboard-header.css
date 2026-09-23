@@ -1,0 +1,41 @@
+.app-shell .social-header-create {
+  display: inline-grid;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  place-items: center;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: 50%;
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  box-shadow: var(--rr-shadow-soft);
+  transition: background-color 220ms var(--rr-ease-out), border-color 220ms var(--rr-ease-out), transform 220ms var(--rr-ease-out);
+}
+
+.app-shell .social-header-create svg {
+  width: 19px;
+  height: 19px;
+}
+
+@media (hover: hover) {
+  .app-shell .social-header-create:hover {
+    border-color: rgba(220, 27, 42, 0.34);
+    background: var(--rr-red-soft);
+    color: var(--rr-danger);
+  }
+}
+
+.app-shell .social-header-create:active {
+  transform: scale(0.96);
+}
+
+.app-shell .social-header-create:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .social-header-create {
+    transition: none;
+  }
+}
