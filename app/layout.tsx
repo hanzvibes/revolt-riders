@@ -10,6 +10,7 @@ import "./form-density.css";
 import "./native-admin.css";
 import "./system-ui.css";
 import "./social-feed.css";
+import "./bottom-navigation.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.revoltriders.my.id"),
