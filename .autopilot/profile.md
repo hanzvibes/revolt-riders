@@ -101,3 +101,4 @@ Before starting new work, reconcile the latest task commit, tracker status, and 
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
 2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | 2446d62fda818a4e83093966635576924e3c9e99 | branch QA GREEN | Audited current /profil structure and established safe frontend-only priorities; no product/data behavior changed.
+2026-09-23 11:29 WIB | 02 Cover Height & Composition | QA_PENDING | aa55aef2f679e4511e0c05c04546e99ff3e3fa61 | Quick QA unavailable: no same-lane GitHub Actions run; remote execution device unavailable | Implemented profile-scoped cover composition in app/profil/layout.tsx; task remains unchecked until required QA can run. No backend/data/shared-global changes.
