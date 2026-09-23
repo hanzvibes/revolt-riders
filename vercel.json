@@ -1,5 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "ignoreCommand": "! git log -1 --pretty=%B | grep -q '\\[deploy\\]'",
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://www.revoltriders.my.id"
   }
