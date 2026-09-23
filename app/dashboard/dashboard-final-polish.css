@@ -1,0 +1,6 @@
+/* Dashboard final polish, tasks 55-61. Dashboard-scoped only. */
+/* 55 Comment Input UI */
+.app-shell .dashboard-social-feed-v1 .community-comment-form{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;border-top:1px solid var(--rr-line)}
+.app-shell .dashboard-social-feed-v1 .community-comment-form textarea,.app-shell .dashboard-social-feed-v1 .community-comment-form input{min-height:44px;border:1px solid var(--rr-line-strong);border-radius:14px;background:var(--rr-surface-soft);padding:10px 12px;line-height:1.45}
+.app-shell .dashboard-social-feed-v1 .community-comment-form textarea:focus,.app-shell .dashboard-social-feed-v1 .community-comment-form input:focus{border-color:var(--rr-red);outline:none;box-shadow:var(--rr-focus-ring)}
+.app-shell .dashboard-social-feed-v1 .community-comment-form button{min-width:44px;min-height:44px;border-radius:12px}
