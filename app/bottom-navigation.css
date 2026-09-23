@@ -190,3 +190,74 @@
     transition: none !important;
   }
 }
+
+
+/* Dashboard polish 19 · Floating bottom navigation final pass */
+@media (max-width: 720px) {
+  .app-shell .bottom {
+    width: min(calc(100vw - 24px), 390px) !important;
+    max-width: 390px !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 0 !important;
+    border-radius: 21px !important;
+    padding: 5px 6px !important;
+    isolation: isolate;
+  }
+
+  .app-shell .bottom a {
+    width: 100% !important;
+    min-height: 52px !important;
+    gap: 4px !important;
+    border-radius: 14px !important;
+    padding: 5px 2px 4px !important;
+  }
+
+  .app-shell .bottom a.active,
+  .app-shell .bottom a[aria-current="page"] {
+    background: color-mix(in srgb, var(--rr-surface-soft) 72%, transparent) !important;
+    color: var(--rr-ink) !important;
+  }
+
+  .app-shell .bottom a svg {
+    width: 20px !important;
+    height: 20px !important;
+    flex-basis: 20px !important;
+  }
+
+  .app-shell .bottom a small {
+    width: 100% !important;
+    margin-top: 1px !important;
+    overflow: hidden !important;
+    font-size: .55rem !important;
+    line-height: 1.05 !important;
+    text-align: center !important;
+    text-overflow: ellipsis !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .bottom {
+    width: calc(100vw - 20px) !important;
+    max-width: 370px !important;
+    padding-inline: 5px !important;
+  }
+
+  .app-shell .bottom a {
+    min-height: 51px !important;
+    padding-inline: 2px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .app-shell .bottom {
+    width: calc(100vw - 14px) !important;
+  }
+
+  .app-shell .bottom a {
+    min-height: 49px !important;
+  }
+
+  .app-shell .bottom a small {
+    font-size: .51rem !important;
+  }
+}
