@@ -26,6 +26,12 @@ export default function DashboardPage() {
         </main>
         <DesktopFeedRail />
       </div>
+      <style jsx global>{`
+        .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button{width:46px;height:46px;border:1px solid rgba(255,255,255,.18);border-radius:50%;background:rgba(15,16,18,.72);color:#fff;transition:background-color 180ms ease,transform 140ms ease}
+        .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:hover{background:rgba(35,36,39,.9)}
+        .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:active{transform:scale(.94)}
+        .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+      `}</style>
     </AppShell>
   );
 }
