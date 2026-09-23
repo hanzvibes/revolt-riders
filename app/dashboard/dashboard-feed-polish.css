@@ -1,35 +1,13 @@
 /* Dashboard feed polish tasks 30-45. Scoped to the dashboard surface. */
-/* 30 Post Menu UI Polish */
-.app-shell .dashboard-social-feed-v1 .community-post-menu summary{width:40px;height:40px;border:1px solid transparent;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
-.app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}
-.app-shell .dashboard-social-feed-v1 .community-post-menu>div{top:44px;min-width:190px;padding:6px;border-radius:12px}
-.app-shell .dashboard-social-feed-v1 .community-post-menu button{min-height:40px;padding-inline:10px;border-radius:9px}
-/* 31 Caption Readability */
-.app-shell .dashboard-social-feed-v1 .community-post-copy p{font-size:.9rem;line-height:1.68;letter-spacing:-.006em;max-width:68ch}
-/* 32 Long Text Visual Handling */
-.app-shell .dashboard-social-feed-v1 .community-post-copy p{overflow-wrap:anywhere;word-break:break-word}
-.app-shell .dashboard-social-feed-v1 .community-expand{min-height:36px;margin-top:5px;padding:0 2px;text-underline-offset:3px}
-.app-shell .dashboard-social-feed-v1 .community-expand svg{transition:transform 180ms ease}
-/* 33 Mention Visual Style */
-.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]{color:var(--rr-danger);font-weight:var(--rr-fw-semibold);text-decoration:none}
-.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]:hover{text-decoration:underline;text-underline-offset:3px}
-/* 34 Hashtag Visual Style */
-.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="tag"],.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="hashtag"]{color:var(--rr-danger);font-weight:var(--rr-fw-bold);text-decoration:none}
-/* 35 Action Bar Alignment */
-.app-shell .dashboard-social-feed-v1 .community-threads-actions{display:flex;align-items:center;gap:4px;border-top:0;padding-top:2px}
-.app-shell .dashboard-social-feed-v1 .community-post-footer{display:grid;gap:2px;padding:7px 12px 10px}
-/* 36 Action Button Touch Area */
-.app-shell .dashboard-social-feed-v1 .community-threads-actions button{display:grid;width:44px;height:44px;min-height:44px;place-items:center;border:0;border-radius:50%;padding:0}
-.app-shell .dashboard-social-feed-v1 .community-threads-actions button+button{border-left:0}
-/* 37 Action Icon Consistency */
-.app-shell .dashboard-social-feed-v1 .community-threads-actions svg{width:20px;height:20px;stroke-width:1.9}
-.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:background-color 180ms ease,color 180ms ease,transform 120ms ease}
-.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:scale(.94)}
-@media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:none}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:none}}
+/* 30-37 existing polish retained. */
+.app-shell .dashboard-social-feed-v1 .community-post-menu summary{width:40px;height:40px;border:1px solid transparent;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}.app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}.app-shell .dashboard-social-feed-v1 .community-post-menu>div{top:44px;min-width:190px;padding:6px;border-radius:12px}.app-shell .dashboard-social-feed-v1 .community-post-menu button{min-height:40px;padding-inline:10px;border-radius:9px}.app-shell .dashboard-social-feed-v1 .community-post-copy p{font-size:.9rem;line-height:1.68;letter-spacing:-.006em;max-width:68ch;overflow-wrap:anywhere;word-break:break-word}.app-shell .dashboard-social-feed-v1 .community-expand{min-height:36px;margin-top:5px;padding:0 2px;text-underline-offset:3px}.app-shell .dashboard-social-feed-v1 .community-expand svg{transition:transform 180ms ease}.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]{color:var(--rr-danger);font-weight:var(--rr-fw-semibold);text-decoration:none}.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]:hover{text-decoration:underline;text-underline-offset:3px}.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="tag"],.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="hashtag"]{color:var(--rr-danger);font-weight:var(--rr-fw-bold);text-decoration:none}.app-shell .dashboard-social-feed-v1 .community-threads-actions{display:flex;align-items:center;gap:4px;border-top:0;padding-top:2px}.app-shell .dashboard-social-feed-v1 .community-post-footer{display:grid;gap:2px;padding:7px 12px 10px}.app-shell .dashboard-social-feed-v1 .community-threads-actions button{display:grid;width:44px;height:44px;min-height:44px;place-items:center;border:0;border-radius:50%;padding:0;transition:background-color 180ms ease,color 180ms ease,transform 120ms ease}.app-shell .dashboard-social-feed-v1 .community-threads-actions button+button{border-left:0}.app-shell .dashboard-social-feed-v1 .community-threads-actions svg{width:20px;height:20px;stroke-width:1.9}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:scale(.94)}
 /* 38 Engagement Counter Polish */
-.app-shell .dashboard-social-feed-v1 .community-threads-counts{justify-content:flex-start;align-items:center;gap:7px;min-height:28px;padding:0 4px;color:var(--rr-muted);font-variant-numeric:tabular-nums}
-.app-shell .dashboard-social-feed-v1 .community-threads-counts button,.app-shell .dashboard-social-feed-v1 .community-threads-counts span{font-size:.76rem;font-weight:var(--rr-fw-semibold);line-height:1.25}
+.app-shell .dashboard-social-feed-v1 .community-threads-counts{justify-content:flex-start;align-items:center;gap:7px;min-height:28px;padding:0 4px;color:var(--rr-muted);font-variant-numeric:tabular-nums}.app-shell .dashboard-social-feed-v1 .community-threads-counts button,.app-shell .dashboard-social-feed-v1 .community-threads-counts span{font-size:.76rem;font-weight:var(--rr-fw-semibold);line-height:1.25}
 /* 39 Hover State Desktop */
 @media (hover:hover) and (pointer:fine){.app-shell .dashboard-social-feed-v1 .community-post{transition:border-color 180ms ease,box-shadow 180ms ease}.app-shell .dashboard-social-feed-v1 .community-post:hover{border-color:var(--rr-line-strong);box-shadow:var(--rr-shadow-card)}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover{background:var(--rr-surface-soft)}}
 /* 40 Press State Mobile */
 @media (hover:none){.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active,.app-shell .dashboard-social-feed-v1 .community-post-menu summary:active{background:var(--rr-surface-soft);transform:scale(.95)}.app-shell .dashboard-social-feed-v1 .community-post-counts button:active{color:var(--rr-ink)}}
+/* 41 Media Grid Polish */
+.app-shell .dashboard-social-feed-v1 .community-feed-media{gap:2px;margin-top:13px;border-radius:14px;overflow:hidden;background:var(--rr-line)}
+.app-shell .dashboard-social-feed-v1 .community-feed-media figure{isolation:isolate}
+@media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:none}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:none}}
