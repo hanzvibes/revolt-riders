@@ -4,7 +4,7 @@ Surface: `/profil`
 Branch: `feat/autopilot-profile`
 Status: ACTIVE
 Batch size: 10
-Run budget: max 45 minutes / max 8 safe tasks
+Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
 Last Full QA checkpoint: none
 
@@ -95,7 +95,7 @@ Do not edit:
 - Task 02 onward can be implemented without changing data contracts by keeping changes to `/profil` markup/classes and strictly profile-scoped styles.
 
 ## Recovery checkpoint
-Before starting new work, reconcile the latest task commit, tracker status, and branch QA. Skip a new run while prior same-lane QA/build is still in progress.
+Before starting new work, reconcile the latest task commit and tracker state. Intermediate same-lane GitHub Actions may remain in progress while the same sprint continues; only a separate active sprint lock should block a new invocation.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
