@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: QA_PENDING (tasks 04-11 implemented)
+Status: READY_FOR_INTEGRATION
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -40,14 +40,14 @@ Do not edit:
 - [x] 01 Profile Visual Baseline Audit
 - [x] 02 Cover Height & Composition
 - [x] 03 Fix MEMBER NETWORK Cover Overlap
-- [ ] 04 Avatar Scale & Position — QA_PENDING
-- [ ] 05 Edit Profile Button Hierarchy — QA_PENDING
-- [ ] 06 Name & Verified Icon Alignment — QA_PENDING
-- [ ] 07 Full Name Secondary Hierarchy — QA_PENDING
-- [ ] 08 Handle, Role & Active Row Polish — QA_PENDING
-- [ ] 09 Bio Readability — QA_PENDING
-- [ ] 10 Member Meta Row Spacing — QA_PENDING
-- [ ] 11 Profile Stats Row Polish — QA_PENDING
+- [x] 04 Avatar Scale & Position
+- [x] 05 Edit Profile Button Hierarchy
+- [x] 06 Name & Verified Icon Alignment
+- [x] 07 Full Name Secondary Hierarchy
+- [x] 08 Handle, Role & Active Row Polish
+- [x] 09 Bio Readability
+- [x] 10 Member Meta Row Spacing
+- [x] 11 Profile Stats Row Polish
 - [ ] 12 Quick Actions Layout
 - [ ] 13 Hero Small-Phone Composition
 - [ ] 14 Hero Tablet Composition
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 04-11 have product commits on the branch. Do not reimplement them. On the next run, reconcile the final cumulative UI Quality result for `28ae7a4f4d635bf9a53e2604803df1551b9c66d1`. If GREEN and it covers required Full QA, mark 04-11 DONE and READY_FOR_INTEGRATION. If superseded, validate the newest cumulative tree before changing task state.
+Tasks 04-11 are complete and validated by cumulative UI Quality on checkpoint `a870012eb651d9f05efbb9a446bdc41c8ae234dd`, which differs from the final product head only by `.autopilot/profile.md`. Lane is READY_FOR_INTEGRATION; do not start Task 12 until Integration Guard merges and resynchronizes the lane.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -106,3 +106,5 @@ Tasks 04-11 have product commits on the branch. Do not reimplement them. On the 
 2026-09-23 14:40 WIB | 09 Bio Readability | QA_PENDING | d623157409ad2ebb139f30f44f09a250df7927d1 | cumulative QA pending | Supporting-copy rhythm.
 2026-09-23 14:40 WIB | 10 Member Meta Row Spacing | QA_PENDING | f245d036cb5cff3b61b51404f3e6de1aba7c7e66 | cumulative QA pending | Member fact spacing; no tree delta beyond already-staged profile CSS.
 2026-09-23 14:40 WIB | 11 Profile Stats Row Polish | QA_PENDING | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | final UI Quality run 35832947928 pending | Eight safe tasks implemented. Final cumulative QA pending; not READY yet.
+
+2026-09-23 15:07 WIB | sprint 04-11 | DONE / READY_FOR_INTEGRATION | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | Full cumulative UI Quality GREEN via checkpoint a870012eb651d9f05efbb9a446bdc41c8ae234dd / run 35832999808 | Checkpoint changed only tracker file, so tasks 04-11 are validated and ready for Integration Guard.
