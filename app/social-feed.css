@@ -2797,3 +2797,50 @@
     padding-left: 10px;
   }
 }
+
+
+/* Swipeable media viewer */
+.app-shell .community-media-viewer-stage {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.app-shell .community-media-viewer-stage > figure {
+  will-change: transform, opacity;
+  transition:
+    transform 180ms var(--rr-ease-out),
+    opacity 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-media-viewer-stage.is-swiping {
+  cursor: grabbing;
+}
+
+.app-shell .community-media-viewer-stage.is-swiping > figure {
+  transition: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .community-media-viewer-stage {
+    cursor: grab;
+  }
+
+  .app-shell .community-media-viewer-stage.is-swiping {
+    cursor: grabbing;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .app-shell .community-media-viewer-nav {
+    background: rgba(0, 0, 0, .42);
+    opacity: .72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-media-viewer-stage > figure {
+    transition: none;
+  }
+}
