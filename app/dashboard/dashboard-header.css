@@ -39,3 +39,14 @@
     transition: none;
   }
 }
+
+/* Dashboard task 22: keep the social header anchored without turning it into a heavy bar. */
+.app-shell.social-shell .social-app-header {
+  position: sticky;
+  top: 0;
+  z-index: 18;
+  border-bottom: 1px solid color-mix(in srgb, var(--rr-line) 82%, transparent);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
