@@ -98,6 +98,48 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
           overflow-wrap: anywhere;
         }
 
+        /* Task 08 — handle, role, and status share one compact metadata rhythm. */
+        .profile-social-page .profile-social-handle-row {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 7px 8px;
+          margin-top: 9px;
+          min-width: 0;
+        }
+
+        .profile-social-page .profile-social-handle-row code {
+          max-width: 100%;
+          font-size: 0.76rem;
+          line-height: 1.35;
+          overflow-wrap: anywhere;
+        }
+
+        .profile-social-page .profile-social-handle-row .member-role-badge,
+        .profile-social-page .profile-social-active {
+          min-height: 24px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          padding-block: 3px;
+          line-height: 1.2;
+          white-space: nowrap;
+        }
+
+        .profile-social-page .profile-social-active > svg {
+          width: 13px;
+          height: 13px;
+        }
+
+        /* Task 09 — bio is short-form supporting copy, not another headline. */
+        .profile-social-page .profile-social-bio {
+          max-width: 46rem;
+          margin: 12px 0 0;
+          font-size: clamp(0.84rem, 2.5vw, 0.94rem);
+          line-height: 1.55;
+          text-wrap: pretty;
+        }
+
         @media (max-width: 560px) {
           .profile-social-page .profile-social-cover {
             min-height: 156px;
@@ -136,6 +178,10 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
             width: 16px;
             height: 16px;
             flex-basis: 16px;
+          }
+
+          .profile-social-page .profile-social-handle-row {
+            gap: 6px;
           }
         }
       `}</style>
