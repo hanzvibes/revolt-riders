@@ -677,7 +677,14 @@ export function CommunityFeed({
       const voyagerIds = voyagerRows.map((event) => event.id);
 
       if (voyagerIds.length === 0) {
-        setAvailableEvents([...agendaRows, ...voyagerRows]);
+        const options = [...agendaRows, ...voyagerRows];
+        if (
+          editingPost?.attached_event &&
+          !options.some((event) => event.id === editingPost.attached_event?.id)
+        ) {
+          options.unshift(editingPost.attached_event);
+        }
+        setAvailableEvents(options);
         return;
       }
 
@@ -715,20 +722,27 @@ export function CommunityFeed({
         }
       }
 
-      setAvailableEvents([
-        ...agendaRows,
-        ...voyagerRows.map((event) => ({
-          ...event,
-          participantCount: participantCountByEvent.get(event.id) ?? 0,
-          photoCount: photoCountByEvent.get(event.id) ?? 0,
-        })),
-      ]);
+      const voyagerOptions = voyagerRows.map((event) => ({
+        ...event,
+        participantCount: participantCountByEvent.get(event.id) ?? 0,
+        photoCount: photoCountByEvent.get(event.id) ?? 0,
+      }));
+      const options = [...agendaRows, ...voyagerOptions];
+
+      if (
+        editingPost?.attached_event &&
+        !options.some((event) => event.id === editingPost.attached_event?.id)
+      ) {
+        options.unshift(editingPost.attached_event);
+      }
+
+      setAvailableEvents(options);
     };
     void loadEvents();
     return () => {
       active = false;
     };
-  }, [account?.member_external_id, composerOpen, isStaff]);
+  }, [account?.member_external_id, composerOpen, editingPost?.id, isStaff]);
 
   useEffect(() => {
     if (!activeMember) return;
@@ -1258,7 +1272,7 @@ export function CommunityFeed({
               event={selectedPreviewEvent}
               media={previewMedia}
               authorName={previewAuthorName}
-              authorRole={account?.role ?? "member"}
+              authorRole={editingPost?.author_role ?? account?.role ?? "member"}
               pinned={pinPost}
               commentsLocked={lockComments}
             />
