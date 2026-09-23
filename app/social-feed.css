@@ -3698,3 +3698,59 @@
     border-radius: 13px;
   }
 }
+
+
+/* Dashboard polish 15 · New post indicator */
+.app-shell .dashboard-social-feed-v1 .community-new-posts {
+  min-height: 38px;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: var(--rr-radius-pill);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  color: var(--rr-ink);
+  padding: 0 13px;
+  font-size: .72rem;
+  font-weight: var(--rr-fw-semibold);
+  box-shadow:
+    0 2px 8px rgba(20, 22, 24, .06),
+    0 10px 24px rgba(20, 22, 24, .06);
+  backdrop-filter: blur(12px);
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    border-color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts svg {
+  width: 14px;
+  height: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts:hover {
+  border-color: var(--rr-ink);
+  background: var(--rr-surface);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+  transform: scale(.98);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-new-posts {
+    top: max(8px, env(safe-area-inset-top));
+    min-height: 36px;
+    margin-bottom: 10px;
+    padding-inline: 12px;
+    font-size: .7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-new-posts {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+    transform: none;
+  }
+}
