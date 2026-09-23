@@ -4,3 +4,5 @@
 .app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}
 .app-shell .dashboard-social-feed-v1 .community-post-menu>div{top:44px;min-width:190px;padding:6px;border-radius:12px}
 .app-shell .dashboard-social-feed-v1 .community-post-menu button{min-height:40px;padding-inline:10px;border-radius:9px}
+/* 31 Caption Readability */
+.app-shell .dashboard-social-feed-v1 .community-post-copy p{font-size:.9rem;line-height:1.68;letter-spacing:-.006em;max-width:68ch}
