@@ -314,7 +314,7 @@ export default function AdminEventsPage() {
           .from("events")
           .insert({
             ...payload,
-            slug: `${slugify(title)}-${Date.now().toString().slice(-6)}`,
+            slug: `${slugify(title)}-${crypto.randomUUID().slice(0, 6)}`,
             status: "draft",
             created_by: user.id,
           })
