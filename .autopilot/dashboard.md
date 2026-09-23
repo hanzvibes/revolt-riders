@@ -4,7 +4,7 @@ Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
 Status: ACTIVE
 Batch size: 10
-Run budget: max 45 minutes / max 8 safe tasks
+Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
 Last Full QA checkpoint: none
 
@@ -89,7 +89,7 @@ Avoid unless Integration Guard handles it:
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Before starting new work, reconcile the latest task commit, tracker status, and branch QA. Skip a new run while prior same-lane QA/build is still in progress.
+Before starting new work, reconcile the latest task commit and tracker state. Intermediate same-lane GitHub Actions may remain in progress while the same sprint continues; only a separate active sprint lock should block a new invocation.
 
 ## Run log
 Append concise entries here:
