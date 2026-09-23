@@ -23,16 +23,18 @@ If required: mark `BLOCKED_BACKEND`, explain why, and continue independent safe 
 - One hourly builder invocation means one multi-task sprint, not one task.
 - Target exactly 8 safe unfinished tasks per sprint when 8 safe tasks are available.
 - Do not stop after the first successful task.
-- Stop before 8 only when fewer tasks remain, a 10-task batch boundary is reached, or a genuine hard blocker makes further independent work unsafe.
+- Stop before 8 only when fewer tasks remain or a genuine hard blocker makes further independent work unsafe.
+- Each successful 8-task sprint is one integration batch.
 - Keep one product task per commit.
 - Intermediate task commits may trigger GitHub Actions in the background. Do not wait for each intermediate remote CI run before continuing.
 - A cancelled intermediate workflow that was superseded by a later sprint commit is not itself a failure.
 - Validate the cumulative sprint head with Full QA before declaring the sprint successful.
+- When 8 tasks are completed and final Full QA is green, mark the lane `READY_FOR_INTEGRATION`.
 
 ## Sprint lock and recovery
 Before a builder starts:
 1. Reconcile the tracker, latest task commit, and branch state.
-2. Mark the current sprint RUNNING in the branch tracker with its intended task range.
+2. Mark the current sprint RUNNING in the branch tracker with its intended 8-task range.
 3. A newer automation invocation must not overwrite an actively running sprint.
 4. If a prior sprint was interrupted, reconcile its last committed task and tracker state, then continue from the next safe task.
 5. Do not use an in-progress GitHub Actions run from an intermediate task commit as a sprint lock.
@@ -45,7 +47,7 @@ Before a builder starts:
 - NEEDS_REVIEW: safe task failed twice or needs a human/product decision
 - BLOCKED_BACKEND: requires forbidden backend-sensitive work
 - WAITING_SHARED_COMPONENT: requires a cross-lane/global primitive or real merge conflict
-- READY_FOR_INTEGRATION: batch-level state after the 10-task regression gate
+- READY_FOR_INTEGRATION: sprint-level state after 8 tasks + final Full QA
 
 ## Sprint QA
 ### Quick QA for low-risk isolated UI tasks
@@ -67,8 +69,7 @@ Full QA is mandatory:
 - after every 4 completed tasks inside the sprint
 - after any repair
 - for medium/high-risk interaction, form, navigation, shared UI, loading/error, or structural responsive work
-- at a 10-task batch boundary
-- at the final sprint head
+- at the final 8-task sprint head
 - before READY_FOR_INTEGRATION
 - before integration/release
 
@@ -86,8 +87,10 @@ If Quick QA reveals a regression, repair it and upgrade the validation to Full Q
 - Never overwrite another lane's work just to make a merge pass.
 
 ## Integration gate
-- Merge only one ready batch at a time.
-- Re-run/confirm main Full QA after merge.
+- A builder's integration batch is its completed 8-task sprint.
+- Integration Guard may process both ready lanes in one run, but strictly one lane at a time.
+- Re-run/confirm main Full QA after each merge.
+- After merging one lane, synchronize/rebase the other ready lane safely against the new main before merging it.
 - Production deploy is triggered only by a main commit containing `[deploy]`.
 - Builders never create `[deploy]` commits.
 - After release, verify production and scan runtime errors when available.
