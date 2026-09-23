@@ -2596,6 +2596,7 @@
 
 /* Social card refinement */
 .app-shell .dashboard-social-feed-v1 {
+  position: relative;
   isolation: isolate;
 }
 
@@ -2609,12 +2610,7 @@
 
 .app-shell .dashboard-social-feed-v1 .community-threads-post {
   position: relative;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--rr-surface) 98%, #fff) 0%,
-      var(--rr-surface) 100%
-    );
+  background: var(--rr-surface);
 }
 
 .app-shell .dashboard-social-feed-v1 .community-threads-post::after {
