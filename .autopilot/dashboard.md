@@ -2,7 +2,7 @@
 
 Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
-Status: READY_FOR_INTEGRATION
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -71,7 +71,7 @@ Avoid shared/global/backend files unless Integration Guard handles them.
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Tasks 38-45 are validated on cumulative head `67325361835dcfdecb3e590195374c2d4862d867` by UI Quality run 35895904307 GREEN. Lane is READY_FOR_INTEGRATION. Next after integration: 46 Viewer Navigation Controls.
+Tasks 38-45 were integrated to main. Branch fast-forwarded to main at `53c98869014e1812e228c52c09d92b097e9fe1bd`. Lane self-healed to ACTIVE. Next sprint: 46-53.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -83,3 +83,4 @@ Tasks 38-45 are validated on cumulative head `67325361835dcfdecb3e590195374c2d48
 2026-09-24 00:13 WIB | lane recovery | ACTIVE | 1a3900cc2d2a553ca488400c3ba382608894acc4 | integrated batch detected; branch fast-forwarded | Next task 38 Engagement Counter Polish.
 2026-09-24 00:18 WIB | sprint 38-45 | QA_PENDING | 67325361835dcfdecb3e590195374c2d4862d867 | final cumulative UI Quality not visible yet | 8 dashboard polish tasks implemented; final CI trigger is Task 45.
 2026-09-24 01:11 WIB | sprint 38-45 | DONE / READY_FOR_INTEGRATION | 67325361835dcfdecb3e590195374c2d4862d867 | UI Quality run 35895904307 GREEN | Reconciled final cumulative QA; tasks 38-45 validated. Next after integration: 46 Viewer Navigation Controls.
+2026-09-24 02:10 WIB | lane recovery | ACTIVE | 53c98869014e1812e228c52c09d92b097e9fe1bd | integrated batch detected; branch fast-forwarded | Next sprint 46-53.
