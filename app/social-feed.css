@@ -3111,3 +3111,26 @@
     transform: none;
   }
 }
+
+
+/* Dashboard polish 06 · Like microinteraction */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+  transform-origin: center;
+  animation: rr-dashboard-like-confirm 180ms cubic-bezier(.16, 1, .3, 1);
+}
+
+@keyframes rr-dashboard-like-confirm {
+  from {
+    transform: scale(.86);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+    animation: none;
+  }
+}
