@@ -9,3 +9,5 @@
 /* 28 */.app-shell.social-shell .community-threads-post .community-post-author strong{font-size:.875rem;font-weight:750;line-height:1.2;letter-spacing:-.012em}.app-shell.social-shell .community-threads-post .community-post-author small{line-height:1.25}
 /* 29 Timestamp Styling */
 .app-shell.social-shell .community-threads-post .community-post-author time{color:var(--rr-muted);font-size:.72rem;font-variant-numeric:tabular-nums;letter-spacing:.005em}
+/* 66 Tablet Layout Audit */
+@media (min-width:721px) and (max-width:1099px){.app-shell.social-shell .dashboard-social-feed-v1{width:min(100%,700px);padding-inline:18px}.app-shell.social-shell .community-feed-list{gap:15px}.app-shell.social-shell .social-app-header{padding-inline:max(16px,3vw)}}
