@@ -2844,3 +2844,73 @@
     transition: none;
   }
 }
+
+
+/* Restore floating dashboard bottom navigation */
+@media (max-width: 720px) {
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px)) !important;
+    width: min(calc(100vw - 24px), 420px) !important;
+    max-width: calc(100vw - 24px) !important;
+    min-height: 62px !important;
+    height: auto !important;
+    transform: translateX(-50%) !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    gap: 2px !important;
+    margin: 0 !important;
+    border: 1px solid color-mix(in srgb, var(--rr-line-strong) 78%, transparent) !important;
+    border-radius: 22px !important;
+    background: color-mix(in srgb, var(--rr-surface) 94%, transparent) !important;
+    padding: 6px 7px !important;
+    box-shadow:
+      0 14px 36px rgba(20, 22, 24, .14),
+      0 3px 10px rgba(20, 22, 24, .055) !important;
+    backdrop-filter: blur(20px) saturate(135%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
+    overflow: hidden;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a {
+    min-width: 0 !important;
+    min-height: 50px !important;
+    border-radius: 15px !important;
+    background: transparent !important;
+    color: var(--rr-muted) !important;
+    padding: 5px 3px 4px !important;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a:hover,
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a:active {
+    background: color-mix(in srgb, var(--rr-surface-soft) 78%, transparent) !important;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a.active {
+    background: transparent !important;
+    color: var(--rr-ink) !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a.active svg {
+    color: var(--rr-red) !important;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .dashboard-social-feed-v1 {
+    padding-bottom:
+      calc(
+        var(--rr-mobile-dashboard-clearance)
+        + 30px
+        + env(safe-area-inset-bottom)
+      );
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
+    width: calc(100vw - 18px) !important;
+    max-width: calc(100vw - 18px) !important;
+    border-radius: 20px !important;
+    padding-inline: 5px !important;
+  }
+}
