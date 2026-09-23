@@ -71,10 +71,9 @@ export function DesktopFeedRail() {
     () => window.matchMedia("(min-width: 1280px)").matches,
     () => false,
   );
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
-    setLoading(true);
     const supabase = getSupabaseBrowserClient();
     const now = new Date().toISOString();
 
