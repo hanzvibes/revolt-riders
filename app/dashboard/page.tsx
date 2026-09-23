@@ -34,6 +34,9 @@ export default function DashboardPage() {
         .app-shell .dashboard-social-feed-v1 .community-agenda-attachment{min-height:88px;margin-top:14px;border:1px solid var(--rr-line);border-radius:14px;background:var(--rr-surface-soft);padding:12px 13px;transition:border-color 180ms ease,background-color 180ms ease}
         .app-shell .dashboard-social-feed-v1 .community-agenda-attachment:hover{border-color:var(--rr-line-strong);background:var(--rr-surface)}
         .app-shell .dashboard-social-feed-v1 .community-agenda-copy strong{line-height:1.3;letter-spacing:-.015em}
+        .app-shell .dashboard-social-feed-v1 .community-voyager-attachment{margin-top:14px;border:1px solid rgba(220,27,42,.22);border-radius:14px;background:linear-gradient(180deg,var(--rr-surface),var(--rr-surface-soft));padding:13px;box-shadow:none}
+        .app-shell .dashboard-social-feed-v1 .community-voyager-head{gap:10px}.app-shell .dashboard-social-feed-v1 .community-voyager-head>b{border-radius:999px;padding:5px 8px;background:var(--rr-red-soft);color:var(--rr-danger);font-size:.66rem}
+        .app-shell .dashboard-social-feed-v1 .community-voyager-progress{gap:8px}.app-shell .dashboard-social-feed-v1 .community-voyager-cta{min-height:38px;margin-top:8px}
       `}</style>
     </AppShell>
   );
