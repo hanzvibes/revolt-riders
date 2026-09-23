@@ -2,7 +2,7 @@
 
 Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
-Status: READY_FOR_INTEGRATION
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -71,7 +71,7 @@ Avoid shared/global/backend files unless Integration Guard handles them.
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Sprint 46-53 validated GREEN on cumulative head `ce9a93c3cd2650269abe185c5df6e1dc44538604` via UI Quality run `35907700153`. Lane is READY_FOR_INTEGRATION. Do not start Task 54 until Integration Guard merges and resynchronizes this batch.
+Sprint 46-53 is integrated into main. Branch fast-forwarded to merge commit `8e1d59e3534b765ee33d289dfde03c7a58f37712`; lane recovered to ACTIVE. Next sprint starts at Task 54 Comment Row Spacing.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -86,3 +86,4 @@ Sprint 46-53 validated GREEN on cumulative head `ce9a93c3cd2650269abe185c5df6e1d
 2026-09-24 02:10 WIB | lane recovery | ACTIVE | 53c98869014e1812e228c52c09d92b097e9fe1bd | integrated batch detected; branch fast-forwarded | Next sprint 46-53.
 2026-09-24 02:17 WIB | sprint 46-53 | QA_PENDING | ce9a93c3cd2650269abe185c5df6e1dc44538604 | final cumulative UI Quality not visible yet | 8 safe dashboard UI tasks implemented; tasks 46-52 used [skip ci], Task 53 is the sole cumulative CI trigger.
 2026-09-24 03:10 WIB | sprint 46-53 | DONE / READY_FOR_INTEGRATION | ce9a93c3cd2650269abe185c5df6e1dc44538604 | UI Quality run 35907700153 GREEN | Reconciled final cumulative QA; tasks 46-53 validated. Next after integration: 54 Comment Row Spacing.
+2026-09-24 04:11 WIB | lane recovery | ACTIVE | 8e1d59e3534b765ee33d289dfde03c7a58f37712 | integrated batch detected; branch fast-forwarded | Next sprint 54-61.
