@@ -29,3 +29,5 @@
 /* 38 Engagement Counter Polish */
 .app-shell .dashboard-social-feed-v1 .community-threads-counts{justify-content:flex-start;align-items:center;gap:7px;min-height:28px;padding:0 4px;color:var(--rr-muted);font-variant-numeric:tabular-nums}
 .app-shell .dashboard-social-feed-v1 .community-threads-counts button,.app-shell .dashboard-social-feed-v1 .community-threads-counts span{font-size:.76rem;font-weight:var(--rr-fw-semibold);line-height:1.25}
+/* 39 Hover State Desktop */
+@media (hover:hover) and (pointer:fine){.app-shell .dashboard-social-feed-v1 .community-post{transition:border-color 180ms ease,box-shadow 180ms ease}.app-shell .dashboard-social-feed-v1 .community-post:hover{border-color:var(--rr-line-strong);box-shadow:var(--rr-shadow-card)}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover{background:var(--rr-surface-soft)}}
