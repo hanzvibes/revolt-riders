@@ -1,0 +1,28 @@
+/* Dashboard feed polish tasks 30-37. Scoped to the dashboard surface. */
+/* 30 Post Menu UI Polish */
+.app-shell .dashboard-social-feed-v1 .community-post-menu summary{width:40px;height:40px;border:1px solid transparent;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
+.app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}
+.app-shell .dashboard-social-feed-v1 .community-post-menu>div{top:44px;min-width:190px;padding:6px;border-radius:12px}
+.app-shell .dashboard-social-feed-v1 .community-post-menu button{min-height:40px;padding-inline:10px;border-radius:9px}
+/* 31 Caption Readability */
+.app-shell .dashboard-social-feed-v1 .community-post-copy p{font-size:.9rem;line-height:1.68;letter-spacing:-.006em;max-width:68ch}
+/* 32 Long Text Visual Handling */
+.app-shell .dashboard-social-feed-v1 .community-post-copy p{overflow-wrap:anywhere;word-break:break-word}
+.app-shell .dashboard-social-feed-v1 .community-expand{min-height:36px;margin-top:5px;padding:0 2px;text-underline-offset:3px}
+.app-shell .dashboard-social-feed-v1 .community-expand svg{transition:transform 180ms ease}
+/* 33 Mention Visual Style */
+.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]{color:var(--rr-danger);font-weight:var(--rr-fw-semibold);text-decoration:none}
+.app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]:hover{text-decoration:underline;text-underline-offset:3px}
+/* 34 Hashtag Visual Style */
+.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="tag"],.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="hashtag"]{color:var(--rr-danger);font-weight:var(--rr-fw-bold);text-decoration:none}
+/* 35 Action Bar Alignment */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions{display:flex;align-items:center;gap:4px;border-top:0;padding-top:2px}
+.app-shell .dashboard-social-feed-v1 .community-post-footer{display:grid;gap:2px;padding:7px 12px 10px}
+/* 36 Action Button Touch Area */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button{display:grid;width:44px;height:44px;min-height:44px;place-items:center;border:0;border-radius:50%;padding:0}
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button+button{border-left:0}
+/* 37 Action Icon Consistency */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions svg{width:20px;height:20px;stroke-width:1.9}
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:background-color 180ms ease,color 180ms ease,transform 120ms ease}
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:none}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:none}}

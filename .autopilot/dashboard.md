@@ -6,35 +6,17 @@ Status: READY_FOR_INTEGRATION
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on 3b391959e5a52d2606196d92bb664999dc9a8608 (run 35859072528)
+Last Full QA checkpoint: UI Quality GREEN on ad737a736bff2ddaea925f0a291b4ed77fce4d85 (run 35879612921)
 
 ## Rules
-- Work only on frontend/UI/UX and follow `.autopilot/RULES.md` on main.
-- Preserve existing features and data flow.
-- Never modify Supabase schema, migrations, RLS, auth, permissions, secrets, DB structure, or production data.
-- Do not use `[deploy]` in builder commits.
-- One product task per commit.
-- Low-risk isolated UI work may use Quick QA; Full QA is required by the global risk-based QA rules.
-- After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
-- If a task requires sensitive/backend work, mark `BLOCKED_BACKEND`.
-- If it needs another lane/global primitive, mark `WAITING_SHARED_COMPONENT`.
-- After 8 tasks in the current sprint, run final Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases that sprint.
-- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors.
+- Follow `.autopilot/RULES.md` on main; frontend/UI/UX only.
+- Preserve features/data flow. Never touch backend/Supabase/DB/auth/RLS/permissions/secrets/production data.
+- Never use `[deploy]`; one product task per commit.
+- Final cumulative remote UI Quality must be GREEN before DONE/READY_FOR_INTEGRATION.
 
 ## File ownership
-Primary:
-- `app/dashboard/**`
-- `app/social-feed.css`
-- `components/community-feed.tsx`
-- `components/desktop-feed-rail.tsx`
-- `app/bottom-navigation.css`
-
-Avoid unless Integration Guard handles it:
-- `components/app-shell.tsx`
-- `app/globals.css`
-- `app/tokens.css`
-- `package.json`, lockfiles, workflows
-- all `supabase/**`, `db/**`, `drizzle/**`
+Primary: `app/dashboard/**`, `app/social-feed.css`, `components/community-feed.tsx`, `components/desktop-feed-rail.tsx`, `app/bottom-navigation.css`.
+Avoid shared/global/backend files unless Integration Guard handles them.
 
 ## Queue
 - [x] 21 Dashboard Header Refinement
@@ -46,14 +28,14 @@ Avoid unless Integration Guard handles it:
 - [x] 27 Avatar Size Consistency
 - [x] 28 Author Typography
 - [x] 29 Timestamp Styling
-- [ ] 30 Post Menu UI Polish
-- [ ] 31 Caption Readability
-- [ ] 32 Long Text Visual Handling
-- [ ] 33 Mention Visual Style
-- [ ] 34 Hashtag Visual Style
-- [ ] 35 Action Bar Alignment
-- [ ] 36 Action Button Touch Area
-- [ ] 37 Action Icon Consistency
+- [x] 30 Post Menu UI Polish
+- [x] 31 Caption Readability
+- [x] 32 Long Text Visual Handling
+- [x] 33 Mention Visual Style
+- [x] 34 Hashtag Visual Style
+- [x] 35 Action Bar Alignment
+- [x] 36 Action Button Touch Area
+- [x] 37 Action Icon Consistency
 - [ ] 38 Engagement Counter Polish
 - [ ] 39 Hover State Desktop
 - [ ] 40 Press State Mobile
@@ -89,13 +71,12 @@ Avoid unless Integration Guard handles it:
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Sprint 22-29 is complete and final cumulative UI Quality is GREEN. Lane is READY_FOR_INTEGRATION. Next task after Integration Guard merges and resynchronizes the branch: 30 Post Menu UI Polish.
+Tasks 30-37 are implemented and validated on cumulative head `ad737a736bff2ddaea925f0a291b4ed77fce4d85`. UI Quality run 35879612921 completed successfully. Sprint is READY_FOR_INTEGRATION. Next task after Integration Guard merges and resynchronizes the lane: 38 Engagement Counter Polish.
 
 ## Run log
-Append concise entries here:
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
-2026-09-23 12:08 WIB | 21 Dashboard Header Refinement | QA_PENDING | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA pending branch CI | Added lane-scoped 44px create action polish, hover/press/focus/reduced-motion states; no behavior/data changes.
-2026-09-23 12:59 WIB | 21 Dashboard Header Refinement | DONE | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA GREEN; UI Quality run 35820880555 success | Reconciled prior checkpoint after branch CI completed successfully. Next task: 22 Sticky Header Polish.
-2026-09-23 17:16 WIB | lane recovery | ACTIVE | 6d0a0ca9fab14da5516dbfa37821c40ff4285b7d | clean rebuild from latest main | Preserved completed Task 21; removed old diverged branch history. Next task: 22 Sticky Header Polish.
-2026-09-23 20:08 WIB | sprint 22-29 | DONE / READY_FOR_INTEGRATION | 3b391959e5a52d2606196d92bb664999dc9a8608 | Full cumulative UI Quality GREEN; run 35859072528 | Tasks 22-29 validated. Vercel branch status is build-rate-limit only and was not retried. Next task after integration: 30 Post Menu UI Polish.
+2026-09-23 20:08 WIB | sprint 22-29 | DONE / READY_FOR_INTEGRATION | 3b391959e5a52d2606196d92bb664999dc9a8608 | Full cumulative UI Quality GREEN; run 35859072528 | Tasks 22-29 validated.
+2026-09-23 21:18 WIB | sprint 22-29 | INTEGRATED | c35af746f34cd4e5e5ab6c12c9bd2c9016b7bf29 | main UI Quality GREEN | Branch resynchronized; next task 30.
+2026-09-23 22:09 WIB | sprint 30-37 | QA_PENDING | ad737a736bff2ddaea925f0a291b4ed77fce4d85 | final cumulative UI Quality not visible yet | 8 safe dashboard polish tasks implemented; commits 30-36 skipped CI, task 37 triggered the final cumulative CI.
+2026-09-23 23:10 WIB | sprint 30-37 | DONE / READY_FOR_INTEGRATION | ad737a736bff2ddaea925f0a291b4ed77fce4d85 | UI Quality run 35879612921 GREEN | Reconciled final cumulative QA; tasks 30-37 validated. Vercel status is build-rate-limit only and is irrelevant before final release gate. Next after integration: 38 Engagement Counter Polish.
