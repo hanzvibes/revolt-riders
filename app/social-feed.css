@@ -3562,3 +3562,58 @@
     height: 36px;
   }
 }
+
+
+/* Dashboard polish 13 · Link preview */
+.app-shell .dashboard-social-feed-v1 .community-link-preview {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 7px;
+  min-height: 50px;
+  margin: 12px 0 0;
+  border-color: var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 8px 10px;
+  box-shadow: none;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview:hover {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface-soft) 88%, var(--rr-surface));
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > span {
+  gap: 7px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > span svg {
+  width: 14px;
+  height: 14px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview small {
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview b {
+  color: var(--rr-muted);
+  font-size: .66rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > svg {
+  width: 13px;
+  height: 13px;
+  color: var(--rr-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-link-preview {
+    transition: none;
+  }
+}
