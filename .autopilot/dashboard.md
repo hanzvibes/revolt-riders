@@ -37,7 +37,7 @@ Avoid unless Integration Guard handles it:
 - all `supabase/**`, `db/**`, `drizzle/**`
 
 ## Queue
-- [ ] 21 Dashboard Header Refinement — QA_PENDING
+- [x] 21 Dashboard Header Refinement
 - [ ] 22 Sticky Header Polish
 - [ ] 23 Feed Container Spacing
 - [ ] 24 Post Card Vertical Rhythm
@@ -96,3 +96,4 @@ Append concise entries here:
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
 2026-09-23 12:08 WIB | 21 Dashboard Header Refinement | QA_PENDING | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA pending branch CI | Added lane-scoped 44px create action polish, hover/press/focus/reduced-motion states; no behavior/data changes.
+2026-09-23 12:59 WIB | 21 Dashboard Header Refinement | DONE | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA GREEN; UI Quality run 35820880555 success | Reconciled prior checkpoint after branch CI completed successfully. Next task: 22 Sticky Header Polish.
