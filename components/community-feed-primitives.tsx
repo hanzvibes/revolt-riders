@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export type CommunityFeedMedia = {
   id: string;
@@ -196,10 +196,23 @@ export function CommunityMediaGallery({
   media: CommunityFeedMedia[];
 }) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  const [swiping, setSwiping] = useState(false);
+  const swipeStartRef = useRef<{
+    x: number;
+    y: number;
+    startedAt: number;
+    pointerId: number;
+  } | null>(null);
   const visible = media.slice(0, 4);
   const activeMedia = activeIndex === null ? null : media[activeIndex];
 
-  const closeViewer = useCallback(() => setActiveIndex(null), []);
+  const closeViewer = useCallback(() => {
+    swipeStartRef.current = null;
+    setSwipeOffset(0);
+    setSwiping(false);
+    setActiveIndex(null);
+  }, []);
   const showPrevious = useCallback(() => {
     setActiveIndex((current) => {
       if (current === null) return null;
@@ -212,6 +225,35 @@ export function CommunityMediaGallery({
       return current === media.length - 1 ? 0 : current + 1;
     });
   }, [media.length]);
+
+  const resetSwipe = useCallback(() => {
+    swipeStartRef.current = null;
+    setSwipeOffset(0);
+    setSwiping(false);
+  }, []);
+
+  const finishSwipe = useCallback(
+    (clientX: number) => {
+      const start = swipeStartRef.current;
+      if (!start) return;
+
+      const distance = clientX - start.x;
+      const elapsed = Math.max(1, performance.now() - start.startedAt);
+      const velocity = Math.abs(distance) / elapsed;
+      const shouldNavigate =
+        media.length > 1 &&
+        (Math.abs(distance) >= 52 ||
+          (Math.abs(distance) >= 28 && velocity >= 0.45));
+
+      if (shouldNavigate) {
+        if (distance < 0) showNext();
+        else showPrevious();
+      }
+
+      resetSwipe();
+    },
+    [media.length, resetSwipe, showNext, showPrevious],
+  );
 
   useEffect(() => {
     if (activeIndex === null) return;
@@ -288,6 +330,9 @@ export function CommunityMediaGallery({
         >
           <header>
             <span>{activeIndex! + 1} / {media.length}</span>
+            {media.length > 1 ? (
+              <span className="sr-only">Geser kiri atau kanan untuk pindah foto.</span>
+            ) : null}
             <button
               type="button"
               onClick={closeViewer}
@@ -298,7 +343,49 @@ export function CommunityMediaGallery({
             </button>
           </header>
 
-          <div className="community-media-viewer-stage">
+          <div
+            className={`community-media-viewer-stage${swiping ? " is-swiping" : ""}`}
+            onPointerDown={(event) => {
+              if (media.length <= 1) return;
+              const target = event.target;
+              if (
+                target instanceof Element &&
+                target.closest("button")
+              ) {
+                return;
+              }
+
+              swipeStartRef.current = {
+                x: event.clientX,
+                y: event.clientY,
+                startedAt: performance.now(),
+                pointerId: event.pointerId,
+              };
+              setSwiping(true);
+              event.currentTarget.setPointerCapture(event.pointerId);
+            }}
+            onPointerMove={(event) => {
+              const start = swipeStartRef.current;
+              if (!start || start.pointerId !== event.pointerId) return;
+
+              const deltaX = event.clientX - start.x;
+              const deltaY = event.clientY - start.y;
+
+              if (Math.abs(deltaY) > Math.abs(deltaX) + 18) {
+                resetSwipe();
+                return;
+              }
+
+              if (Math.abs(deltaX) < 4) return;
+              setSwipeOffset(Math.max(-110, Math.min(110, deltaX)));
+            }}
+            onPointerUp={(event) => {
+              const start = swipeStartRef.current;
+              if (!start || start.pointerId !== event.pointerId) return;
+              finishSwipe(event.clientX);
+            }}
+            onPointerCancel={resetSwipe}
+          >
             {media.length > 1 ? (
               <button
                 type="button"
@@ -310,7 +397,13 @@ export function CommunityMediaGallery({
               </button>
             ) : null}
 
-            <figure>
+            <figure
+              className={swiping ? "is-swiping" : ""}
+              style={{
+                transform: `translate3d(${swipeOffset}px, 0, 0)`,
+                opacity: 1 - Math.min(Math.abs(swipeOffset) / 520, 0.16),
+              }}
+            >
               <Image
                 src={activeMedia.signedUrl}
                 alt={activeMedia.alt_text}
