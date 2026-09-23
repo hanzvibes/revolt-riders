@@ -742,7 +742,7 @@ export function CommunityFeed({
     return () => {
       active = false;
     };
-  }, [account?.member_external_id, composerOpen, editingPost?.id, isStaff]);
+  }, [account?.member_external_id, composerOpen, editingPost?.attached_event, isStaff]);
 
   useEffect(() => {
     if (!activeMember) return;
@@ -757,7 +757,7 @@ export function CommunityFeed({
           schema: "public",
           table: "feed_posts",
         },
-        (payload: any) => {
+        (payload) => {
           if (payload.eventType === "INSERT") {
             const record = payload.new ?? {};
             if (
