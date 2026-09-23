@@ -3,11 +3,15 @@ name: UI Quality
 on:
   pull_request:
     branches: [main]
+    paths-ignore:
+      - ".autopilot/**"
   push:
     branches:
       - main
       - "fix/**"
       - "feat/**"
+    paths-ignore:
+      - ".autopilot/**"
 
 concurrency:
   group: ui-quality-${{ github.ref }}
