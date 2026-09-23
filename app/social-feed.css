@@ -3875,3 +3875,61 @@
     grid-template-columns: minmax(0, 712px) 296px;
   }
 }
+
+
+/* Dashboard polish 18 · Tablet responsive pass */
+@media (min-width: 721px) and (max-width: 1279px) {
+  .app-shell .dashboard-social-feed-v1 {
+    display: block;
+    width: min(100%, 736px);
+    margin-inline: auto;
+    padding: 10px 18px 44px;
+  }
+
+  .app-shell .dashboard-social-feed-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-list {
+    gap: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: 17px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding: 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media,
+  .app-shell .dashboard-social-feed-v1 .community-link-preview,
+  .app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+    max-width: 100%;
+  }
+
+  .app-shell .desktop-feed-rail {
+    display: none;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 900px) {
+  .app-shell .dashboard-social-feed-v1 {
+    width: min(100%, 700px);
+    padding-inline: 16px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
