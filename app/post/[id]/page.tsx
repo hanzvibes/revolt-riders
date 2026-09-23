@@ -39,6 +39,12 @@ import {
   type FormEvent,
 } from "react";
 
+type RealtimeChangePayload = {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown>;
+  old: Record<string, unknown>;
+};
+
 type ThreadMedia = CommunityFeedMedia;
 
 type ThreadEvent = CommunityFeedEvent;
@@ -240,9 +246,10 @@ export default function ThreadPage() {
           schema: "public",
           table: "feed_post_comments",
         },
-        (payload) => {
-          if (payload.eventType === "DELETE") {
-            const id = payload.old?.id;
+        (payload: unknown) => {
+          const change = payload as RealtimeChangePayload;
+          if (change.eventType === "DELETE") {
+            const id = change.old?.id;
             if (typeof id !== "string") return;
             setComments((current) =>
               current.filter((comment) => comment.id !== id),
@@ -250,10 +257,10 @@ export default function ThreadPage() {
             return;
           }
 
-          const record = payload.new;
+          const record = change.new;
           if (!record || record.post_id !== postId) return;
 
-          if (payload.eventType === "INSERT") {
+          if (change.eventType === "INSERT") {
             setComments((current) => {
               if (current.some((comment) => comment.id === record.id)) {
                 return current;
@@ -268,7 +275,7 @@ export default function ThreadPage() {
             return;
           }
 
-          if (payload.eventType === "UPDATE") {
+          if (change.eventType === "UPDATE") {
             setComments((current) =>
               current.map((comment) =>
                 comment.id === record.id
@@ -287,8 +294,9 @@ export default function ThreadPage() {
           table: "feed_posts",
           filter: `id=eq.${postId}`,
         },
-        (payload) => {
-          const record = payload.new;
+        (payload: unknown) => {
+          const change = payload as RealtimeChangePayload;
+          const record = change.new;
           if (!record || record.id !== postId) return;
 
           if (
