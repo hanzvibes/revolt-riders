@@ -18,3 +18,6 @@
 /* 35 Action Bar Alignment */
 .app-shell .dashboard-social-feed-v1 .community-threads-actions{display:flex;align-items:center;gap:4px;border-top:0;padding-top:2px}
 .app-shell .dashboard-social-feed-v1 .community-post-footer{display:grid;gap:2px;padding:7px 12px 10px}
+/* 36 Action Button Touch Area */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button{display:grid;width:44px;height:44px;min-height:44px;place-items:center;border:0;border-radius:50%;padding:0}
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button+button{border-left:0}
