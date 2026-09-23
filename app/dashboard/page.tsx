@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import "./dashboard-header.css";
 import "./dashboard-feed-polish.css";
+import "./dashboard-final-polish.css";
 
 const FEED_STAFF_ROLES = new Set(["road_captain", "admin", "superadmin"]);
 
