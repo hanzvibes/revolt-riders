@@ -6,6 +6,7 @@ import { DesktopFeedRail } from "@/components/desktop-feed-rail";
 import { useDataCache } from "@/context/data-cache-context";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import "./dashboard-header.css";
 
 const FEED_STAFF_ROLES = new Set(["road_captain", "admin", "superadmin"]);
 

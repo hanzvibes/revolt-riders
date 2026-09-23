@@ -2,21 +2,24 @@
 
 Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
-Status: ACTIVE
-Batch size: 10
+Status: READY_FOR_INTEGRATION
+Batch size: 8
+Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
+Last Full QA checkpoint: UI Quality GREEN on 3b391959e5a52d2606196d92bb664999dc9a8608 (run 35859072528)
 
 ## Rules
-- Work only on frontend/UI/UX.
+- Work only on frontend/UI/UX and follow `.autopilot/RULES.md` on main.
 - Preserve existing features and data flow.
 - Never modify Supabase schema, migrations, RLS, auth, permissions, secrets, DB structure, or production data.
 - Do not use `[deploy]` in builder commits.
-- One task at a time. Run QA before marking DONE.
-- Required QA per task: tests relevant to the change, `pnpm audit:ui`, TypeScript, lint, production build, production-server smoke test.
-- If a task requires a sensitive/backend change, mark BLOCKED and continue with the next safe task.
-- If QA reveals a frontend regression, enter REPAIR mode, fix it, rerun QA, then continue.
-- At each 10-task boundary, run broad regression, mark the batch READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases it.
-- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors. Only fix evidenced frontend regressions.
+- One product task per commit.
+- Low-risk isolated UI work may use Quick QA; Full QA is required by the global risk-based QA rules.
+- After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
+- If a task requires sensitive/backend work, mark `BLOCKED_BACKEND`.
+- If it needs another lane/global primitive, mark `WAITING_SHARED_COMPONENT`.
+- After 8 tasks in the current sprint, run final Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases that sprint.
+- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors.
 
 ## File ownership
 Primary:
@@ -34,15 +37,15 @@ Avoid unless Integration Guard handles it:
 - all `supabase/**`, `db/**`, `drizzle/**`
 
 ## Queue
-- [ ] 21 Dashboard Header Refinement
-- [ ] 22 Sticky Header Polish
-- [ ] 23 Feed Container Spacing
-- [ ] 24 Post Card Vertical Rhythm
-- [ ] 25 Post Card Border Polish
-- [ ] 26 Author Row Alignment
-- [ ] 27 Avatar Size Consistency
-- [ ] 28 Author Typography
-- [ ] 29 Timestamp Styling
+- [x] 21 Dashboard Header Refinement
+- [x] 22 Sticky Header Polish
+- [x] 23 Feed Container Spacing
+- [x] 24 Post Card Vertical Rhythm
+- [x] 25 Post Card Border Polish
+- [x] 26 Author Row Alignment
+- [x] 27 Avatar Size Consistency
+- [x] 28 Author Typography
+- [x] 29 Timestamp Styling
 - [ ] 30 Post Menu UI Polish
 - [ ] 31 Caption Readability
 - [ ] 32 Long Text Visual Handling
@@ -85,6 +88,14 @@ Avoid unless Integration Guard handles it:
 - [ ] 69 Accessibility & Motion Audit
 - [ ] 70 Final Dashboard Regression Pass
 
+## Recovery checkpoint
+Sprint 22-29 is complete and final cumulative UI Quality is GREEN. Lane is READY_FOR_INTEGRATION. Next task after Integration Guard merges and resynchronizes the branch: 30 Post Menu UI Polish.
+
 ## Run log
 Append concise entries here:
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
+
+2026-09-23 12:08 WIB | 21 Dashboard Header Refinement | QA_PENDING | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA pending branch CI | Added lane-scoped 44px create action polish, hover/press/focus/reduced-motion states; no behavior/data changes.
+2026-09-23 12:59 WIB | 21 Dashboard Header Refinement | DONE | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA GREEN; UI Quality run 35820880555 success | Reconciled prior checkpoint after branch CI completed successfully. Next task: 22 Sticky Header Polish.
+2026-09-23 17:16 WIB | lane recovery | ACTIVE | 6d0a0ca9fab14da5516dbfa37821c40ff4285b7d | clean rebuild from latest main | Preserved completed Task 21; removed old diverged branch history. Next task: 22 Sticky Header Polish.
+2026-09-23 20:08 WIB | sprint 22-29 | DONE / READY_FOR_INTEGRATION | 3b391959e5a52d2606196d92bb664999dc9a8608 | Full cumulative UI Quality GREEN; run 35859072528 | Tasks 22-29 validated. Vercel branch status is build-rate-limit only and was not retried. Next task after integration: 30 Post Menu UI Polish.
