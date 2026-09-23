@@ -3,7 +3,7 @@
 Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
 Status: ACTIVE
-Batch size: 10
+Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
 Last Full QA checkpoint: none
@@ -18,7 +18,7 @@ Last Full QA checkpoint: none
 - After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
 - If a task requires sensitive/backend work, mark `BLOCKED_BACKEND`.
 - If it needs another lane/global primitive, mark `WAITING_SHARED_COMPONENT`.
-- At each 10-task boundary, run Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases it.
+- After 8 tasks in the current sprint, run final Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases that sprint.
 - After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors.
 
 ## File ownership
