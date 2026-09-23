@@ -3,7 +3,6 @@
 .app-shell .community-feed-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--rr-space-4);margin-bottom:var(--rr-space-5)}
 .app-shell .community-feed-heading h2{margin:0;color:var(--rr-ink);font-size:clamp(1.55rem,4vw,2.15rem);font-weight:var(--rr-fw-extrabold);letter-spacing:-.045em;line-height:1}
 
-
 .app-shell .community-feed-list{display:grid;gap:14px}
 .app-shell .community-new-posts{display:flex;align-items:center;justify-content:center;gap:7px;width:max-content;max-width:100%;min-height:38px;margin:-2px auto 14px;border:1px solid #f4c8cd;border-radius:var(--rr-radius-pill);background:var(--rr-red-soft);color:var(--rr-danger);padding:0 14px;font-size:var(--rr-type-small);font-weight:var(--rr-fw-bold);box-shadow:var(--rr-shadow-soft)}.app-shell .community-new-posts svg{width:15px;height:15px}
 .app-shell .community-feed-error{margin:0 0 14px;border:1px solid var(--rr-danger-line);border-radius:var(--rr-radius-md);background:var(--rr-danger-soft);color:var(--rr-danger);padding:12px 14px;font-size:var(--rr-type-small);line-height:1.45}
@@ -250,7 +249,6 @@
     transition: none;
   }
 }
-
 
 /* Post anatomy and media viewer */
 .app-shell .dashboard-social-feed-v1 .community-post {
@@ -655,7 +653,6 @@
     transition: none;
   }
 }
-
 
 /* Agenda attachments and thread page */
 .app-shell .community-agenda-attachment {
@@ -1065,7 +1062,6 @@
   }
 }
 
-
 /* Social app header */
 .app-shell .content > header.social-app-header {
   position: sticky;
@@ -1183,7 +1179,6 @@
   }
 }
 
-
 /* Loading skeleton and mobile social navigation */
 .app-shell .community-feed-skeleton {
   display: block;
@@ -1289,61 +1284,6 @@
 }
 
 @media (max-width: 720px) {
-  .app-shell.social-shell .bottom {
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100%;
-    max-width: none;
-    min-height: calc(58px + env(safe-area-inset-bottom));
-    margin: 0;
-    border: 0;
-    border-top: 1px solid var(--rr-line);
-    border-radius: 0;
-    background: color-mix(in srgb, var(--rr-surface) 96%, transparent);
-    padding: 4px 5px env(safe-area-inset-bottom);
-    box-shadow: none;
-    backdrop-filter: blur(18px);
-    transition:
-      transform 180ms var(--rr-ease-out),
-      opacity 160ms var(--rr-ease-out);
-  }
-
-  .app-shell.social-shell .bottom a {
-    min-height: 50px;
-    border-radius: 8px;
-    background: transparent;
-    color: var(--rr-muted);
-    padding: 5px 3px 4px;
-  }
-
-  .app-shell.social-shell .bottom a:hover,
-  .app-shell.social-shell .bottom a:active {
-    background: transparent;
-  }
-
-  .app-shell.social-shell .bottom a.active {
-    background: transparent;
-    color: var(--rr-ink);
-  }
-
-  .app-shell.social-shell .bottom a svg {
-    width: 20px;
-    height: 20px;
-    stroke-width: 1.8;
-  }
-
-  .app-shell.social-shell .bottom a.active svg {
-    color: var(--rr-red);
-    stroke-width: 2.4;
-  }
-
-  .app-shell.social-shell .bottom a small {
-    margin-top: 2px;
-    color: currentColor;
-    font-size: .56rem !important;
-    font-weight: var(--rr-fw-semibold);
-  }
 
   .app-shell .community-post-skeleton {
     padding-inline: 14px;
@@ -1362,7 +1302,6 @@
     animation: none;
   }
 }
-
 
 /* Feed pagination states */
 .app-shell .community-feed-sentinel {
@@ -1406,7 +1345,6 @@
   }
 }
 
-
 /* Thread mobile clearance */
 @media (max-width: 720px) {
   .app-shell.social-shell .community-thread-page {
@@ -1415,12 +1353,6 @@
 
   .app-shell.social-shell .community-thread-composer {
     bottom: calc(58px + env(safe-area-inset-bottom));
-  }
-
-  .app-shell.social-shell:has(.community-thread-composer textarea:focus) .bottom {
-    transform: translateY(calc(100% + env(safe-area-inset-bottom)));
-    opacity: 0;
-    pointer-events: none;
   }
 
   .app-shell.social-shell:has(.community-thread-composer textarea:focus) .community-thread-composer {
@@ -1438,7 +1370,6 @@
     min-height: 44px;
   }
 }
-
 
 /* Desktop feed context rail */
 .app-shell .dashboard-social-feed-main {
@@ -1653,7 +1584,6 @@
     animation: none;
   }
 }
-
 
 /* Voyager feed attachment */
 .app-shell .community-voyager-attachment {
@@ -1878,7 +1808,6 @@
   }
 }
 
-
 /* Composer live preview */
 .app-shell .community-composer-mode {
   display: grid;
@@ -2066,7 +1995,6 @@
     transition: none;
   }
 }
-
 
 /* Threads-inspired social timeline */
 .app-shell .dashboard-social-feed-v1 .community-feed-heading {
@@ -2347,37 +2275,6 @@
     border-inline: 1px solid var(--rr-line);
     border-radius: 12px;
   }
-
-  .app-shell.social-shell .bottom {
-    left: 0 !important;
-    right: 0 !important;
-    bottom: 0 !important;
-    width: 100% !important;
-    max-width: none !important;
-    min-height: calc(60px + env(safe-area-inset-bottom)) !important;
-    transform: none !important;
-    margin: 0 !important;
-    border: 0 !important;
-    border-top: 1px solid var(--rr-line) !important;
-    border-radius: 0 !important;
-    background: color-mix(in srgb, var(--rr-surface) 97%, transparent) !important;
-    padding: 4px 6px env(safe-area-inset-bottom) !important;
-    box-shadow: none !important;
-    backdrop-filter: blur(18px);
-  }
-
-  .app-shell.social-shell .bottom a {
-    min-width: 0 !important;
-    min-height: 52px !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    padding: 5px 2px 4px !important;
-  }
-
-  .app-shell.social-shell .bottom a.active {
-    background: transparent !important;
-    box-shadow: none !important;
-  }
 }
 
 @media (max-width: 370px) {
@@ -2403,7 +2300,6 @@
     transition: none;
   }
 }
-
 
 /* Threads-inspired header and loading polish */
 .app-shell .content > header.social-app-header {
@@ -2487,7 +2383,6 @@
     border-radius: 12px;
   }
 }
-
 
 /* Social post cards */
 .app-shell .dashboard-social-feed-v1 .community-feed-list {
@@ -2592,7 +2487,6 @@
     transition: none;
   }
 }
-
 
 /* Social card refinement */
 .app-shell .dashboard-social-feed-v1 {
@@ -2715,7 +2609,6 @@
   }
 }
 
-
 /* Published post editor */
 .app-shell .community-existing-media {
   display: grid;
@@ -2798,7 +2691,6 @@
   }
 }
 
-
 /* Swipeable media viewer */
 .app-shell .community-media-viewer-stage {
   touch-action: pan-y;
@@ -2847,53 +2739,6 @@
 
 /* Restore floating dashboard bottom navigation */
 @media (max-width: 720px) {
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
-    left: 50% !important;
-    right: auto !important;
-    bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px)) !important;
-    width: min(84vw, 390px) !important;
-    max-width: calc(100vw - 28px) !important;
-    min-height: 62px !important;
-    height: auto !important;
-    transform: translateX(-50%) !important;
-    grid-template-columns: repeat(5, minmax(52px, 1fr)) !important;
-    gap: 2px !important;
-    margin: 0 !important;
-    border: 1px solid color-mix(in srgb, var(--rr-line-strong) 78%, transparent) !important;
-    border-radius: 22px !important;
-    background: color-mix(in srgb, var(--rr-surface) 94%, transparent) !important;
-    padding: 6px 7px !important;
-    box-shadow:
-      0 14px 36px rgba(20, 22, 24, .14),
-      0 3px 10px rgba(20, 22, 24, .055) !important;
-    backdrop-filter: blur(20px) saturate(135%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
-    overflow: hidden;
-  }
-
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a {
-    min-width: 52px !important;
-    min-height: 50px !important;
-    border-radius: 14px !important;
-    background: transparent !important;
-    color: var(--rr-muted) !important;
-    padding: 5px 4px 4px !important;
-  }
-
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a:hover,
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a:active {
-    background: color-mix(in srgb, var(--rr-surface-soft) 78%, transparent) !important;
-  }
-
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a.active {
-    background: transparent !important;
-    color: var(--rr-ink) !important;
-    box-shadow: none !important;
-  }
-
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a.active svg {
-    color: var(--rr-red) !important;
-  }
 
   .app-shell.social-shell:has(.dashboard-social-feed-v1) .dashboard-social-feed-v1 {
     padding-bottom:
@@ -2906,13 +2751,5 @@
 }
 
 @media (max-width: 390px) {
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
-    width: min(86vw, 344px) !important;
-    max-width: calc(100vw - 18px) !important;
-  }
-
-  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a {
-    min-width: 50px !important;
-  }
 }
 
