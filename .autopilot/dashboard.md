@@ -4,19 +4,22 @@ Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
 Status: ACTIVE
 Batch size: 10
+Run budget: max 45 minutes / max 8 safe tasks
 Deploy: Integration Guard only
+Last Full QA checkpoint: none
 
 ## Rules
-- Work only on frontend/UI/UX.
+- Work only on frontend/UI/UX and follow `.autopilot/RULES.md` on main.
 - Preserve existing features and data flow.
 - Never modify Supabase schema, migrations, RLS, auth, permissions, secrets, DB structure, or production data.
 - Do not use `[deploy]` in builder commits.
-- One task at a time. Run QA before marking DONE.
-- Required QA per task: tests relevant to the change, `pnpm audit:ui`, TypeScript, lint, production build, production-server smoke test.
-- If a task requires a sensitive/backend change, mark BLOCKED and continue with the next safe task.
-- If QA reveals a frontend regression, enter REPAIR mode, fix it, rerun QA, then continue.
-- At each 10-task boundary, run broad regression, mark the batch READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases it.
-- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors. Only fix evidenced frontend regressions.
+- One product task per commit.
+- Low-risk isolated UI work may use Quick QA; Full QA is required by the global risk-based QA rules.
+- After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
+- If a task requires sensitive/backend work, mark `BLOCKED_BACKEND`.
+- If it needs another lane/global primitive, mark `WAITING_SHARED_COMPONENT`.
+- At each 10-task boundary, run Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases it.
+- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors.
 
 ## File ownership
 Primary:
@@ -84,6 +87,9 @@ Avoid unless Integration Guard handles it:
 - [ ] 68 Floating Bottom Nav Audit
 - [ ] 69 Accessibility & Motion Audit
 - [ ] 70 Final Dashboard Regression Pass
+
+## Recovery checkpoint
+Before starting new work, reconcile the latest task commit, tracker status, and branch QA. Skip a new run while prior same-lane QA/build is still in progress.
 
 ## Run log
 Append concise entries here:
