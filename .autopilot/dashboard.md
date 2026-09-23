@@ -1,0 +1,90 @@
+# Dashboard Autopilot
+
+Surface: Dashboard / social home
+Branch: `feat/autopilot-dashboard`
+Status: ACTIVE
+Batch size: 10
+Deploy: Integration Guard only
+
+## Rules
+- Work only on frontend/UI/UX.
+- Preserve existing features and data flow.
+- Never modify Supabase schema, migrations, RLS, auth, permissions, secrets, DB structure, or production data.
+- Do not use `[deploy]` in builder commits.
+- One task at a time. Run QA before marking DONE.
+- Required QA per task: tests relevant to the change, `pnpm audit:ui`, TypeScript, lint, production build, production-server smoke test.
+- If a task requires a sensitive/backend change, mark BLOCKED and continue with the next safe task.
+- If QA reveals a frontend regression, enter REPAIR mode, fix it, rerun QA, then continue.
+- At each 10-task boundary, run broad regression, mark the batch READY_FOR_INTEGRATION, and stop until Integration Guard merges/releases it.
+- After all tasks are DONE, enter MAINTENANCE mode: no speculative refactors. Only fix evidenced frontend regressions.
+
+## File ownership
+Primary:
+- `app/dashboard/**`
+- `app/social-feed.css`
+- `components/community-feed.tsx`
+- `components/desktop-feed-rail.tsx`
+- `app/bottom-navigation.css`
+
+Avoid unless Integration Guard handles it:
+- `components/app-shell.tsx`
+- `app/globals.css`
+- `app/tokens.css`
+- `package.json`, lockfiles, workflows
+- all `supabase/**`, `db/**`, `drizzle/**`
+
+## Queue
+- [ ] 21 Dashboard Header Refinement
+- [ ] 22 Sticky Header Polish
+- [ ] 23 Feed Container Spacing
+- [ ] 24 Post Card Vertical Rhythm
+- [ ] 25 Post Card Border Polish
+- [ ] 26 Author Row Alignment
+- [ ] 27 Avatar Size Consistency
+- [ ] 28 Author Typography
+- [ ] 29 Timestamp Styling
+- [ ] 30 Post Menu UI Polish
+- [ ] 31 Caption Readability
+- [ ] 32 Long Text Visual Handling
+- [ ] 33 Mention Visual Style
+- [ ] 34 Hashtag Visual Style
+- [ ] 35 Action Bar Alignment
+- [ ] 36 Action Button Touch Area
+- [ ] 37 Action Icon Consistency
+- [ ] 38 Engagement Counter Polish
+- [ ] 39 Hover State Desktop
+- [ ] 40 Press State Mobile
+- [ ] 41 Media Grid Polish
+- [ ] 42 Media Border Radius
+- [ ] 43 Media Aspect Ratio Audit
+- [ ] 44 Image Loading Placeholder Polish
+- [ ] 45 Fullscreen Viewer Layout
+- [ ] 46 Viewer Navigation Controls
+- [ ] 47 Viewer Mobile Safe Area
+- [ ] 48 Viewer Close Interaction
+- [ ] 49 Agenda Attachment Polish
+- [ ] 50 Voyager Attachment Polish
+- [ ] 51 Link Preview Polish
+- [ ] 52 Pinned Post Polish
+- [ ] 53 Comment Preview Styling
+- [ ] 54 Comment Row Spacing
+- [ ] 55 Comment Input UI
+- [ ] 56 Composer Entry UI
+- [ ] 57 Composer Layout Polish
+- [ ] 58 Composer Mobile Keyboard Safety
+- [ ] 59 Loading Button State
+- [ ] 60 Disabled Button State
+- [ ] 61 Feed Skeleton Final Pass
+- [ ] 62 Empty State Polish
+- [ ] 63 Error State Polish
+- [ ] 64 Dashboard Quick Action Styling
+- [ ] 65 Desktop Feed Width Audit
+- [ ] 66 Tablet Layout Audit
+- [ ] 67 Small Phone Audit
+- [ ] 68 Floating Bottom Nav Audit
+- [ ] 69 Accessibility & Motion Audit
+- [ ] 70 Final Dashboard Regression Pass
+
+## Run log
+Append concise entries here:
+`YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
