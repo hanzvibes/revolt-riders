@@ -4,9 +4,15 @@
    ========================================================================== */
 
 .app-shell {
-  --rr-floating-nav-height: 62px;
-  --rr-floating-nav-bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px));
-  --rr-floating-nav-clearance: calc(88px + env(safe-area-inset-bottom));
+  --rr-floating-nav-height: var(--rr-mobile-nav-height);
+  --rr-floating-nav-bottom: max(
+    var(--rr-mobile-nav-bottom),
+    calc(env(safe-area-inset-bottom) + 8px)
+  );
+  --rr-floating-nav-clearance: max(
+    var(--rr-mobile-fab-clearance),
+    calc(env(safe-area-inset-bottom) + 84px)
+  );
 }
 
 @media (min-width: 721px) {
@@ -25,7 +31,7 @@
     bottom: var(--rr-floating-nav-bottom) !important;
     width: min(84vw, 390px) !important;
     max-width: calc(100vw - 28px) !important;
-    min-height: 62px !important;
+    min-height: var(--rr-floating-nav-height) !important;
     height: auto !important;
     grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
     align-items: stretch !important;
@@ -137,7 +143,8 @@
   }
 
   .app-shell .community-thread-page {
-    padding-bottom: calc(var(--rr-floating-nav-clearance) + 12px) !important;
+    padding-bottom:
+      calc(var(--rr-mobile-page-clearance) + env(safe-area-inset-bottom)) !important;
   }
 
   .app-shell .community-thread-composer {
