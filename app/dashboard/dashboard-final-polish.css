@@ -1,0 +1,19 @@
+/* Dashboard final polish, tasks 55-61. Dashboard-scoped only. */
+/* 55 Comment Input UI */
+.app-shell .dashboard-social-feed-v1 .community-comment-form{display:flex;align-items:flex-end;gap:8px;padding:10px 12px;border-top:1px solid var(--rr-line)}
+.app-shell .dashboard-social-feed-v1 .community-comment-form textarea,.app-shell .dashboard-social-feed-v1 .community-comment-form input{min-height:44px;border:1px solid var(--rr-line-strong);border-radius:14px;background:var(--rr-surface-soft);padding:10px 12px;line-height:1.45}
+.app-shell .dashboard-social-feed-v1 .community-comment-form textarea:focus,.app-shell .dashboard-social-feed-v1 .community-comment-form input:focus{border-color:var(--rr-red);outline:none;box-shadow:var(--rr-focus-ring)}
+.app-shell .dashboard-social-feed-v1 .community-comment-form button{min-width:44px;min-height:44px;border-radius:12px}
+/* 56 Composer Entry UI */
+.app-shell .dashboard-social-feed-v1 .community-composer-entry{display:flex;align-items:center;gap:10px;min-height:56px;border:1px solid var(--rr-line);border-radius:16px;background:var(--rr-surface);padding:8px 10px;box-shadow:var(--rr-shadow-soft)}
+.app-shell .dashboard-social-feed-v1 .community-composer-entry button{min-height:40px;border-radius:999px}
+/* 57 Composer Layout Polish */
+.app-shell .dashboard-social-feed-v1 .community-composer{gap:14px}.app-shell .dashboard-social-feed-v1 .community-composer>label{gap:6px}.app-shell .dashboard-social-feed-v1 .community-composer-actions{gap:10px;margin-top:2px}
+/* 58 Composer Mobile Keyboard Safety */
+@media (max-width:720px){.app-shell .dashboard-social-feed-v1 .community-composer{max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:max(12px,env(safe-area-inset-bottom));scroll-padding-bottom:96px}.app-shell .dashboard-social-feed-v1 .community-composer textarea{max-height:34dvh}}
+/* 59 Loading Button State */
+.app-shell .dashboard-social-feed-v1 button[aria-busy="true"],.app-shell .dashboard-social-feed-v1 button.is-loading{position:relative;cursor:progress;opacity:.78;pointer-events:none}.app-shell .dashboard-social-feed-v1 button[aria-busy="true"] svg,.app-shell .dashboard-social-feed-v1 button.is-loading svg{animation:dashboard-button-spin .8s linear infinite}@keyframes dashboard-button-spin{to{transform:rotate(360deg)}}
+/* 60 Disabled Button State */
+.app-shell .dashboard-social-feed-v1 button:disabled,.app-shell .dashboard-social-feed-v1 button[aria-disabled="true"]{cursor:not-allowed;opacity:.46;filter:saturate(.55);box-shadow:none}.app-shell .dashboard-social-feed-v1 button:disabled:active,.app-shell .dashboard-social-feed-v1 button[aria-disabled="true"]:active{transform:none}
+/* 61 Feed Skeleton Final Pass */
+.app-shell .dashboard-social-feed-v1 .community-feed-skeleton{display:grid;gap:14px}.app-shell .dashboard-social-feed-v1 .community-feed-skeleton>*{border:1px solid var(--rr-line);border-radius:16px;background:linear-gradient(100deg,var(--rr-surface) 20%,var(--rr-surface-soft) 42%,var(--rr-surface) 64%);background-size:220% 100%;animation:dashboard-feed-shimmer 1.35s ease-in-out infinite}.app-shell .dashboard-social-feed-v1 .community-feed-skeleton>*:first-child{min-height:210px}@keyframes dashboard-feed-shimmer{to{background-position:-220% 0}}@media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-feed-skeleton>*,.app-shell .dashboard-social-feed-v1 button[aria-busy="true"] svg,.app-shell .dashboard-social-feed-v1 button.is-loading svg{animation:none}}

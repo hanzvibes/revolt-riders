@@ -8,6 +8,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import "./dashboard-header.css";
 import "./dashboard-feed-polish.css";
+import "./dashboard-final-polish.css";
 
 const FEED_STAFF_ROLES = new Set(["road_captain", "admin", "superadmin"]);
 
@@ -34,6 +35,7 @@ export default function DashboardPage() {
         .app-shell .dashboard-social-feed-v1 .community-link-preview{min-height:58px;border-radius:13px;padding:10px 12px;background:var(--rr-surface-soft);transition:border-color 180ms ease,background-color 180ms ease}.app-shell .dashboard-social-feed-v1 .community-link-preview:hover{border-color:var(--rr-line-strong);background:var(--rr-surface)}.app-shell .dashboard-social-feed-v1 .community-link-preview small{font-size:.72rem}.app-shell .dashboard-social-feed-v1 .community-link-preview b{white-space:nowrap}
         .app-shell .dashboard-social-feed-v1 .community-post.is-pinned{border-color:rgba(220,27,42,.28);box-shadow:0 8px 28px rgba(220,27,42,.06)}.app-shell .dashboard-social-feed-v1 .community-pin-label{min-height:34px;padding-inline:14px;background:var(--rr-red-soft);font-size:.65rem;letter-spacing:.075em}.app-shell .dashboard-social-feed-v1 .community-pin-label svg{width:14px;height:14px}
         .app-shell .dashboard-social-feed-v1 .community-post-counts button{min-height:32px;border-radius:999px;padding:0 7px;margin-left:-7px;font-weight:var(--rr-fw-semibold);transition:background-color 160ms ease,color 160ms ease}.app-shell .dashboard-social-feed-v1 .community-post-counts button:hover{background:var(--rr-surface-soft);text-decoration:none}.app-shell .dashboard-social-feed-v1 .community-post-counts button:focus-visible{outline:2px solid var(--rr-red);outline-offset:2px}
+        .app-shell .dashboard-social-feed-v1 .community-comment{gap:10px;padding-block:10px}.app-shell .dashboard-social-feed-v1 .community-comment+.community-comment{border-top:1px solid var(--rr-line)}.app-shell .dashboard-social-feed-v1 .community-comment-body{min-width:0;line-height:1.5}
       `}</style>
     </AppShell>
   );
