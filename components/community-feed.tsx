@@ -40,6 +40,12 @@ import {
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 
+type RealtimeChangePayload = {
+  eventType: "INSERT" | "UPDATE" | "DELETE";
+  new: Record<string, unknown>;
+  old: Record<string, unknown>;
+};
+
 type FeedMedia = CommunityFeedMedia;
 
 type FeedEvent = CommunityFeedEvent;
@@ -757,9 +763,10 @@ export function CommunityFeed({
           schema: "public",
           table: "feed_posts",
         },
-        (payload) => {
-          if (payload.eventType === "INSERT") {
-            const record = payload.new ?? {};
+        (payload: unknown) => {
+          const change = payload as RealtimeChangePayload;
+          if (change.eventType === "INSERT") {
+            const record = change.new ?? {};
             if (
               record.status === "published" &&
               record.author_id !== user?.id
@@ -769,8 +776,8 @@ export function CommunityFeed({
             return;
           }
 
-          if (payload.eventType === "DELETE") {
-            const id = payload.old?.id;
+          if (change.eventType === "DELETE") {
+            const id = change.old?.id;
             if (typeof id !== "string") return;
             setPosts((current) =>
               current.filter((post) => post.id !== id),
@@ -778,9 +785,9 @@ export function CommunityFeed({
             return;
           }
 
-          if (payload.eventType !== "UPDATE") return;
+          if (change.eventType !== "UPDATE") return;
 
-          const record = payload.new ?? {};
+          const record = change.new ?? {};
           const id = record.id;
           if (typeof id !== "string") return;
 
