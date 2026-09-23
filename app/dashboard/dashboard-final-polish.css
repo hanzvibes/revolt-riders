@@ -20,3 +20,5 @@
 
 /* 62 Empty State Polish */
 .app-shell .dashboard-social-feed-v1 .community-feed-empty{min-height:260px;align-content:center;gap:2px;border-style:dashed;background:linear-gradient(180deg,var(--rr-surface),var(--rr-surface-soft));box-shadow:none}.app-shell .dashboard-social-feed-v1 .community-feed-empty>svg{width:34px;height:34px;margin-bottom:10px}.app-shell .dashboard-social-feed-v1 .community-feed-empty button{min-width:132px;justify-content:center}
+/* 63 Error State Polish */
+.app-shell .dashboard-social-feed-v1 .community-feed-error{display:flex;align-items:flex-start;gap:9px;border-radius:14px;padding:12px 14px;box-shadow:inset 3px 0 0 var(--rr-danger)}.app-shell .dashboard-social-feed-v1 .community-feed-error a,.app-shell .dashboard-social-feed-v1 .community-feed-error button{font-weight:var(--rr-fw-bold);text-underline-offset:3px}
