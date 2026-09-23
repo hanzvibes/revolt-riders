@@ -1419,7 +1419,7 @@
     width: 44px;
     height: 44px;
     min-width: 44px;
-    min-height: 44px;
+    min-height: var(--rr-control-lg);
     margin-right: 7px;
     border-radius: 10px;
   }
@@ -1432,11 +1432,11 @@
     width: 44px;
     height: 44px;
     min-width: 44px;
-    min-height: 44px;
+    min-height: var(--rr-control-lg);
   }
 
   .app-shell .login-link {
-    min-height: 44px;
+    min-height: var(--rr-control-lg);
     padding: 0 10px;
     font-size: .59rem;
   }
@@ -11606,7 +11606,7 @@
   }
 
   .app-shell .profile-social-avatar-row {
-    min-height: 44px;
+    min-height: var(--rr-control-lg);
   }
 
   .app-shell .profile-social-avatar {
