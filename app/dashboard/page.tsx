@@ -31,6 +31,9 @@ export default function DashboardPage() {
         .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:hover{background:rgba(35,36,39,.9)}
         .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:active{transform:scale(.94)}
         .app-shell .dashboard-social-feed-v1 .community-media-viewer > header button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+        .app-shell .dashboard-social-feed-v1 .community-agenda-attachment{min-height:88px;margin-top:14px;border:1px solid var(--rr-line);border-radius:14px;background:var(--rr-surface-soft);padding:12px 13px;transition:border-color 180ms ease,background-color 180ms ease}
+        .app-shell .dashboard-social-feed-v1 .community-agenda-attachment:hover{border-color:var(--rr-line-strong);background:var(--rr-surface)}
+        .app-shell .dashboard-social-feed-v1 .community-agenda-copy strong{line-height:1.3;letter-spacing:-.015em}
       `}</style>
     </AppShell>
   );
