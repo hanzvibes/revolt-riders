@@ -621,6 +621,7 @@ export default function VoyagerPage() {
       <div className="page-wrap voyager-page">
         <section className="voyager-hero voyager-hero-compact">
           <div className="voyager-hero-copy">
+            <small>Voyager berikutnya</small>
             <h2>Voyager</h2>
             <p>Progress riding resmi, participant, dan bukti foto club.</p>
           </div>
@@ -671,7 +672,7 @@ export default function VoyagerPage() {
               </div>
             </div>
 
-            <div className="voyager-command-member">
+            <div className="voyager-command-member" aria-label="Status Voyager saya">
               <div className="voyager-command-member-copy">
                 <small>STATUS KAMU</small>
                 <strong>{featuredMemberStatus}</strong>
@@ -723,11 +724,11 @@ export default function VoyagerPage() {
               <strong>Belum ada Voyager</strong>
               <p>Activity Voyager akan muncul di sini setelah dibuat pengurus.</p>
             </div>
-            {canManage && <Link href="/admin/events?create=voyager">Buat Voyager</Link>}
+            {canManage && <Link href="/admin/events?create=voyager">Buat Voyager Pertama</Link>}
           </section>
         )}
 
-        <section className="voyager-stat-strip" aria-label="Ringkasan Voyager">
+        <section className="voyager-stat-strip voyager-overview-grid" aria-label="Ringkasan Voyager">
           <span><Route /><small>Aktif</small><strong>{activeEvents.length}</strong></span>
           <span><History /><small>Selesai</small><strong>{historyEvents.length}</strong></span>
           <span><Bike /><small>Official KM</small><strong>{formatKm(totalOfficialKm)}</strong></span>
@@ -869,7 +870,8 @@ export default function VoyagerPage() {
         <section className="voyager-gallery-hub voyager-gallery-compact">
           <div className="voyager-section-heading">
             <span>
-              <h3>Bukti Foto</h3>
+              <small>BUKTI FOTO</small>
+              <h3>Activity Gallery</h3>
             </span>
             <b className="voyager-section-count">{photos.length} Foto</b>
           </div>
@@ -878,7 +880,7 @@ export default function VoyagerPage() {
             <div className="voyager-gallery-empty compact">
               <Camera aria-hidden="true" />
               <span>
-                <strong>Belum ada dokumentasi</strong>
+                <strong>Gallery siap digunakan</strong>
                 <p>Foto akan muncul setelah pengurus menambahkan bukti aktivitas.</p>
               </span>
               {canManage && featuredEvent && (
