@@ -67,6 +67,37 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
           height: 15px;
         }
 
+        /* Task 06 — name and verification icon read as one identity lockup. */
+        .profile-social-page .profile-social-name-row {
+          display: flex;
+          align-items: center;
+          gap: 7px;
+          min-width: 0;
+        }
+
+        .profile-social-page .profile-social-name-row h2 {
+          min-width: 0;
+          margin: 0;
+          line-height: 1.08;
+          letter-spacing: -0.025em;
+          overflow-wrap: anywhere;
+        }
+
+        .profile-social-page .profile-social-name-row > svg {
+          width: 18px;
+          height: 18px;
+          flex: 0 0 18px;
+        }
+
+        /* Task 07 — legal/full name stays clearly secondary to the social identity. */
+        .profile-social-page .profile-social-full-name {
+          margin: 5px 0 0;
+          font-size: clamp(0.78rem, 2.5vw, 0.9rem);
+          line-height: 1.4;
+          opacity: 0.68;
+          overflow-wrap: anywhere;
+        }
+
         @media (max-width: 560px) {
           .profile-social-page .profile-social-cover {
             min-height: 156px;
@@ -95,6 +126,16 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
             min-height: 38px;
             padding: 8px 12px;
             font-size: 0.74rem;
+          }
+
+          .profile-social-page .profile-social-name-row {
+            gap: 6px;
+          }
+
+          .profile-social-page .profile-social-name-row > svg {
+            width: 16px;
+            height: 16px;
+            flex-basis: 16px;
           }
         }
       `}</style>
