@@ -2753,3 +2753,78 @@
 @media (max-width: 390px) {
 }
 
+
+
+/* Dashboard polish 01 · Feed card system */
+.app-shell .dashboard-social-feed-v1 {
+  --feed-card-radius: 18px;
+  --feed-card-radius-mobile: 16px;
+  --feed-card-border: color-mix(in srgb, var(--rr-line-strong) 72%, var(--rr-line));
+  --feed-card-shadow:
+    0 1px 2px rgba(20, 22, 24, .025),
+    0 10px 28px rgba(20, 22, 24, .045);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  gap: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  border: 1px solid var(--feed-card-border);
+  border-radius: var(--feed-card-radius);
+  background: var(--rr-surface);
+  box-shadow: var(--feed-card-shadow);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  overflow: visible;
+  transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+  display: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  padding: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body {
+  min-width: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  overflow: hidden;
+  border-color: var(--rr-line);
+  border-radius: 13px;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: none;
+    border-color: var(--rr-line-strong);
+    box-shadow:
+      0 2px 5px rgba(20, 22, 24, .035),
+      0 14px 32px rgba(20, 22, 24, .055);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-list {
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: var(--feed-card-radius-mobile);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding: 14px 13px 15px;
+  }
+}
