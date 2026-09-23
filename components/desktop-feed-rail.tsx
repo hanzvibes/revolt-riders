@@ -125,7 +125,9 @@ export function DesktopFeedRail() {
   useEffect(() => {
     if (!enabled) return;
 
-    void load();
+    const initialLoad = window.setTimeout(() => {
+      void load();
+    }, 0);
     const supabase = getSupabaseBrowserClient();
     const channel = supabase
       .channel("dashboard-right-rail")
@@ -137,6 +139,7 @@ export function DesktopFeedRail() {
       .subscribe();
 
     return () => {
+      window.clearTimeout(initialLoad);
       void supabase.removeChannel(channel);
     };
   }, [enabled, load]);
