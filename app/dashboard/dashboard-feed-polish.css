@@ -15,3 +15,6 @@
 .app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]:hover{text-decoration:underline;text-underline-offset:3px}
 /* 34 Hashtag Visual Style */
 .app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="tag"],.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="hashtag"]{color:var(--rr-danger);font-weight:var(--rr-fw-bold);text-decoration:none}
+/* 35 Action Bar Alignment */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions{display:flex;align-items:center;gap:4px;border-top:0;padding-top:2px}
+.app-shell .dashboard-social-feed-v1 .community-post-footer{display:grid;gap:2px;padding:7px 12px 10px}
