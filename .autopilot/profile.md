@@ -3,7 +3,7 @@
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
 Status: ACTIVE
-Batch size: 10
+Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
 Last Full QA checkpoint: none
@@ -18,7 +18,7 @@ Last Full QA checkpoint: none
 - After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
 - Backend/data requirement => `BLOCKED_BACKEND`.
 - Cross-lane/global primitive requirement => `WAITING_SHARED_COMPONENT`.
-- At each 10-task boundary, run Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard releases the batch.
+- After 8 tasks in the current sprint, run final Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard releases that sprint.
 - After Task 50, enter MAINTENANCE mode. Only evidence-based fixes.
 
 ## File ownership
