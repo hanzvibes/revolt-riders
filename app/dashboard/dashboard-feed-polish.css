@@ -1,0 +1,6 @@
+/* Dashboard feed polish tasks 30-37. Scoped to the dashboard surface. */
+/* 30 Post Menu UI Polish */
+.app-shell .dashboard-social-feed-v1 .community-post-menu summary{width:40px;height:40px;border:1px solid transparent;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
+.app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}
+.app-shell .dashboard-social-feed-v1 .community-post-menu>div{top:44px;min-width:190px;padding:6px;border-radius:12px}
+.app-shell .dashboard-social-feed-v1 .community-post-menu button{min-height:40px;padding-inline:10px;border-radius:9px}
