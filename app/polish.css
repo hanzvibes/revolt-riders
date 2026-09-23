@@ -289,8 +289,8 @@
   box-shadow: 0 4px 16px rgba(220, 27, 42, 0.35) !important;
   cursor: pointer;
   transition: all 0.18s ease;
-  display: inline-flex !important;
-  align-items: center !important;
+  display: inline-flex;
+  align-items: center;
   justify-content: center !important;
   gap: 8px !important;
 }
