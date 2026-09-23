@@ -31,3 +31,5 @@
 .app-shell .dashboard-social-feed-v1 .community-threads-counts button,.app-shell .dashboard-social-feed-v1 .community-threads-counts span{font-size:.76rem;font-weight:var(--rr-fw-semibold);line-height:1.25}
 /* 39 Hover State Desktop */
 @media (hover:hover) and (pointer:fine){.app-shell .dashboard-social-feed-v1 .community-post{transition:border-color 180ms ease,box-shadow 180ms ease}.app-shell .dashboard-social-feed-v1 .community-post:hover{border-color:var(--rr-line-strong);box-shadow:var(--rr-shadow-card)}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover{background:var(--rr-surface-soft)}}
+/* 40 Press State Mobile */
+@media (hover:none){.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active,.app-shell .dashboard-social-feed-v1 .community-post-menu summary:active{background:var(--rr-surface-soft);transform:scale(.95)}.app-shell .dashboard-social-feed-v1 .community-post-counts button:active{color:var(--rr-ink)}}
