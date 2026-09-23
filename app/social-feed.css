@@ -2845,19 +2845,18 @@
   }
 }
 
-
 /* Restore floating dashboard bottom navigation */
 @media (max-width: 720px) {
   .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
     left: 50% !important;
     right: auto !important;
     bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px)) !important;
-    width: min(calc(100vw - 24px), 420px) !important;
-    max-width: calc(100vw - 24px) !important;
+    width: min(84vw, 390px) !important;
+    max-width: calc(100vw - 28px) !important;
     min-height: 62px !important;
     height: auto !important;
     transform: translateX(-50%) !important;
-    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    grid-template-columns: repeat(5, minmax(52px, 1fr)) !important;
     gap: 2px !important;
     margin: 0 !important;
     border: 1px solid color-mix(in srgb, var(--rr-line-strong) 78%, transparent) !important;
@@ -2873,12 +2872,12 @@
   }
 
   .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a {
-    min-width: 0 !important;
+    min-width: 52px !important;
     min-height: 50px !important;
-    border-radius: 15px !important;
+    border-radius: 14px !important;
     background: transparent !important;
     color: var(--rr-muted) !important;
-    padding: 5px 3px 4px !important;
+    padding: 5px 4px 4px !important;
   }
 
   .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a:hover,
@@ -2908,9 +2907,12 @@
 
 @media (max-width: 390px) {
   .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom {
-    width: calc(100vw - 18px) !important;
+    width: min(86vw, 344px) !important;
     max-width: calc(100vw - 18px) !important;
-    border-radius: 20px !important;
-    padding-inline: 5px !important;
+  }
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .bottom a {
+    min-width: 50px !important;
   }
 }
+
