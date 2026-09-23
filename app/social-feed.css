@@ -3032,3 +3032,82 @@
     -webkit-line-clamp: 4;
   }
 }
+
+
+/* Dashboard polish 05 · Post action bar */
+.app-shell .dashboard-social-feed-v1 .community-post-footer {
+  margin-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--rr-line) 80%, transparent);
+  padding-top: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: -10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  display: grid;
+  width: var(--rr-control-lg);
+  height: var(--rr-control-lg);
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+  place-items: center;
+  border: 0;
+  border-radius: var(--rr-radius-pill);
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  box-shadow: none;
+  transition:
+    transform var(--rr-motion-fast) var(--rr-ease-out),
+    background-color var(--rr-motion-fast) var(--rr-ease-out),
+    color var(--rr-motion-fast) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+  transform: scale(.94);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:focus-visible {
+  outline: 2px solid var(--rr-focus-outline);
+  outline-offset: -2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.9;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked {
+  color: var(--rr-red);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-post-footer {
+    margin-top: 9px;
+    padding-top: 5px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions {
+    margin-left: -11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+    transform: none;
+  }
+}
