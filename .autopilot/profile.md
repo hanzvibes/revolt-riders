@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: ACTIVE
+Status: ACTIVE · QA_PENDING
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 12-26 are integrated on main. Builder branch synchronized to main at `8e1d59e3534b765ee33d289dfde03c7a58f37712`; resume with Task 27.
+Tasks 27-34 are implemented on final cumulative product head `016e3669dfd87573c981db199f55746ad3d960f2`. Commits 27-33 use `[skip ci]`; Task 34 is the single CI-triggering commit. Final UI Quality run was not yet visible at the one allowed final inspection, so do not reimplement these tasks. Next run must reconcile this exact head once; if GREEN, mark 27-34 DONE and READY_FOR_INTEGRATION.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -102,4 +102,12 @@ Tasks 12-26 are integrated on main. Builder branch synchronized to main at `8e1d
 2026-09-23 18:22 WIB | tasks 12-15 | DONE | 777441716733f1113ed13036712b52db4bd787ad | UI Quality run 35849610000 GREEN | Reconciled partial sprint.
 2026-09-23 19:35 WIB | tasks 16-19 | DONE | 7b1222b0af20495f50217a746f976df42e9198f7 | UI Quality run 35855476365 GREEN | Reconciled prior cumulative tree.
 2026-09-23 21:19 WIB | tasks 20-26 | DONE / READY_FOR_INTEGRATION | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | UI Quality run 35868143352 GREEN | Reconciled cumulative profile batch.
-2026-09-24 04:33 WIB | lane recovery | ACTIVE | 8e1d59e3534b765ee33d289dfde03c7a58f37712 | main synchronized | Prior Profile batch already integrated; branch resynchronized to current main. Next task 27 Achievement Timeline Layout.
+2026-09-24 04:33 WIB | lane recovery | ACTIVE | 8e1d59e3534b765ee33d289dfde03c7a58f37712 | main synchronized | Prior Profile batch already integrated; branch resynchronized.
+2026-09-24 04:36 WIB | 27 Achievement Timeline Layout | QA_PENDING | 29dd50f4976ea3f41332c67fa5cb3a1088b3d42b | cumulative final QA pending | [skip ci]
+2026-09-24 04:37 WIB | 28 Locked/Unlocked Achievement States | QA_PENDING | 47106d821d2796c46852a5c0c42ec7b324e1f662 | cumulative final QA pending | [skip ci]
+2026-09-24 04:38 WIB | 29 Achievement Timeline Mobile Pass | QA_PENDING | b72394a1d5f7783d04b7aa2eab2f25079344cad5 | cumulative final QA pending | [skip ci]
+2026-09-24 04:39 WIB | 30 Progress + Achievement Grid Balance | QA_PENDING | 2d78c1b2d6bd3312f7e8eb3c4e515ce3447f021b | cumulative final QA pending | [skip ci]
+2026-09-24 04:40 WIB | 31 Riding History Header | QA_PENDING | f37d9717b8ecb1b549a4c555a7412194b3c6cf46 | cumulative final QA pending | [skip ci]
+2026-09-24 04:41 WIB | 32 Catat Riwayat CTA Polish | QA_PENDING | 74bc7bdb0f05a3e0f4a26a82667385e05a35b65b | cumulative final QA pending | [skip ci]
+2026-09-24 04:42 WIB | 33 Ride Row Density | QA_PENDING | 0fd4915b13a28982a3969c5ba00a536ffcab1773 | cumulative final QA pending | [skip ci]
+2026-09-24 04:43 WIB | 34 Ride Icon & Status Treatment | QA_PENDING | 016e3669dfd87573c981db199f55746ad3d960f2 | final UI Quality not visible yet | final CI-triggering product head
