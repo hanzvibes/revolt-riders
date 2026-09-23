@@ -49,3 +49,22 @@ jobs:
 
       - name: Production build
         run: pnpm build
+
+      - name: Smoke production server
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=3000 pnpm start > /tmp/revolt-riders-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error --location --max-time 5 http://127.0.0.1:3000/ -o /tmp/revolt-riders-home.html; then
+              test -s /tmp/revolt-riders-home.html
+              exit 0
+            fi
+            sleep 1
+          done
+
+          cat /tmp/revolt-riders-next.log
+          exit 1
