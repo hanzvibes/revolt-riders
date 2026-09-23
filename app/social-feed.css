@@ -3617,3 +3617,84 @@
     transition: none;
   }
 }
+
+
+/* Dashboard polish 14 · Feed loading skeleton */
+.app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+  display: grid;
+  gap: 10px;
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  border: 1px solid var(--feed-card-border, var(--rr-line));
+  border-radius: var(--feed-card-radius, 18px);
+  background: var(--rr-surface);
+  padding: 16px;
+  box-shadow: var(--feed-card-shadow, none);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header {
+  gap: 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > span:last-child,
+.app-shell .dashboard-social-feed-v1 .community-skeleton-copy {
+  gap: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton i,
+.app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+  background:
+    linear-gradient(
+      100deg,
+      var(--rr-surface-muted) 24%,
+      color-mix(in srgb, var(--rr-surface-soft) 76%, var(--rr-surface)) 42%,
+      var(--rr-surface-muted) 60%
+    );
+  background-size: 220% 100%;
+  animation-duration: 1.5s;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-copy {
+  margin-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+  aspect-ratio: 4 / 3;
+  margin-top: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  gap: 14px;
+  margin-top: 11px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer i {
+  width: 58px;
+  height: 8px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+    gap: 9px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: var(--feed-card-radius-mobile, 16px);
+    padding: 14px 13px 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+    width: 100%;
+    margin: 11px 0 0;
+    border-radius: 13px;
+  }
+}
