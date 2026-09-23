@@ -32,7 +32,7 @@ Do not edit:
 - backend/Supabase/DB files
 
 ## Queue
-- [ ] 01 Profile Visual Baseline Audit
+- [x] 01 Profile Visual Baseline Audit
 - [ ] 02 Cover Height & Composition
 - [ ] 03 Fix MEMBER NETWORK Cover Overlap
 - [ ] 04 Avatar Scale & Position
@@ -83,6 +83,13 @@ Do not edit:
 - [ ] 49 Visual Regression & Consistency Audit
 - [ ] 50 Final Profile UAT & Polish
 
+## Baseline findings
+- Profile is already organized into a social identity hero, member stats/quick actions, road-level progress, achievement timeline, riding history, edit-profile sheet, and ride edit flow.
+- Existing Supabase reads/writes and auth behavior are explicitly out of scope and remain untouched.
+- Highest-priority visual risks for the first batch are cover/avatar overlap, dense identity metadata on small screens, inconsistent hierarchy between hero/stat/action regions, and inline-styled riding rows that will need later profile-scoped cleanup.
+- Task 02 onward can be implemented without changing data contracts by keeping changes to `/profil` markup/classes and strictly profile-scoped styles.
+
 ## Run log
-Append concise entries here:
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
+
+2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | pending | baseline main UI Quality GREEN; branch CI pending | Audited current /profil structure and established safe frontend-only priorities; no product/data behavior changed.
