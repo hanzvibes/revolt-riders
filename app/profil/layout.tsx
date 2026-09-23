@@ -6,15 +6,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
       {children}
       <style>{`
         /* Profile Autopilot: Task 02 — Cover Height & Composition */
-        .profile-social-page .profile-social-cover {
-          min-height: clamp(148px, 24vw, 220px);
-          display: grid;
-          place-items: center;
-          align-content: center;
-          gap: 10px;
-          padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 32px) clamp(34px, 5vw, 46px);
-          overflow: hidden;
-        }
+        .profile-social-page .profile-social-cover { min-height: clamp(148px, 24vw, 220px); display: grid; place-items: center; align-content: center; gap: 10px; padding: clamp(20px, 4vw, 34px) clamp(18px, 4vw, 32px) clamp(34px, 5vw, 46px); overflow: hidden; }
         .profile-social-page .profile-social-cover > img { width: clamp(92px, 15vw, 132px); height: clamp(92px, 15vw, 132px); object-fit: contain; flex: none; }
         .profile-social-page .profile-social-cover > span { position: relative; z-index: 2; max-width: min(100%, 32rem); margin-inline: auto; padding-inline: clamp(42px, 11vw, 78px); text-align: center; text-wrap: balance; }
         /* Task 03 — reserve the avatar overlap zone so the cover label stays readable. */
@@ -46,7 +38,6 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
         .profile-social-page .profile-social-stats > a { min-width: 0; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; text-align: center; }
         .profile-social-page .profile-social-stats strong { line-height: 1; font-variant-numeric: tabular-nums; }
         .profile-social-page .profile-social-stats span { font-size: clamp(0.66rem, 2.2vw, 0.76rem); line-height: 1.25; text-wrap: balance; }
-
         @media (max-width: 560px) {
           .profile-social-page .profile-social-cover { min-height: 156px; padding: 20px 18px 34px; }
           .profile-social-page .profile-social-cover > img { width: 96px; height: 96px; }
