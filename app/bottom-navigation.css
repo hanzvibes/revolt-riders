@@ -1,0 +1,157 @@
+/* ==========================================================================
+   Unified Floating Bottom Navigation
+   Single source of truth for every AppShell page.
+   ========================================================================== */
+
+@media (min-width: 721px) {
+  .app-shell .bottom {
+    display: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .bottom {
+    display: grid !important;
+    position: fixed !important;
+    z-index: 23 !important;
+    left: 50% !important;
+    right: auto !important;
+    bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px)) !important;
+    width: min(84vw, 390px) !important;
+    max-width: calc(100vw - 28px) !important;
+    min-height: 62px !important;
+    height: auto !important;
+    grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+    align-items: stretch !important;
+    gap: 2px !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+    border: 1px solid color-mix(in srgb, var(--rr-line-strong) 78%, transparent) !important;
+    border-radius: 22px !important;
+    background: color-mix(in srgb, var(--rr-surface) 94%, transparent) !important;
+    padding: 6px 7px !important;
+    box-shadow:
+      0 14px 36px rgba(20, 22, 24, .14),
+      0 3px 10px rgba(20, 22, 24, .055) !important;
+    backdrop-filter: blur(20px) saturate(135%) !important;
+    -webkit-backdrop-filter: blur(20px) saturate(135%) !important;
+    overflow: hidden !important;
+    transition:
+      transform 220ms var(--rr-ease-out),
+      opacity 180ms var(--rr-ease-out) !important;
+  }
+
+  .app-shell .bottom a {
+    position: relative !important;
+    display: flex !important;
+    min-width: 0 !important;
+    min-height: 50px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    border: 0 !important;
+    border-radius: 14px !important;
+    background: transparent !important;
+    color: var(--rr-muted) !important;
+    padding: 5px 4px 4px !important;
+    box-shadow: none !important;
+    text-decoration: none !important;
+    transition:
+      transform 150ms var(--rr-ease-out),
+      background-color 160ms var(--rr-ease-out),
+      color 160ms var(--rr-ease-out) !important;
+  }
+
+  .app-shell .bottom a:hover {
+    background: color-mix(in srgb, var(--rr-surface-soft) 78%, transparent) !important;
+    color: var(--rr-ink) !important;
+  }
+
+  .app-shell .bottom a:active {
+    transform: scale(.96) !important;
+    background: color-mix(in srgb, var(--rr-surface-soft) 88%, transparent) !important;
+  }
+
+  .app-shell .bottom a:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--rr-red) 72%, transparent) !important;
+    outline-offset: -2px !important;
+  }
+
+  .app-shell .bottom a.active,
+  .app-shell .bottom a[aria-current="page"] {
+    background: transparent !important;
+    color: var(--rr-ink) !important;
+    box-shadow: none !important;
+  }
+
+  .app-shell .bottom a::before,
+  .app-shell .bottom a.active::before {
+    display: none !important;
+  }
+
+  .app-shell .bottom a svg {
+    width: 20px !important;
+    height: 20px !important;
+    flex: 0 0 20px !important;
+    color: currentColor !important;
+    stroke-width: 1.9 !important;
+  }
+
+  .app-shell .bottom a.active svg,
+  .app-shell .bottom a[aria-current="page"] svg {
+    color: var(--rr-red) !important;
+    stroke-width: 2.35 !important;
+  }
+
+  .app-shell .bottom a small {
+    display: block !important;
+    margin: 2px 0 0 !important;
+    color: currentColor !important;
+    font-size: .56rem !important;
+    font-weight: var(--rr-fw-semibold) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  .app-shell:has(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+    textarea:focus,
+    select:focus
+  ) .bottom {
+    transform: translate(-50%, calc(100% + 32px)) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .bottom {
+    width: min(86vw, 344px) !important;
+    max-width: calc(100vw - 18px) !important;
+    border-radius: 20px !important;
+    padding-inline: 5px !important;
+  }
+
+  .app-shell .bottom a {
+    min-height: 50px !important;
+    padding-inline: 3px !important;
+  }
+}
+
+@media (max-width: 340px) {
+  .app-shell .bottom {
+    width: calc(100vw - 14px) !important;
+  }
+
+  .app-shell .bottom a small {
+    font-size: .52rem !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .bottom,
+  .app-shell .bottom a {
+    transition: none !important;
+  }
+}
