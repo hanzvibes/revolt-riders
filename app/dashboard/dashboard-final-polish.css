@@ -13,3 +13,5 @@
 @media (max-width:720px){.app-shell .dashboard-social-feed-v1 .community-composer{max-height:calc(100dvh - 92px);overflow-y:auto;overscroll-behavior:contain;padding-bottom:max(12px,env(safe-area-inset-bottom));scroll-padding-bottom:96px}.app-shell .dashboard-social-feed-v1 .community-composer textarea{max-height:34dvh}}
 /* 59 Loading Button State */
 .app-shell .dashboard-social-feed-v1 button[aria-busy="true"],.app-shell .dashboard-social-feed-v1 button.is-loading{position:relative;cursor:progress;opacity:.78;pointer-events:none}.app-shell .dashboard-social-feed-v1 button[aria-busy="true"] svg,.app-shell .dashboard-social-feed-v1 button.is-loading svg{animation:dashboard-button-spin .8s linear infinite}@keyframes dashboard-button-spin{to{transform:rotate(360deg)}}
+/* 60 Disabled Button State */
+.app-shell .dashboard-social-feed-v1 button:disabled,.app-shell .dashboard-social-feed-v1 button[aria-disabled="true"]{cursor:not-allowed;opacity:.46;filter:saturate(.55);box-shadow:none}.app-shell .dashboard-social-feed-v1 button:disabled:active,.app-shell .dashboard-social-feed-v1 button[aria-disabled="true"]:active{transform:none}
