@@ -13,3 +13,5 @@
 /* 33 Mention Visual Style */
 .app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]{color:var(--rr-danger);font-weight:var(--rr-fw-semibold);text-decoration:none}
 .app-shell .dashboard-social-feed-v1 .community-post-copy a[href^="/"]:hover{text-decoration:underline;text-underline-offset:3px}
+/* 34 Hashtag Visual Style */
+.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="tag"],.app-shell .dashboard-social-feed-v1 .community-post-copy a[href*="hashtag"]{color:var(--rr-danger);font-weight:var(--rr-fw-bold);text-decoration:none}
