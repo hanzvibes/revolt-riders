@@ -96,6 +96,11 @@ If Quick QA reveals a regression, repair it and upgrade the validation to Full Q
 - If another ready lane remains, evaluate its PR against the new main; never overwrite its owned work.
 - Production deploy is triggered only by a main commit containing `[deploy]`.
 - Builders never create `[deploy]` commits.
+- FINAL-RELEASE MODE: Integration Guard MUST NOT create any `[deploy]` commit while either Dashboard or Profile still has an unchecked task, a QA_PENDING/RUNNING/READY batch not yet integrated, NEEDS_REVIEW, BLOCKED_BACKEND, WAITING_SHARED_COMPONENT, or a unique builder diff not merged to main.
+- Intermediate sprint merges to main are integration-only and MUST NOT deploy production.
+- The single final production release may be created only after BOTH trackers have zero unchecked tasks, both builder branches are synchronized with main, all final lane QA is GREEN, final main UI Quality/full regression is GREEN, and there are no unresolved blockers.
+- When the final gate passes, create exactly one main commit containing `[deploy]` for the completed Dashboard + Profile release, then verify the Vercel status through GitHub and run production smoke/regression checks.
+- Any older pending release entry is superseded by FINAL-RELEASE MODE and must not be retried before the final gate.
 - After release, verify production and scan runtime errors when available.
 - Safe frontend production regressions may be repaired or the offending frontend batch reverted after Full QA.
 - Backend-sensitive errors are reported, not modified automatically.
@@ -120,3 +125,15 @@ When all tasks for a lane are complete:
 - Do not immediate-retry the same provider in a loop.
 - Preserve completed work, record RATE_LIMIT_PAUSE if needed, and let the next scheduled run recover.
 - Avoid redundant reads of unchanged tracker/branch state and avoid per-task Slack updates.
+
+
+## Final production release gate
+Production stays frozen while autopilot queues are still moving. A final release is allowed only when ALL conditions are true:
+1. Dashboard tracker has 0 unchecked tasks and its final regression task is DONE.
+2. Profile tracker has 0 unchecked tasks and its final UAT/polish task is DONE.
+3. Neither tracker contains RUNNING, QA_PENDING, READY_FOR_INTEGRATION, NEEDS_REVIEW, BLOCKED_BACKEND, or WAITING_SHARED_COMPONENT work that still requires action.
+4. Both builder branches contain no unique unmerged product diff versus main.
+5. Main UI Quality/full regression is GREEN after the final integrations.
+6. Exactly one final `[deploy]` commit is created.
+7. Vercel production status is checked through GitHub status, followed by production HTTP smoke/regression verification.
+If any condition is false, do not deploy and do not create a placeholder `[deploy]` commit.
