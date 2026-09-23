@@ -19,41 +19,42 @@ Builders and repair automation must NOT modify:
 
 If required: mark `BLOCKED_BACKEND`, explain why, and continue independent safe work.
 
-## Fast execution policy
-- Each builder run has a 45-minute work budget and a maximum target of 8 safe tasks.
-- Do not force the task count. Finish fewer tasks if they are larger or verification needs more time.
-- Prefer independent tasks when an earlier task is blocked.
-- Never combine multiple unfinished product tasks into one commit.
-- A task may be attempted at most twice in one run. If the same safe frontend task still fails after two repair attempts, mark it `NEEDS_REVIEW`, record the evidence, and continue with an independent safe task.
-- `NEEDS_REVIEW`, `BLOCKED_BACKEND`, and `WAITING_SHARED_COMPONENT` tasks must not be retried every hour unless new evidence or a relevant code change exists.
+## Hourly sprint policy
+- One hourly builder invocation means one multi-task sprint, not one task.
+- Target exactly 8 safe unfinished tasks per sprint when 8 safe tasks are available.
+- Do not stop after the first successful task.
+- Stop before 8 only when fewer tasks remain, a 10-task batch boundary is reached, or a genuine hard blocker makes further independent work unsafe.
+- Keep one product task per commit.
+- Intermediate task commits may trigger GitHub Actions in the background. Do not wait for each intermediate remote CI run before continuing.
+- A cancelled intermediate workflow that was superseded by a later sprint commit is not itself a failure.
+- Validate the cumulative sprint head with Full QA before declaring the sprint successful.
 
-## Run lock and recovery
+## Sprint lock and recovery
 Before a builder starts:
-1. Inspect the builder branch and its current GitHub Actions/QA runs.
-2. If a previous builder QA/build for the same lane is still running, do not start another product change.
-3. If a prior run appears interrupted, reconcile the last task first: compare tracker state, latest task commit, and QA result.
-4. If a task commit exists but the tracker was not updated, verify it and repair the tracker before starting new work.
-5. Never overwrite or reset another run's work.
+1. Reconcile the tracker, latest task commit, and branch state.
+2. Mark the current sprint RUNNING in the branch tracker with its intended task range.
+3. A newer automation invocation must not overwrite an actively running sprint.
+4. If a prior sprint was interrupted, reconcile its last committed task and tracker state, then continue from the next safe task.
+5. Do not use an in-progress GitHub Actions run from an intermediate task commit as a sprint lock.
+6. Never overwrite or reset another lane's work.
 
 ## Task states
-Use tracker queue text and run log consistently:
 - TODO: unchecked task with no status suffix
+- RUNNING: current task/sprint in progress
 - DONE: checked task
 - NEEDS_REVIEW: safe task failed twice or needs a human/product decision
 - BLOCKED_BACKEND: requires forbidden backend-sensitive work
 - WAITING_SHARED_COMPONENT: requires a cross-lane/global primitive or real merge conflict
 - READY_FOR_INTEGRATION: batch-level state after the 10-task regression gate
 
-## Risk-based QA
+## Sprint QA
 ### Quick QA for low-risk isolated UI tasks
 Run:
 1. relevant focused tests
 2. `pnpm audit:ui`
 3. `pnpm exec tsc --noEmit`
 
-A low-risk task is isolated styling/layout/copy/presentation work inside lane-owned files with no shared navigation, data-flow, auth, form-submission, or interaction-contract change.
-
-### Full QA
+### Full QA checkpoint
 Run:
 1. relevant tests
 2. `pnpm audit:ui`
@@ -62,16 +63,21 @@ Run:
 5. production build
 6. production-server HTTP smoke
 
-Full QA is mandatory when:
-- the task affects interaction behavior, forms, navigation, shared UI, responsive behavior with structural changes, or loading/error states
-- the task is medium/high frontend risk
-- three tasks have completed since the last Full QA checkpoint
-- a repair was needed
-- a 10-task batch boundary is reached
+Full QA is mandatory:
+- after every 4 completed tasks inside the sprint
+- after any repair
+- for medium/high-risk interaction, form, navigation, shared UI, loading/error, or structural responsive work
+- at a 10-task batch boundary
+- at the final sprint head
 - before READY_FOR_INTEGRATION
 - before integration/release
 
-If Quick QA reveals a regression, upgrade that task to Full QA after repair.
+If Quick QA reveals a regression, repair it and upgrade the validation to Full QA.
+
+## Failure handling
+- A task may receive up to two safe repair attempts in one sprint.
+- If it still fails, mark `NEEDS_REVIEW` with evidence and continue with another independent safe task.
+- `NEEDS_REVIEW`, `BLOCKED_BACKEND`, and `WAITING_SHARED_COMPONENT` should not be retried every hour unless new evidence or a relevant code change exists.
 
 ## Shared-file collision policy
 - Respect file ownership written in each tracker.
@@ -85,14 +91,14 @@ If Quick QA reveals a regression, upgrade that task to Full QA after repair.
 - Production deploy is triggered only by a main commit containing `[deploy]`.
 - Builders never create `[deploy]` commits.
 - After release, verify production and scan runtime errors when available.
-- If a clearly evidenced safe frontend regression reaches production, Integration Guard may make the smallest repair or revert the offending frontend batch to the last known healthy frontend state, then run Full QA before release.
+- Safe frontend production regressions may be repaired or the offending frontend batch reverted after Full QA.
 - Backend-sensitive errors are reported, not modified automatically.
 
 ## Reporting policy
 - Slack channel: `#revolt-autopilot` / `C0C4MLT17FS`.
 - Status board message: `1790137463.205899`.
 - Builders and Guard must read the current status-board message before editing it, preserve other lanes, and update only their own line(s).
-- New Slack messages are only for meaningful events: completed work, blocker, QA failure, batch readiness, merge, repair, release, rollback, or production state change.
+- New Slack messages are only for meaningful events: sprint completion, blocker, QA failure, batch readiness, merge, repair, release, rollback, or production state change.
 - Do not post repeated no-change reports.
 
 ## Completion behavior
