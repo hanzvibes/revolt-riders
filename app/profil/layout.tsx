@@ -25,8 +25,8 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
         /* Task 10 */ .profile-social-page .profile-social-meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin-top: 13px; }
         .profile-social-page .profile-social-meta > span { min-width: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 0.78rem; line-height: 1.4; }
         .profile-social-page .profile-social-meta > span > svg { width: 14px; height: 14px; flex: 0 0 14px; }
-        /* Task 11 */ .profile-social-page .profile-social-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 8px; }
-        .profile-social-page .profile-social-stats > a { min-width: 0; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; text-align: center; }
+        /* Task 11 */ .profile-social-page .profile-social-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 8px; margin-top: 16px; }
+        .profile-social-page .profile-social-stats > a { min-width: 0; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; text-align: center; border-radius: 12px; }
         .profile-social-page .profile-social-stats strong { line-height: 1; font-variant-numeric: tabular-nums; }
         .profile-social-page .profile-social-stats span { font-size: clamp(0.66rem, 2.2vw, 0.76rem); line-height: 1.25; text-wrap: balance; }
         @media (max-width: 560px) {
@@ -40,7 +40,7 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
           .profile-social-page .profile-social-handle-row { gap: 6px; }
           .profile-social-page .profile-social-meta { gap: 7px 10px; }
           .profile-social-page .profile-social-meta > span { flex: 1 1 calc(50% - 10px); }
-          .profile-social-page .profile-social-stats { gap: 6px; }
+          .profile-social-page .profile-social-stats { gap: 6px; margin-top: 14px; }
           .profile-social-page .profile-social-stats > a { min-height: 64px; padding-inline: 5px; }
         }
       `}</style>
