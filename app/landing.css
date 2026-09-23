@@ -135,7 +135,7 @@
   align-items: center;
   gap: 12px;
   text-decoration: none;
-  color: #fff;
+  color: var(--brand-light);
   z-index: 102;
 }
 
@@ -229,7 +229,7 @@
 
 .btn-nav-portal {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   gap: 6px;
   font-family: var(--font-heading);
@@ -253,7 +253,7 @@
 
 .btn-nav-join {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   gap: 6px;
   font-family: var(--font-heading);
@@ -277,7 +277,7 @@
 
 .dark-mobile-drawer > a,
 .dark-mobile-drawer > button {
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   display: inline-flex;
   align-items: center;
 }
@@ -292,7 +292,7 @@
 .dark-mobile-btn {
   display: inline-flex;
   min-width: 44px;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   justify-content: center;
   background: transparent;
@@ -437,7 +437,7 @@
 
 .btn-hero-primary {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -462,7 +462,7 @@
 
 .btn-hero-secondary {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -488,7 +488,7 @@
 
 .btn-hero-portal {
   display: inline-flex;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   align-items: center;
   gap: 8px;
   font-family: var(--font-heading);
@@ -1630,7 +1630,7 @@
 
 .join-input-wrap input {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   padding: 12px 14px 12px 42px;
   background: #1c1d22;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -1706,7 +1706,7 @@
 
 .btn-join-submit {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--rr-control-lg);
   padding: 14px 24px;
   font-family: var(--font-heading);
   font-size: 0.95rem;
