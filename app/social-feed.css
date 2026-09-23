@@ -2592,3 +2592,129 @@
     transition: none;
   }
 }
+
+
+/* Social card refinement */
+.app-shell .dashboard-social-feed-v1 {
+  isolation: isolate;
+}
+
+.app-shell .dashboard-social-feed-v1::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  position: relative;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--rr-surface) 98%, #fff) 0%,
+      var(--rr-surface) 100%
+    );
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 18px 42px rgba(20, 22, 24, .025);
+  opacity: 0;
+  transition: opacity 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 0;
+  width: 3px;
+  height: 34px;
+  border-radius: 0 999px 999px 0;
+  background: var(--rr-red);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+  margin-top: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--rr-line) 76%, transparent);
+  padding-top: 8px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  gap: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  color: color-mix(in srgb, var(--rr-ink) 88%, transparent);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: color-mix(in srgb, var(--rr-surface-soft) 86%, transparent);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts {
+  padding-left: 2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  box-shadow: 0 1px 2px rgba(20, 22, 24, .025);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu>div {
+  border-color: var(--rr-line-strong);
+  box-shadow: 0 14px 34px rgba(20, 22, 24, .14);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: translateY(-1px);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    position: relative;
+  }
+
+  .app-shell .dashboard-social-feed-v1::before {
+    background: color-mix(in srgb, var(--rr-surface-soft) 52%, transparent);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post {
+    box-shadow:
+      0 1px 2px rgba(20, 22, 24, .028),
+      0 7px 20px rgba(20, 22, 24, .028);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+    margin-top: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+    top: 13px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: none;
+  }
+}
