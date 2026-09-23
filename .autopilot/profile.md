@@ -2,11 +2,11 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: READY_FOR_INTEGRATION
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on 7b1222b0af20495f50217a746f976df42e9198f7 / run 35855476365
+Last Full QA checkpoint: UI Quality GREEN on 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 / run 35868143352
 
 ## Rules
 - Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 20-26 are validated by final cumulative UI Quality GREEN on 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 / run 35868143352. Together with previously validated Tasks 12-19, this lane now has a large cumulative frontend batch ready to integrate. Do not start Task 27 until Integration Guard merges and resynchronizes the branch.
+Tasks 12-26 are integrated on main. Builder branch synchronized to main at `8e1d59e3534b765ee33d289dfde03c7a58f37712`; resume with Task 27.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -101,12 +101,5 @@ Tasks 20-26 are validated by final cumulative UI Quality GREEN on 98cb4e5fb2d8fd
 2026-09-23 17:15 WIB | sprint 04-11 | INTEGRATED | 1a3fe7235a539bb0f7bc46918bf72b0783a28c00 | main integration complete | Branch resynchronized.
 2026-09-23 18:22 WIB | tasks 12-15 | DONE | 777441716733f1113ed13036712b52db4bd787ad | UI Quality run 35849610000 GREEN | Reconciled partial sprint.
 2026-09-23 19:35 WIB | tasks 16-19 | DONE | 7b1222b0af20495f50217a746f976df42e9198f7 | UI Quality run 35855476365 GREEN | Reconciled prior cumulative tree.
-2026-09-23 19:39 WIB | 20 Save Button Loading/Disabled State | QA_PENDING | 347cd433e59835ecfe3c83bd8689995d4cccfbf5 | cumulative QA unavailable | Profile-scoped save-state affordance.
-2026-09-23 19:40 WIB | 21 Road Progress Card Hierarchy | QA_PENDING | 20790dba9d128c912a2dd4b884109508c7878afc | cumulative QA unavailable | Profile-scoped progress hierarchy.
-2026-09-23 19:41 WIB | 22 Road Level Typography | QA_PENDING | 685df50fe56336edd88adf252820513ed2875375 | cumulative QA unavailable | Road-level typography refinement.
-2026-09-23 19:42 WIB | 23 Progress Track Polish | QA_PENDING | 9cb64b2bb5343b5636af6090afa8259d139e45eb | no UI Quality run visible | Final product head of prior partial sprint.
-2026-09-23 20:34 WIB | 24 Milestone Scale Readability | QA_PENDING | a8d9255120d91f3c42cd460ccc833f7ab2dd1e58 | cumulative final QA pending | Profile-scoped scale labels; [skip ci].
-2026-09-23 20:34 WIB | 25 Milestone Callout Polish | QA_PENDING | f63180c5571e3d89d3f6f5ce66aed0d53b78583a | cumulative final QA pending | Profile-scoped milestone callout; [skip ci].
-2026-09-23 20:35 WIB | 26 Achievement Header Hierarchy | QA_PENDING | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | final UI Quality not visible yet | Final CI-triggering product head for partial sprint.
-
-2026-09-23 21:19 WIB | tasks 20-26 | DONE / READY_FOR_INTEGRATION | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | UI Quality run 35868143352 GREEN | Reconciled cumulative profile batch; next after integration: 27 Achievement Timeline Layout.
+2026-09-23 21:19 WIB | tasks 20-26 | DONE / READY_FOR_INTEGRATION | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | UI Quality run 35868143352 GREEN | Reconciled cumulative profile batch.
+2026-09-24 04:33 WIB | lane recovery | ACTIVE | 8e1d59e3534b765ee33d289dfde03c7a58f37712 | main synchronized | Prior Profile batch already integrated; branch resynchronized to current main. Next task 27 Achievement Timeline Layout.
