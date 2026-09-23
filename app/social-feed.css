@@ -3310,3 +3310,113 @@
     transform: none;
   }
 }
+
+
+/* Dashboard polish 10 · Fullscreen photo viewer */
+.app-shell .community-media-viewer {
+  background: rgba(0, 0, 0, .985);
+}
+
+.app-shell .community-media-viewer > header {
+  min-height: 60px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(12px);
+}
+
+.app-shell .community-media-viewer > header span {
+  color: rgba(255, 255, 255, .82);
+  font-size: .74rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .community-media-viewer > header button,
+.app-shell .community-media-viewer-nav {
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .07);
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    border-color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-media-viewer > header button:hover,
+.app-shell .community-media-viewer-nav:hover {
+  border-color: rgba(255, 255, 255, .24);
+  background: rgba(255, 255, 255, .13);
+}
+
+.app-shell .community-media-viewer > header button:active,
+.app-shell .community-media-viewer-nav:active {
+  transform: scale(.96);
+}
+
+.app-shell .community-media-viewer-stage {
+  gap: 14px;
+  padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
+}
+
+.app-shell .community-media-viewer-stage figure {
+  max-width: min(1240px, calc(100vw - 170px));
+  max-height: calc(100dvh - 108px);
+}
+
+.app-shell .community-media-viewer-stage figure img {
+  user-select: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-media-viewer {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .app-shell .community-media-viewer > header {
+    min-height: 56px;
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      12px
+      8px;
+  }
+
+  .app-shell .community-media-viewer > header button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-shell .community-media-viewer-stage {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 6px;
+    padding:
+      8px
+      max(6px, env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      max(6px, env(safe-area-inset-left));
+  }
+
+  .app-shell .community-media-viewer-stage figure {
+    max-width: 100%;
+    max-height: calc(100dvh - 86px - env(safe-area-inset-top));
+  }
+
+  .app-shell .community-media-viewer-nav {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-shell .community-media-viewer-nav svg {
+    width: 21px;
+    height: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-media-viewer > header button,
+  .app-shell .community-media-viewer-nav {
+    transition: none;
+  }
+
+  .app-shell .community-media-viewer > header button:active,
+  .app-shell .community-media-viewer-nav:active {
+    transform: none;
+  }
+}
