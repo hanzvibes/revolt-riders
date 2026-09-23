@@ -3,6 +3,12 @@
    Single source of truth for every AppShell page.
    ========================================================================== */
 
+.app-shell {
+  --rr-floating-nav-height: 62px;
+  --rr-floating-nav-bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px));
+  --rr-floating-nav-clearance: calc(88px + env(safe-area-inset-bottom));
+}
+
 @media (min-width: 721px) {
   .app-shell .bottom {
     display: none !important;
@@ -16,7 +22,7 @@
     z-index: 23 !important;
     left: 50% !important;
     right: auto !important;
-    bottom: max(10px, calc(env(safe-area-inset-bottom) + 8px)) !important;
+    bottom: var(--rr-floating-nav-bottom) !important;
     width: min(84vw, 390px) !important;
     max-width: calc(100vw - 28px) !important;
     min-height: 62px !important;
@@ -122,6 +128,28 @@
     transform: translate(-50%, calc(100% + 32px)) !important;
     opacity: 0 !important;
     pointer-events: none !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .floating-action-button {
+    bottom: var(--rr-floating-nav-clearance) !important;
+  }
+
+  .app-shell .community-thread-page {
+    padding-bottom: calc(var(--rr-floating-nav-clearance) + 12px) !important;
+  }
+
+  .app-shell .community-thread-composer {
+    bottom: var(--rr-floating-nav-clearance) !important;
+  }
+
+  .app-shell:has(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="file"]):focus,
+    textarea:focus,
+    select:focus
+  ) .community-thread-composer {
+    bottom: 0 !important;
   }
 }
 
