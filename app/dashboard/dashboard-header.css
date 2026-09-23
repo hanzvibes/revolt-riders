@@ -11,3 +11,5 @@
 .app-shell.social-shell .community-threads-post .community-post-author time{color:var(--rr-muted);font-size:.72rem;font-variant-numeric:tabular-nums;letter-spacing:.005em}
 /* 66 Tablet Layout Audit */
 @media (min-width:721px) and (max-width:1099px){.app-shell.social-shell .dashboard-social-feed-v1{width:min(100%,700px);padding-inline:18px}.app-shell.social-shell .community-feed-list{gap:15px}.app-shell.social-shell .social-app-header{padding-inline:max(16px,3vw)}}
+/* 67 Small Phone Audit */
+@media (max-width:390px){.app-shell.social-shell .dashboard-social-feed-v1{padding-inline:8px}.app-shell.social-shell .community-feed-list{gap:10px}.app-shell.social-shell .community-threads-post{border-radius:14px}.app-shell.social-shell .community-threads-post .community-post-header{padding-inline:11px}.app-shell.social-shell .social-header-create{width:42px;height:42px;flex-basis:42px}}
