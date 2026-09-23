@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 
 type RailEvent = {
   id: string;
@@ -62,7 +62,15 @@ function RailEventItem({
 export function DesktopFeedRail() {
   const [nextAgenda, setNextAgenda] = useState<RailEvent | null>(null);
   const [nextVoyager, setNextVoyager] = useState<RailEvent | null>(null);
-  const [enabled, setEnabled] = useState(false);
+  const enabled = useSyncExternalStore(
+    (onStoreChange) => {
+      const query = window.matchMedia("(min-width: 1280px)");
+      query.addEventListener("change", onStoreChange);
+      return () => query.removeEventListener("change", onStoreChange);
+    },
+    () => window.matchMedia("(min-width: 1280px)").matches,
+    () => false,
+  );
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
@@ -113,18 +121,6 @@ export function DesktopFeedRail() {
 
     setNextVoyager(started ?? upcoming ?? null);
     setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    const query = window.matchMedia("(min-width: 1280px)");
-
-    const sync = () => {
-      setEnabled(query.matches);
-    };
-
-    sync();
-    query.addEventListener("change", sync);
-    return () => query.removeEventListener("change", sync);
   }, []);
 
   useEffect(() => {
