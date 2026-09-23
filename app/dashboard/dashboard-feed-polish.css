@@ -1,4 +1,4 @@
-/* Dashboard feed polish tasks 30-37. Scoped to the dashboard surface. */
+/* Dashboard feed polish tasks 30-45. Scoped to the dashboard surface. */
 /* 30 Post Menu UI Polish */
 .app-shell .dashboard-social-feed-v1 .community-post-menu summary{width:40px;height:40px;border:1px solid transparent;transition:background-color 180ms ease,color 180ms ease,border-color 180ms ease}
 .app-shell .dashboard-social-feed-v1 .community-post-menu[open] summary{border-color:var(--rr-line)}
@@ -26,3 +26,6 @@
 .app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:background-color 180ms ease,color 180ms ease,transform 120ms ease}
 .app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:scale(.94)}
 @media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-threads-actions button{transition:none}.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active{transform:none}}
+/* 38 Engagement Counter Polish */
+.app-shell .dashboard-social-feed-v1 .community-threads-counts{justify-content:flex-start;align-items:center;gap:7px;min-height:28px;padding:0 4px;color:var(--rr-muted);font-variant-numeric:tabular-nums}
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button,.app-shell .dashboard-social-feed-v1 .community-threads-counts span{font-size:.76rem;font-weight:var(--rr-fw-semibold);line-height:1.25}
