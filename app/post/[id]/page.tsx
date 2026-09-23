@@ -240,7 +240,7 @@ export default function ThreadPage() {
           schema: "public",
           table: "feed_post_comments",
         },
-        (payload: any) => {
+        (payload) => {
           if (payload.eventType === "DELETE") {
             const id = payload.old?.id;
             if (typeof id !== "string") return;
@@ -287,7 +287,7 @@ export default function ThreadPage() {
           table: "feed_posts",
           filter: `id=eq.${postId}`,
         },
-        (payload: any) => {
+        (payload) => {
           const record = payload.new;
           if (!record || record.id !== postId) return;
 
