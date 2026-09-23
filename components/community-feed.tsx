@@ -30,6 +30,7 @@ import {
   LockKeyhole,
   MessageCircle,
   MoreHorizontal,
+  Pencil,
   Pin,
   Plus,
   Sparkles,
@@ -112,13 +113,14 @@ function FeedSkeleton() {
   );
 }
 
-function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike, onOpenDiscussion, onManage }: {
+function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike, onOpenDiscussion, onEdit, onManage }: {
   post: FeedPost;
   isStaff: boolean;
   currentRole?: AppRole;
   currentUserId?: string;
   onToggleLike: (post: FeedPost) => void;
   onOpenDiscussion: (post: FeedPost) => void;
+  onEdit: (post: FeedPost) => void;
   onManage: (post: FeedPost, action: "pin" | "comments" | "archive") => void;
 }) {
   const [expanded, setExpanded] = useState(false);
@@ -166,6 +168,10 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
                   <MoreHorizontal aria-hidden="true" />
                 </summary>
                 <div>
+                  <button type="button" onClick={() => onEdit(post)}>
+                    <Pencil aria-hidden="true" />
+                    Edit post
+                  </button>
                   <button type="button" onClick={() => onManage(post, "pin")}>
                     <Pin aria-hidden="true" />
                     {post.is_pinned ? "Lepas sematan" : "Sematkan"}
@@ -415,25 +421,33 @@ export function CommunityFeed({
   const [lockComments, setLockComments] = useState(false);
   const [composerMode, setComposerMode] = useState<"edit" | "preview">("edit");
   const [previewAuthorName, setPreviewAuthorName] = useState("Pengurus Revolt Riders");
+  const [editingPost, setEditingPost] = useState<FeedPost | null>(null);
+  const [existingMedia, setExistingMedia] = useState<FeedMedia[]>([]);
   const [previewMedia, setPreviewMedia] = useState<FeedMedia[]>([]);
 
   useEffect(() => {
-    const next = postFiles.map((file, index) => ({
+    const local = postFiles.map((file, index) => ({
       id: `preview-${index}-${file.name}`,
       object_path: "",
-      alt_text: `Preview foto ${index + 1}`,
-      sort_order: index,
+      alt_text: `Preview foto ${existingMedia.length + index + 1}`,
+      sort_order: existingMedia.length + index,
       signedUrl: URL.createObjectURL(file),
     }));
 
-    setPreviewMedia(next);
+    setPreviewMedia([
+      ...existingMedia.map((item, index) => ({
+        ...item,
+        sort_order: index,
+      })),
+      ...local,
+    ]);
 
     return () => {
-      for (const item of next) {
+      for (const item of local) {
         if (item.signedUrl) URL.revokeObjectURL(item.signedUrl);
       }
     };
-  }, [postFiles]);
+  }, [existingMedia, postFiles]);
 
   const selectedPreviewEvent = useMemo(
     () => availableEvents.find((event) => event.id === postEventId) ?? null,
@@ -831,6 +845,21 @@ export function CommunityFeed({
     }
   };
 
+  const openEditPost = (post: FeedPost) => {
+    setEditingPost(post);
+    setPostBody(post.body);
+    setPostLink(post.link_url ?? "");
+    setPostEventId(post.event_id ?? "");
+    setPinPost(post.is_pinned);
+    setLockComments(post.comments_locked);
+    setExistingMedia(post.media);
+    setPostFiles([]);
+    setPreviewAuthorName(post.author_name);
+    setComposerMode("edit");
+    setError("");
+    setComposerOpen(true);
+  };
+
   const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
     const supabase = getSupabaseBrowserClient();
 
@@ -876,38 +905,162 @@ export function CommunityFeed({
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
-    const combined = [...postFiles, ...files].slice(0, 4);
+    const availableSlots = Math.max(0, 4 - existingMedia.length);
+    const combined = [...postFiles, ...files].slice(0, availableSlots);
     const invalid = combined.find((file) => !allowedImageTypes.has(file.type) || file.size > 8 * 1024 * 1024);
     if (invalid) { setError("Gunakan JPG, PNG, atau WEBP dengan ukuran maksimal 8 MB per foto."); return; }
     setPostFiles(combined);
   };
 
   const closeComposer = () => {
-    setComposerOpen(false); setPostBody(""); setPostLink(""); setPostFiles([]); setPostEventId(""); setPinPost(false); setLockComments(false); setComposerMode("edit");
+    setComposerOpen(false);
+    setPostBody("");
+    setPostLink("");
+    setPostFiles([]);
+    setPostEventId("");
+    setPinPost(false);
+    setLockComments(false);
+    setComposerMode("edit");
+    setEditingPost(null);
+    setExistingMedia([]);
   };
 
   const submitPost = async (event: FormEvent, publish: boolean) => {
     event.preventDefault();
     if (!postBody.trim()) return;
-    setPostSaving(true); setError("");
+
+    setPostSaving(true);
+    setError("");
     const supabase = getSupabaseBrowserClient();
+
     try {
-      const { data: post, error: createError } = await supabase.from("feed_posts").insert({
-        body: postBody.trim(), link_url: postLink.trim() || null, event_id: postEventId || null, status: publish ? "published" : "draft", is_pinned: pinPost, comments_locked: lockComments,
-      }).select("id").single();
-      if (createError || !post) throw createError ?? new Error("Post tidak dapat dibuat.");
-      for (const [index, file] of postFiles.entries()) {
-        const extension = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-        const objectPath = `${post.id}/${crypto.randomUUID()}.${extension}`;
-        const { error: uploadError } = await supabase.storage.from("community-feed").upload(objectPath, file, { cacheControl: "3600", upsert: false });
-        if (uploadError) throw uploadError;
-        const { error: mediaError } = await supabase.from("feed_post_media").insert({ post_id: post.id, object_path: objectPath, sort_order: index, alt_text: `Dokumentasi post Revolt Riders ${index + 1}` });
-        if (mediaError) throw mediaError;
+      let postId = editingPost?.id ?? "";
+
+      if (editingPost) {
+        const { error: updateError } = await supabase
+          .from("feed_posts")
+          .update({
+            body: postBody.trim(),
+            link_url: postLink.trim() || null,
+            event_id: postEventId || null,
+            is_pinned: pinPost,
+            comments_locked: lockComments,
+          })
+          .eq("id", editingPost.id);
+
+        if (updateError) throw updateError;
+
+        const keptIds = new Set(existingMedia.map((item) => item.id));
+        const removedMedia = editingPost.media.filter(
+          (item) => !keptIds.has(item.id),
+        );
+
+        if (removedMedia.length > 0) {
+          const { error: mediaDeleteError } = await supabase
+            .from("feed_post_media")
+            .delete()
+            .in("id", removedMedia.map((item) => item.id));
+
+          if (mediaDeleteError) throw mediaDeleteError;
+
+          const paths = removedMedia
+            .map((item) => item.object_path)
+            .filter(Boolean);
+
+          if (paths.length > 0) {
+            const { error: storageDeleteError } = await supabase.storage
+              .from("community-feed")
+              .remove(paths);
+
+            if (storageDeleteError) {
+              console.error(
+                "Media post terhapus dari database, tapi file storage belum bersih.",
+                storageDeleteError,
+              );
+            }
+          }
+        }
+
+        for (const [index, item] of existingMedia.entries()) {
+          if (item.sort_order === index) continue;
+          const { error: sortError } = await supabase
+            .from("feed_post_media")
+            .update({ sort_order: index })
+            .eq("id", item.id);
+
+          if (sortError) throw sortError;
+        }
+      } else {
+        const { data: post, error: createError } = await supabase
+          .from("feed_posts")
+          .insert({
+            body: postBody.trim(),
+            link_url: postLink.trim() || null,
+            event_id: postEventId || null,
+            status: publish ? "published" : "draft",
+            is_pinned: pinPost,
+            comments_locked: lockComments,
+          })
+          .select("id")
+          .single();
+
+        if (createError || !post) {
+          throw createError ?? new Error("Post tidak dapat dibuat.");
+        }
+
+        postId = post.id;
       }
-      closeComposer(); invalidateCache("dashboard_"); await loadFeed();
+
+      for (const [index, file] of postFiles.entries()) {
+        const extension =
+          file.type === "image/png"
+            ? "png"
+            : file.type === "image/webp"
+              ? "webp"
+              : "jpg";
+        const objectPath = `${postId}/${crypto.randomUUID()}.${extension}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("community-feed")
+          .upload(objectPath, file, {
+            cacheControl: "3600",
+            upsert: false,
+          });
+
+        if (uploadError) throw uploadError;
+
+        const { error: mediaError } = await supabase
+          .from("feed_post_media")
+          .insert({
+            post_id: postId,
+            object_path: objectPath,
+            sort_order: existingMedia.length + index,
+            alt_text: `Dokumentasi post Revolt Riders ${existingMedia.length + index + 1}`,
+          });
+
+        if (mediaError) {
+          await supabase.storage.from("community-feed").remove([objectPath]);
+          throw mediaError;
+        }
+      }
+
+      closeComposer();
+      invalidateCache("dashboard_");
+      await loadFeed({
+        pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current),
+        quiet: true,
+      });
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "Post belum dapat disimpan.");
-    } finally { setPostSaving(false); }
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : editingPost
+            ? "Perubahan post belum dapat disimpan."
+            : "Post belum dapat disimpan.",
+      );
+    } finally {
+      setPostSaving(false);
+    }
   };
 
   const emptyCopy = isStaff ? "Belum ada post. Bagikan kabar pertama untuk member Revolt Riders." : "Belum ada kabar dari pengurus. Post terbaru akan muncul di sini.";
@@ -934,8 +1087,8 @@ export function CommunityFeed({
           {error && <p className="community-feed-error" role="alert">{error}</p>}
           {loading ? <FeedSkeleton /> : (
             <div className="community-feed-list">
-              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} />)}
-              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onManage={managePost} />)}
+              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onEdit={openEditPost} onManage={managePost} />)}
+              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onEdit={openEditPost} onManage={managePost} />)}
               {posts.length === 0 && <section className="community-feed-empty"><MessageCircle aria-hidden="true" /><h3>Belum ada kabar</h3><p>{emptyCopy}</p>{isStaff && <button type="button" onClick={() => setComposerOpen(true)}><Plus aria-hidden="true" /> Buat post pertama</button>}</section>}
               {posts.length > 0 && hasMore ? (
                 <div ref={loadMoreRef} className="community-feed-sentinel" aria-live="polite">
@@ -948,7 +1101,7 @@ export function CommunityFeed({
         </>
       )}
 
-      <ModalSheet open={Boolean(isStaff && composerOpen)} onClose={closeComposer} title="Buat post" eyebrow="">
+      <ModalSheet open={Boolean(isStaff && composerOpen)} onClose={closeComposer} title={editingPost ? "Edit post" : "Buat post"} eyebrow="">
         <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
           <div className="community-composer-mode" role="tablist" aria-label="Mode composer">
             <button
@@ -1010,10 +1163,39 @@ export function CommunityFeed({
                 </select>
               </label>
 
+              {existingMedia.length > 0 ? (
+                <div className="community-existing-media">
+                  <span>
+                    Foto terpasang
+                    <small>
+                      {existingMedia.length} foto · hapus dari sini bila tidak ingin dipertahankan
+                    </small>
+                  </span>
+                  <div>
+                    {existingMedia.map((item, index) => (
+                      <span key={item.id}>
+                        <b>Foto {index + 1}</b>
+                        <button
+                          type="button"
+                          aria-label={`Hapus foto ${index + 1}`}
+                          onClick={() =>
+                            setExistingMedia((media) =>
+                              media.filter((entry) => entry.id !== item.id),
+                            )
+                          }
+                        >
+                          <X aria-hidden="true" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
               <div className="community-upload-control">
                 <span>
                   Foto dokumentasi
-                  <small>Maks. 4 foto · JPG, PNG, atau WEBP</small>
+                  <small>Maks. 4 foto total · JPG, PNG, atau WEBP</small>
                 </span>
                 <label>
                   <ImagePlus aria-hidden="true" />
@@ -1091,6 +1273,14 @@ export function CommunityFeed({
               >
                 Kembali edit
               </button>
+            ) : editingPost ? (
+              <button
+                type="button"
+                className="outline-action"
+                onClick={closeComposer}
+              >
+                Batal
+              </button>
             ) : (
               <button
                 type="button"
@@ -1116,7 +1306,7 @@ export function CommunityFeed({
               ) : (
                 <>
                   <Check aria-hidden="true" />
-                  Terbitkan
+                  {editingPost ? "Simpan perubahan" : "Terbitkan"}
                 </>
               )}
             </button>
