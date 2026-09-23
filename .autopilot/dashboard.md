@@ -2,11 +2,11 @@
 
 Surface: Dashboard / social home
 Branch: `feat/autopilot-dashboard`
-Status: QA_PENDING
+Status: READY_FOR_INTEGRATION
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on 3b391959e5a52d2606196d92bb664999dc9a8608 (run 35859072528)
+Last Full QA checkpoint: UI Quality GREEN on ad737a736bff2ddaea925f0a291b4ed77fce4d85 (run 35879612921)
 
 ## Rules
 - Follow `.autopilot/RULES.md` on main; frontend/UI/UX only.
@@ -28,14 +28,14 @@ Avoid shared/global/backend files unless Integration Guard handles them.
 - [x] 27 Avatar Size Consistency
 - [x] 28 Author Typography
 - [x] 29 Timestamp Styling
-- [ ] 30 Post Menu UI Polish
-- [ ] 31 Caption Readability
-- [ ] 32 Long Text Visual Handling
-- [ ] 33 Mention Visual Style
-- [ ] 34 Hashtag Visual Style
-- [ ] 35 Action Bar Alignment
-- [ ] 36 Action Button Touch Area
-- [ ] 37 Action Icon Consistency
+- [x] 30 Post Menu UI Polish
+- [x] 31 Caption Readability
+- [x] 32 Long Text Visual Handling
+- [x] 33 Mention Visual Style
+- [x] 34 Hashtag Visual Style
+- [x] 35 Action Bar Alignment
+- [x] 36 Action Button Touch Area
+- [x] 37 Action Icon Consistency
 - [ ] 38 Engagement Counter Polish
 - [ ] 39 Hover State Desktop
 - [ ] 40 Press State Mobile
@@ -71,7 +71,7 @@ Avoid shared/global/backend files unless Integration Guard handles them.
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Tasks 30-37 are implemented on cumulative head `ad737a736bff2ddaea925f0a291b4ed77fce4d85`. Final remote UI Quality has not yet appeared for that head, so tasks remain unchecked and lane is QA_PENDING. Next run must reconcile that single final head before new work. Branch was resynchronized to main before this sprint.
+Tasks 30-37 are implemented and validated on cumulative head `ad737a736bff2ddaea925f0a291b4ed77fce4d85`. UI Quality run 35879612921 completed successfully. Sprint is READY_FOR_INTEGRATION. Next task after Integration Guard merges and resynchronizes the lane: 38 Engagement Counter Polish.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -79,3 +79,4 @@ Tasks 30-37 are implemented on cumulative head `ad737a736bff2ddaea925f0a291b4ed7
 2026-09-23 20:08 WIB | sprint 22-29 | DONE / READY_FOR_INTEGRATION | 3b391959e5a52d2606196d92bb664999dc9a8608 | Full cumulative UI Quality GREEN; run 35859072528 | Tasks 22-29 validated.
 2026-09-23 21:18 WIB | sprint 22-29 | INTEGRATED | c35af746f34cd4e5e5ab6c12c9bd2c9016b7bf29 | main UI Quality GREEN | Branch resynchronized; next task 30.
 2026-09-23 22:09 WIB | sprint 30-37 | QA_PENDING | ad737a736bff2ddaea925f0a291b4ed77fce4d85 | final cumulative UI Quality not visible yet | 8 safe dashboard polish tasks implemented; commits 30-36 skipped CI, task 37 triggered the final cumulative CI.
+2026-09-23 23:10 WIB | sprint 30-37 | DONE / READY_FOR_INTEGRATION | ad737a736bff2ddaea925f0a291b4ed77fce4d85 | UI Quality run 35879612921 GREEN | Reconciled final cumulative QA; tasks 30-37 validated. Vercel status is build-rate-limit only and is irrelevant before final release gate. Next after integration: 38 Engagement Counter Polish.
