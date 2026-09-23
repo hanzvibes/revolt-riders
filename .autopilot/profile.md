@@ -4,17 +4,22 @@ Surface: `/profil`
 Branch: `feat/autopilot-profile`
 Status: ACTIVE
 Batch size: 10
+Run budget: max 45 minutes / max 8 safe tasks
 Deploy: Integration Guard only
+Last Full QA checkpoint: none
 
 ## Rules
-- Frontend/UI/UX only. Existing profile reads/writes must keep the same behavior.
+- Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
+- Existing profile reads/writes must keep the same behavior.
 - Do not change Supabase queries, tables, schema, migrations, RLS, auth, permissions, secrets, or production data.
 - Do not use `[deploy]` in builder commits.
-- One task at a time with QA before DONE.
-- If a task unexpectedly needs backend/data work, mark BLOCKED and continue.
-- Safe frontend regression fixes are allowed in REPAIR mode.
-- At each 10-task boundary, run broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard releases the batch.
-- After Task 50, enter MAINTENANCE mode. Only evidence-based fixes, no random redesign/refactor.
+- One product task per commit.
+- Low-risk isolated UI work may use Quick QA; Full QA is required by the global risk-based QA rules.
+- After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
+- Backend/data requirement => `BLOCKED_BACKEND`.
+- Cross-lane/global primitive requirement => `WAITING_SHARED_COMPONENT`.
+- At each 10-task boundary, run Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard releases the batch.
+- After Task 50, enter MAINTENANCE mode. Only evidence-based fixes.
 
 ## File ownership
 Primary:
@@ -89,7 +94,10 @@ Do not edit:
 - Highest-priority visual risks for the first batch are cover/avatar overlap, dense identity metadata on small screens, inconsistent hierarchy between hero/stat/action regions, and inline-styled riding rows that will need later profile-scoped cleanup.
 - Task 02 onward can be implemented without changing data contracts by keeping changes to `/profil` markup/classes and strictly profile-scoped styles.
 
+## Recovery checkpoint
+Before starting new work, reconcile the latest task commit, tracker status, and branch QA. Skip a new run while prior same-lane QA/build is still in progress.
+
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
-2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | pending | baseline main UI Quality GREEN; branch CI pending | Audited current /profil structure and established safe frontend-only priorities; no product/data behavior changed.
+2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | 2446d62fda818a4e83093966635576924e3c9e99 | branch QA GREEN | Audited current /profil structure and established safe frontend-only priorities; no product/data behavior changed.
