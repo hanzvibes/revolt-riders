@@ -89,7 +89,7 @@ Avoid unless Integration Guard handles it:
 - [ ] 70 Final Dashboard Regression Pass
 
 ## Recovery checkpoint
-Before starting new work, reconcile the latest task commit and tracker state. Intermediate same-lane GitHub Actions may remain in progress while the same sprint continues; only a separate active sprint lock should block a new invocation.
+Dashboard lane was rebuilt from current main and Task 21 was reapplied as a clean single commit. Next sprint starts at Task 22. Use the low-request sprint policy from .autopilot/RULES.md: intermediate product commits use [skip ci], and only the final product commit triggers remote UI Quality. Do not create separate tracker commits between product tasks.
 
 ## Run log
 Append concise entries here:
@@ -97,3 +97,5 @@ Append concise entries here:
 
 2026-09-23 12:08 WIB | 21 Dashboard Header Refinement | QA_PENDING | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA pending branch CI | Added lane-scoped 44px create action polish, hover/press/focus/reduced-motion states; no behavior/data changes.
 2026-09-23 12:59 WIB | 21 Dashboard Header Refinement | DONE | f02d7b717a85b0205ebca07c2c2cf9c723a47563 | Quick QA GREEN; UI Quality run 35820880555 success | Reconciled prior checkpoint after branch CI completed successfully. Next task: 22 Sticky Header Polish.
+
+2026-09-23 17:16 WIB | lane recovery | ACTIVE | 6d0a0ca9fab14da5516dbfa37821c40ff4285b7d | clean rebuild from latest main | Preserved completed Task 21; removed old diverged branch history. Next task: 22 Sticky Header Polish.
