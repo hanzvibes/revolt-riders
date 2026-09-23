@@ -3754,3 +3754,72 @@
     transform: none;
   }
 }
+
+
+/* Dashboard polish 16 · Empty and error states */
+.app-shell .dashboard-social-feed-v1 .community-feed-gate,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty {
+  min-height: 210px;
+  align-content: center;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+  padding: 28px 22px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate > svg,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty > svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 10px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate h3,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty h3 {
+  font-size: .98rem;
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: -.02em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate p,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty p {
+  max-width: 38ch;
+  margin-top: 6px;
+  color: var(--rr-muted);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-empty button {
+  min-height: 40px;
+  margin-top: 14px;
+  border-radius: 10px;
+  padding-inline: 13px;
+  font-size: .72rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-error {
+  margin: 0 0 12px;
+  border: 1px solid color-mix(in srgb, var(--rr-danger) 24%, var(--rr-line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--rr-danger-soft) 54%, var(--rr-surface));
+  color: color-mix(in srgb, var(--rr-danger) 82%, var(--rr-ink));
+  padding: 10px 12px;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-gate,
+  .app-shell .dashboard-social-feed-v1 .community-feed-empty {
+    min-height: 190px;
+    margin-inline: 12px;
+    padding: 24px 18px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-error {
+    margin-inline: 12px;
+  }
+}
