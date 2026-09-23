@@ -2828,3 +2828,74 @@
     padding: 14px 13px 15px;
   }
 }
+
+
+/* Dashboard polish 02 · Vertical timeline alignment */
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: stretch;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  flex-direction: column;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  z-index: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-connector {
+  position: absolute;
+  z-index: 1;
+  top: 50px;
+  bottom: 7px;
+  left: 50%;
+  width: 1px;
+  min-height: 14px;
+  transform: translateX(-50%);
+  border-radius: var(--rr-radius-pill);
+  background: color-mix(in srgb, var(--rr-line-strong) 82%, transparent);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 42px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-connector {
+    top: 48px;
+    bottom: 6px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 9px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-connector {
+    top: 46px;
+  }
+}
