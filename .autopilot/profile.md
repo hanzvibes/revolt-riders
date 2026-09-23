@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: RUNNING (tasks 04-11)
+Status: QA_PENDING (tasks 04-11 implemented)
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -40,14 +40,14 @@ Do not edit:
 - [x] 01 Profile Visual Baseline Audit
 - [x] 02 Cover Height & Composition
 - [x] 03 Fix MEMBER NETWORK Cover Overlap
-- [ ] 04 Avatar Scale & Position
-- [ ] 05 Edit Profile Button Hierarchy
-- [ ] 06 Name & Verified Icon Alignment
-- [ ] 07 Full Name Secondary Hierarchy
-- [ ] 08 Handle, Role & Active Row Polish
-- [ ] 09 Bio Readability
-- [ ] 10 Member Meta Row Spacing
-- [ ] 11 Profile Stats Row Polish
+- [ ] 04 Avatar Scale & Position — QA_PENDING
+- [ ] 05 Edit Profile Button Hierarchy — QA_PENDING
+- [ ] 06 Name & Verified Icon Alignment — QA_PENDING
+- [ ] 07 Full Name Secondary Hierarchy — QA_PENDING
+- [ ] 08 Handle, Role & Active Row Polish — QA_PENDING
+- [ ] 09 Bio Readability — QA_PENDING
+- [ ] 10 Member Meta Row Spacing — QA_PENDING
+- [ ] 11 Profile Stats Row Polish — QA_PENDING
 - [ ] 12 Quick Actions Layout
 - [ ] 13 Hero Small-Phone Composition
 - [ ] 14 Hero Tablet Composition
@@ -88,20 +88,21 @@ Do not edit:
 - [ ] 49 Visual Regression & Consistency Audit
 - [ ] 50 Final Profile UAT & Polish
 
-## Baseline findings
-- Profile is already organized into a social identity hero, member stats/quick actions, road-level progress, achievement timeline, riding history, edit-profile sheet, and ride edit flow.
-- Existing Supabase reads/writes and auth behavior are explicitly out of scope and remain untouched.
-- Highest-priority visual risks for the first batch are cover/avatar overlap, dense identity metadata on small screens, inconsistent hierarchy between hero/stat/action regions, and inline-styled riding rows that will need later profile-scoped cleanup.
-- Task 02 onward can be implemented without changing data contracts by keeping changes to `/profil` markup/classes and strictly profile-scoped styles.
-
 ## Recovery checkpoint
-Before starting new work, reconcile the latest task commit and tracker state. Intermediate same-lane GitHub Actions may remain in progress while the same sprint continues; only a separate active sprint lock should block a new invocation.
+Tasks 04-11 have product commits on the branch. Do not reimplement them. On the next run, reconcile the final cumulative UI Quality result for `28ae7a4f4d635bf9a53e2604803df1551b9c66d1`. If GREEN and it covers required Full QA, mark 04-11 DONE and READY_FOR_INTEGRATION. If superseded, validate the newest cumulative tree before changing task state.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
-2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | 2446d62fda818a4e83093966635576924e3c9e99 | branch QA GREEN | Audited current /profil structure and established safe frontend-only priorities; no product/data behavior changed.
-2026-09-23 11:29 WIB | 02 Cover Height & Composition | QA_PENDING | aa55aef2f679e4511e0c05c04546e99ff3e3fa61 | Quick QA unavailable: no same-lane GitHub Actions run; remote execution device unavailable | Implemented profile-scoped cover composition in app/profil/layout.tsx; task remains unchecked until required QA can run. No backend/data/shared-global changes.
-2026-09-23 13:00 WIB | 02 Cover Height & Composition | DONE | aa55aef2f679e4511e0c05c04546e99ff3e3fa61 | Full branch UI Quality GREEN via checkpoint run 35818641585 on d16079b4522339deff8aec01b35071a5ca8ac712 | Reconciled cancelled task run: checkpoint commit changed only .autopilot/profile.md, so successful branch workflow validates the task tree. Next task: 03 Fix MEMBER NETWORK Cover Overlap.
-2026-09-23 14:03 WIB | 03 Fix MEMBER NETWORK Cover Overlap | DONE | 136e27b76d9dc7c0d1729428f0597951e5bb015f | UI Quality GREEN; run 35826914358 success | Reconciled completed product commit that was not reflected in tracker. Next task: 04 Avatar Scale & Position.
-2026-09-23 14:37 WIB | sprint 04-11 | RUNNING | 12c76e300114cb113b85bb28c4ec5e6038f1cafd | start checkpoint GREEN; UI Quality run 35831086489 success | Reconciled branch and tracker once; beginning next safe profile sprint.
+2026-09-23 10:28 WIB | 01 Profile Visual Baseline Audit | DONE | 2446d62fda818a4e83093966635576924e3c9e99 | branch QA GREEN | Baseline audit.
+2026-09-23 13:00 WIB | 02 Cover Height & Composition | DONE | aa55aef2f679e4511e0c05c04546e99ff3e3fa61 | Full branch UI Quality GREEN | Reconciled checkpoint.
+2026-09-23 14:03 WIB | 03 Fix MEMBER NETWORK Cover Overlap | DONE | 136e27b76d9dc7c0d1729428f0597951e5bb015f | UI Quality GREEN | Reconciled completed product commit.
+2026-09-23 14:37 WIB | sprint 04-11 | STARTED | 3494eed7bdf61c5e3f0dbd29a834696269aac1a2 | start checkpoint GREEN | Reconciled tracker and branch once.
+2026-09-23 14:38 WIB | 04 Avatar Scale & Position | QA_PENDING | 1fcde4c402b51a2fd923a5a62346006366435353 | cumulative QA pending | Profile-scoped avatar sizing/anchoring.
+2026-09-23 14:38 WIB | 05 Edit Profile Button Hierarchy | QA_PENDING | 5dfda41f81475bd2ed19faa773180d8c93070c04 | cumulative QA pending | Compact secondary edit action.
+2026-09-23 14:39 WIB | 06 Name & Verified Icon Alignment | QA_PENDING | 99e7fe07ffda1e430907f06ba941fa995ec2ae43 | cumulative QA pending | Identity lockup alignment.
+2026-09-23 14:39 WIB | 07 Full Name Secondary Hierarchy | QA_PENDING | adcb9c91f546feab79b45208ee3e7d1c7ec4effe | cumulative QA pending | Secondary legal-name hierarchy.
+2026-09-23 14:40 WIB | 08 Handle, Role & Active Row Polish | QA_PENDING | 7b0782832c40424e7fb8e8f69c69068e00b0f7e8 | cumulative QA pending | Compact wrapping metadata row.
+2026-09-23 14:40 WIB | 09 Bio Readability | QA_PENDING | d623157409ad2ebb139f30f44f09a250df7927d1 | cumulative QA pending | Supporting-copy rhythm.
+2026-09-23 14:40 WIB | 10 Member Meta Row Spacing | QA_PENDING | f245d036cb5cff3b61b51404f3e6de1aba7c7e66 | cumulative QA pending | Member fact spacing; no tree delta beyond already-staged profile CSS.
+2026-09-23 14:40 WIB | 11 Profile Stats Row Polish | QA_PENDING | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | final UI Quality run 35832947928 pending | Eight safe tasks implemented. Final cumulative QA pending; not READY yet.
