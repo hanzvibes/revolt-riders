@@ -3933,3 +3933,96 @@
     flex-basis: 40px;
   }
 }
+
+
+/* Dashboard polish 20 · Interaction and motion audit */
+.app-shell .dashboard-social-feed-v1 {
+  --feed-motion-fast: 160ms;
+  --feed-motion-base: 180ms;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button,
+.app-shell .dashboard-social-feed-v1 .community-post-menu summary,
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--feed-motion-fast) var(--rr-ease-out),
+    color var(--feed-motion-fast) var(--rr-ease-out),
+    transform var(--feed-motion-fast) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  transition:
+    border-color var(--feed-motion-base) var(--rr-ease-out),
+    box-shadow var(--feed-motion-base) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+  transition:
+    border-color var(--feed-motion-base) var(--rr-ease-out),
+    background-color var(--feed-motion-base) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-menu[open] > div {
+  transform-origin: top right;
+  animation: rr-dashboard-menu-in var(--feed-motion-fast) var(--rr-ease-out) both;
+}
+
+@keyframes rr-dashboard-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary:hover {
+    background: var(--rr-surface-soft);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open:hover img {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-threads-post::after,
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu[open] > div,
+  .app-shell .dashboard-social-feed-v1 .community-threads-counts button,
+  .app-shell .dashboard-social-feed-v1 .community-link-preview,
+  .app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-cta svg,
+  .app-shell .dashboard-social-feed-v1 .community-feed-media img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open img,
+  .app-shell .dashboard-social-feed-v1 .community-new-posts,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton i,
+  .app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:active,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary:active,
+  .app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment:hover .community-voyager-cta svg,
+  .app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+    transform: none !important;
+  }
+}
