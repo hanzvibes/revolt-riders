@@ -89,8 +89,10 @@ If Quick QA reveals a regression, repair it and upgrade the validation to Full Q
 - Integration Guard may process both ready lanes in one run, but strictly one lane at a time.
 - `diverged`, ahead/behind counts, or a stale mergeability calculation are NOT conflicts by themselves.
 - GitHub PR `mergeable=true` is authoritative for a safe merge. If mergeability is unknown/pending, re-read it once after GitHub computes it. Only an actual `mergeable=false`/conflicting PR blocks automatic integration.
+- Use a normal merge commit (`merge`), not squash/rebase, for builder-lane integration. This keeps the builder head as an ancestor of main so post-merge branch synchronization is a clean fast-forward.
 - Re-run/confirm main Full QA after each merge.
-- After a successful merge, fast-forward the merged builder branch to current main and reset that lane tracker to ACTIVE/next task before its next sprint.
+- After a successful merge, wait for main UI Quality GREEN, then fast-forward the merged builder branch to current main and reset that lane tracker to ACTIVE/next task before the Guard run ends.
+- If an older already-merged lane was integrated with squash and therefore cannot fast-forward, force-reset only that merged builder branch to verified current main after confirming it has zero unique product diff left. Never force-reset an unmerged lane.
 - If another ready lane remains, evaluate its PR against the new main; never overwrite its owned work.
 - Production deploy is triggered only by a main commit containing `[deploy]`.
 - Builders never create `[deploy]` commits.
