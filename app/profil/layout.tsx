@@ -29,6 +29,10 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
         .profile-social-page .profile-social-stats > a { min-width: 0; min-height: 68px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 10px 8px; text-align: center; border-radius: 12px; }
         .profile-social-page .profile-social-stats strong { line-height: 1; font-variant-numeric: tabular-nums; }
         .profile-social-page .profile-social-stats span { font-size: clamp(0.66rem, 2.2vw, 0.76rem); line-height: 1.25; text-wrap: balance; }
+        /* Task 12 */ .profile-social-page .profile-social-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 10px; }
+        .profile-social-page .profile-social-actions > a { min-width: 0; min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 8px; border-radius: 12px; text-align: center; }
+        .profile-social-page .profile-social-actions > a > svg { width: 17px; height: 17px; flex: 0 0 17px; }
+        .profile-social-page .profile-social-actions > a > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         @media (max-width: 560px) {
           .profile-social-page .profile-social-cover { min-height: 156px; padding: 20px 18px 34px; }
           .profile-social-page .profile-social-cover > img { width: 96px; height: 96px; }
@@ -42,6 +46,8 @@ export default function ProfileLayout({ children }: { children: ReactNode }) {
           .profile-social-page .profile-social-meta > span { flex: 1 1 calc(50% - 10px); }
           .profile-social-page .profile-social-stats { gap: 6px; margin-top: 14px; }
           .profile-social-page .profile-social-stats > a { min-height: 64px; padding-inline: 5px; }
+          .profile-social-page .profile-social-actions { gap: 6px; }
+          .profile-social-page .profile-social-actions > a { min-height: 50px; padding-inline: 5px; gap: 5px; font-size: 0.7rem; }
         }
       `}</style>
     </>
