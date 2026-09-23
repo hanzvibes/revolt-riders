@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: ACTIVE · QA_PENDING
+Status: READY_FOR_INTEGRATION
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -56,13 +56,13 @@ Do not edit:
 - [x] 17 Edit Profile Field Density
 - [x] 18 Input Focus, Error & Success States
 - [x] 19 Edit Sheet Keyboard & Safe-Area
-- [ ] 20 Save Button Loading/Disabled State
-- [ ] 21 Road Progress Card Hierarchy
-- [ ] 22 Road Level Typography
-- [ ] 23 Progress Track Polish
-- [ ] 24 Milestone Scale Readability
-- [ ] 25 Milestone Callout Polish
-- [ ] 26 Achievement Header Hierarchy
+- [x] 20 Save Button Loading/Disabled State
+- [x] 21 Road Progress Card Hierarchy
+- [x] 22 Road Level Typography
+- [x] 23 Progress Track Polish
+- [x] 24 Milestone Scale Readability
+- [x] 25 Milestone Callout Polish
+- [x] 26 Achievement Header Hierarchy
 - [ ] 27 Achievement Timeline Layout
 - [ ] 28 Locked/Unlocked Achievement States
 - [ ] 29 Achievement Timeline Mobile Pass
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 16-19 are DONE via cumulative UI Quality GREEN on 7b1222b / run 35855476365. Tasks 20-23 remain implemented but unvalidated because no UI Quality run was available for 9cb64b2. Tasks 24-26 were implemented in the latest partial sprint; 98cb4e5 is the final CI-triggering product head and currently has no visible UI Quality run. Reconcile final cumulative QA before marking 20-26 DONE. Next safe implementation task after successful reconciliation is 27 Achievement Timeline Layout.
+Tasks 20-26 are validated by final cumulative UI Quality GREEN on 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 / run 35868143352. Together with previously validated Tasks 12-19, this lane now has a large cumulative frontend batch ready to integrate. Do not start Task 27 until Integration Guard merges and resynchronizes the branch.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -108,3 +108,5 @@ Tasks 16-19 are DONE via cumulative UI Quality GREEN on 7b1222b / run 3585547636
 2026-09-23 20:34 WIB | 24 Milestone Scale Readability | QA_PENDING | a8d9255120d91f3c42cd460ccc833f7ab2dd1e58 | cumulative final QA pending | Profile-scoped scale labels; [skip ci].
 2026-09-23 20:34 WIB | 25 Milestone Callout Polish | QA_PENDING | f63180c5571e3d89d3f6f5ce66aed0d53b78583a | cumulative final QA pending | Profile-scoped milestone callout; [skip ci].
 2026-09-23 20:35 WIB | 26 Achievement Header Hierarchy | QA_PENDING | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | final UI Quality not visible yet | Final CI-triggering product head for partial sprint.
+
+2026-09-23 21:19 WIB | tasks 20-26 | DONE / READY_FOR_INTEGRATION | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | UI Quality run 35868143352 GREEN | Reconciled cumulative profile batch; next after integration: 27 Achievement Timeline Layout.
