@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: READY_FOR_INTEGRATION
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 04-11 are complete and validated by cumulative UI Quality on checkpoint `a870012eb651d9f05efbb9a446bdc41c8ae234dd`, which differs from the final product head only by `.autopilot/profile.md`. Lane is READY_FOR_INTEGRATION; do not start Task 12 until Integration Guard merges and resynchronizes the lane.
+Sprint 04-11 has been merged to main. Branch is resynchronized to current main. Next sprint starts at Task 12. Use the low-request sprint policy from .autopilot/RULES.md: intermediate product commits use [skip ci], and only the final product commit triggers remote UI Quality.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -108,3 +108,5 @@ Tasks 04-11 are complete and validated by cumulative UI Quality on checkpoint `a
 2026-09-23 14:40 WIB | 11 Profile Stats Row Polish | QA_PENDING | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | final UI Quality run 35832947928 pending | Eight safe tasks implemented. Final cumulative QA pending; not READY yet.
 
 2026-09-23 15:07 WIB | sprint 04-11 | DONE / READY_FOR_INTEGRATION | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | Full cumulative UI Quality GREEN via checkpoint a870012eb651d9f05efbb9a446bdc41c8ae234dd / run 35832999808 | Checkpoint changed only tracker file, so tasks 04-11 are validated and ready for Integration Guard.
+
+2026-09-23 17:15 WIB | sprint 04-11 | INTEGRATED | 1a3fe7235a539bb0f7bc46918bf72b0783a28c00 | main integration complete | Branch resynchronized; next task: 12 Quick Actions Layout.
