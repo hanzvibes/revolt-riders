@@ -3176,3 +3176,61 @@
     transition: none;
   }
 }
+
+
+/* Dashboard polish 08 · Pinned post treatment */
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface) 94%, var(--rr-surface-soft));
+  box-shadow:
+    0 1px 2px rgba(20, 22, 24, .035),
+    0 8px 24px rgba(20, 22, 24, .035);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+  display: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 22px;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-pill);
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted);
+  padding: 0 8px;
+  font-size: .66rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label svg {
+  width: 12px;
+  height: 12px;
+  color: currentColor;
+  stroke-width: 2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned:hover {
+    border-color: var(--rr-line-strong);
+    box-shadow:
+      0 2px 5px rgba(20, 22, 24, .04),
+      0 12px 28px rgba(20, 22, 24, .045);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+    min-height: 21px;
+    margin-bottom: 5px;
+    padding-inline: 7px;
+    font-size: .65rem;
+  }
+}
