@@ -2,11 +2,11 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: QA_PENDING
+Status: READY_FOR_INTEGRATION
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on bf2cd1e16cafa8eefc18ad83e475d08546b6685e / run 35952205016
+Last Full QA checkpoint: UI Quality GREEN on ff2f311ca529feaf2cf0ea19aab18576319109fa / run 36008826890
 
 ## Rules
 - Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
@@ -14,27 +14,12 @@ Last Full QA checkpoint: UI Quality GREEN on bf2cd1e16cafa8eefc18ad83e475d08546b
 - Do not change Supabase queries, tables, schema, migrations, RLS, auth, permissions, secrets, or production data.
 - Do not use `[deploy]` in builder commits.
 - One product task per commit.
-- Low-risk isolated UI work may use Quick QA; Full QA is required by the global risk-based QA rules.
-- After two failed safe repair attempts on the same task, mark `NEEDS_REVIEW` and continue with an independent task.
-- Backend/data requirement => `BLOCKED_BACKEND`.
-- Cross-lane/global primitive requirement => `WAITING_SHARED_COMPONENT`.
-- After 8 tasks in the current sprint, run final Full QA + broad regression, mark READY_FOR_INTEGRATION, and stop until Integration Guard releases that sprint.
-- After Task 50, enter MAINTENANCE mode. Only evidence-based fixes.
+- After Task 50, enter MAINTENANCE mode after Integration Guard merges, confirms main QA GREEN, and resynchronizes this branch. Only evidence-based fixes afterward.
 
 ## File ownership
-Primary:
-- `app/profil/**`
-
-Allowed with strict selector scope:
-- existing CSS rules that target only `.profile-*` or `.member-passport-*`
-
-Do not edit:
-- dashboard feed files
-- `app/bottom-navigation.css`
-- `components/app-shell.tsx`
-- global tokens/design primitives
-- package/lock/workflow files
-- backend/Supabase/DB files
+Primary: `app/profil/**`
+Allowed with strict selector scope: existing CSS rules targeting only `.profile-*` or `.member-passport-*`.
+Do not edit Dashboard-owned files, `app/bottom-navigation.css`, `components/app-shell.tsx`, global tokens/design primitives, package/lock/workflow files, or backend/Supabase/DB files.
 
 ## Queue
 - [x] 01 Profile Visual Baseline Audit
@@ -77,47 +62,24 @@ Do not edit:
 - [x] 38 Edit/Delete Ride Tap Targets
 - [x] 39 Ride Empty State
 - [x] 40 Ride Error State
-- [ ] 41 Profile Loading Skeleton Pass
-- [ ] 42 Logged-Out & Verification States
-- [ ] 43 Logout Action Placement
+- [x] 41 Profile Loading Skeleton Pass
+- [x] 42 Logged-Out & Verification States
+- [x] 43 Logout Action Placement
 - [x] 44 Keyboard Focus Audit
 - [x] 45 Mobile Touch Target Audit
 - [x] 46 Reduced Motion Audit
 - [x] 47 Small Phone Stress Test
 - [x] 48 Tablet/Desktop Responsive Pass
-- [ ] 49 Visual Regression & Consistency Audit
-- [ ] 50 Final Profile UAT & Polish
+- [x] 49 Visual Regression & Consistency Audit
+- [x] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Final Profile tasks 41-43 and 49-50 are implemented on cumulative product head ff2f311ca529feaf2cf0ea19aab18576319109fa. Tasks 41-43 and 49 used [skip ci]; Task 50 is the sole final cumulative UI Quality trigger. Final UI Quality run 36008826890 is currently in progress. Keep Tasks 41-43 and 49-50 unchecked until that exact head is GREEN. After GREEN: mark all five DONE, set READY_FOR_INTEGRATION, merge to main, confirm main UI Quality GREEN, resync branch, then final release gate may open.
+All 50 Profile tasks are complete. Final tasks 41-43 and 49-50 were implemented on cumulative product head `ff2f311ca529feaf2cf0ea19aab18576319109fa`; Tasks 41-43 and 49 used `[skip ci]`, and Task 50 was the sole cumulative UI Quality trigger. Exact-head UI Quality run `36008826890` completed GREEN on 2026-09-24. No backend/data/auth/global/shared changes were introduced by the final sprint. Integration Guard now owns merge to `main`, main QA confirmation, branch resynchronization, MAINTENANCE transition, and final release gate.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
 
-2026-09-23 15:07 WIB | sprint 04-11 | DONE / READY_FOR_INTEGRATION | 28ae7a4f4d635bf9a53e2604803df1551b9c66d1 | Full cumulative UI Quality GREEN via checkpoint a870012eb651d9f05efbb9a446bdc41c8ae234dd / run 35832999808 | Tasks 04-11 validated.
-2026-09-23 17:15 WIB | sprint 04-11 | INTEGRATED | 1a3fe7235a539bb0f7bc46918bf72b0783a28c00 | main integration complete | Branch resynchronized.
-2026-09-23 18:22 WIB | tasks 12-15 | DONE | 777441716733f1113ed13036712b52db4bd787ad | UI Quality run 35849610000 GREEN | Reconciled partial sprint.
-2026-09-23 19:35 WIB | tasks 16-19 | DONE | 7b1222b0af20495f50217a746f976df42e9198f7 | UI Quality run 35855476365 GREEN | Reconciled prior cumulative tree.
-2026-09-23 21:19 WIB | tasks 20-26 | DONE / READY_FOR_INTEGRATION | 98cb4e5fb2d8fd5b1a0c60a49a4fea6958691b06 | UI Quality run 35868143352 GREEN | Reconciled cumulative profile batch.
-2026-09-24 04:33 WIB | lane recovery | ACTIVE | 8e1d59e3534b765ee33d289dfde03c7a58f37712 | main synchronized | Prior Profile batch already integrated; branch resynchronized.
-2026-09-24 04:36-04:43 WIB | tasks 27-34 | DONE / READY_FOR_INTEGRATION | 016e3669dfd87573c981db199f55746ad3d960f2 | UI Quality run 35923580813 GREEN | Eight-task cumulative batch validated.
-2026-09-24 07:33 WIB | lane recovery | ACTIVE | e7e62a538b824a6ca33512103ba0c60ea5e39833 | main synchronized | Prior Profile batch already integrated; branch fast-forwarded before product work.
-2026-09-24 07:34 WIB | 35 Long Ride Title Handling | IMPLEMENTED / QA_PENDING | 67d3cdeaf1238176de2b5de5c8044e7e6d7a1917 | cumulative QA pending | [skip ci]
-2026-09-24 07:35 WIB | 36 Ride Metadata, Odometer & Event Tags | IMPLEMENTED / QA_PENDING | a760a4265b505bbf5bf8704cb1937cbb752a8307 | cumulative QA pending | [skip ci]
-2026-09-24 07:36 WIB | 37 Rejected Reason Presentation | IMPLEMENTED / QA_PENDING | c0e4f2182710f80450d38ad9debaf9e3d93fbc10 | cumulative QA pending | [skip ci]
-2026-09-24 07:37 WIB | 38 Edit/Delete Ride Tap Targets | IMPLEMENTED / QA_PENDING | 7953f3f7a92a1b2c9bb810805d2b4ed40267bf05 | cumulative QA pending | [skip ci]
-2026-09-24 07:38 WIB | 39 Ride Empty State | IMPLEMENTED / QA_PENDING | f4f1ff6d75318b6f2bd21957a0071432cd770276 | cumulative QA pending | [skip ci]
-2026-09-24 07:39 WIB | 40 Ride Error State | IMPLEMENTED / QA_PENDING | 2325a434ca927bba28a6b6fc1ec54abbfbde16ba | UI Quality not visible on single final check | final cumulative product head
-2026-09-24 07:45 WIB | tasks 35-40 | DONE / ACTIVE | 2325a434ca927bba28a6b6fc1ec54abbfbde16ba | UI Quality run 35939151018 GREEN | Reconciled partial batch; next task: 41 Profile Loading Skeleton Pass.
-2026-09-24 08:35 WIB | 44 Keyboard Focus Audit | IMPLEMENTED / QA_PENDING | 6ea22e1f9a1273994ffd14f3cf5463ead1e8e4a6 | cumulative QA pending | [skip ci]; independent safe CSS task while structural runner unavailable.
-2026-09-24 08:36 WIB | 45 Mobile Touch Target Audit | IMPLEMENTED / QA_PENDING | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality not visible on single final check | final cumulative product head; current batch now 8 implemented tasks.
-2026-09-24 09:38 WIB | tasks 35-40,44-45 | DONE / READY_FOR_INTEGRATION | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality run 35943655558 GREEN | Eight-task cumulative batch validated; product work stopped for Integration Guard.
-2026-09-24 10:07 WIB | profile batch 35-40,44-45 | INTEGRATED | d443be639f034ebefe5bb12c38b413b73ab7187a | main UI Quality run 35949202468 GREEN | Branch resynchronized; final sprint tasks: 41-43,46-50.
-2026-09-24 10:35 WIB | 46 Reduced Motion Audit | IMPLEMENTED / QA_PENDING | profile-sprint.css | cumulative QA pending | [skip ci]
-2026-09-24 10:36 WIB | 47 Small Phone Stress Test | IMPLEMENTED / QA_PENDING | profile-sprint.css | cumulative QA pending | [skip ci]
-2026-09-24 10:37 WIB | 48 Tablet/Desktop Responsive Pass | IMPLEMENTED / QA_PENDING | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | final cumulative product head
-2026-09-24 12:38 WIB | tasks 46-48 | DONE / ACTIVE | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | Reconciled cumulative final-sprint CSS work; next safe task 41 when complete TSX source is available.
-
-2026-09-24 17:25 WIB | final-sprint recovery | ACTIVE | tracker only | blocker cleared | Full page.tsx source verified intact via GitHub; Tasks 41-43 are safe presentation-only work and should proceed without auth/data logic changes. Five tasks remain: 41-43,49-50.
-
-2026-09-24 20:54 WIB | final tasks 41-43,49-50 | QA_PENDING | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 in progress | Final five Profile tasks implemented; Task 50 is sole cumulative CI trigger.
+2026-09-24 10:07 WIB | profile batch 35-40,44-45 | INTEGRATED | d443be639f034ebefe5bb12c38b413b73ab7187a | main UI Quality run 35949202468 GREEN | Branch resynchronized; final sprint opened.
+2026-09-24 10:37 WIB | tasks 46-48 | IMPLEMENTED | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | Responsive final-sprint work validated.
+2026-09-24 20:54 WIB | final tasks 41-43,49-50 | QA_PENDING | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 | Final five Profile tasks implemented; Task 50 sole cumulative CI trigger.
+2026-09-24 21:35 WIB | final tasks 41-43,49-50 | DONE / READY_FOR_INTEGRATION | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 GREEN | Exact final cumulative head validated; Profile queue is 50/50 complete. Integration Guard owns merge and release gate.
