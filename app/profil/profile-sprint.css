@@ -23,3 +23,6 @@
 
 /* 43 Logout Action Placement */
 .profile-social-page .profile-social-logout{display:flex;justify-content:center;margin-top:18px;padding:4px 0 2px}.profile-social-page .profile-social-logout-button{min-height:44px;border-radius:10px!important;padding-inline:16px;gap:8px}.profile-social-page .profile-social-logout-button svg{width:16px;height:16px}
+
+/* 49 Visual Regression & Consistency Audit */
+@media(max-width:560px){.profile-state-shell{width:100%;padding-inline:10px}.profile-loading-state{min-height:48vh;padding-block:12px}.profile-access-state,.profile-verification-state{min-height:52vh;padding-block:16px}.profile-social-page .profile-social-logout{margin-top:14px}.profile-social-page .profile-social-logout-button{width:min(100%,320px);justify-content:center}}
