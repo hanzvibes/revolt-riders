@@ -358,7 +358,9 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <PageSkeleton title="Memuat Kartu Anggota..." />
+        <div className="profile-state-shell profile-loading-state" aria-live="polite" aria-busy="true">
+          <PageSkeleton title="Memuat Kartu Anggota..." />
+        </div>
       </AppShell>
     );
   }
@@ -366,7 +368,7 @@ export default function ProfilePage() {
   if (!email) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <div className="page-wrap">
+        <div className="page-wrap profile-state-shell profile-access-state">
           <PageState
             tone="restricted"
             icon={<UserRound />}
@@ -386,7 +388,7 @@ export default function ProfilePage() {
   if (!account) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <div className="page-wrap">
+        <div className="page-wrap profile-state-shell profile-verification-state">
           <PageState
             icon={<ShieldAlert />}
             title="Akun menunggu verifikasi pengurus"
@@ -837,9 +839,9 @@ export default function ProfilePage() {
 
         {/* ================================================================ */}
         {/* LOGOUT BUTTON */}
-        <div style={{ textAlign: "center", marginTop: "16px" }}>
-          <button className="dark-action" onClick={logout} style={{ borderRadius: "8px" }}>
-            <LogOut />
+        <div className="profile-social-logout">
+          <button type="button" className="dark-action profile-social-logout-button" onClick={logout}>
+            <LogOut aria-hidden="true" />
             KELUAR DARI AKUN
           </button>
         </div>
