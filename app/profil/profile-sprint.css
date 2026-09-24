@@ -17,3 +17,6 @@
 
 /* 41 Profile Loading Skeleton Pass */
 .profile-state-shell{width:min(100%,760px);margin-inline:auto}.profile-loading-state{min-height:52vh;display:grid;align-content:center;padding:18px 0}.profile-loading-state>div{width:100%}
+
+/* 42 Logged-Out & Verification States */
+.profile-access-state,.profile-verification-state{min-height:56vh;display:grid;align-content:center;padding-block:22px}.profile-access-state .primary-action{min-width:150px;justify-content:center}.profile-verification-state{max-width:680px}.profile-verification-state :is(p,small){overflow-wrap:anywhere}

@@ -368,7 +368,7 @@ export default function ProfilePage() {
   if (!email) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <div className="page-wrap">
+        <div className="page-wrap profile-state-shell profile-access-state">
           <PageState
             tone="restricted"
             icon={<UserRound />}
@@ -388,7 +388,7 @@ export default function ProfilePage() {
   if (!account) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <div className="page-wrap">
+        <div className="page-wrap profile-state-shell profile-verification-state">
           <PageState
             icon={<ShieldAlert />}
             title="Akun menunggu verifikasi pengurus"
