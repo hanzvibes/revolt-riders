@@ -2,11 +2,11 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: ACTIVE · QA_PENDING
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on 016e3669dfd87573c981db199f55746ad3d960f2 / run 35923580813
+Last Full QA checkpoint: UI Quality GREEN on 2325a434ca927bba28a6b6fc1ec54abbfbde16ba / run 35939151018
 
 ## Rules
 - Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
@@ -71,12 +71,12 @@ Do not edit:
 - [x] 32 Catat Riwayat CTA Polish
 - [x] 33 Ride Row Density
 - [x] 34 Ride Icon & Status Treatment
-- [ ] 35 Long Ride Title Handling
-- [ ] 36 Ride Metadata, Odometer & Event Tags
-- [ ] 37 Rejected Reason Presentation
-- [ ] 38 Edit/Delete Ride Tap Targets
-- [ ] 39 Ride Empty State
-- [ ] 40 Ride Error State
+- [x] 35 Long Ride Title Handling
+- [x] 36 Ride Metadata, Odometer & Event Tags
+- [x] 37 Rejected Reason Presentation
+- [x] 38 Edit/Delete Ride Tap Targets
+- [x] 39 Ride Empty State
+- [x] 40 Ride Error State
 - [ ] 41 Profile Loading Skeleton Pass
 - [ ] 42 Logged-Out & Verification States
 - [ ] 43 Logout Action Placement
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 35-40 are implemented on cumulative product head `2325a434ca927bba28a6b6fc1ec54abbfbde16ba`. Commits 35-39 use `[skip ci]`; Task 40 is the final CI-triggering commit. UI Quality was checked once immediately after the final push and no run was visible yet. Keep tasks 35-40 unchecked until that cumulative head is GREEN. Lane remains ACTIVE · QA_PENDING. Next safe task after GREEN reconciliation is 41 Profile Loading Skeleton Pass. Tasks 41-42 require structural TSX changes and were not started because the local execution device was unavailable and the remote file API could not safely patch the truncated source.
+Tasks 35-40 are validated by cumulative UI Quality GREEN on 2325a434ca927bba28a6b6fc1ec54abbfbde16ba / run 35939151018. Lane remains ACTIVE because this partial batch has 6 tasks. Next safe task: 41 Profile Loading Skeleton Pass. Structural TSX tasks may continue when a safe execution path is available.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -108,3 +108,5 @@ Tasks 35-40 are implemented on cumulative product head `2325a434ca927bba28a6b6fc
 2026-09-24 07:37 WIB | 38 Edit/Delete Ride Tap Targets | IMPLEMENTED / QA_PENDING | 7953f3f7a92a1b2c9bb810805d2b4ed40267bf05 | cumulative QA pending | [skip ci]
 2026-09-24 07:38 WIB | 39 Ride Empty State | IMPLEMENTED / QA_PENDING | f4f1ff6d75318b6f2bd21957a0071432cd770276 | cumulative QA pending | [skip ci]
 2026-09-24 07:39 WIB | 40 Ride Error State | IMPLEMENTED / QA_PENDING | 2325a434ca927bba28a6b6fc1ec54abbfbde16ba | UI Quality not visible on single final check | final cumulative product head
+
+2026-09-24 07:45 WIB | tasks 35-40 | DONE / ACTIVE | 2325a434ca927bba28a6b6fc1ec54abbfbde16ba | UI Quality run 35939151018 GREEN | Reconciled partial batch; next task: 41 Profile Loading Skeleton Pass.
