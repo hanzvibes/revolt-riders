@@ -9,3 +9,9 @@
 /* 28 */.app-shell.social-shell .community-threads-post .community-post-author strong{font-size:.875rem;font-weight:750;line-height:1.2;letter-spacing:-.012em}.app-shell.social-shell .community-threads-post .community-post-author small{line-height:1.25}
 /* 29 Timestamp Styling */
 .app-shell.social-shell .community-threads-post .community-post-author time{color:var(--rr-muted);font-size:.72rem;font-variant-numeric:tabular-nums;letter-spacing:.005em}
+/* 66 Tablet Layout Audit */
+@media (min-width:721px) and (max-width:1099px){.app-shell.social-shell .dashboard-social-feed-v1{width:min(100%,700px);padding-inline:18px}.app-shell.social-shell .community-feed-list{gap:15px}.app-shell.social-shell .social-app-header{padding-inline:max(16px,3vw)}}
+/* 67 Small Phone Audit */
+@media (max-width:390px){.app-shell.social-shell .dashboard-social-feed-v1{padding-inline:8px}.app-shell.social-shell .community-feed-list{gap:10px}.app-shell.social-shell .community-threads-post{border-radius:14px}.app-shell.social-shell .community-threads-post .community-post-header{padding-inline:11px}.app-shell.social-shell .social-header-create{width:42px;height:42px;flex-basis:42px}}
+/* 69 Accessibility & Motion Audit */
+.app-shell.social-shell .dashboard-social-feed-v1 :is(button,a,summary,input,textarea):focus-visible{outline:2px solid color-mix(in srgb,var(--rr-red) 72%,transparent);outline-offset:2px}.app-shell.social-shell .dashboard-social-feed-v1 button,.app-shell.social-shell .dashboard-social-feed-v1 a{touch-action:manipulation}@media (prefers-reduced-motion:reduce){.app-shell.social-shell .dashboard-social-feed-v1 *{scroll-behavior:auto!important}.app-shell.social-shell .dashboard-social-feed-v1 .community-feed-media img,.app-shell.social-shell .dashboard-social-feed-v1 button,.app-shell.social-shell .dashboard-social-feed-v1 a{transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
