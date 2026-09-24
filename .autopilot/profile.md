@@ -2,11 +2,11 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: READY_FOR_INTEGRATION
+Status: MAINTENANCE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on ff2f311ca529feaf2cf0ea19aab18576319109fa / run 36008826890
+Last Full QA checkpoint: UI Quality GREEN on main merge commit d004e9f3410a451daeb7ef8c68bf34c9510bf250 / run 36014107067
 
 ## Rules
 - Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
@@ -74,7 +74,7 @@ Do not edit Dashboard-owned files, `app/bottom-navigation.css`, `components/app-
 - [x] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-All 50 Profile tasks are complete. Final tasks 41-43 and 49-50 were implemented on cumulative product head `ff2f311ca529feaf2cf0ea19aab18576319109fa`; Tasks 41-43 and 49 used `[skip ci]`, and Task 50 was the sole cumulative UI Quality trigger. Exact-head UI Quality run `36008826890` completed GREEN on 2026-09-24. No backend/data/auth/global/shared changes were introduced by the final sprint. Integration Guard now owns merge to `main`, main QA confirmation, branch resynchronization, MAINTENANCE transition, and final release gate.
+All 50 Profile tasks are complete and integrated. Final cumulative product head `ff2f311ca529feaf2cf0ea19aab18576319109fa` passed UI Quality run `36008826890`; final Profile sprint was merged to main at `d004e9f3410a451daeb7ef8c68bf34c9510bf250`, and main UI Quality run `36014107067` completed GREEN. Lane is MAINTENANCE; no speculative polish.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -82,4 +82,5 @@ All 50 Profile tasks are complete. Final tasks 41-43 and 49-50 were implemented 
 2026-09-24 10:07 WIB | profile batch 35-40,44-45 | INTEGRATED | d443be639f034ebefe5bb12c38b413b73ab7187a | main UI Quality run 35949202468 GREEN | Branch resynchronized; final sprint opened.
 2026-09-24 10:37 WIB | tasks 46-48 | IMPLEMENTED | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | Responsive final-sprint work validated.
 2026-09-24 20:54 WIB | final tasks 41-43,49-50 | QA_PENDING | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 | Final five Profile tasks implemented; Task 50 sole cumulative CI trigger.
-2026-09-24 21:35 WIB | final tasks 41-43,49-50 | DONE / READY_FOR_INTEGRATION | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 GREEN | Exact final cumulative head validated; Profile queue is 50/50 complete. Integration Guard owns merge and release gate.
+2026-09-24 21:35 WIB | final tasks 41-43,49-50 | DONE / READY_FOR_INTEGRATION | ff2f311ca529feaf2cf0ea19aab18576319109fa | UI Quality run 36008826890 GREEN | Exact final cumulative head validated; Profile queue is 50/50 complete.
+2026-09-24 21:53 WIB | final Profile integration | DONE / MAINTENANCE | d004e9f3410a451daeb7ef8c68bf34c9510bf250 | main UI Quality run 36014107067 GREEN | Final Profile sprint integrated; branch synchronization owned by Integration Guard; final release gate opened.
