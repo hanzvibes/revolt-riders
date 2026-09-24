@@ -26,3 +26,6 @@
 
 /* 49 Visual Regression & Consistency Audit */
 @media(max-width:560px){.profile-state-shell{width:100%;padding-inline:10px}.profile-loading-state{min-height:48vh;padding-block:12px}.profile-access-state,.profile-verification-state{min-height:52vh;padding-block:16px}.profile-social-page .profile-social-logout{margin-top:14px}.profile-social-page .profile-social-logout-button{width:min(100%,320px);justify-content:center}}
+
+/* 50 Final Profile UAT & Polish */
+.profile-social-page .profile-social-logout-button:focus-visible{outline:2px solid var(--red);outline-offset:3px;box-shadow:0 0 0 4px color-mix(in srgb,var(--red) 14%,transparent)}
