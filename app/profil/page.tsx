@@ -839,9 +839,9 @@ export default function ProfilePage() {
 
         {/* ================================================================ */}
         {/* LOGOUT BUTTON */}
-        <div style={{ textAlign: "center", marginTop: "16px" }}>
-          <button className="dark-action" onClick={logout} style={{ borderRadius: "8px" }}>
-            <LogOut />
+        <div className="profile-social-logout">
+          <button className="dark-action profile-social-logout-button" onClick={logout}>
+            <LogOut aria-hidden="true" />
             KELUAR DARI AKUN
           </button>
         </div>
