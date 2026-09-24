@@ -358,7 +358,9 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <AppShell active="Profil" title="Profil Saya">
-        <PageSkeleton title="Memuat Kartu Anggota..." />
+        <div className="profile-state-shell profile-loading-state" aria-live="polite" aria-busy="true">
+          <PageSkeleton title="Memuat Kartu Anggota..." />
+        </div>
       </AppShell>
     );
   }
