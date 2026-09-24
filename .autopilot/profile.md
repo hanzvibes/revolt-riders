@@ -6,7 +6,7 @@ Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
-Last Full QA checkpoint: UI Quality GREEN on 9455635bd7bc31bfe43c7431db62c65d78ada6f2 / run 35943655558
+Last Full QA checkpoint: UI Quality GREEN on bf2cd1e16cafa8eefc18ad83e475d08546b6685e / run 35952205016
 
 ## Rules
 - Frontend/UI/UX only and follow `.autopilot/RULES.md` on main.
@@ -82,14 +82,14 @@ Do not edit:
 - [ ] 43 Logout Action Placement
 - [x] 44 Keyboard Focus Audit
 - [x] 45 Mobile Touch Target Audit
-- [ ] 46 Reduced Motion Audit
-- [ ] 47 Small Phone Stress Test
-- [ ] 48 Tablet/Desktop Responsive Pass
+- [x] 46 Reduced Motion Audit
+- [x] 47 Small Phone Stress Test
+- [x] 48 Tablet/Desktop Responsive Pass
 - [ ] 49 Visual Regression & Consistency Audit
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Profile batch 35-40,44-45 is integrated on main at d443be639f034ebefe5bb12c38b413b73ab7187a and main UI Quality is GREEN (run 35949202468). Branch is resynchronized. Exactly 8 tasks remain: 41-43 and 46-50. Next sprint is the final Profile sprint.
+Profile batch 35-40,44-45 is integrated on main at d443be639f034ebefe5bb12c38b413b73ab7187a and main UI Quality is GREEN (run 35949202468). Branch is resynchronized. Tasks 46-48 are now validated GREEN on cumulative head bf2cd1e16cafa8eefc18ad83e475d08546b6685e / run 35952205016. Five tasks remain: 41-43 and 49-50. Structural tasks 41-43 require a complete current `app/profil/page.tsx`; never patch from a truncated source.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -112,5 +112,8 @@ Profile batch 35-40,44-45 is integrated on main at d443be639f034ebefe5bb12c38b41
 2026-09-24 08:35 WIB | 44 Keyboard Focus Audit | IMPLEMENTED / QA_PENDING | 6ea22e1f9a1273994ffd14f3cf5463ead1e8e4a6 | cumulative QA pending | [skip ci]; independent safe CSS task while structural runner unavailable.
 2026-09-24 08:36 WIB | 45 Mobile Touch Target Audit | IMPLEMENTED / QA_PENDING | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality not visible on single final check | final cumulative product head; current batch now 8 implemented tasks.
 2026-09-24 09:38 WIB | tasks 35-40,44-45 | DONE / READY_FOR_INTEGRATION | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality run 35943655558 GREEN | Eight-task cumulative batch validated; product work stopped for Integration Guard.
-
 2026-09-24 10:07 WIB | profile batch 35-40,44-45 | INTEGRATED | d443be639f034ebefe5bb12c38b413b73ab7187a | main UI Quality run 35949202468 GREEN | Branch resynchronized; final sprint tasks: 41-43,46-50.
+2026-09-24 10:35 WIB | 46 Reduced Motion Audit | IMPLEMENTED / QA_PENDING | profile-sprint.css | cumulative QA pending | [skip ci]
+2026-09-24 10:36 WIB | 47 Small Phone Stress Test | IMPLEMENTED / QA_PENDING | profile-sprint.css | cumulative QA pending | [skip ci]
+2026-09-24 10:37 WIB | 48 Tablet/Desktop Responsive Pass | IMPLEMENTED / QA_PENDING | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | final cumulative product head
+2026-09-24 12:38 WIB | tasks 46-48 | DONE / ACTIVE | bf2cd1e16cafa8eefc18ad83e475d08546b6685e | UI Quality run 35952205016 GREEN | Reconciled cumulative final-sprint CSS work; next safe task 41 when complete TSX source is available.
