@@ -2,7 +2,7 @@
 
 Surface: `/profil`
 Branch: `feat/autopilot-profile`
-Status: READY_FOR_INTEGRATION
+Status: ACTIVE
 Batch size: 8
 Sprint target: 8 safe tasks per hourly run
 Deploy: Integration Guard only
@@ -89,7 +89,7 @@ Do not edit:
 - [ ] 50 Final Profile UAT & Polish
 
 ## Recovery checkpoint
-Tasks 35-40 and 44-45 form the validated eight-task post-integration batch. Final cumulative head 9455635bd7bc31bfe43c7431db62c65d78ada6f2 passed UI Quality run 35943655558. Lane is READY_FOR_INTEGRATION; do not start Tasks 41-43 or 46+ until Integration Guard merges/resynchronizes this batch.
+Profile batch 35-40,44-45 is integrated on main at d443be639f034ebefe5bb12c38b413b73ab7187a and main UI Quality is GREEN (run 35949202468). Branch is resynchronized. Exactly 8 tasks remain: 41-43 and 46-50. Next sprint is the final Profile sprint.
 
 ## Run log
 `YYYY-MM-DD HH:mm WIB | task | status | commit | QA | note`
@@ -112,3 +112,5 @@ Tasks 35-40 and 44-45 form the validated eight-task post-integration batch. Fina
 2026-09-24 08:35 WIB | 44 Keyboard Focus Audit | IMPLEMENTED / QA_PENDING | 6ea22e1f9a1273994ffd14f3cf5463ead1e8e4a6 | cumulative QA pending | [skip ci]; independent safe CSS task while structural runner unavailable.
 2026-09-24 08:36 WIB | 45 Mobile Touch Target Audit | IMPLEMENTED / QA_PENDING | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality not visible on single final check | final cumulative product head; current batch now 8 implemented tasks.
 2026-09-24 09:38 WIB | tasks 35-40,44-45 | DONE / READY_FOR_INTEGRATION | 9455635bd7bc31bfe43c7431db62c65d78ada6f2 | UI Quality run 35943655558 GREEN | Eight-task cumulative batch validated; product work stopped for Integration Guard.
+
+2026-09-24 10:07 WIB | profile batch 35-40,44-45 | INTEGRATED | d443be639f034ebefe5bb12c38b413b73ab7187a | main UI Quality run 35949202468 GREEN | Branch resynchronized; final sprint tasks: 41-43,46-50.
