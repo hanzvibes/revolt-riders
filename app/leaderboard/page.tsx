@@ -262,9 +262,11 @@ export default function LeaderboardPage() {
                       {top3Stack.map(({ rider, rank, layer }) => {
                         const isFront = layer === 0;
                         const Icon = rank === 1 ? Crown : Medal;
-                        const layerY = layer * 12;
-                        const layerScale = 1 - layer * 0.045;
-                        const layerOpacity = 1 - layer * 0.09;
+                        const layerX = layer === 1 ? 32 : layer === 2 ? -32 : 0;
+                        const layerY = layer === 0 ? 0 : layer === 1 ? 14 : 20;
+                        const layerScale = layer === 0 ? 1 : layer === 1 ? 0.955 : 0.92;
+                        const layerRotate = layer === 0 ? 0 : layer === 1 ? 1.8 : -1.8;
+                        const layerOpacity = layer === 0 ? 1 : layer === 1 ? 0.82 : 0.66;
 
                         return (
                           <motion.article
@@ -277,9 +279,10 @@ export default function LeaderboardPage() {
                             dragElastic={0.16}
                             dragMomentum={false}
                             animate={{
-                              x: 0,
+                              x: layerX,
                               y: layerY,
                               scale: layerScale,
+                              rotate: layerRotate,
                               opacity: layerOpacity,
                             }}
                             transition={
@@ -321,28 +324,63 @@ export default function LeaderboardPage() {
                             }}
                             style={{ zIndex: 10 - layer }}
                           >
-                            <div
-                              className="leaderboard-hero-rank-icon"
-                              aria-hidden="true"
-                            >
-                              <Icon />
+                            <header className="leaderboard-stack-card-head">
+                              <div className="leaderboard-stack-card-identity">
+                                <div
+                                  className="leaderboard-hero-rank-icon"
+                                  aria-hidden="true"
+                                >
+                                  <Icon />
+                                </div>
+                                <div>
+                                  <span className="leaderboard-hero-rank-label">
+                                    Peringkat #{rank}
+                                  </span>
+                                  <strong title={rider.full_name}>
+                                    {rider.full_name}
+                                  </strong>
+                                  <small>{rider.member_external_id}</small>
+                                </div>
+                              </div>
+                              <b className="leaderboard-stack-card-km">
+                                <CountUpNumber
+                                  value={rider.total_km}
+                                  suffix=" KM"
+                                />
+                              </b>
+                            </header>
+
+                            <p className="leaderboard-stack-card-note">
+                              Kilometer riding terverifikasi dari aktivitas member.
+                            </p>
+
+                            <div className="leaderboard-stack-card-details">
+                              <div>
+                                <Trophy aria-hidden="true" />
+                                <span>Peringkat</span>
+                                <strong>#{rank}</strong>
+                              </div>
+                              <div>
+                                <Users aria-hidden="true" />
+                                <span>Member ID</span>
+                                <strong>{rider.member_external_id}</strong>
+                              </div>
+                              <div>
+                                <Gauge aria-hidden="true" />
+                                <span>Status</span>
+                                <strong>Terverifikasi</strong>
+                              </div>
                             </div>
-                            <div className="leaderboard-hero-avatar">
-                              {getInitials(rider.full_name)}
-                            </div>
-                            <span className="leaderboard-hero-rank-label">
-                              #{rank}
-                            </span>
-                            <strong title={rider.full_name}>
-                              {rider.full_name}
-                            </strong>
-                            <small>{rider.member_external_id}</small>
-                            <b>
-                              <CountUpNumber
-                                value={rider.total_km}
-                                suffix=" KM"
-                              />
-                            </b>
+
+                            <footer className="leaderboard-stack-card-total">
+                              <span>Total Kilometer</span>
+                              <strong>
+                                <CountUpNumber
+                                  value={rider.total_km}
+                                  suffix=" KM"
+                                />
+                              </strong>
+                            </footer>
                           </motion.article>
                         );
                       })}

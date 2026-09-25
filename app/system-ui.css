@@ -11676,48 +11676,41 @@
   }
 }
 
-/* Leaderboard hero · swipeable stacked cards */
+/* Leaderboard hero · receipt-style swipeable stacked cards */
 .app-shell .leaderboard-swipe-podium {
   display: flex;
-  width: min(100%, 640px);
-  margin: 22px auto 2px;
+  width: min(100%, 700px);
+  margin: 24px auto 4px;
   flex-direction: column;
   align-items: center;
-  gap: 0;
 }
 
 .app-shell .leaderboard-swipe-deck {
   position: relative;
-  width: 100%;
-  height: 142px;
-  perspective: 900px;
+  width: min(100%, 650px);
+  height: 360px;
+  perspective: 1100px;
   isolation: isolate;
 }
 
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
   position: absolute;
-  inset: 0 0 auto;
-  display: grid;
-  width: 100%;
-  min-height: 112px;
-  grid-template-columns: 34px 54px minmax(0, 1fr) auto;
-  grid-template-rows: auto auto auto;
-  align-items: center;
-  column-gap: 12px;
-  row-gap: 2px;
-  margin: 0;
-  padding: 15px 17px;
-  border: 1px solid rgba(255,255,255,.11);
-  border-radius: 18px;
-  background:
-    radial-gradient(circle at 92% 12%, rgba(255,255,255,.045), transparent 30%),
-    linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
-    rgba(6,8,10,.94);
-  text-align: left;
+  inset: 0;
+  display: flex;
+  width: calc(100% - 40px);
+  min-height: 326px;
+  margin: 0 auto;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 26px;
+  background: #fff;
+  color: var(--rr-ink);
+  padding: 22px 22px 20px;
   box-shadow:
-    0 16px 34px rgba(0,0,0,.23),
-    inset 0 1px 0 rgba(255,255,255,.04);
-  transform-origin: 50% 14%;
+    0 22px 48px rgba(18, 20, 22, .16),
+    0 3px 10px rgba(18, 20, 22, .05);
+  transform-origin: 50% 16%;
   backface-visibility: hidden;
   will-change: transform, opacity;
   user-select: none;
@@ -11727,123 +11720,181 @@
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-0 {
   cursor: grab;
   touch-action: pan-y;
-  border-color: rgba(220,27,42,.34);
+  border-color: #e1e3e4;
   box-shadow:
-    0 20px 40px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.05);
+    0 26px 54px rgba(18, 20, 22, .18),
+    0 4px 12px rgba(18, 20, 22, .06);
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-1 {
-  pointer-events: none;
-  filter: saturate(.88);
-}
-
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-1,
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-2 {
   pointer-events: none;
-  filter: saturate(.72);
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 {
-  background:
-    radial-gradient(circle at 88% 16%, rgba(220,27,42,.15), transparent 34%),
-    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
-    rgba(7,9,11,.96);
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-rank-icon {
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .leaderboard-stack-card-head {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.app-shell .leaderboard-stack-card-identity {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-shell .leaderboard-stack-card-identity > div:last-child {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
 }
 
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
-  grid-column: 1;
-  grid-row: 1 / 4;
-  width: 34px;
-  height: 34px;
+  display: grid;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  place-items: center;
   margin: 0;
-  border-radius: 10px;
+  border-radius: 16px;
+  background: #f3f4f4;
+  color: var(--rr-ink);
 }
 
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon svg {
-  width: 17px;
-  height: 17px;
-}
-
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-  grid-column: 2;
-  grid-row: 1 / 4;
-  width: 50px;
-  height: 50px;
-  border-width: 2px;
-  font-size: .68rem;
-}
-
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-  width: 54px;
-  height: 54px;
+  width: 22px;
+  height: 22px;
 }
 
 .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-label {
-  grid-column: 3;
-  grid-row: 1;
-  margin: 0;
-  font-size: .49rem;
+  margin: 0 0 5px;
+  color: var(--rr-red);
+  font-size: .58rem;
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1;
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card strong {
-  grid-column: 3;
-  grid-row: 2;
-  width: 100%;
-  margin: 0;
+.app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity strong {
+  max-width: 290px;
   overflow: hidden;
-  font-size: .76rem;
-  text-align: left;
+  color: var(--rr-ink);
+  font-size: 1.08rem;
+  font-weight: var(--rr-fw-extrabold);
+  line-height: 1.12;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card small {
-  grid-column: 3;
-  grid-row: 3;
-  width: 100%;
-  margin: 0;
+.app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity small {
+  margin-top: 5px;
+  color: var(--rr-muted);
+  font-size: .64rem;
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .leaderboard-stack-card-km {
+  flex: none;
+  color: var(--rr-red);
+  font-size: 1.02rem;
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.app-shell .leaderboard-stack-card-note {
+  margin: 18px 0 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed var(--rr-line);
+  color: var(--rr-muted);
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+.app-shell .leaderboard-stack-card-details {
+  display: grid;
+}
+
+.app-shell .leaderboard-stack-card-details > div {
+  display: grid;
+  min-height: 50px;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px dashed var(--rr-line);
+}
+
+.app-shell .leaderboard-stack-card-details svg {
+  width: 17px;
+  height: 17px;
+  color: var(--rr-muted);
+}
+
+.app-shell .leaderboard-stack-card-details span {
+  color: var(--rr-muted);
+  font-size: .68rem;
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .leaderboard-stack-card-details strong {
+  max-width: 220px;
   overflow: hidden;
-  font-size: .46rem;
-  text-align: left;
+  color: var(--rr-ink);
+  font-size: .72rem;
+  font-weight: var(--rr-fw-extrabold);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
-  grid-column: 4;
-  grid-row: 1 / 4;
-  margin: 0;
-  justify-self: end;
-  color: #fff;
-  font-size: .84rem;
-  text-align: right;
-  white-space: nowrap;
+.app-shell .leaderboard-stack-card-total {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  border-radius: 16px;
+  background: var(--rr-red-soft);
+  padding: 0 16px;
+  color: var(--rr-red);
 }
 
-.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
-  font-size: .96rem;
+.app-shell .leaderboard-stack-card-total span {
+  font-size: .72rem;
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell .leaderboard-stack-card-total strong {
+  font-size: 1rem;
+  font-weight: var(--rr-fw-extrabold);
+  font-variant-numeric: tabular-nums;
 }
 
 .app-shell .leaderboard-swipe-controls {
   display: grid;
-  grid-template-columns: 34px auto 34px;
+  grid-template-columns: 36px auto 36px;
   align-items: center;
   justify-content: center;
-  gap: 9px;
-  margin-top: 5px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .app-shell .leaderboard-swipe-controls > button {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   place-items: center;
-  border: 1px solid rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.12);
   border-radius: 50%;
-  background: rgba(255,255,255,.045);
-  color: #b0b6ba;
+  background: rgba(255,255,255,.06);
+  color: #c0c5c8;
   padding: 0;
   transition:
     background-color 180ms var(--rr-ease-out),
@@ -11852,7 +11903,7 @@
 }
 
 .app-shell .leaderboard-swipe-controls > button:hover {
-  background: rgba(255,255,255,.09);
+  background: rgba(255,255,255,.11);
   color: #fff;
   transform: scale(1.04);
 }
@@ -11862,8 +11913,8 @@
 }
 
 .app-shell .leaderboard-swipe-controls > button svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 .app-shell .leaderboard-swipe-dots {
@@ -11878,7 +11929,7 @@
   height: 6px;
   border: 0;
   border-radius: 999px;
-  background: rgba(255,255,255,.26);
+  background: rgba(255,255,255,.28);
   padding: 0;
   transition:
     width 240ms var(--rr-ease-out),
@@ -11886,107 +11937,125 @@
 }
 
 .app-shell .leaderboard-swipe-dots button.active {
-  width: 18px;
+  width: 20px;
   background: var(--rr-red);
 }
 
 .app-shell .leaderboard-swipe-hint {
-  margin-top: 4px;
-  color: #747c81;
-  font-size: .47rem;
-  font-weight: 700;
-  letter-spacing: .02em;
+  margin-top: 5px;
+  color: #7f878c;
+  font-size: .5rem;
+  font-weight: var(--rr-fw-bold);
 }
 
 @media (max-width: 720px) {
   .app-shell .leaderboard-swipe-podium {
     width: 100%;
-    margin-top: 16px;
+    margin-top: 18px;
   }
 
   .app-shell .leaderboard-swipe-deck {
-    height: 126px;
+    width: 100%;
+    height: 332px;
   }
 
   .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
-    min-height: 98px;
-    grid-template-columns: 29px 44px minmax(0, 1fr) auto;
-    column-gap: 8px;
-    padding: 12px 11px;
-    border-radius: 15px;
+    width: calc(100% - 28px);
+    min-height: 304px;
+    border-radius: 22px;
+    padding: 18px 17px 17px;
   }
 
   .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
-    width: 29px;
-    height: 29px;
-    border-radius: 9px;
+    width: 46px;
+    height: 46px;
+    flex-basis: 46px;
+    border-radius: 14px;
   }
 
   .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon svg {
-    width: 14px;
-    height: 14px;
+    width: 19px;
+    height: 19px;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 42px;
-    height: 42px;
-    font-size: .58rem;
+  .app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity strong {
+    max-width: 180px;
+    font-size: .92rem;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 45px;
-    height: 45px;
+  .app-shell .leaderboard-stack-card-km {
+    font-size: .86rem;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card strong {
+  .app-shell .leaderboard-stack-card-note {
+    margin-top: 15px;
+    font-size: .66rem;
+  }
+
+  .app-shell .leaderboard-stack-card-details > div {
+    min-height: 46px;
+  }
+
+  .app-shell .leaderboard-stack-card-details span {
     font-size: .63rem;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card small {
-    font-size: .4rem;
+  .app-shell .leaderboard-stack-card-details strong {
+    max-width: 148px;
+    font-size: .66rem;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
-    font-size: .69rem;
+  .app-shell .leaderboard-stack-card-total {
+    min-height: 56px;
+    border-radius: 14px;
+    padding-inline: 13px;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
-    font-size: .78rem;
+  .app-shell .leaderboard-stack-card-total span {
+    font-size: .66rem;
   }
 
-  .app-shell .leaderboard-swipe-controls {
-    margin-top: 3px;
+  .app-shell .leaderboard-stack-card-total strong {
+    font-size: .9rem;
   }
 }
 
 @media (max-width: 390px) {
   .app-shell .leaderboard-swipe-deck {
-    height: 120px;
+    height: 318px;
   }
 
   .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
-    min-height: 94px;
-    grid-template-columns: 27px 39px minmax(0, 1fr) auto;
-    column-gap: 7px;
-    padding-inline: 9px;
+    width: calc(100% - 22px);
+    min-height: 292px;
+    padding: 16px 14px 14px;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 38px;
-    height: 38px;
+  .app-shell .leaderboard-stack-card-head {
+    gap: 8px;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 41px;
-    height: 41px;
+  .app-shell .leaderboard-stack-card-identity {
+    gap: 9px;
   }
 
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
-  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
-    font-size: .62rem;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+
+  .app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity strong {
+    max-width: 140px;
+    font-size: .82rem;
+  }
+
+  .app-shell .leaderboard-stack-card-km {
+    font-size: .78rem;
+  }
+
+  .app-shell .leaderboard-stack-card-details strong {
+    max-width: 118px;
   }
 
   .app-shell .leaderboard-swipe-controls {
