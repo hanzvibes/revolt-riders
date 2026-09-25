@@ -11676,262 +11676,332 @@
   }
 }
 
-
-/* Leaderboard hero · stacked cards */
-.app-shell .leaderboard-hero-podium {
+/* Leaderboard hero · swipeable stacked cards */
+.app-shell .leaderboard-swipe-podium {
   display: flex;
-  width: min(100%, 620px);
-  margin: 22px auto 4px;
+  width: min(100%, 640px);
+  margin: 22px auto 2px;
   flex-direction: column;
   align-items: center;
   gap: 0;
 }
 
-.app-shell .leaderboard-hero-podium-card {
+.app-shell .leaderboard-swipe-deck {
+  position: relative;
+  width: 100%;
+  height: 142px;
+  perspective: 900px;
+  isolation: isolate;
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
+  position: absolute;
+  inset: 0 0 auto;
   display: grid;
   width: 100%;
-  min-height: 96px;
-  grid-template-columns: 32px 52px minmax(0, 1fr) auto;
+  min-height: 112px;
+  grid-template-columns: 34px 54px minmax(0, 1fr) auto;
   grid-template-rows: auto auto auto;
   align-items: center;
-  justify-content: initial;
-  column-gap: 11px;
+  column-gap: 12px;
   row-gap: 2px;
-  padding: 14px 16px;
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 17px;
+  margin: 0;
+  padding: 15px 17px;
+  border: 1px solid rgba(255,255,255,.11);
+  border-radius: 18px;
   background:
-    linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025)),
-    rgba(6,8,10,.86);
+    radial-gradient(circle at 92% 12%, rgba(255,255,255,.045), transparent 30%),
+    linear-gradient(145deg, rgba(255,255,255,.07), rgba(255,255,255,.025)),
+    rgba(6,8,10,.94);
   text-align: left;
   box-shadow:
-    0 12px 24px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.035);
-  transform-origin: 50% 0;
-  transition:
-    transform 220ms var(--rr-ease-out),
-    border-color 220ms var(--rr-ease-out),
-    box-shadow 220ms var(--rr-ease-out);
+    0 16px 34px rgba(0,0,0,.23),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  transform-origin: 50% 14%;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-1 {
-  order: 1;
-  z-index: 3;
-  width: 100%;
-  min-height: 106px;
-  border-color: rgba(220,27,42,.38);
-  background:
-    radial-gradient(circle at 88% 18%, rgba(220,27,42,.13), transparent 34%),
-    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
-    rgba(7,9,11,.94);
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-0 {
+  cursor: grab;
+  touch-action: pan-y;
+  border-color: rgba(220,27,42,.34);
   box-shadow:
-    0 18px 34px rgba(0,0,0,.24),
-    inset 0 1px 0 rgba(255,255,255,.045);
+    0 20px 40px rgba(0,0,0,.28),
+    inset 0 1px 0 rgba(255,255,255,.05);
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-2 {
-  order: 2;
-  z-index: 2;
-  width: 95%;
-  margin-top: -9px;
-  transform: translateY(0) scale(.985);
-  opacity: .95;
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-1 {
+  pointer-events: none;
+  filter: saturate(.88);
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-3 {
-  order: 3;
-  z-index: 1;
-  width: 90%;
-  margin-top: -9px;
-  transform: translateY(0) scale(.97);
-  opacity: .88;
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-2 {
+  pointer-events: none;
+  filter: saturate(.72);
 }
 
-.app-shell .leaderboard-hero-podium-card:hover {
-  border-color: rgba(255,255,255,.18);
-  transform: translateY(-2px);
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 {
+  background:
+    radial-gradient(circle at 88% 16%, rgba(220,27,42,.15), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
+    rgba(7,9,11,.96);
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-1:hover {
-  border-color: rgba(220,27,42,.54);
-}
-
-.app-shell .leaderboard-hero-rank-icon {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
   grid-column: 1;
   grid-row: 1 / 4;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   margin: 0;
   border-radius: 10px;
 }
 
-.app-shell .leaderboard-hero-rank-icon svg {
-  width: 16px;
-  height: 16px;
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon svg {
+  width: 17px;
+  height: 17px;
 }
 
-.app-shell .leaderboard-hero-avatar,
-.app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
   grid-column: 2;
   grid-row: 1 / 4;
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-width: 2px;
   font-size: .68rem;
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-  width: 52px;
-  height: 52px;
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+  width: 54px;
+  height: 54px;
 }
 
-.app-shell .leaderboard-hero-rank-label {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-label {
   grid-column: 3;
   grid-row: 1;
   margin: 0;
-  font-size: .48rem;
+  font-size: .49rem;
 }
 
-.app-shell .leaderboard-hero-podium-card strong {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card strong {
   grid-column: 3;
   grid-row: 2;
+  width: 100%;
   margin: 0;
-  font-size: .74rem;
+  overflow: hidden;
+  font-size: .76rem;
   text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-shell .leaderboard-hero-podium-card small {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card small {
   grid-column: 3;
   grid-row: 3;
+  width: 100%;
   margin: 0;
+  overflow: hidden;
   font-size: .46rem;
   text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.app-shell .leaderboard-hero-podium-card b,
-.app-shell .leaderboard-hero-podium-card.rank-1 b {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
   grid-column: 4;
   grid-row: 1 / 4;
   margin: 0;
   justify-self: end;
   color: #fff;
-  font-size: .82rem;
+  font-size: .84rem;
   text-align: right;
   white-space: nowrap;
 }
 
-.app-shell .leaderboard-hero-podium-card.rank-1 b {
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
+  font-size: .96rem;
+}
+
+.app-shell .leaderboard-swipe-controls {
+  display: grid;
+  grid-template-columns: 34px auto 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 5px;
+}
+
+.app-shell .leaderboard-swipe-controls > button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 50%;
+  background: rgba(255,255,255,.045);
+  color: #b0b6ba;
+  padding: 0;
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .leaderboard-swipe-controls > button:hover {
+  background: rgba(255,255,255,.09);
   color: #fff;
-  font-size: .94rem;
+  transform: scale(1.04);
+}
+
+.app-shell .leaderboard-swipe-controls > button:active {
+  transform: scale(.94);
+}
+
+.app-shell .leaderboard-swipe-controls > button svg {
+  width: 15px;
+  height: 15px;
+}
+
+.app-shell .leaderboard-swipe-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.app-shell .leaderboard-swipe-dots button {
+  width: 6px;
+  height: 6px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255,255,255,.26);
+  padding: 0;
+  transition:
+    width 240ms var(--rr-ease-out),
+    background-color 240ms var(--rr-ease-out);
+}
+
+.app-shell .leaderboard-swipe-dots button.active {
+  width: 18px;
+  background: var(--rr-red);
+}
+
+.app-shell .leaderboard-swipe-hint {
+  margin-top: 4px;
+  color: #747c81;
+  font-size: .47rem;
+  font-weight: 700;
+  letter-spacing: .02em;
 }
 
 @media (max-width: 720px) {
-  .app-shell .leaderboard-hero-podium {
+  .app-shell .leaderboard-swipe-podium {
     width: 100%;
     margin-top: 16px;
   }
 
-  .app-shell .leaderboard-hero-podium-card {
-    min-height: 84px;
-    grid-template-columns: 28px 42px minmax(0, 1fr) auto;
+  .app-shell .leaderboard-swipe-deck {
+    height: 126px;
+  }
+
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
+    min-height: 98px;
+    grid-template-columns: 29px 44px minmax(0, 1fr) auto;
     column-gap: 8px;
-    padding: 11px 10px;
-    border-radius: 14px;
+    padding: 12px 11px;
+    border-radius: 15px;
   }
 
-  .app-shell .leaderboard-hero-podium-card.rank-1 {
-    min-height: 92px;
-  }
-
-  .app-shell .leaderboard-hero-podium-card.rank-2 {
-    width: 96%;
-    margin-top: -7px;
-  }
-
-  .app-shell .leaderboard-hero-podium-card.rank-3 {
-    width: 92%;
-    margin-top: -7px;
-  }
-
-  .app-shell .leaderboard-hero-rank-icon {
-    width: 28px;
-    height: 28px;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
+    width: 29px;
+    height: 29px;
     border-radius: 9px;
   }
 
-  .app-shell .leaderboard-hero-rank-icon svg {
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon svg {
     width: 14px;
     height: 14px;
   }
 
-  .app-shell .leaderboard-hero-avatar,
-  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 40px;
-    height: 40px;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 42px;
+    height: 42px;
     font-size: .58rem;
   }
 
-  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 44px;
-    height: 44px;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 45px;
+    height: 45px;
   }
 
-  .app-shell .leaderboard-hero-podium-card strong {
-    font-size: .62rem;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card strong {
+    font-size: .63rem;
   }
 
-  .app-shell .leaderboard-hero-podium-card small {
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card small {
     font-size: .4rem;
   }
 
-  .app-shell .leaderboard-hero-podium-card b,
-  .app-shell .leaderboard-hero-podium-card.rank-1 b {
-    font-size: .68rem;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
+    font-size: .69rem;
   }
 
-  .app-shell .leaderboard-hero-podium-card.rank-1 b {
-    font-size: .76rem;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
+    font-size: .78rem;
+  }
+
+  .app-shell .leaderboard-swipe-controls {
+    margin-top: 3px;
   }
 }
 
 @media (max-width: 390px) {
-  .app-shell .leaderboard-hero-podium-card {
-    grid-template-columns: 26px 38px minmax(0, 1fr) auto;
+  .app-shell .leaderboard-swipe-deck {
+    height: 120px;
+  }
+
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
+    min-height: 94px;
+    grid-template-columns: 27px 39px minmax(0, 1fr) auto;
     column-gap: 7px;
     padding-inline: 9px;
   }
 
-  .app-shell .leaderboard-hero-podium-card.rank-2 {
-    width: 97%;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-avatar,
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 38px;
+    height: 38px;
   }
 
-  .app-shell .leaderboard-hero-podium-card.rank-3 {
-    width: 94%;
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 41px;
+    height: 41px;
   }
 
-  .app-shell .leaderboard-hero-avatar,
-  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 36px;
-    height: 36px;
-  }
-
-  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
-    width: 40px;
-    height: 40px;
-  }
-
-  .app-shell .leaderboard-hero-podium-card b,
-  .app-shell .leaderboard-hero-podium-card.rank-1 b {
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card b,
+  .app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 b {
     font-size: .62rem;
+  }
+
+  .app-shell .leaderboard-swipe-controls {
+    grid-template-columns: 32px auto 32px;
+  }
+
+  .app-shell .leaderboard-swipe-controls > button {
+    width: 32px;
+    height: 32px;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .app-shell .leaderboard-hero-podium-card {
+  .app-shell .leaderboard-swipe-controls > button,
+  .app-shell .leaderboard-swipe-dots button {
     transition: none;
-  }
-
-  .app-shell .leaderboard-hero-podium-card:hover {
-    transform: none;
   }
 }

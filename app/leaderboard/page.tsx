@@ -6,7 +6,10 @@ import { PageState } from "@/components/page-state";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { motion, useReducedMotion } from "framer-motion";
 import {
+  ChevronLeft,
+  ChevronRight,
   Crown,
   Gauge,
   Medal,
@@ -29,6 +32,8 @@ export default function LeaderboardPage() {
   const { user, account, loading: authLoading, fetchWithCache, invalidateCache } = useDataCache();
   const [riders, setRiders] = useState<Rider[]>([]);
   const [query, setQuery] = useState("");
+  const [activeTopIndex, setActiveTopIndex] = useState(0);
+  const reduceMotion = useReducedMotion();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -130,6 +135,32 @@ export default function LeaderboardPage() {
     return riders.slice(0, 3);
   }, [riders]);
 
+  useEffect(() => {
+    if (top3.length > 0 && activeTopIndex >= top3.length) {
+      setActiveTopIndex(0);
+    }
+  }, [activeTopIndex, top3.length]);
+
+  const rotateTopStack = useCallback(
+    (direction: 1 | -1) => {
+      if (top3.length < 2) return;
+      setActiveTopIndex((current) =>
+        (current + direction + top3.length) % top3.length,
+      );
+    },
+    [top3.length],
+  );
+
+  const top3Stack = useMemo(
+    () =>
+      top3.map((rider, index) => ({
+        rider,
+        rank: index + 1,
+        layer: (index - activeTopIndex + top3.length) % top3.length,
+      })),
+    [activeTopIndex, top3],
+  );
+
   const remainingRiders = useMemo(() => {
     if (query.trim()) {
       return filteredRiders;
@@ -218,51 +249,141 @@ export default function LeaderboardPage() {
                 <div className="leaderboard-hero-watermark" aria-hidden="true">RR</div>
 
                 {top3.length >= 3 ? (
-                  <div className="leaderboard-hero-podium" aria-label="Tiga rider teratas">
-                    <article className="leaderboard-hero-podium-card rank-2">
-                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
-                        <Medal />
-                      </div>
-                      <div className="leaderboard-hero-avatar">
-                        {getInitials(top3[1].full_name)}
-                      </div>
-                      <span className="leaderboard-hero-rank-label">#2</span>
-                      <strong title={top3[1].full_name}>{top3[1].full_name}</strong>
-                      <small>{top3[1].member_external_id}</small>
-                      <b>
-                        <CountUpNumber value={top3[1].total_km} suffix=" KM" />
-                      </b>
-                    </article>
+                  <div
+                    className="leaderboard-hero-podium leaderboard-swipe-podium"
+                    aria-label="Tiga rider teratas"
+                  >
+                    <div
+                      className="leaderboard-swipe-deck"
+                      role="region"
+                      aria-roledescription="carousel"
+                      aria-label="Top 3 leaderboard. Geser kartu ke kiri atau kanan."
+                    >
+                      {top3Stack.map(({ rider, rank, layer }) => {
+                        const isFront = layer === 0;
+                        const Icon = rank === 1 ? Crown : Medal;
+                        const layerY = layer * 12;
+                        const layerScale = 1 - layer * 0.045;
+                        const layerOpacity = 1 - layer * 0.09;
 
-                    <article className="leaderboard-hero-podium-card rank-1">
-                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
-                        <Crown />
-                      </div>
-                      <div className="leaderboard-hero-avatar">
-                        {getInitials(top3[0].full_name)}
-                      </div>
-                      <span className="leaderboard-hero-rank-label">#1</span>
-                      <strong title={top3[0].full_name}>{top3[0].full_name}</strong>
-                      <small>{top3[0].member_external_id}</small>
-                      <b>
-                        <CountUpNumber value={top3[0].total_km} suffix=" KM" />
-                      </b>
-                    </article>
+                        return (
+                          <motion.article
+                            key={rider.member_external_id}
+                            className={`leaderboard-hero-podium-card rank-${rank} stack-layer-${layer}`}
+                            aria-hidden={!isFront}
+                            tabIndex={isFront ? 0 : -1}
+                            drag={isFront && !reduceMotion ? "x" : false}
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.16}
+                            dragMomentum={false}
+                            animate={{
+                              x: 0,
+                              y: layerY,
+                              scale: layerScale,
+                              opacity: layerOpacity,
+                            }}
+                            transition={
+                              reduceMotion
+                                ? { duration: 0 }
+                                : {
+                                    type: "spring",
+                                    stiffness: 290,
+                                    damping: 34,
+                                    mass: 0.78,
+                                  }
+                            }
+                            whileDrag={
+                              isFront && !reduceMotion
+                                ? {
+                                    scale: 1.015,
+                                    rotate: 0.35,
+                                    cursor: "grabbing",
+                                  }
+                                : undefined
+                            }
+                            onDragEnd={(_, info) => {
+                              const shouldMove =
+                                Math.abs(info.offset.x) > 54 ||
+                                Math.abs(info.velocity.x) > 460;
 
-                    <article className="leaderboard-hero-podium-card rank-3">
-                      <div className="leaderboard-hero-rank-icon" aria-hidden="true">
-                        <Medal />
+                              if (!shouldMove) return;
+                              rotateTopStack(info.offset.x < 0 ? 1 : -1);
+                            }}
+                            onKeyDown={(event) => {
+                              if (event.key === "ArrowLeft") {
+                                event.preventDefault();
+                                rotateTopStack(-1);
+                              }
+                              if (event.key === "ArrowRight") {
+                                event.preventDefault();
+                                rotateTopStack(1);
+                              }
+                            }}
+                            style={{ zIndex: 10 - layer }}
+                          >
+                            <div
+                              className="leaderboard-hero-rank-icon"
+                              aria-hidden="true"
+                            >
+                              <Icon />
+                            </div>
+                            <div className="leaderboard-hero-avatar">
+                              {getInitials(rider.full_name)}
+                            </div>
+                            <span className="leaderboard-hero-rank-label">
+                              #{rank}
+                            </span>
+                            <strong title={rider.full_name}>
+                              {rider.full_name}
+                            </strong>
+                            <small>{rider.member_external_id}</small>
+                            <b>
+                              <CountUpNumber
+                                value={rider.total_km}
+                                suffix=" KM"
+                              />
+                            </b>
+                          </motion.article>
+                        );
+                      })}
+                    </div>
+
+                    <div
+                      className="leaderboard-swipe-controls"
+                      aria-label="Navigasi kartu leaderboard"
+                    >
+                      <button
+                        type="button"
+                        onClick={() => rotateTopStack(-1)}
+                        aria-label="Kartu sebelumnya"
+                      >
+                        <ChevronLeft aria-hidden="true" />
+                      </button>
+                      <div className="leaderboard-swipe-dots">
+                        {top3.map((rider, index) => (
+                          <button
+                            key={rider.member_external_id}
+                            type="button"
+                            className={index === activeTopIndex ? "active" : ""}
+                            aria-label={`Tampilkan peringkat #${index + 1}`}
+                            aria-current={
+                              index === activeTopIndex ? "true" : undefined
+                            }
+                            onClick={() => setActiveTopIndex(index)}
+                          />
+                        ))}
                       </div>
-                      <div className="leaderboard-hero-avatar">
-                        {getInitials(top3[2].full_name)}
-                      </div>
-                      <span className="leaderboard-hero-rank-label">#3</span>
-                      <strong title={top3[2].full_name}>{top3[2].full_name}</strong>
-                      <small>{top3[2].member_external_id}</small>
-                      <b>
-                        <CountUpNumber value={top3[2].total_km} suffix=" KM" />
-                      </b>
-                    </article>
+                      <button
+                        type="button"
+                        onClick={() => rotateTopStack(1)}
+                        aria-label="Kartu berikutnya"
+                      >
+                        <ChevronRight aria-hidden="true" />
+                      </button>
+                    </div>
+                    <small className="leaderboard-swipe-hint">
+                      Swipe kiri atau kanan
+                    </small>
                   </div>
                 ) : (
                   <div className="leaderboard-hero-podium-empty">
