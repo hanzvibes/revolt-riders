@@ -4026,3 +4026,356 @@
     transform: none !important;
   }
 }
+
+/* Post detail polish v2 */
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 720px);
+  padding-top: 10px;
+}
+
+.app-shell .community-thread-page .community-thread-back {
+  width: fit-content;
+  min-height: 38px;
+  margin: 0 2px 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 999px;
+  background: var(--rr-surface);
+  color: var(--rr-muted);
+  padding: 0 12px 0 10px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-back:hover {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  transform: translateY(-1px);
+}
+
+.app-shell .community-thread-page .community-thread-back:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin {
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 20px;
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding: 16px 16px 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy {
+  padding-inline: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy p {
+  font-size: var(--rr-type-body);
+  line-height: 1.68;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-link-preview {
+  margin-inline: 16px;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+  overflow: hidden;
+  margin: 14px 14px 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  min-height: 34px;
+  padding: 8px 16px 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  gap: 8px;
+  padding: 8px 14px 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 0 12px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button:hover {
+  border-color: var(--rr-line);
+  background: var(--rr-surface-muted);
+  transform: translateY(-1px);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button.is-liked {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .community-thread-page .community-thread-discussion {
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 20px;
+  background: var(--rr-surface);
+  padding: 18px 16px 0;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  margin-bottom: 18px;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head h2 {
+  font-size: 1.05rem;
+  letter-spacing: -.025em;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head > span {
+  min-width: 30px;
+  height: 30px;
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .community-no-comments {
+  margin: 8px 0 22px;
+  border: 1px dashed var(--rr-line-strong);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+  padding: 18px 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  padding-bottom: 20px;
+}
+
+.app-shell .community-thread-page .thread-comment-root + .thread-comment-root {
+  padding-top: 20px;
+}
+
+.app-shell .community-thread-page .thread-comment-line {
+  gap: 11px;
+}
+
+.app-shell .community-thread-page .thread-comment-line > .community-avatar.small {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .thread-comment-content > header {
+  gap: 5px 7px;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header span {
+  border-radius: 999px;
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+  padding: 2px 6px;
+  font-size: .62rem;
+  line-height: 1.2;
+}
+
+.app-shell .community-thread-page .thread-comment-content > p {
+  margin-top: 7px;
+  line-height: 1.62;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button {
+  min-height: 32px;
+  border-radius: 999px;
+  padding-inline: 8px;
+  transition:
+    background-color 160ms var(--rr-ease-out),
+    color 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .community-thread-page .thread-comment-actions button.danger:hover {
+  background: color-mix(in srgb, var(--rr-danger) 9%, transparent);
+}
+
+.app-shell .community-thread-page .thread-replies {
+  gap: 16px;
+  margin-top: 16px;
+  margin-left: 15px;
+  padding-left: 24px;
+}
+
+.app-shell .community-thread-page .thread-replies::before {
+  width: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rr-line-strong) 68%, transparent);
+}
+
+.app-shell .community-thread-page .community-comments-locked {
+  margin: 4px -16px 0;
+  border-top: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  padding: 13px 16px;
+}
+
+.app-shell .community-thread-page .community-thread-composer {
+  z-index: 8;
+  margin: 10px -16px 0;
+  border-top: 1px solid var(--rr-line);
+  background: color-mix(in srgb, var(--rr-surface) 92%, transparent);
+  padding: 12px 16px;
+  box-shadow: 0 -10px 30px color-mix(in srgb, var(--rr-charcoal) 8%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child {
+  grid-template-columns: minmax(0, 1fr) 46px;
+  gap: 9px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  min-height: 46px;
+  max-height: 160px;
+  border-radius: 16px;
+  background: var(--rr-surface-soft);
+  padding: 12px 13px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    box-shadow 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea:focus {
+  background: var(--rr-surface);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+  width: 46px;
+  height: 46px;
+  background: var(--rr-red);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--rr-red) 24%, transparent);
+  transition:
+    opacity 160ms var(--rr-ease-out),
+    transform 160ms var(--rr-ease-out),
+    box-shadow 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--rr-red) 30%, transparent);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):active {
+  transform: scale(.96);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .community-thread-page .community-reply-target {
+  margin-bottom: 10px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 7px 8px 7px 10px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-top: 6px;
+    padding-inline: 12px;
+  }
+
+  .app-shell .community-thread-page .community-thread-back {
+    margin-inline: 2px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin,
+  .app-shell .community-thread-page .community-thread-discussion {
+    border-radius: 18px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+    margin-inline: 12px;
+    border-radius: 14px;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion {
+    padding-inline: 14px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer {
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+
+  .app-shell .community-thread-page .community-comments-locked {
+    margin-inline: -14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-inline: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+    padding-inline: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+    min-width: 0;
+    flex: 1 1 0;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
+  .app-shell .community-thread-page .thread-replies {
+    margin-left: 11px;
+    padding-left: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-thread-page .community-thread-back,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button,
+  .app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+    transition: none;
+  }
+}
