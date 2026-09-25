@@ -11675,3 +11675,263 @@
     height: 17px;
   }
 }
+
+
+/* Leaderboard hero · stacked cards */
+.app-shell .leaderboard-hero-podium {
+  display: flex;
+  width: min(100%, 620px);
+  margin: 22px auto 4px;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.app-shell .leaderboard-hero-podium-card {
+  display: grid;
+  width: 100%;
+  min-height: 96px;
+  grid-template-columns: 32px 52px minmax(0, 1fr) auto;
+  grid-template-rows: auto auto auto;
+  align-items: center;
+  justify-content: initial;
+  column-gap: 11px;
+  row-gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 17px;
+  background:
+    linear-gradient(145deg, rgba(255,255,255,.065), rgba(255,255,255,.025)),
+    rgba(6,8,10,.86);
+  text-align: left;
+  box-shadow:
+    0 12px 24px rgba(0,0,0,.16),
+    inset 0 1px 0 rgba(255,255,255,.035);
+  transform-origin: 50% 0;
+  transition:
+    transform 220ms var(--rr-ease-out),
+    border-color 220ms var(--rr-ease-out),
+    box-shadow 220ms var(--rr-ease-out);
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-1 {
+  order: 1;
+  z-index: 3;
+  width: 100%;
+  min-height: 106px;
+  border-color: rgba(220,27,42,.38);
+  background:
+    radial-gradient(circle at 88% 18%, rgba(220,27,42,.13), transparent 34%),
+    linear-gradient(145deg, rgba(255,255,255,.075), rgba(255,255,255,.025)),
+    rgba(7,9,11,.94);
+  box-shadow:
+    0 18px 34px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.045);
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-2 {
+  order: 2;
+  z-index: 2;
+  width: 95%;
+  margin-top: -9px;
+  transform: translateY(0) scale(.985);
+  opacity: .95;
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-3 {
+  order: 3;
+  z-index: 1;
+  width: 90%;
+  margin-top: -9px;
+  transform: translateY(0) scale(.97);
+  opacity: .88;
+}
+
+.app-shell .leaderboard-hero-podium-card:hover {
+  border-color: rgba(255,255,255,.18);
+  transform: translateY(-2px);
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-1:hover {
+  border-color: rgba(220,27,42,.54);
+}
+
+.app-shell .leaderboard-hero-rank-icon {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  border-radius: 10px;
+}
+
+.app-shell .leaderboard-hero-rank-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-shell .leaderboard-hero-avatar,
+.app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  width: 48px;
+  height: 48px;
+  border-width: 2px;
+  font-size: .68rem;
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+  width: 52px;
+  height: 52px;
+}
+
+.app-shell .leaderboard-hero-rank-label {
+  grid-column: 3;
+  grid-row: 1;
+  margin: 0;
+  font-size: .48rem;
+}
+
+.app-shell .leaderboard-hero-podium-card strong {
+  grid-column: 3;
+  grid-row: 2;
+  margin: 0;
+  font-size: .74rem;
+  text-align: left;
+}
+
+.app-shell .leaderboard-hero-podium-card small {
+  grid-column: 3;
+  grid-row: 3;
+  margin: 0;
+  font-size: .46rem;
+  text-align: left;
+}
+
+.app-shell .leaderboard-hero-podium-card b,
+.app-shell .leaderboard-hero-podium-card.rank-1 b {
+  grid-column: 4;
+  grid-row: 1 / 4;
+  margin: 0;
+  justify-self: end;
+  color: #fff;
+  font-size: .82rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.app-shell .leaderboard-hero-podium-card.rank-1 b {
+  color: #fff;
+  font-size: .94rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .leaderboard-hero-podium {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card {
+    min-height: 84px;
+    grid-template-columns: 28px 42px minmax(0, 1fr) auto;
+    column-gap: 8px;
+    padding: 11px 10px;
+    border-radius: 14px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-1 {
+    min-height: 92px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-2 {
+    width: 96%;
+    margin-top: -7px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-3 {
+    width: 92%;
+    margin-top: -7px;
+  }
+
+  .app-shell .leaderboard-hero-rank-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 9px;
+  }
+
+  .app-shell .leaderboard-hero-rank-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .app-shell .leaderboard-hero-avatar,
+  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: .58rem;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 44px;
+    height: 44px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card strong {
+    font-size: .62rem;
+  }
+
+  .app-shell .leaderboard-hero-podium-card small {
+    font-size: .4rem;
+  }
+
+  .app-shell .leaderboard-hero-podium-card b,
+  .app-shell .leaderboard-hero-podium-card.rank-1 b {
+    font-size: .68rem;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-1 b {
+    font-size: .76rem;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .leaderboard-hero-podium-card {
+    grid-template-columns: 26px 38px minmax(0, 1fr) auto;
+    column-gap: 7px;
+    padding-inline: 9px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-2 {
+    width: 97%;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-3 {
+    width: 94%;
+  }
+
+  .app-shell .leaderboard-hero-avatar,
+  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 36px;
+    height: 36px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .leaderboard-hero-podium-card b,
+  .app-shell .leaderboard-hero-podium-card.rank-1 b {
+    font-size: .62rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .leaderboard-hero-podium-card {
+    transition: none;
+  }
+
+  .app-shell .leaderboard-hero-podium-card:hover {
+    transform: none;
+  }
+}
