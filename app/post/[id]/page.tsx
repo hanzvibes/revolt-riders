@@ -520,7 +520,7 @@ export default function ThreadPage() {
       <div className="community-thread-page dashboard-social-feed-v1">
         <Link className="community-thread-back" href="/dashboard">
           <ArrowLeft aria-hidden="true" />
-          Feed
+          Kembali
         </Link>
 
         {error ? (
