@@ -222,7 +222,7 @@ export default function ThreadPage() {
     } catch (cause) {
       console.error("Thread gagal dimuat.", cause);
       setError(
-        cause instanceof Error ? cause.message : "Thread belum dapat dimuat.",
+        cause instanceof Error ? cause.message : "Post belum dapat dimuat.",
       );
     } finally {
       if (!quiet) setLoading(false);
@@ -477,19 +477,19 @@ export default function ThreadPage() {
 
   if (accessLoading || loading) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
-        <PageSkeleton title="Memuat Thread..." />
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
+        <PageSkeleton title="Memuat Post..." />
       </AppShell>
     );
   }
 
   if (!activeMember) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
         <div className="community-thread-page">
           <section className="community-feed-gate">
             <LockKeyhole aria-hidden="true" />
-            <h3>Thread khusus member aktif</h3>
+            <h3>Post khusus member aktif</h3>
             <p>Aktifkan akun member untuk membaca dan ikut berdiskusi.</p>
           </section>
         </div>
@@ -499,11 +499,11 @@ export default function ThreadPage() {
 
   if (!post) {
     return (
-      <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
         <div className="community-thread-page">
           <Link className="community-thread-back" href="/dashboard">
             <ArrowLeft aria-hidden="true" />
-            Feed
+            Kembali
           </Link>
           <section className="community-feed-empty">
             <MessageCircle aria-hidden="true" />
@@ -516,7 +516,7 @@ export default function ThreadPage() {
   }
 
   return (
-    <AppShell active="Home" title="Thread" eyebrow={null} socialHeader>
+    <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
       <div className="community-thread-page dashboard-social-feed-v1">
         <Link className="community-thread-back" href="/dashboard">
           <ArrowLeft aria-hidden="true" />
@@ -603,13 +603,13 @@ export default function ThreadPage() {
 
         <section className="community-thread-discussion" aria-labelledby="thread-discussion-title">
           <header className="community-thread-discussion-head">
-            <h2 id="thread-discussion-title">Diskusi</h2>
+            <h2 id="thread-discussion-title">Komentar</h2>
             <span>{comments.length}</span>
           </header>
 
           {rootComments.length === 0 ? (
             <p className="community-no-comments">
-              Belum ada komentar. Mulai percakapan dengan tetap saling menghargai.
+              Belum ada komentar. Jadi yang pertama membuka percakapan.
             </p>
           ) : (
             <div className="community-thread-list">
