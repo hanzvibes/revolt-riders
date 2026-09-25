@@ -4379,3 +4379,402 @@
     transition: none;
   }
 }
+
+/* Post detail polish v3 · Threads reference */
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 660px);
+  padding-top: 0;
+  background: var(--rr-surface);
+}
+
+.app-shell .community-thread-page .community-thread-back {
+  min-width: 40px;
+  min-height: 40px;
+  margin: 2px 8px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-ink);
+  padding-inline: 10px 12px;
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-back:hover {
+  border-color: transparent;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  transform: none;
+}
+
+.app-shell .community-thread-page .community-thread-back svg {
+  width: 21px;
+  height: 21px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding: 14px 16px 7px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy {
+  padding: 0 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy p {
+  line-height: 1.55;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-link-preview {
+  margin: 10px 16px 0;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+  margin: 12px 16px 0;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  min-height: auto;
+  gap: 12px;
+  padding: 11px 16px 0;
+  color: var(--rr-muted);
+  font-size: .7rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  gap: 8px;
+  padding: 6px 10px 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  font-size: 0;
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button svg {
+  width: 21px;
+  height: 21px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button:hover {
+  border-color: transparent;
+  background: var(--rr-surface-soft);
+  transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button.is-liked {
+  border-color: transparent;
+  background: transparent;
+  color: var(--rr-red);
+}
+
+.app-shell .community-thread-page .community-thread-discussion {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  min-height: 48px;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0 16px;
+  align-items: center;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head h2 {
+  font-size: .82rem;
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: -.01em;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head > span {
+  min-width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  font-size: .72rem;
+}
+
+.app-shell .community-thread-page .community-no-comments {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 24px 16px;
+  color: var(--rr-muted);
+  text-align: center;
+}
+
+.app-shell .community-thread-page .community-thread-list {
+  display: block;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  position: relative;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 14px 16px 16px;
+}
+
+.app-shell .community-thread-page .thread-comment-root + .thread-comment-root {
+  padding-top: 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-line {
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.app-shell .community-thread-page .thread-comment-line > .community-avatar.small {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-content {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header {
+  gap: 4px 6px;
+  align-items: baseline;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header strong {
+  font-size: .8rem;
+  letter-spacing: -.01em;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header span {
+  border-radius: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  font-size: .66rem;
+  font-weight: var(--rr-fw-medium);
+}
+
+.app-shell .community-thread-page .thread-comment-content > header time {
+  margin-left: 1px;
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-content > p {
+  margin-top: 5px;
+  color: var(--rr-ink);
+  font-size: .8rem;
+  line-height: 1.52;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button {
+  min-height: 30px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-muted);
+  padding-inline: 7px;
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .thread-replies {
+  position: relative;
+  gap: 17px;
+  margin-top: 15px;
+  margin-left: 17px;
+  padding-left: 29px;
+}
+
+.app-shell .community-thread-page .thread-replies::before {
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--rr-line);
+}
+
+.app-shell .community-thread-page .thread-replies .thread-comment-line {
+  position: relative;
+}
+
+.app-shell .community-thread-page .thread-replies .thread-comment-line::before {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: -29px;
+  width: 18px;
+  height: 1px;
+  background: var(--rr-line);
+}
+
+.app-shell .community-thread-page .community-comments-locked {
+  margin: 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--rr-line);
+  background: transparent;
+  padding: 14px 16px;
+}
+
+.app-shell .community-thread-page .community-thread-composer {
+  z-index: 20;
+  margin: 0;
+  border-top: 1px solid var(--rr-line);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  padding: 10px 12px;
+  box-shadow: 0 -8px 22px color-mix(in srgb, var(--rr-charcoal) 5%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child {
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  min-height: 42px;
+  max-height: 132px;
+  border: 1px solid var(--rr-line);
+  border-radius: 999px;
+  background: var(--rr-surface-soft);
+  padding: 10px 14px;
+  line-height: 1.35;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea:focus {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface);
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+  width: 42px;
+  height: 42px;
+  background: var(--rr-ink);
+  color: var(--rr-surface);
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: none;
+  box-shadow: none;
+  opacity: .88;
+}
+
+.app-shell .community-thread-page .community-reply-target {
+  margin: 0 2px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--rr-surface-soft);
+  padding: 7px 9px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    width: 100%;
+    padding: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-back {
+    width: 42px;
+    margin: 2px 8px 6px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin,
+  .app-shell .community-thread-page .community-thread-discussion {
+    border-radius: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+    margin-inline: 12px;
+    border-radius: 12px;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion {
+    padding-inline: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer,
+  .app-shell .community-thread-page .community-comments-locked {
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-inline: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+    padding-inline: 7px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+    flex: 0 0 38px;
+    padding-inline: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion-head,
+  .app-shell .community-thread-page .thread-comment-root,
+  .app-shell .community-thread-page .community-no-comments {
+    padding-inline: 13px;
+  }
+
+  .app-shell .community-thread-page .thread-replies {
+    margin-left: 16px;
+    padding-left: 25px;
+  }
+
+  .app-shell .community-thread-page .thread-replies .thread-comment-line::before {
+    left: -25px;
+    width: 15px;
+  }
+}
+
