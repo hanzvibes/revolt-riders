@@ -4778,3 +4778,229 @@
   }
 }
 
+
+
+/* Post detail polish v4 · compact Threads pass */
+.app-shell .content > header.social-app-header .social-back-link {
+  display: grid;
+  place-items: center;
+  color: var(--rr-ink);
+  text-decoration: none;
+}
+
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 640px);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-footer {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px 9px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  order: 1;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1px;
+  border: 0;
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button + button {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  order: 2;
+  min-height: auto;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0 6px;
+  font-size: .67rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts span + span::before {
+  content: "·";
+  margin-inline: 6px;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  min-height: 44px;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  padding-block: 13px 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  margin-left: -7px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  height: 42px;
+  min-height: 42px;
+  resize: none;
+  overflow-y: auto;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+  gap: 8px;
+  margin: 10px 16px 2px;
+  border-radius: 13px;
+  background: transparent;
+  padding: 10px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+  gap: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head strong {
+  font-size: .78rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head small,
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head > b,
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress small {
+  font-size: .55rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-meta {
+  gap: 4px 10px;
+  font-size: .66rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress {
+  padding-block: 7px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress > span {
+  min-width: 0;
+  padding-inline: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress b {
+  font-size: .72rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-cta {
+  font-size: .66rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .content > header.social-app-header {
+    min-height: calc(56px + env(safe-area-inset-top));
+  }
+
+  .app-shell .content > header.social-app-header .social-back-link {
+    margin-right: 4px;
+  }
+
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 72px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+    padding-top: 10px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+    margin-inline: 13px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head > b {
+    grid-column: auto;
+    justify-self: end;
+    margin-top: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-meta {
+    display: flex;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-progress {
+    overflow: visible;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-progress > span {
+    min-width: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer {
+    position: fixed;
+    right: 12px;
+    bottom: calc(var(--rr-mobile-dashboard-clearance) + 8px + env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    margin: 0;
+    border: 1px solid var(--rr-line);
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--rr-surface) 96%, transparent);
+    padding: 7px 8px 7px 12px;
+    box-shadow: 0 10px 30px rgba(20, 22, 24, .12);
+  }
+
+  .app-shell .community-thread-page .community-thread-composer > div:last-child {
+    grid-template-columns: minmax(0, 1fr) 40px;
+    gap: 6px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer textarea {
+    height: 40px;
+    min-height: 40px;
+    border: 0;
+    background: transparent;
+    padding: 10px 8px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer textarea:focus {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .community-thread-page .community-reply-target {
+    margin: 0 0 5px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+    margin-inline: 11px;
+    padding: 9px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head > b {
+    display: none;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}

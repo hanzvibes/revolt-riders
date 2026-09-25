@@ -4,6 +4,7 @@ import { useMemberAccess, type AppRole } from "@/hooks/use-member-access";
 import { useDataCache } from "@/context/data-cache-context";
 import {
   Activity,
+  ArrowLeft,
   Bell,
   BellRing,
   Bike,
@@ -129,6 +130,7 @@ export function AppShell({
   eyebrow = "REVOLT RIDERS · MEMBER HUB",
   headerAction,
   socialHeader = false,
+  headerBackHref,
   children,
 }: {
   active: string;
@@ -136,6 +138,7 @@ export function AppShell({
   eyebrow?: string | null;
   headerAction?: ReactNode;
   socialHeader?: boolean;
+  headerBackHref?: string;
   children: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -468,16 +471,26 @@ export function AppShell({
         inert={isMobileDrawer && open ? true : undefined}
       >
         <header className={socialHeader ? "social-app-header" : undefined}>
-          <button
-            ref={menuButtonRef}
-            className="hamb"
-            onClick={() => setOpen(true)}
-            aria-label="Buka menu"
-            aria-controls="app-mobile-drawer"
-            aria-expanded={open}
-          >
-            <Menu />
-          </button>
+          {headerBackHref ? (
+            <Link
+              className="hamb social-back-link"
+              href={headerBackHref}
+              aria-label="Kembali"
+            >
+              <ArrowLeft />
+            </Link>
+          ) : (
+            <button
+              ref={menuButtonRef}
+              className="hamb"
+              onClick={() => setOpen(true)}
+              aria-label="Buka menu"
+              aria-controls="app-mobile-drawer"
+              aria-expanded={open}
+            >
+              <Menu />
+            </button>
+          )}
           <div>
             {eyebrow ? <small>{eyebrow}</small> : null}
             <h1>{title}</h1>

@@ -19,7 +19,6 @@ import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
-  ArrowLeft,
   ExternalLink,
   Heart,
   Link2,
@@ -29,7 +28,6 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import {
   useCallback,
@@ -477,7 +475,7 @@ export default function ThreadPage() {
 
   if (accessLoading || loading) {
     return (
-      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader headerBackHref="/dashboard">
         <PageSkeleton title="Memuat Post..." />
       </AppShell>
     );
@@ -485,7 +483,7 @@ export default function ThreadPage() {
 
   if (!activeMember) {
     return (
-      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader headerBackHref="/dashboard">
         <div className="community-thread-page">
           <section className="community-feed-gate">
             <LockKeyhole aria-hidden="true" />
@@ -499,13 +497,9 @@ export default function ThreadPage() {
 
   if (!post) {
     return (
-      <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
+      <AppShell active="Home" title="Post" eyebrow={null} socialHeader headerBackHref="/dashboard">
         <div className="community-thread-page">
-          <Link className="community-thread-back" href="/dashboard">
-            <ArrowLeft aria-hidden="true" />
-            Kembali
-          </Link>
-          <section className="community-feed-empty">
+<section className="community-feed-empty">
             <MessageCircle aria-hidden="true" />
             <h3>Post tidak ditemukan</h3>
             <p>{error || "Post ini sudah tidak tersedia."}</p>
@@ -516,14 +510,9 @@ export default function ThreadPage() {
   }
 
   return (
-    <AppShell active="Home" title="Post" eyebrow={null} socialHeader>
+    <AppShell active="Home" title="Post" eyebrow={null} socialHeader headerBackHref="/dashboard">
       <div className="community-thread-page dashboard-social-feed-v1">
-        <Link className="community-thread-back" href="/dashboard">
-          <ArrowLeft aria-hidden="true" />
-          Kembali
-        </Link>
-
-        {error ? (
+{error ? (
           <p className="community-feed-error" role="alert">{error}</p>
         ) : null}
 
