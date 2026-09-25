@@ -12074,3 +12074,120 @@
     transition: none;
   }
 }
+
+
+/* Leaderboard hero · dark matched stacked cards */
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card {
+  border-color: rgba(255,255,255,.10);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(220,27,42,.10), transparent 32%),
+    linear-gradient(145deg, #15181a 0%, #0f1113 58%, #0b0d0f 100%);
+  color: #fff;
+  box-shadow:
+    0 24px 52px rgba(0,0,0,.34),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-0 {
+  border-color: rgba(220,27,42,.38);
+  box-shadow:
+    0 28px 58px rgba(0,0,0,.38),
+    0 0 0 1px rgba(220,27,42,.06) inset;
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-1 {
+  border-color: rgba(220,27,42,.24);
+  background:
+    radial-gradient(circle at 88% 14%, rgba(220,27,42,.08), transparent 32%),
+    linear-gradient(145deg, #141719 0%, #0d0f11 62%, #090b0d 100%);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.stack-layer-2 {
+  border-color: rgba(220,27,42,.16);
+  background:
+    linear-gradient(145deg, #121416 0%, #0b0d0f 65%, #08090a 100%);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-icon {
+  background: rgba(255,255,255,.055);
+  color: #c7ccd0;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-podium-card.rank-1 .leaderboard-hero-rank-icon {
+  background: rgba(220,27,42,.13);
+  color: var(--rr-red);
+  border-color: rgba(220,27,42,.18);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-hero-rank-label {
+  color: var(--rr-red);
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity strong {
+  color: #f7f8f8;
+}
+
+.app-shell .leaderboard-swipe-deck .leaderboard-stack-card-identity small {
+  color: #7f878c;
+}
+
+.app-shell .leaderboard-stack-card-km {
+  color: #ff3948;
+}
+
+.app-shell .leaderboard-stack-card-note {
+  border-bottom-color: rgba(255,255,255,.08);
+  color: #8d9499;
+}
+
+.app-shell .leaderboard-stack-card-details > div {
+  border-bottom-color: rgba(255,255,255,.08);
+}
+
+.app-shell .leaderboard-stack-card-details svg {
+  color: #8d9499;
+}
+
+.app-shell .leaderboard-stack-card-details span {
+  color: #8d9499;
+}
+
+.app-shell .leaderboard-stack-card-details strong {
+  color: #f4f5f5;
+}
+
+.app-shell .leaderboard-stack-card-total {
+  border: 1px solid rgba(220,27,42,.34);
+  background: rgba(220,27,42,.10);
+  color: #ff3948;
+}
+
+.app-shell .leaderboard-stack-card-total span,
+.app-shell .leaderboard-stack-card-total strong {
+  color: #ff3948;
+}
+
+.app-shell .leaderboard-swipe-controls > button {
+  border-color: rgba(220,27,42,.34);
+  background: rgba(220,27,42,.07);
+  color: #d9dde0;
+}
+
+.app-shell .leaderboard-swipe-controls > button:hover {
+  border-color: rgba(220,27,42,.52);
+  background: rgba(220,27,42,.14);
+  color: #fff;
+}
+
+.app-shell .leaderboard-swipe-dots button {
+  background: rgba(255,255,255,.24);
+}
+
+.app-shell .leaderboard-swipe-dots button.active {
+  background: var(--rr-red);
+}
+
+.app-shell .leaderboard-swipe-hint {
+  color: #858c91;
+}
