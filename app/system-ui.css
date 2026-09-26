@@ -12191,3 +12191,54 @@
 .app-shell .leaderboard-swipe-hint {
   color: var(--rr-invite-muted-strong);
 }
+
+
+/* Global app canvas · pure white */
+html,
+body {
+  background: #ffffff !important;
+}
+
+body,
+.app-shell,
+.app-shell > .content,
+.app-shell > section.content,
+.app-shell .page-wrap,
+.app-shell .dashboard-grid,
+.app-shell .dashboard-social-feed-v1,
+.app-shell .dashboard-social-feed-main,
+.app-shell .community-thread-page,
+.app-shell .community-thread-discussion,
+.app-shell .community-thread-list {
+  background-color: #ffffff !important;
+}
+
+/* Keep the app canvas white through empty/overscroll areas */
+.app-shell,
+.app-shell > .content {
+  min-height: 100dvh;
+}
+
+.app-shell > .content::before,
+.app-shell > .content::after,
+.app-shell .page-wrap::before,
+.app-shell .page-wrap::after {
+  background: transparent !important;
+}
+
+/* Header is part of the white canvas, no gray tint */
+.app-shell .content > header,
+.app-shell .content > header.social-app-header {
+  background: #ffffff !important;
+}
+
+/* Mobile viewport and safe-area remain white behind the floating nav */
+@media (max-width: 720px) {
+  html,
+  body,
+  .app-shell,
+  .app-shell > .content,
+  .app-shell > section.content {
+    background: #ffffff !important;
+  }
+}
