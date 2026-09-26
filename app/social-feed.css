@@ -5477,3 +5477,121 @@
     transition: none;
   }
 }
+
+
+/* Post detail polish v6 · full white + connected thread */
+.app-shell.social-shell,
+.app-shell.social-shell .content,
+.app-shell.social-shell .content > header.social-app-header,
+.app-shell.social-shell .community-thread-page.dashboard-social-feed-v1,
+.app-shell.social-shell .community-thread-origin,
+.app-shell.social-shell .community-thread-discussion,
+.app-shell.social-shell .community-thread-list,
+.app-shell.social-shell .thread-comment-root {
+  background: #fff;
+}
+
+.app-shell.social-shell,
+.app-shell.social-shell .content {
+  min-height: 100dvh;
+}
+
+.app-shell.social-shell .content > header.social-app-header {
+  border-bottom-color: #eceeef;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+  background: #fff;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  --thread-root-gutter: 18px;
+  --thread-avatar-size: 36px;
+  position: relative;
+}
+
+/* Continuous Threads-style connector: parent avatar -> replies */
+.app-shell.social-shell .thread-comment-root.has-replies::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc(16px + var(--thread-avatar-size));
+  bottom: 35px;
+  left: calc(var(--thread-root-gutter) + (var(--thread-avatar-size) / 2) - 1px);
+  width: 2px;
+  border-radius: 999px;
+  background: #dfe2e4;
+  pointer-events: none;
+}
+
+.app-shell.social-shell .thread-comment-root.has-replies > .thread-comment-line,
+.app-shell.social-shell .thread-comment-root.has-replies > .thread-replies {
+  position: relative;
+  z-index: 1;
+}
+
+/* Remove the old detached reply rail */
+.app-shell.social-shell .thread-replies::before {
+  display: none;
+}
+
+/* Keep child replies aligned with the parent's vertical connector */
+.app-shell.social-shell .thread-replies {
+  margin: 12px 0 0 18px;
+  padding-left: 30px;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line {
+  position: relative;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 18px;
+  left: -30px;
+  width: 30px;
+  height: 2px;
+  border-radius: 999px;
+  background: #dfe2e4;
+  pointer-events: none;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line > .community-avatar.small {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    background: #fff;
+  }
+
+  .app-shell.social-shell .thread-comment-root {
+    --thread-root-gutter: 16px;
+  }
+
+  .app-shell.social-shell .thread-comment-root.has-replies::before {
+    top: calc(16px + var(--thread-avatar-size));
+    bottom: 34px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .thread-comment-root {
+    --thread-root-gutter: 14px;
+  }
+
+  .app-shell.social-shell .thread-replies {
+    margin-left: 18px;
+    padding-left: 27px;
+  }
+
+  .app-shell.social-shell .thread-replies .thread-comment-line::before {
+    left: -27px;
+    width: 27px;
+  }
+}

@@ -608,7 +608,7 @@ export default function ThreadPage() {
                   isStaff || comment.author_id === user?.id;
 
                 return (
-                  <article className="thread-comment-root" key={comment.id}>
+                  <article className={`thread-comment-root${replies.length > 0 ? " has-replies" : ""}`} key={comment.id}>
                     <div className="thread-comment-line">
                       <span className="community-avatar small" aria-hidden="true">
                         {socialInitials(comment.author_name)}
