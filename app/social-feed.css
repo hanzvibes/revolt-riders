@@ -5004,3 +5004,476 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 }
+
+
+/* Post detail polish v5 · proper social layout */
+.app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 720px);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 0 120px;
+  background: #fff;
+}
+
+.app-shell.social-shell .community-thread-origin {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-header {
+  gap: 12px;
+  padding: 18px 18px 8px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-avatar-logo {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  border-color: var(--rr-line);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author {
+  gap: 4px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author strong {
+  font-size: .9rem;
+  line-height: 1.15;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author small {
+  gap: 5px;
+  font-size: .7rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author small b {
+  color: var(--rr-muted);
+  font-size: .7rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-copy {
+  padding: 4px 18px 0;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-copy p {
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+  gap: 9px;
+  margin: 14px 18px 8px;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface-soft);
+  padding: 12px;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head {
+  gap: 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head strong {
+  font-size: .82rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head small,
+.app-shell.social-shell .community-thread-origin .community-voyager-head > b,
+.app-shell.social-shell .community-thread-origin .community-voyager-progress small {
+  font-size: .59rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-meta {
+  gap: 6px 12px;
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress {
+  padding-block: 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress > span {
+  min-height: 36px;
+  padding-inline: 10px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress b {
+  font-size: .76rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-cta {
+  min-height: 30px;
+  align-items: center;
+  font-size: .68rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-footer {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions {
+  order: 1;
+  gap: 2px;
+  padding: 0;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-counts {
+  order: 2;
+  gap: 0;
+  padding: 0 4px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+.app-shell.social-shell .community-thread-discussion {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-discussion-head {
+  min-height: 52px;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0 18px;
+}
+
+.app-shell.social-shell .community-thread-discussion-head h2 {
+  font-size: .86rem;
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell.social-shell .community-thread-discussion-head > span {
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+.app-shell.social-shell .community-no-comments {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: #fff;
+  padding: 28px 18px;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 16px 18px 17px;
+}
+
+.app-shell.social-shell .thread-comment-line {
+  gap: 11px;
+}
+
+.app-shell.social-shell .thread-comment-line > .community-avatar.small {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+  border: 1px solid var(--rr-line);
+  background: #fff;
+  color: var(--rr-ink);
+  font-size: .62rem;
+}
+
+.app-shell.social-shell .thread-comment-content {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.app-shell.social-shell .thread-comment-content > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  align-items: baseline;
+}
+
+.app-shell.social-shell .thread-comment-content > header strong {
+  color: var(--rr-ink);
+  font-size: .82rem;
+  line-height: 1.25;
+}
+
+.app-shell.social-shell .thread-comment-content > header span,
+.app-shell.social-shell .thread-comment-content > header time {
+  color: var(--rr-muted);
+  font-size: .68rem;
+  font-weight: var(--rr-fw-regular);
+}
+
+.app-shell.social-shell .thread-comment-content > p {
+  margin: 6px 0 0;
+  color: var(--rr-ink);
+  font-size: .84rem;
+  line-height: 1.48;
+}
+
+.app-shell.social-shell .thread-comment-actions {
+  display: flex;
+  gap: 2px;
+  margin: 6px 0 0 -8px;
+}
+
+.app-shell.social-shell .thread-comment-actions button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0 8px;
+  font-size: .68rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell.social-shell .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .thread-comment-actions button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-shell.social-shell .thread-comment-actions button.danger {
+  color: var(--rr-muted);
+}
+
+.app-shell.social-shell .thread-comment-actions button.danger:hover {
+  color: var(--rr-danger);
+}
+
+.app-shell.social-shell .thread-replies {
+  position: relative;
+  gap: 16px;
+  margin: 12px 0 0 18px;
+  padding-left: 30px;
+}
+
+.app-shell.social-shell .thread-replies::before {
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: #e4e6e7;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line::before {
+  top: 18px;
+  left: -30px;
+  width: 19px;
+  height: 2px;
+  border-radius: 999px;
+  background: #e4e6e7;
+}
+
+.app-shell.social-shell .community-thread-composer {
+  z-index: 24;
+  margin: 0;
+  border: 1px solid #dde0e2;
+  border-radius: 999px;
+  background: rgba(255,255,255,.97);
+  padding: 6px 7px 6px 16px;
+  box-shadow:
+    0 12px 32px rgba(20,22,24,.10),
+    0 2px 8px rgba(20,22,24,.04);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 42px;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-shell.social-shell .community-thread-composer textarea {
+  width: 100%;
+  height: 42px;
+  min-height: 42px;
+  max-height: 112px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 10px 0;
+  color: var(--rr-ink);
+  line-height: 1.35;
+  resize: none;
+  outline: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer textarea:focus {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:disabled {
+  background: #aeb3b7;
+  color: #fff;
+  opacity: 1;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: scale(1.03);
+  background: #111315;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell.social-shell .community-reply-target {
+  margin: 0 0 5px -5px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 7px 9px;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    width: 100%;
+    max-width: none;
+    padding: 0 0 calc(var(--rr-mobile-dashboard-clearance) + 92px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-header {
+    padding: 16px 16px 8px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-copy {
+    padding-inline: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+    margin: 12px 16px 7px;
+    padding: 11px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-footer {
+    padding-inline: 10px;
+  }
+
+  .app-shell.social-shell .community-thread-discussion-head,
+  .app-shell.social-shell .thread-comment-root,
+  .app-shell.social-shell .community-no-comments {
+    padding-inline: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: fixed;
+    right: auto;
+    bottom: calc(var(--rr-mobile-dashboard-clearance) + 12px + env(safe-area-inset-bottom));
+    left: 50%;
+    width: min(calc(100% - 24px), 696px);
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-origin .community-post-header {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-copy {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+    margin-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-discussion-head,
+  .app-shell.social-shell .thread-comment-root,
+  .app-shell.social-shell .community-no-comments {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .thread-replies {
+    margin-left: 18px;
+    padding-left: 27px;
+  }
+
+  .app-shell.social-shell .thread-replies .thread-comment-line::before {
+    left: -27px;
+    width: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    width: calc(100% - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.social-shell .community-thread-origin .community-post-actions button,
+  .app-shell.social-shell .thread-comment-actions button,
+  .app-shell.social-shell .community-thread-composer > div:last-child > button {
+    transition: none;
+  }
+}
