@@ -3,3 +3,123 @@
 /* 65 Desktop Feed Width Audit */
 @media (min-width:1100px){.app-shell .dashboard-social-feed-v1{width:min(100%,720px);padding-inline:20px}.app-shell .dashboard-social-feed-v1 .community-feed-list{gap:16px}.app-shell .dashboard-social-feed-v1 .community-post{max-width:680px;margin-inline:auto}}
 @media (prefers-reduced-motion:reduce){.app-shell .dashboard-social-feed-v1 .community-feed-skeleton>*,.app-shell .dashboard-social-feed-v1 button[aria-busy="true"] svg,.app-shell .dashboard-social-feed-v1 button.is-loading svg{animation:none}}
+
+
+/* Dashboard clean thread · neutral continuous timeline */
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  display: block;
+  background: var(--rr-bg);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post,
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: var(--rr-bg);
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post:last-child {
+  border-bottom: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  position: relative;
+  padding-top: 16px;
+  padding-bottom: 18px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail {
+  overflow: visible;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+  background: var(--rr-bg);
+  box-shadow: 0 0 0 3px var(--rr-bg);
+}
+
+/* One continuous timeline from this user avatar into the next post avatar. */
+.app-shell .dashboard-social-feed-v1 .community-threads-post:not(:last-child) .community-threads-connector {
+  bottom: -38px;
+  background: var(--rr-line-strong);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post:last-child .community-threads-connector {
+  bottom: 2px;
+  background: var(--rr-line);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+  min-height: 28px;
+  margin: 0 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label svg {
+  color: currentColor;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  border-color: var(--rr-line);
+  background: var(--rr-bg);
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-head > b {
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-cta,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-cta svg {
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked {
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts {
+  border-color: var(--rr-line);
+  background: var(--rr-bg);
+  color: var(--rr-ink);
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover,
+  .app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned:hover {
+    border-bottom-color: var(--rr-line-strong);
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding-top: 15px;
+    padding-bottom: 17px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:not(:last-child) .community-threads-connector {
+    bottom: -36px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:not(:last-child) .community-threads-connector {
+    bottom: -34px;
+  }
+}
