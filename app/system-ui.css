@@ -12192,11 +12192,10 @@
   color: var(--rr-invite-muted-strong);
 }
 
-
 /* Global app canvas · pure white */
 html,
 body {
-  background: #ffffff !important;
+  background: var(--rr-bg);
 }
 
 body,
@@ -12210,7 +12209,7 @@ body,
 .app-shell .community-thread-page,
 .app-shell .community-thread-discussion,
 .app-shell .community-thread-list {
-  background-color: #ffffff !important;
+  background-color: var(--rr-bg);
 }
 
 /* Keep the app canvas white through empty/overscroll areas */
@@ -12223,13 +12222,13 @@ body,
 .app-shell > .content::after,
 .app-shell .page-wrap::before,
 .app-shell .page-wrap::after {
-  background: transparent !important;
+  background: transparent;
 }
 
 /* Header is part of the white canvas, no gray tint */
 .app-shell .content > header,
 .app-shell .content > header.social-app-header {
-  background: #ffffff !important;
+  background: var(--rr-bg);
 }
 
 /* Mobile viewport and safe-area remain white behind the floating nav */
@@ -12239,6 +12238,6 @@ body,
   .app-shell,
   .app-shell > .content,
   .app-shell > section.content {
-    background: #ffffff !important;
+    background: var(--rr-bg);
   }
 }
