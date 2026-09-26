@@ -1,5 +1,6 @@
 "use client";
 
+import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
@@ -12,6 +13,7 @@ import {
   CheckCircle2,
   Clock,
   Gauge,
+  KeyRound,
   Pencil,
   RefreshCw,
   Search,
@@ -104,6 +106,7 @@ const getRoleClass = (role: string | null) => {
 };
 
 export default function ManageMembersPage() {
+  const { confirmAction } = useActionDialog();
   const { account, loading: accessLoading } = useMemberAccess();
   const { fetchWithCache, invalidateCache } = useDataCache();
   const [members, setMembers] = useState<Member[]>([]);
@@ -118,6 +121,9 @@ export default function ManageMembersPage() {
   const [editingAccount, setEditingAccount] = useState<MemberAccount | null>(null);
   const [accountRole, setAccountRole] = useState<string>("member");
   const [accountStatus, setAccountStatus] = useState<"active" | "inactive">("active");
+  const [newPassword, setNewPassword] = useState("");
+  const [showPasswordReset, setShowPasswordReset] = useState(false);
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -258,6 +264,9 @@ export default function ManageMembersPage() {
     setForm(emptyForm);
     setEditing(false);
     setEditingAccount(null);
+    setNewPassword("");
+    setShowPasswordReset(false);
+    setResettingPassword(false);
     setError("");
   };
 
@@ -267,6 +276,9 @@ export default function ManageMembersPage() {
     setEditingAccount(null);
     setAccountRole("member");
     setAccountStatus("active");
+    setNewPassword("");
+    setShowPasswordReset(false);
+    setResettingPassword(false);
     setFormOpen(true);
     setError("");
   };
@@ -291,8 +303,64 @@ export default function ManageMembersPage() {
       setAccountRole(linkedAccount.role);
       setAccountStatus(linkedAccount.status === "inactive" ? "inactive" : "active");
     }
+    setNewPassword("");
+    setShowPasswordReset(false);
+    setResettingPassword(false);
     setFormOpen(true);
     setError("");
+  };
+
+  const canResetSelectedPassword =
+    Boolean(editingAccount) &&
+    (account?.role === "superadmin" ||
+      !["admin", "superadmin"].includes(editingAccount?.role ?? ""));
+
+  const resetMemberPassword = async () => {
+    if (!editingAccount) return;
+    if (newPassword.length < 8) {
+      showToast("Password minimal 8 karakter.", "error");
+      return;
+    }
+
+    const confirmed = await confirmAction({
+      title: `Reset password ${form.memberId}?`,
+      description:
+        "Password lama akan langsung diganti. Member bisa masuk memakai password baru setelah proses ini berhasil.",
+      confirmLabel: "RESET PASSWORD",
+      cancelLabel: "BATAL",
+      destructive: true,
+    });
+    if (!confirmed) return;
+
+    setResettingPassword(true);
+    setError("");
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error: invokeError } = await supabase.functions.invoke(
+        "admin-reset-member-password",
+        {
+          body: {
+            memberExternalId: form.memberId,
+            password: newPassword,
+          },
+        },
+      );
+
+      if (invokeError) throw invokeError;
+      if (data?.error) throw new Error(String(data.error));
+
+      setNewPassword("");
+      setShowPasswordReset(false);
+      showToast(`Password ${form.memberId} berhasil direset.`, "success");
+    } catch (caught) {
+      const message =
+        caught instanceof Error ? caught.message : "Password gagal direset.";
+      setError(message);
+      showToast(message, "error");
+    } finally {
+      setResettingPassword(false);
+    }
   };
 
   const saveMember = async (event: FormEvent) => {
@@ -1111,6 +1179,107 @@ export default function ManageMembersPage() {
                       <option value="inactive">Nonaktif (Diblokir)</option>
                     </select>
                   </label>
+                </div>
+
+                <div
+                  style={{
+                    marginTop: 12,
+                    padding: "12px",
+                    borderRadius: 10,
+                    border: "1px solid #e2e8f0",
+                    background: "#f8fafc",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 7,
+                      marginBottom: 8,
+                      fontSize: "0.75rem",
+                      fontWeight: 800,
+                      color: "var(--ink)",
+                    }}
+                  >
+                    <KeyRound size={14} style={{ color: "var(--red)" }} />
+                    <span>Reset Password Member</span>
+                  </div>
+
+                  {canResetSelectedPassword ? (
+                    <>
+                      <p
+                        style={{
+                          margin: "0 0 9px",
+                          fontSize: "0.7rem",
+                          lineHeight: 1.5,
+                          color: "#64748b",
+                        }}
+                      >
+                        Gunakan saat member lupa password. Password lama langsung
+                        diganti setelah dikonfirmasi.
+                      </p>
+
+                      {showPasswordReset ? (
+                        <div
+                          style={{
+                            display: "grid",
+                            gridTemplateColumns: "minmax(0, 1fr) auto",
+                            gap: 8,
+                            alignItems: "end",
+                          }}
+                        >
+                          <label style={{ margin: 0 }}>
+                            Password Baru
+                            <input
+                              type="password"
+                              value={newPassword}
+                              onChange={(event) => setNewPassword(event.target.value)}
+                              minLength={8}
+                              autoComplete="new-password"
+                              placeholder="Minimal 8 karakter"
+                              disabled={resettingPassword}
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            className="outline-action"
+                            onClick={() => void resetMemberPassword()}
+                            disabled={resettingPassword || newPassword.length < 8}
+                            style={{ minHeight: 42, whiteSpace: "nowrap" }}
+                          >
+                            <KeyRound size={13} />
+                            {resettingPassword ? "MEReset…" : "RESET"}
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="outline-action"
+                          onClick={() => setShowPasswordReset(true)}
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: 6,
+                          }}
+                        >
+                          <KeyRound size={13} />
+                          RESET PASSWORD
+                        </button>
+                      )}
+                    </>
+                  ) : (
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: "0.7rem",
+                        lineHeight: 1.5,
+                        color: "#64748b",
+                      }}
+                    >
+                      Hanya Superadmin yang dapat mereset password akun Admin
+                      atau Superadmin.
+                    </p>
+                  )}
                 </div>
               </div>
             )}
