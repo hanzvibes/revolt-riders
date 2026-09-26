@@ -5783,3 +5783,93 @@
     padding-block: 7px;
   }
 }
+
+
+/* Post detail polish v8 · composer after discussion */
+/* Hard reset legacy sticky/fixed composer behavior */
+.app-shell.social-shell .community-thread-composer {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto;
+  width: auto !important;
+  max-width: none;
+  transform: none !important;
+  clear: both;
+  margin: 16px 16px 28px !important;
+}
+
+.app-shell.social-shell .community-thread-discussion {
+  display: block;
+  overflow: visible;
+}
+
+.app-shell.social-shell .community-thread-list {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-replies {
+  position: relative !important;
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line {
+  position: relative !important;
+  min-height: 48px;
+}
+
+.app-shell.social-shell .thread-comment-root:last-child {
+  padding-bottom: 20px;
+}
+
+.app-shell.social-shell .community-thread-discussion + .community-thread-composer {
+  border-top: 1px solid #eef0f1;
+  padding-top: 12px;
+}
+
+/* No viewport offset when keyboard/input is focused */
+.app-shell.social-shell:has(.community-thread-composer textarea:focus) .community-thread-composer {
+  position: static !important;
+  inset: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 28px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    margin: 16px 14px 26px !important;
+    transform: none !important;
+  }
+
+  .app-shell.social-shell .community-thread-discussion + .community-thread-composer {
+    padding-top: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-composer {
+    margin-inline: 12px !important;
+  }
+}

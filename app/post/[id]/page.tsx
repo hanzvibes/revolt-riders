@@ -702,39 +702,41 @@ export default function ThreadPage() {
               <LockKeyhole aria-hidden="true" />
               Pengurus telah menutup komentar untuk post ini.
             </p>
-          ) : (
-            <form className="community-thread-composer" onSubmit={submitComment}>
-              {replyTarget ? (
-                <div className="community-reply-target">
-                  <span>
-                    Membalas <b>{replyTarget.author_name}</b>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setReplyTarget(null)}
-                    aria-label="Batalkan balasan"
-                  >
-                    <X aria-hidden="true" />
-                  </button>
-                </div>
-              ) : null}
-              <div>
-                <textarea
-                  id="thread-comment-box"
-                  value={commentBody}
-                  onChange={(event) => setCommentBody(event.target.value)}
-                  maxLength={1000}
-                  placeholder={replyTarget ? "Tulis balasan…" : "Tulis komentar…"}
-                  required
-                />
-                <button type="submit" disabled={commentSaving || !commentBody.trim()}>
-                  <Send aria-hidden="true" />
-                  <span className="sr-only">Kirim komentar</span>
+          ) : null}
+        </section>
+
+        {!post.comments_locked ? (
+          <form className="community-thread-composer" onSubmit={submitComment}>
+            {replyTarget ? (
+              <div className="community-reply-target">
+                <span>
+                  Membalas <b>{replyTarget.author_name}</b>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setReplyTarget(null)}
+                  aria-label="Batalkan balasan"
+                >
+                  <X aria-hidden="true" />
                 </button>
               </div>
-            </form>
-          )}
-        </section>
+            ) : null}
+            <div>
+              <textarea
+                id="thread-comment-box"
+                value={commentBody}
+                onChange={(event) => setCommentBody(event.target.value)}
+                maxLength={1000}
+                placeholder={replyTarget ? "Tulis balasan…" : "Tulis komentar…"}
+                required
+              />
+              <button type="submit" disabled={commentSaving || !commentBody.trim()}>
+                <Send aria-hidden="true" />
+                <span className="sr-only">Kirim komentar</span>
+              </button>
+            </div>
+          </form>
+        ) : null}
       </div>
     </AppShell>
   );
