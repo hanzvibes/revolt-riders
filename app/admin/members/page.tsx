@@ -315,6 +315,7 @@ export default function ManageMembersPage() {
     (account?.role === "superadmin" ||
       !["admin", "superadmin"].includes(editingAccount?.role ?? ""));
 
+  // Password reset is executed server-side through the secured Supabase Edge Function.
   const resetMemberPassword = async () => {
     if (!editingAccount) return;
     if (newPassword.length < 8) {
