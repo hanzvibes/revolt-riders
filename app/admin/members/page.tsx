@@ -1248,7 +1248,7 @@ export default function ManageMembersPage() {
                             style={{ minHeight: 42, whiteSpace: "nowrap" }}
                           >
                             <KeyRound size={13} />
-                            {resettingPassword ? "MEReset…" : "RESET"}
+                            {resettingPassword ? "MEMPROSES…" : "RESET"}
                           </button>
                         </div>
                       ) : (
