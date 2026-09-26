@@ -149,13 +149,6 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
         </div>
 
         <div className="community-threads-body">
-          {post.is_pinned ? (
-            <div className="community-pin-label">
-              <Pin aria-hidden="true" />
-              Disematkan
-            </div>
-          ) : null}
-
           <header className="community-post-header">
             <span className="community-post-author">
               <strong>{post.author_name}</strong>
@@ -166,6 +159,12 @@ function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike,
                   {socialRelativeDate(post.published_at ?? post.created_at)}
                 </time>
               </small>
+              {post.is_pinned ? (
+                <span className="community-pin-label">
+                  <Pin aria-hidden="true" />
+                  Disematkan
+                </span>
+              ) : null}
             </span>
 
             {canManage ? (
