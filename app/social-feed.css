@@ -5595,3 +5595,191 @@
     width: 27px;
   }
 }
+
+
+/* Post detail polish v7 · inline composer below comments */
+.app-shell.social-shell .community-thread-discussion {
+  padding-bottom: 0;
+}
+
+.app-shell.social-shell .community-thread-list {
+  display: block;
+}
+
+/* Composer lives in normal document flow, directly after the comments list */
+.app-shell.social-shell .community-thread-composer {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: auto;
+  max-width: none;
+  transform: none;
+  margin: 14px 16px 22px;
+  border: 1px solid #e2e4e6;
+  border-radius: 18px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 18px rgba(20,22,24,.06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 42px;
+  align-items: end;
+  gap: 8px;
+}
+
+.app-shell.social-shell .community-thread-composer textarea {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  max-height: 120px;
+  border: 1px solid #e1e4e6;
+  border-radius: 14px;
+  background: #fff;
+  padding: 11px 12px;
+  color: var(--rr-ink);
+  font: inherit;
+  font-size: .82rem;
+  line-height: 1.4;
+  resize: vertical;
+  outline: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer textarea::placeholder {
+  color: #9aa0a5;
+}
+
+.app-shell.social-shell .community-thread-composer textarea:focus {
+  border: 1px solid color-mix(in srgb, var(--rr-red) 72%, #fff);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rr-red) 10%, transparent);
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  align-self: end;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:disabled {
+  background: #c5c9cc;
+  color: #fff;
+  opacity: 1;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  background: #111315;
+  transform: translateY(-1px);
+}
+
+.app-shell.social-shell .community-reply-target {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 8px;
+  border: 0;
+  border-radius: 12px;
+  background: #f6f7f7;
+  padding: 8px 10px 8px 12px;
+}
+
+.app-shell.social-shell .community-reply-target span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.social-shell .community-reply-target span b {
+  color: var(--rr-ink);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell.social-shell .community-reply-target button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+}
+
+.app-shell.social-shell .community-reply-target button:hover {
+  background: #eceeef;
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .community-reply-target button svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 18px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    transform: none;
+    margin: 14px 14px 22px;
+    border-radius: 17px;
+    padding: 9px;
+  }
+
+  .app-shell.social-shell .community-thread-composer textarea {
+    min-height: 42px;
+    height: 42px;
+    max-height: 112px;
+    border-radius: 13px;
+    font-size: .8rem;
+  }
+
+  .app-shell.social-shell .community-thread-composer > div:last-child {
+    grid-template-columns: minmax(0,1fr) 40px;
+    gap: 7px;
+  }
+
+  .app-shell.social-shell .community-thread-composer > div:last-child > button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-composer {
+    width: auto;
+    margin-inline: 12px;
+    padding: 8px;
+  }
+
+  .app-shell.social-shell .community-reply-target {
+    min-height: 36px;
+    padding-block: 7px;
+  }
+}
