@@ -38,10 +38,10 @@
   overflow: hidden;
 }
 .native-sheet-backdrop[data-state="open"] {
-  animation: sheet-fade 0.22s ease-out;
+  animation: sheet-fade 0.22s ease-out both;
 }
 .native-sheet-backdrop[data-state="closed"] {
-  animation: sheet-fade-out 0.2s ease-in forwards;
+  animation: sheet-fade-out 0.2s ease-in both;
 }
 .native-sheet {
   --sheet-surface: #ffffff;
@@ -56,14 +56,19 @@
   background: var(--sheet-surface);
   box-shadow: 0 -12px 48px rgba(10, 12, 14, 0.2);
   overflow: hidden;
-  clip-path: inset(0 round 22px 22px 0 0);
-  -webkit-clip-path: inset(0 round 22px 22px 0 0);
   isolation: isolate;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
 }
 .native-sheet[data-state="open"] {
-  animation: sheet-rise-native 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: sheet-rise-native 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 .native-sheet[data-state="closed"] {
+  animation: sheet-sink-native 0.22s cubic-bezier(0.32, 0, 0.67, 0) both;
+}
+.native-sheet[data-dragging="true"] {
   animation: none;
 }
 .native-sheet-handle {
@@ -796,12 +801,20 @@
 }
 @keyframes sheet-rise-native {
   from {
-    opacity: 0.4;
-    transform: translateY(100%);
+    transform: translate3d(0, 100%, 0);
   }
   to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes sheet-sink-native {
+  from {
+    transform: translate3d(0, 0, 0);
     opacity: 1;
-    transform: translateY(0);
+  }
+  to {
+    transform: translate3d(0, calc(100% + 24px), 0);
+    opacity: 0;
   }
 }
 @media (max-width: 1024px) {

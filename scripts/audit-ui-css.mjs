@@ -285,7 +285,7 @@ if (fs.existsSync(nativeAdminPath)) {
 
 const systemUiPath = path.join(ROOT, "app/system-ui.css");
 if (fs.existsSync(systemUiPath)) {
-  const systemUi = fs.readFileSync(systemUiPath, "utf8");
+  const systemUi = fs.readFileSync(systemUiPath, "utf8").replace(/\r\n/g, "\n");
   const mobileActionTypography = `.app-shell .voyager-create-action,
 .app-shell .voyager-gallery-empty > button,
 .app-shell .voyager-tabs button,

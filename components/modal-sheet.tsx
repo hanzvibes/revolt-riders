@@ -34,7 +34,6 @@ export function ModalSheet({
 }) {
   const [closing, setClosing] = useState(false);
   const closingRef = useRef(false);
-  const [dragOffset, setDragOffset] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef<number | null>(null);
   const dragOffsetRef = useRef(0);
@@ -50,15 +49,14 @@ export function ModalSheet({
 
   const finishClose = useCallback(() => {
     closingRef.current = false;
-    setClosing(false);
     dragOffsetRef.current = 0;
-    setDragOffset(0);
-    setIsDragging(false);
     onCloseRef.current();
 
     window.requestAnimationFrame(() => {
       previousFocusRef.current?.focus();
       previousFocusRef.current = null;
+      setClosing(false);
+      setIsDragging(false);
     });
   }, []);
 
@@ -79,12 +77,19 @@ export function ModalSheet({
     if (!open) return;
 
     const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+
     previousFocusRef.current =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     document.body.style.overflow = "hidden";
 
     const focusSheet = window.requestAnimationFrame(() => {
-      sheetRef.current?.focus();
+      sheetRef.current?.focus({ preventScroll: true });
     });
 
     const onKeyDown = (event: KeyboardEvent) => {
@@ -107,7 +112,7 @@ export function ModalSheet({
 
       if (focusable.length === 0) {
         event.preventDefault();
-        sheetRef.current.focus();
+        sheetRef.current.focus({ preventScroll: true });
         return;
       }
 
@@ -128,6 +133,7 @@ export function ModalSheet({
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
       window.cancelAnimationFrame(focusSheet);
       window.removeEventListener("keydown", onKeyDown);
       if (closeTimerRef.current !== null) {
@@ -141,8 +147,8 @@ export function ModalSheet({
 
   const finishDrag = () => {
     const finalOffset = dragOffsetRef.current;
-    setIsDragging(false);
     dragStart.current = null;
+    setIsDragging(false);
 
     if (finalOffset > 60) {
       requestClose();
@@ -150,7 +156,11 @@ export function ModalSheet({
     }
 
     dragOffsetRef.current = 0;
-    setDragOffset(0);
+    if (sheetRef.current) {
+      sheetRef.current.style.transform = "translate3d(0, 0, 0)";
+      sheetRef.current.style.transition =
+        "transform var(--rr-motion-open) var(--rr-ease-out)";
+    }
   };
 
   const getSheetStyle = () => {
@@ -162,16 +172,7 @@ export function ModalSheet({
         opacity: 0,
       };
     }
-    if (isDragging) {
-      return {
-        transform: `translate3d(0, ${dragOffset}px, 0)`,
-        transition: "none",
-      };
-    }
-    return {
-      transform: "translate3d(0, 0, 0)",
-      transition: "transform var(--rr-motion-open) var(--rr-ease-out)",
-    };
+    return undefined;
   };
 
   return (
@@ -186,6 +187,7 @@ export function ModalSheet({
         ref={sheetRef}
         className="native-sheet"
         data-state={closing ? "closed" : "open"}
+        data-dragging={isDragging ? "true" : undefined}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -199,9 +201,12 @@ export function ModalSheet({
           onPointerDown={(event) => {
             if (closing || (event.pointerType === "mouse" && event.button !== 0)) return;
             dragStart.current = event.clientY;
-            dragOffsetRef.current = dragOffset;
+            dragOffsetRef.current = 0;
             event.currentTarget.setPointerCapture(event.pointerId);
             setIsDragging(true);
+            if (sheetRef.current) {
+              sheetRef.current.style.transition = "none";
+            }
           }}
           onPointerMove={(event) => {
             if (
@@ -212,7 +217,10 @@ export function ModalSheet({
             }
             const delta = Math.max(0, event.clientY - dragStart.current);
             dragOffsetRef.current = delta;
-            setDragOffset(delta);
+            if (sheetRef.current) {
+              sheetRef.current.style.transform = `translate3d(0, ${delta}px, 0)`;
+              sheetRef.current.style.transition = "none";
+            }
           }}
           onPointerUp={(event) => {
             if (event.currentTarget.hasPointerCapture(event.pointerId)) {
