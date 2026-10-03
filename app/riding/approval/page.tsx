@@ -3,8 +3,8 @@
 import { AppShell } from "@/components/app-shell";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import { reviewRideLog } from "@/features/riding/mutations";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { reviewRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Bike, Check, ShieldAlert, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
