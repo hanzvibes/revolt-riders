@@ -36,6 +36,63 @@ jobs:
       - name: Apply Voyager refactor
         run: python scripts/tmp-voyager-complete.py
 
+      - name: Normalize Voyager manage form state lifecycle
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          manage_path = Path("app/voyager/voyager-manage-sheet.tsx")
+          manage = manage_path.read_text()
+          manage = manage.replace(
+              'import { useEffect, useMemo, useState, type ChangeEvent } from "react";',
+              'import { useMemo, useState, type ChangeEvent } from "react";',
+              1,
+          )
+          manage = manage.replace(
+              '  const [countsAsMandatory, setCountsAsMandatory] = useState(false);',
+              '  const [countsAsMandatory, setCountsAsMandatory] = useState(() => event?.counts_as_mandatory ?? false);',
+              1,
+          )
+          manage = manage.replace(
+              '  const [officialDistance, setOfficialDistance] = useState("");',
+              '  const [officialDistance, setOfficialDistance] = useState(() =>\n    event?.official_distance_km == null ? "" : String(event.official_distance_km),\n  );',
+              1,
+          )
+          manage = manage.replace(
+              '  const [officialSupport, setOfficialSupport] = useState("");',
+              '  const [officialSupport, setOfficialSupport] = useState(() => event?.official_support ?? "");',
+              1,
+          )
+          manage = manage.replace(
+              '  const [activitySummary, setActivitySummary] = useState("");',
+              '  const [activitySummary, setActivitySummary] = useState(() => event?.activity_summary ?? "");',
+              1,
+          )
+          manage = manage.replace(
+              '  const [selectedMembers, setSelectedMembers] = useState<string[]>([]);',
+              '  const [selectedMembers, setSelectedMembers] = useState<string[]>(() => [...participantIds]);',
+              1,
+          )
+          manage, count = re.subn(
+              r'\n  useEffect\(\(\) => \{[\s\S]*?\n  \}, \[event, participantIds\]\);\n',
+              '\n',
+              manage,
+              count=1,
+          )
+          if count != 1:
+              raise SystemExit("Voyager manage initialization effect not found")
+          manage_path.write_text(manage)
+
+          page_path = Path("app/voyager/page.tsx")
+          page = page_path.read_text()
+          old = '      <VoyagerManageSheet\n        event={manageEvent}'
+          new = '      <VoyagerManageSheet\n        key={manageEvent?.id ?? "closed"}\n        event={manageEvent}'
+          if old not in page:
+              raise SystemExit("VoyagerManageSheet mount point not found")
+          page_path.write_text(page.replace(old, new, 1))
+          PY
+
       - name: Align Voyager accessibility audit
         run: |
           python - <<'PY'
