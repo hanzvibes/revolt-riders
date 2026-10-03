@@ -8,6 +8,18 @@ import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { fetchMemberAdminSnapshot } from "./member-admin-data";
+import {
+  emptyForm,
+  getInitials,
+  getRoleClass,
+  roles,
+  type Detail,
+  type Member,
+  type MemberAccount,
+  type MemberAdminSnapshot,
+  type MemberForm,
+} from "./member-admin-model";
 import {
   Check,
   CheckCircle2,
@@ -24,86 +36,6 @@ import {
   X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
-
-type Member = {
-  member_external_id: string;
-  full_name: string;
-  nickname: string | null;
-  city: string | null;
-  join_date: string | null;
-  club_role: string | null;
-  total_km: number;
-};
-type Detail = {
-  member_external_id: string;
-  nickname_override: string | null;
-  motorcycle: string | null;
-  city_override: string | null;
-};
-type MemberAccount = {
-  id: string;
-  member_external_id: string;
-  role: string;
-  status: "active" | "inactive" | "pending";
-};
-type MemberAdminSnapshot = {
-  members: Member[];
-  details: Detail[];
-  accounts: MemberAccount[];
-};
-
-type MemberForm = {
-  memberId: string;
-  fullName: string;
-  nickname: string;
-  city: string;
-  joinDate: string;
-  clubRole: string;
-  totalKm: string;
-  motorcycle: string;
-};
-
-const emptyForm: MemberForm = {
-  memberId: "",
-  fullName: "",
-  nickname: "",
-  city: "",
-  joinDate: "",
-  clubRole: "",
-  totalKm: "0",
-  motorcycle: "",
-};
-const roles = ["member", "road_captain", "treasurer", "admin", "superadmin"];
-
-const getInitials = (name: string, nickname: string | null) => {
-  const text = (nickname || name || "RR").trim();
-  const parts = text.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return text.slice(0, 2).toUpperCase();
-};
-
-const getRoleClass = (role: string | null) => {
-  const r = (role ?? "").toUpperCase().trim();
-  if (r === "PRESIDENT") return "badge-president";
-  if (r === "FOUNDER") return "badge-founder";
-  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-  if (r === "NEGOSIATOR") return "badge-negosiator";
-  if (r === "CAPROS") return "badge-capros";
-  if (r === "PROSPEK") return "badge-prospek";
-  if (r === "VIRGIN") return "badge-virgin";
-  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-  if (r.includes("CAPTAIN")) return "badge-rc";
-  if (
-    r.includes("ADMIN") ||
-    r.includes("KETUA") ||
-    r.includes("SEKRETARIS") ||
-    r.includes("BENDAHARA")
-  )
-    return "badge-admin";
-  return "";
-};
 
 export default function ManageMembersPage() {
   const { confirmAction } = useActionDialog();
@@ -159,42 +91,7 @@ export default function ManageMembersPage() {
     try {
       const snapshot = await fetchWithCache<MemberAdminSnapshot>(
         "admin:members",
-        async () => {
-          const supabase = getSupabaseBrowserClient();
-          const [memberResult, detailResult, accountListResult] =
-            await Promise.all([
-              supabase
-                .from("member_profiles")
-                .select(
-                  "member_external_id,full_name,nickname,city,join_date,club_role,total_km",
-                )
-                .order("member_external_id"),
-              supabase
-                .from("member_details")
-                .select(
-                  "member_external_id,nickname_override,motorcycle,city_override",
-                ),
-              supabase
-                .from("member_accounts")
-                .select("id,member_external_id,role,status")
-                .order("member_external_id"),
-            ]);
-
-          const failed =
-            memberResult.error ||
-            detailResult.error ||
-            accountListResult.error;
-          if (failed) throw failed;
-
-          return {
-            members: ((memberResult.data ?? []) as Member[]).map((member) => ({
-              ...member,
-              total_km: Number(member.total_km),
-            })),
-            details: (detailResult.data ?? []) as Detail[],
-            accounts: (accountListResult.data ?? []) as MemberAccount[],
-          };
-        },
+        fetchMemberAdminSnapshot,
         { ttlMs: 45_000, forceRefresh },
       );
 
@@ -425,7 +322,7 @@ export default function ManageMembersPage() {
     invalidateCache("dashboard_club_stats");
     invalidateCache("riding_leaderboard_data");
     invalidateCache("admin:members");
-      await load(true);
+    await load(true);
     setSaving(false);
   };
 
@@ -476,7 +373,7 @@ export default function ManageMembersPage() {
               invalidateCache("admin_dashboard_overview");
               invalidateCache("dashboard_club_stats");
               invalidateCache("admin:members");
-      void load(true);
+              void load(true);
             }}
             style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}
           >
