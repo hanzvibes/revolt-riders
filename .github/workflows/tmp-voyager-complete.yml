@@ -36,6 +36,24 @@ jobs:
       - name: Apply Voyager refactor
         run: python scripts/tmp-voyager-complete.py
 
+      - name: Align Voyager accessibility audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/audit-ui-css.mjs")
+          source = path.read_text()
+          old = '''  "app/voyager/page.tsx": [
+            'aria-label="Cari participant Voyager"',
+          ],'''
+          new = '''  "app/voyager/voyager-manage-sheet.tsx": [
+            'aria-label="Cari participant Voyager"',
+          ],'''
+          if old not in source:
+              raise SystemExit("Voyager mobile accessibility contract shape changed")
+          path.write_text(source.replace(old, new, 1))
+          PY
+
       - name: Contract tests
         run: pnpm test
 
