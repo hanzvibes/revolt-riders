@@ -48,3 +48,23 @@ test("Admin members routes mutations through the action service", async () => {
   assert.match(actions, /"admin-reset-member-password"/);
   assert.match(actions, /return error;/);
 });
+
+test("Admin members derives search, filter, indexes, and counts outside the screen", async () => {
+  const screen = await read("app/admin/members/manage-members-page.tsx");
+  const view = await read("app/admin/members/member-admin-view.ts");
+
+  assert.match(screen, /from "\.\/member-admin-view"/);
+  assert.match(screen, /useState<MemberFilterTab>\("all"\)/);
+  assert.match(screen, /deriveMemberAdminView\(\{/);
+  assert.doesNotMatch(screen, /members\.filter\(/);
+  assert.doesNotMatch(screen, /new Map\(/);
+
+  assert.match(view, /export type MemberFilterTab = "all" \| "with_account" \| "without_account"/);
+  assert.match(view, /const detailByMember = new Map\(/);
+  assert.match(view, /const accountByMember = new Map\(/);
+  assert.match(view, /const withAccountCount = members\.filter\(/);
+  assert.match(view, /const withoutAccountCount = members\.length - withAccountCount/);
+  assert.match(view, /member_external_id\.toLowerCase\(\)\.includes\(normalizedQuery\)/);
+  assert.match(view, /full_name\.toLowerCase\(\)\.includes\(normalizedQuery\)/);
+  assert.match(view, /detail\?\.motorcycle \?\? ""/);
+});
