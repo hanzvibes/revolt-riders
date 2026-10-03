@@ -1,5 +1,7 @@
 "use client";
 
+import AdminJoinRequestsScreen from "./join-requests-screen";
+
 /**
  * Route entry only. Join Requests implementation lives in join-requests-screen.tsx.
  * Legacy source-contract markers are kept here until the production contract is
@@ -16,4 +18,4 @@
  * rpc("reject_join_request"
  * rpc("activate_join_request"
  */
-export { default } from "./join-requests-screen";
+export default AdminJoinRequestsScreen;

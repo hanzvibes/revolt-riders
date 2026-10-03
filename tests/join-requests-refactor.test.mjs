@@ -9,7 +9,8 @@ test("join requests keeps a stable route entry and screen boundary", async () =>
   const screen = await read("app/admin/join-requests/join-requests-screen.tsx");
 
   assert.match(entry, /^"use client";/);
-  assert.match(entry, /export \{ default \} from "\.\/join-requests-screen";/);
+  assert.match(entry, /import AdminJoinRequestsScreen from "\.\/join-requests-screen";/);
+  assert.match(entry, /export default AdminJoinRequestsScreen;/);
 
   assert.match(screen, /export default function AdminJoinRequestsPage/);
   assert.match(screen, /accept_join_request/);
