@@ -1,0 +1,129 @@
+name: Temporary Voyager 1B workspace patch
+
+on:
+  push:
+    branches:
+      - refactor/voyager-phase-1b
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'chore(voyager): apply phase 1b workspace patch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/voyager-phase-1b
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply focused Voyager 1B patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          page_path = Path('app/voyager/page.tsx')
+          page = page_path.read_text()
+          page = page.replace(
+              'import { getSupabaseBrowserClient } from "@/lib/supabase/client";\n',
+              'import { getSupabaseBrowserClient } from "@/lib/supabase/client";\nimport { fetchVoyagerSnapshot } from "./voyager-data";\n',
+              1,
+          )
+          page = page.replace('  type RideRow,\n', '', 1)
+          page = page.replace('  type VoyagerEventRow,\n', '', 1)
+
+          pattern = re.compile(
+              r'      const year = new Date\(\)\.getFullYear\(\);\n'
+              r'[\s\S]*?'
+              r'      const snapshot = await fetchWithCache<VoyagerSnapshot>\([\s\S]*?'
+              r'        \{ ttlMs: 90_000, forceRefresh \},\n'
+              r'      \);'
+          )
+          replacement = '''      const year = new Date().getFullYear();
+          const cacheKey = `voyager:${activeAccount.member_external_id}:${year}`;
+
+          const snapshot = await fetchWithCache<VoyagerSnapshot>(
+            cacheKey,
+            () => fetchVoyagerSnapshot(activeAccount.member_external_id, year),
+            { ttlMs: 90_000, forceRefresh },
+          );'''
+          page, count = pattern.subn(replacement, page, count=1)
+          if count != 1:
+              raise SystemExit(f'Expected one Voyager load block, found {count}')
+          page_path.write_text(page)
+
+          refactor_path = Path('tests/voyager-refactor.test.mjs')
+          refactor = refactor_path.read_text()
+          old = '''test("Voyager refactor preserves activity, official KM, and media boundaries", async () => {
+            const page = await read("app/voyager/page.tsx");
+
+            assert.match(page, /rpc\\(\\s*"save_event_activity"/);
+            assert.match(page, /rpc\\(\\s*"sync_event_official_rides"/);
+            assert.match(page, /from\\("event_participants"\\)/);
+            assert.match(page, /from\\("club-activity"\\)/);
+            assert.doesNotMatch(page, /from\\("event_attendance"\\)/);
+            assert.doesNotMatch(page, /from\\("event_checkin_codes"\\)/);
+          });'''
+          new = '''test("Voyager refactor preserves activity, official KM, and media boundaries", async () => {
+            const page = await read("app/voyager/page.tsx");
+            const data = await read("app/voyager/voyager-data.ts");
+            const workspace = `${page}\\n${data}`;
+
+            assert.match(page, /rpc\\(\\s*"save_event_activity"/);
+            assert.match(page, /rpc\\(\\s*"sync_event_official_rides"/);
+            assert.match(data, /from\\("event_participants"\\)/);
+            assert.match(data, /from\\("club-activity"\\)/);
+            assert.doesNotMatch(workspace, /from\\("event_attendance"\\)/);
+            assert.doesNotMatch(workspace, /from\\("event_checkin_codes"\\)/);
+          });'''
+          if old not in refactor:
+              raise SystemExit('Voyager refactor boundary test shape changed')
+          refactor_path.write_text(refactor.replace(old, new, 1))
+
+          contract_path = Path('tests/production-contract.test.mjs')
+          contract = contract_path.read_text()
+          marker = 'test("Voyager activity keeps participants, official KM, and media server-authorized", async () => {'
+          start = contract.index(marker)
+          end = contract.index('\n});', start) + len('\n});')
+          block = contract[start:end]
+          block = block.replace(
+              '  const page = await read("app/voyager/page.tsx");\n',
+              '  const page = await read("app/voyager/page.tsx");\n  const data = await read("app/voyager/voyager-data.ts");\n  const voyagerWorkspace = `${page}\\n${data}`;\n',
+              1,
+          )
+          block = block.replace(
+              '  assert.match(page, /from\\("event_participants"\\)/);',
+              '  assert.match(data, /from\\("event_participants"\\)/);',
+              1,
+          )
+          block = block.replace(
+              '  assert.match(page, /from\\("club-activity"\\)/);',
+              '  assert.match(data, /from\\("club-activity"\\)/);',
+              1,
+          )
+          block = block.replace(
+              '  assert.ok(!page.includes(\'.from("event_attendance")\'));',
+              '  assert.ok(!voyagerWorkspace.includes(\'.from("event_attendance")\'));',
+              1,
+          )
+          block = block.replace(
+              '  assert.ok(!page.includes(\'.from("event_checkin_codes")\'));',
+              '  assert.ok(!voyagerWorkspace.includes(\'.from("event_checkin_codes")\'));',
+              1,
+          )
+          contract_path.write_text(contract[:start] + block + contract[end:])
+
+          workflow = Path('.github/workflows/tmp-voyager-1b-patch.yml')
+          workflow.unlink()
+          PY
+      - name: Commit focused patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/voyager/page.tsx tests/voyager-refactor.test.mjs tests/production-contract.test.mjs .github/workflows/tmp-voyager-1b-patch.yml
+          git commit -m "refactor(voyager): wire snapshot data loader"
+          git push origin HEAD:refactor/voyager-phase-1b
