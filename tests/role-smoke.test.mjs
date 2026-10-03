@@ -9,6 +9,7 @@ test("Member role stays outside privileged navigation and mutations", async () =
   const ridingApproval = await read("app/riding/approval/page.tsx");
   const cash = await read("app/kas/page.tsx");
   const voyager = await read("app/voyager/page.tsx");
+  const voyagerModel = await read("app/voyager/voyager-model.ts");
 
   assert.match(
     shell,
@@ -21,7 +22,8 @@ test("Member role stays outside privileged navigation and mutations", async () =
 
   assert.match(ridingApproval, /\["road_captain", "admin", "superadmin"\]\.includes/);
   assert.match(cash, /\["treasurer", "admin", "superadmin"\]\.includes/);
-  assert.match(voyager, /role === "admin" \|\| role === "superadmin"/);
+  assert.match(voyager, /from "\.\/voyager-model"/);
+  assert.match(voyagerModel, /role === "admin" \|\| role === "superadmin"/);
 });
 
 test("Road Captain riding review is guarded in UI and database", async () => {
@@ -63,13 +65,15 @@ test("Treasurer cash mutations are guarded in UI and database", async () => {
 
 test("Voyager management is Admin or Superadmin only at both layers", async () => {
   const page = await read("app/voyager/page.tsx");
+  const model = await read("app/voyager/voyager-model.ts");
   const migration = await read(
     "supabase/migrations/20260920121211_add_voyager_activity_system.sql",
   );
 
+  assert.match(page, /from "\.\/voyager-model"/);
   assert.match(
-    page,
-    /const isAdminRole = \(role\?: string\) => role === "admin" \|\| role === "superadmin"/,
+    model,
+    /export const isAdminRole = \(role\?: string\) =>\s*role === "admin" \|\| role === "superadmin"/,
   );
   assert.match(page, /rpc\(\s*"save_event_activity"/);
   assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
