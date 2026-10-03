@@ -7,7 +7,11 @@ import { FloatingActionButton } from "@/components/floating-action-button";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import {
+  resetMemberAccountPassword,
+  syncMemberAccountAccess,
+  upsertMemberProfile,
+} from "./member-admin-actions";
 import { fetchMemberAdminSnapshot } from "./member-admin-data";
 import {
   emptyForm,
@@ -212,7 +216,6 @@ export default function ManageMembersPage() {
     (account?.role === "superadmin" ||
       !["admin", "superadmin"].includes(editingAccount?.role ?? ""));
 
-  // Password reset is executed server-side through the secured Supabase Edge Function.
   const resetMemberPassword = async () => {
     if (!editingAccount) return;
     if (newPassword.length < 8) {
@@ -234,20 +237,7 @@ export default function ManageMembersPage() {
     setError("");
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error: invokeError } = await supabase.functions.invoke(
-        "admin-reset-member-password",
-        {
-          body: {
-            memberExternalId: form.memberId,
-            password: newPassword,
-          },
-        },
-      );
-
-      if (invokeError) throw invokeError;
-      if (data?.error) throw new Error(String(data.error));
-
+      await resetMemberAccountPassword(form.memberId, newPassword);
       setNewPassword("");
       setShowPasswordReset(false);
       showToast(`Password ${form.memberId} berhasil direset.`, "success");
@@ -266,23 +256,7 @@ export default function ManageMembersPage() {
     setSaving(true);
     setError("");
 
-    const supabase = getSupabaseBrowserClient();
-
-    // 1. Update/insert member profile
-    const { error: saveError } = await supabase.rpc(
-      "upsert_member_profile",
-      {
-        p_member_external_id: form.memberId.trim().toUpperCase(),
-        p_full_name: form.fullName.trim(),
-        p_nickname: form.nickname.trim() || null,
-        p_city: form.city.trim() || null,
-        p_join_date: form.joinDate || null,
-        p_club_role: form.clubRole.trim() || null,
-        p_total_km: Number(form.totalKm || 0),
-        p_motorcycle: form.motorcycle.trim() || null,
-      },
-    );
-
+    const saveError = await upsertMemberProfile(form);
     if (saveError) {
       setError(saveError.message);
       showToast(saveError.message, "error");
@@ -290,21 +264,14 @@ export default function ManageMembersPage() {
       return;
     }
 
-    // 2. Update linked account role and status if changed
     if (editing && editingAccount) {
       try {
-        if (accountStatus !== editingAccount.status) {
-          await supabase.rpc("set_member_account_status", {
-            p_account_id: editingAccount.id,
-            p_status: accountStatus,
-          });
-        }
-        if (account?.role === "superadmin" && accountRole !== editingAccount.role) {
-          await supabase.rpc("set_member_account_role", {
-            p_account_id: editingAccount.id,
-            p_role: accountRole,
-          });
-        }
+        await syncMemberAccountAccess({
+          linkedAccount: editingAccount,
+          accountStatus,
+          accountRole,
+          canManageRole: account?.role === "superadmin",
+        });
       } catch (accErr) {
         console.warn("Account update notice:", accErr);
       }
@@ -358,7 +325,6 @@ export default function ManageMembersPage() {
   return (
     <AppShell active="Kelola Member" title="Manajemen Member">
       <div className="page-wrap">
-        {/* Header section */}
         <div className="page-intro native-page-head">
           <div>
             <em>Direktori member</em>
@@ -382,7 +348,6 @@ export default function ManageMembersPage() {
           </button>
         </div>
 
-        {/* 1. Filter Tabs (Segmented & Responsive) */}
         <div className="admin-member-tabs" role="tablist" aria-label="Filter status akun member">
           <button
             type="button"
@@ -419,7 +384,6 @@ export default function ManageMembersPage() {
           </button>
         </div>
 
-        {/* 2. Search Bar Toolbar */}
         <div className="admin-member-search-wrap">
           <Search className="search-icon" />
           <input
@@ -440,7 +404,6 @@ export default function ManageMembersPage() {
           )}
         </div>
 
-        {/* 3. Desktop & Tablet View: Structured Admin Data Table (>= 768px) */}
         <div className="admin-member-table-card">
           <div className="admin-member-table-wrap">
             <table className="admin-member-table">
@@ -483,7 +446,6 @@ export default function ManageMembersPage() {
 
                     return (
                       <tr key={member.member_external_id}>
-                        {/* 1. Rider */}
                         <td>
                           <div className="admin-table-rider-cell">
                             <div
@@ -508,8 +470,6 @@ export default function ManageMembersPage() {
                             </div>
                           </div>
                         </td>
-
-                        {/* 2. ID RR */}
                         <td>
                           <span
                             className="member-id-tag"
@@ -527,8 +487,6 @@ export default function ManageMembersPage() {
                             {member.member_external_id}
                           </span>
                         </td>
-
-                        {/* 3. Jabatan Club */}
                         <td>
                           {member.club_role ? (
                             <span className={`member-role-badge ${roleClass}`}>
@@ -538,8 +496,6 @@ export default function ManageMembersPage() {
                             <span style={{ color: "#94a3b8", fontSize: "0.7rem" }}>—</span>
                           )}
                         </td>
-
-                        {/* 4. Motor & Kota */}
                         <td>
                           <div style={{ display: "flex", flexDirection: "column", gap: 2, fontSize: "0.72rem" }}>
                             <span style={{ fontWeight: 700, color: "#1e293b" }}>
@@ -554,8 +510,6 @@ export default function ManageMembersPage() {
                             </span>
                           </div>
                         </td>
-
-                        {/* 5. Total KM */}
                         <td>
                           <span
                             style={{
@@ -572,8 +526,6 @@ export default function ManageMembersPage() {
                             {new Intl.NumberFormat("id-ID").format(member.total_km)} KM
                           </span>
                         </td>
-
-                        {/* 6. Status Akun */}
                         <td>
                           {memberAccount ? (
                             <span
@@ -630,8 +582,6 @@ export default function ManageMembersPage() {
                             </span>
                           )}
                         </td>
-
-                        {/* 7. Aksi */}
                         <td style={{ textAlign: "right" }}>
                           <button
                             type="button"
@@ -652,7 +602,6 @@ export default function ManageMembersPage() {
           </div>
         </div>
 
-        {/* 4. Mobile View: Clean & Uniform Member Cards (< 768px) */}
         <div className="admin-member-cards-mobile">
           {results.length === 0 ? (
             <section className="empty-state card">
@@ -683,7 +632,6 @@ export default function ManageMembersPage() {
                   className="admin-mobile-card"
                   onClick={() => openEdit(member)}
                 >
-                  {/* Top: Avatar, Name, ID, Jabatan */}
                   <div className="admin-mobile-card-head">
                     <div
                       className="member-avatar"
@@ -743,7 +691,6 @@ export default function ManageMembersPage() {
                     </div>
                   </div>
 
-                  {/* Footer: KM, Account Status, Edit Button */}
                   <div className="admin-mobile-card-footer">
                     <div style={{ display: "flex", alignItems: "center", gap: 6, minWidth: 0, flexWrap: "wrap" }}>
                       <span
@@ -828,10 +775,8 @@ export default function ManageMembersPage() {
           )}
         </div>
 
-        {/* Floating Action Button for adding new member */}
         <FloatingActionButton label="Member baru" onClick={openNew} />
 
-        {/* Floating Toast Notification (Zero push) */}
         {toast && (
           <aside
             className={`admin-floating-toast toast-${toast.type}`}
@@ -855,7 +800,6 @@ export default function ManageMembersPage() {
           </aside>
         )}
 
-        {/* Modal Sheet for Add & Edit Member (Structured 2-Column Grid) */}
         <ModalSheet
           open={formOpen}
           onClose={closeForm}
@@ -867,7 +811,6 @@ export default function ManageMembersPage() {
           }
         >
           <form className="sheet-form member-sheet-form member-modal-form" onSubmit={saveMember}>
-            {/* Seksi 1: Data Profil Member */}
             <div className="member-modal-section">
               <div className="member-modal-section-title">
                 <UsersRound size={13} style={{ color: "var(--red)" }} />
@@ -967,7 +910,6 @@ export default function ManageMembersPage() {
               </label>
             </div>
 
-            {/* Seksi 2: Kendaraan & Jarak Tempuh */}
             <div className="member-modal-section">
               <div className="member-modal-section-title">
                 <Gauge size={13} style={{ color: "var(--red)" }} />
@@ -1024,7 +966,6 @@ export default function ManageMembersPage() {
               </label>
             </div>
 
-            {/* Seksi 3: Akses Akun Aplikasi */}
             {editing && editingAccount && (
               <div className="member-modal-section">
                 <div className="member-modal-section-title">
