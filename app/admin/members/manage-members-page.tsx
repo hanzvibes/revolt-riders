@@ -25,6 +25,10 @@ import {
   type MemberForm,
 } from "./member-admin-model";
 import {
+  deriveMemberAdminView,
+  type MemberFilterTab,
+} from "./member-admin-view";
+import {
   Check,
   CheckCircle2,
   Clock,
@@ -49,7 +53,7 @@ export default function ManageMembersPage() {
   const [details, setDetails] = useState<Detail[]>([]);
   const [accounts, setAccounts] = useState<MemberAccount[]>([]);
   const [query, setQuery] = useState("");
-  const [filterTab, setFilterTab] = useState<"all" | "with_account" | "without_account">("all");
+  const [filterTab, setFilterTab] = useState<MemberFilterTab>("all");
 
   const [form, setForm] = useState<MemberForm>(emptyForm);
   const [formOpen, setFormOpen] = useState(false);
@@ -117,48 +121,23 @@ export default function ManageMembersPage() {
     if (!accessLoading) void load();
   }, [accessLoading, load]);
 
-  const detailByMember = useMemo(
-    () => new Map(details.map((detail) => [detail.member_external_id, detail])),
-    [details],
-  );
-  const accountByMember = useMemo(
+  const {
+    detailByMember,
+    accountByMember,
+    withAccountCount,
+    withoutAccountCount,
+    results,
+  } = useMemo(
     () =>
-      new Map(
-        accounts.map((memberAccount) => [
-          memberAccount.member_external_id,
-          memberAccount,
-        ]),
-      ),
-    [accounts],
+      deriveMemberAdminView({
+        members,
+        details,
+        accounts,
+        query,
+        filterTab,
+      }),
+    [members, details, accounts, query, filterTab],
   );
-
-  // Tab counts
-  const withAccountCount = useMemo(
-    () => members.filter((m) => accountByMember.has(m.member_external_id)).length,
-    [members, accountByMember],
-  );
-  const withoutAccountCount = members.length - withAccountCount;
-
-  const results = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    return members.filter((member) => {
-      // 1. Filter Tab
-      const hasAcc = accountByMember.has(member.member_external_id);
-      if (filterTab === "with_account" && !hasAcc) return false;
-      if (filterTab === "without_account" && hasAcc) return false;
-
-      // 2. Search Query
-      if (!normalized) return true;
-      const detail = detailByMember.get(member.member_external_id);
-      return (
-        member.member_external_id.toLowerCase().includes(normalized) ||
-        member.full_name.toLowerCase().includes(normalized) ||
-        (member.nickname ?? "").toLowerCase().includes(normalized) ||
-        (member.city ?? "").toLowerCase().includes(normalized) ||
-        (detail?.motorcycle ?? "").toLowerCase().includes(normalized)
-      );
-    });
-  }, [members, query, filterTab, accountByMember, detailByMember]);
 
   const closeForm = () => {
     setFormOpen(false);
