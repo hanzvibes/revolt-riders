@@ -1,0 +1,78 @@
+name: Temporary Voyager complete refactor
+
+on:
+  push:
+    branches:
+      - refactor/voyager-complete
+
+permissions:
+  contents: write
+
+jobs:
+  refactor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: refactor/voyager-complete
+          fetch-depth: 0
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply Voyager refactor
+        run: python scripts/tmp-voyager-complete.py
+
+      - name: Contract tests
+        run: pnpm test
+
+      - name: UI guardrails
+        run: pnpm audit:ui
+
+      - name: TypeScript
+        run: pnpm exec tsc --noEmit
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Production build
+        run: pnpm build
+
+      - name: Smoke production server
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=3000 pnpm start > /tmp/revolt-riders-next.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error --location --max-time 5 http://127.0.0.1:3000/ -o /tmp/revolt-riders-home.html; then
+              test -s /tmp/revolt-riders-home.html
+              break
+            fi
+            sleep 1
+          done
+
+          test -s /tmp/revolt-riders-home.html || (cat /tmp/revolt-riders-next.log && exit 1)
+
+      - name: Commit verified refactor
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "refactor(voyager): complete feature modularization"
+          git push origin HEAD:refactor/voyager-complete
