@@ -11,6 +11,10 @@ import {
 } from "@/components/ride-log-edit-modal";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import {
+  getMemberInitials,
+  getMemberRoleClass,
+} from "@/features/members/member-display";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -197,36 +201,6 @@ export default function MemberPage() {
   const totalVerifiedActivities = useMemo(() => {
     return members.reduce((sum, m) => sum + (Number(m.touring_count) || 0), 0);
   }, [members]);
-
-  const getInitials = (name: string, nickname: string | null) => {
-    const text = (nickname || name || "RR").trim();
-    const parts = text.split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return text.slice(0, 2).toUpperCase();
-  };
-
-  const getRoleClass = (role: string | null) => {
-    const r = (role ?? "").toUpperCase().trim();
-    if (r === "PRESIDENT") return "badge-president";
-    if (r === "FOUNDER") return "badge-founder";
-    if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-    if (r === "NEGOSIATOR") return "badge-negosiator";
-    if (r === "CAPROS") return "badge-capros";
-    if (r === "PROSPEK") return "badge-prospek";
-    if (r === "VIRGIN") return "badge-virgin";
-    if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-    if (r.includes("CAPTAIN")) return "badge-rc";
-    if (
-      r.includes("ADMIN") ||
-      r.includes("KETUA") ||
-      r.includes("SEKRETARIS") ||
-      r.includes("BENDAHARA")
-    )
-      return "badge-admin";
-    return "";
-  };
 
   const openDetail = async (member: MemberDisplay) => {
     const requestId = ++detailRequestRef.current;
@@ -561,7 +535,7 @@ export default function MemberPage() {
                   const displayName = m.nickname ? m.nickname : m.full_name;
                   const secondaryName = m.nickname ? m.full_name : null;
                   const roleName = m.club_role || "Member";
-                  const roleClass = getRoleClass(m.club_role);
+                  const roleClass = getMemberRoleClass(m.club_role);
                   const subParts = [secondaryName, m.motorcycle, m.city].filter(Boolean);
 
                   return (
@@ -573,7 +547,7 @@ export default function MemberPage() {
                       aria-label={`Lihat detail ${m.full_name}`}
                     >
                       <div className="member-avatar">
-                        {getInitials(m.full_name, m.nickname)}
+                        {getMemberInitials(m.full_name, m.nickname)}
                       </div>
                       <div className="member-info">
                         <div className="member-header-row">
@@ -635,7 +609,7 @@ export default function MemberPage() {
             {/* Header Hero Box */}
             <div className="member-detail-hero">
               <div className="member-detail-avatar">
-                {getInitials(selectedMember.full_name, selectedMember.nickname)}
+                {getMemberInitials(selectedMember.full_name, selectedMember.nickname)}
               </div>
               <div className="member-detail-hero-info">
                 <div className="member-detail-title-row">
@@ -643,7 +617,7 @@ export default function MemberPage() {
                     {selectedMember.full_name}
                   </h3>
                   <span
-                    className={`member-role-badge ${getRoleClass(selectedMember.club_role)}`}
+                    className={`member-role-badge ${getMemberRoleClass(selectedMember.club_role)}`}
                   >
                     {selectedMember.club_role || "Member"}
                   </span>
