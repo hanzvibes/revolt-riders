@@ -2,393 +2,56 @@
 
 /* eslint-disable react-hooks/set-state-in-effect */
 
-import {
-  CommunityEventAttachment,
-  CommunityMediaGallery,
-  OfficialFeedAvatar,
-  type CommunityFeedEvent,
-  type CommunityFeedMedia,
-} from "@/components/community-feed-primitives";
-import {
-  getSocialUrlDetails,
-  socialRelativeDate,
-  socialRoleLabel,
-  SOCIAL_FEED_STAFF_ROLES,
-} from "@/components/community-feed-utils";
+import { SOCIAL_FEED_STAFF_ROLES } from "@/components/community-feed-utils";
 import { ModalSheet } from "@/components/modal-sheet";
-import { useDataCache, type AppRole } from "@/context/data-cache-context";
+import { useDataCache } from "@/context/data-cache-context";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
-  Archive,
   Check,
-  ChevronDown,
-  ExternalLink,
-  Heart,
   ImagePlus,
-  Link2,
   LoaderCircle,
   LockKeyhole,
   MessageCircle,
-  MoreHorizontal,
-  Pencil,
   Pin,
   Plus,
   Sparkles,
-  UnlockKeyhole,
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
-
-type RealtimeChangePayload = {
-  eventType: "INSERT" | "UPDATE" | "DELETE";
-  new: Record<string, unknown>;
-  old: Record<string, unknown>;
-};
-
-type FeedMedia = CommunityFeedMedia;
-
-type FeedEvent = CommunityFeedEvent;
-
-type FeedPost = {
-  id: string;
-  body: string;
-  link_url: string | null;
-  event_id: string | null;
-  attached_event: FeedEvent | null;
-  is_pinned: boolean;
-  comments_locked: boolean;
-  author_id: string;
-  author_name: string;
-  author_role: AppRole;
-  published_at: string | null;
-  created_at: string;
-  media: FeedMedia[];
-  likeCount: number;
-  commentCount: number;
-  likedByMe: boolean;
-};
-
-type FeedPostRow = Omit<FeedPost, "media" | "likeCount" | "commentCount" | "likedByMe"> & {
-  like_count: number;
-  comment_count: number;
-  feed_post_media?: FeedMedia[];
-};
-
-const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-const FEED_PAGE_SIZE = 12;
-
-function feedErrorMessage(cause: unknown) {
-  const message = typeof cause === "object" && cause !== null && "message" in cause
-    ? String(cause.message)
-    : "";
-
-  if (/permission denied|row-level security|not authorized/i.test(message)) {
-    return "Akses feed belum tersedia untuk akun ini. Muat ulang halaman atau hubungi pengurus bila masalah berlanjut.";
-  }
-
-  return "Kabar Revolt belum dapat dimuat. Coba muat ulang halaman.";
-}
-
-function FeedSkeleton() {
-  return (
-    <div className="community-feed-skeleton" aria-label="Memuat Feed" aria-live="polite">
-      {[0, 1, 2].map((item) => (
-        <article className="community-post-skeleton" key={item} aria-hidden="true">
-          <header>
-            <span className="community-skeleton-avatar" />
-            <span>
-              <i />
-              <i />
-            </span>
-          </header>
-          <div className="community-skeleton-copy">
-            <i />
-            <i />
-            <i />
-          </div>
-          {item !== 1 ? <div className="community-skeleton-media" /> : null}
-          <footer>
-            <i />
-            <i />
-          </footer>
-        </article>
-      ))}
-      <span className="sr-only">Memuat kabar terbaru…</span>
-    </div>
-  );
-}
-
-function FeedPostCard({ post, isStaff, currentRole, currentUserId, onToggleLike, onOpenDiscussion, onEdit, onManage }: {
-  post: FeedPost;
-  isStaff: boolean;
-  currentRole?: AppRole;
-  currentUserId?: string;
-  onToggleLike: (post: FeedPost) => void;
-  onOpenDiscussion: (post: FeedPost) => void;
-  onEdit: (post: FeedPost) => void;
-  onManage: (post: FeedPost, action: "pin" | "comments" | "archive") => void;
-}) {
-  const [expanded, setExpanded] = useState(false);
-  const longPost = post.body.length > 420;
-  const link = post.link_url ? getSocialUrlDetails(post.link_url) : null;
-  const canManage =
-    isStaff &&
-    (post.author_id === currentUserId ||
-      currentRole === "admin" ||
-      currentRole === "superadmin");
-
-  return (
-    <article
-      className={`community-post community-threads-post ${post.is_pinned ? "is-pinned" : ""}`}
-    >
-      <div className="community-threads-layout">
-        <div className="community-threads-rail" aria-hidden="true">
-          <OfficialFeedAvatar />
-          <span className="community-threads-connector" />
-        </div>
-
-        <div className="community-threads-body">
-          <header className="community-post-header">
-            <span className="community-post-author">
-              <strong>{post.author_name}</strong>
-              <small>
-                <b>{socialRoleLabel[post.author_role]}</b>
-                <span aria-hidden="true">·</span>
-                <time dateTime={post.published_at ?? post.created_at}>
-                  {socialRelativeDate(post.published_at ?? post.created_at)}
-                </time>
-              </small>
-              {post.is_pinned ? (
-                <span className="community-pin-label">
-                  <Pin aria-hidden="true" />
-                  Disematkan
-                </span>
-              ) : null}
-            </span>
-
-            {canManage ? (
-              <details className="community-post-menu">
-                <summary aria-label={`Kelola post ${post.author_name}`}>
-                  <MoreHorizontal aria-hidden="true" />
-                </summary>
-                <div>
-                  <button type="button" onClick={() => onEdit(post)}>
-                    <Pencil aria-hidden="true" />
-                    Edit post
-                  </button>
-                  <button type="button" onClick={() => onManage(post, "pin")}>
-                    <Pin aria-hidden="true" />
-                    {post.is_pinned ? "Lepas sematan" : "Sematkan"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onManage(post, "comments")}
-                  >
-                    {post.comments_locked ? (
-                      <UnlockKeyhole aria-hidden="true" />
-                    ) : (
-                      <LockKeyhole aria-hidden="true" />
-                    )}
-                    {post.comments_locked ? "Buka komentar" : "Tutup komentar"}
-                  </button>
-                  <button
-                    type="button"
-                    className="danger"
-                    onClick={() => onManage(post, "archive")}
-                  >
-                    <Archive aria-hidden="true" />
-                    Arsipkan post
-                  </button>
-                </div>
-              </details>
-            ) : null}
-          </header>
-
-          <div className="community-post-copy">
-            <p className={longPost && !expanded ? "is-clamped" : ""}>
-              {post.body}
-            </p>
-            {longPost ? (
-              <button
-                type="button"
-                className="community-expand"
-                onClick={() => setExpanded((value) => !value)}
-              >
-                {expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}
-                <ChevronDown aria-hidden="true" />
-              </button>
-            ) : null}
-          </div>
-
-          {post.attached_event ? (
-            <CommunityEventAttachment event={post.attached_event} />
-          ) : null}
-
-          {link ? (
-            <a
-              className="community-link-preview"
-              href={link.url}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <span>
-                <Link2 aria-hidden="true" />
-                <small>{link.hostname}</small>
-              </span>
-              <b>Buka tautan</b>
-              <ExternalLink aria-hidden="true" />
-            </a>
-          ) : null}
-
-          <CommunityMediaGallery media={post.media} />
-
-          <footer className="community-post-footer">
-            <div className="community-post-actions community-threads-actions">
-              <button
-                type="button"
-                className={post.likedByMe ? "is-liked" : ""}
-                onClick={() => onToggleLike(post)}
-                aria-pressed={post.likedByMe}
-                aria-label={post.likedByMe ? "Batalkan suka" : "Sukai post"}
-              >
-                <Heart
-                  aria-hidden="true"
-                  fill={post.likedByMe ? "currentColor" : "none"}
-                />
-                <span className="sr-only">
-                  {post.likedByMe ? "Batalkan suka" : "Suka"}
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => onOpenDiscussion(post)}
-                aria-label="Buka balasan"
-              >
-                <MessageCircle aria-hidden="true" />
-                <span className="sr-only">Balas</span>
-              </button>
-            </div>
-
-            <div className="community-post-counts community-threads-counts">
-              <button type="button" onClick={() => onOpenDiscussion(post)}>
-                {post.commentCount} balasan
-              </button>
-              <span aria-hidden="true">·</span>
-              <span>{post.likeCount} suka</span>
-            </div>
-          </footer>
-
-          {post.comments_locked ? (
-            <p className="community-comments-locked">
-              <LockKeyhole aria-hidden="true" />
-              Diskusi untuk post ini ditutup oleh pengurus.
-            </p>
-          ) : null}
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function ComposerPostPreview({
-  body,
-  linkUrl,
-  event,
-  media,
-  authorName,
-  authorRole,
-  pinned,
-  commentsLocked,
-}: {
-  body: string;
-  linkUrl: string;
-  event: FeedEvent | null;
-  media: FeedMedia[];
-  authorName: string;
-  authorRole: AppRole;
-  pinned: boolean;
-  commentsLocked: boolean;
-}) {
-  const link = linkUrl.trim() ? getSocialUrlDetails(linkUrl.trim()) : null;
-
-  return (
-    <div className="community-composer-preview">
-      <span className="community-composer-preview-label">Preview post</span>
-      <article className={`community-post${pinned ? " is-pinned" : ""}`}>
-        {pinned ? (
-          <div className="community-pin-label">
-            <Pin aria-hidden="true" />
-            Disematkan
-          </div>
-        ) : null}
-
-        <header className="community-post-header">
-          <OfficialFeedAvatar />
-          <span className="community-post-author">
-            <strong>{authorName}</strong>
-            <small>
-              <b>{socialRoleLabel[authorRole]}</b>
-              <span aria-hidden="true">·</span>
-              <time>Baru saja</time>
-            </small>
-          </span>
-        </header>
-
-        <div className="community-post-copy">
-          <p className={!body.trim() ? "is-placeholder" : ""}>
-            {body.trim() || "Isi post akan muncul di sini."}
-          </p>
-        </div>
-
-        {event ? <CommunityEventAttachment event={event} /> : null}
-
-        {link ? (
-          <a
-            className="community-link-preview"
-            href={link.url}
-            target="_blank"
-            rel="noreferrer"
-          >
-            <span>
-              <Link2 aria-hidden="true" />
-              <small>{link.hostname}</small>
-            </span>
-            <b>Buka tautan</b>
-            <ExternalLink aria-hidden="true" />
-          </a>
-        ) : null}
-
-        <CommunityMediaGallery media={media} />
-
-        <footer className="community-post-footer">
-          <div className="community-post-counts">
-            <span>0 suka</span>
-            <span>0 komentar</span>
-          </div>
-          <div className="community-post-actions" aria-hidden="true">
-            <span>
-              <Heart aria-hidden="true" />
-              Suka
-            </span>
-            <span>
-              <MessageCircle aria-hidden="true" />
-              Komentar
-            </span>
-          </div>
-        </footer>
-
-        {commentsLocked ? (
-          <p className="community-comments-locked">
-            <LockKeyhole aria-hidden="true" />
-            Diskusi untuk post ini ditutup oleh pengurus.
-          </p>
-        ) : null}
-      </article>
-    </div>
-  );
-}
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
+import {
+  manageFeedPost,
+  saveFeedPost,
+  toggleFeedLike,
+} from "./community-feed-actions";
+import {
+  fetchFeedComposerOptions,
+  fetchFeedPage,
+} from "./community-feed-data";
+import {
+  FEED_MAX_MEDIA,
+  FEED_PAGE_SIZE,
+  feedErrorMessage,
+  validateFeedFiles,
+  type FeedEvent,
+  type FeedManageAction,
+  type FeedMedia,
+  type FeedPost,
+  type RealtimeChangePayload,
+} from "./community-feed-model";
+import {
+  ComposerPostPreview,
+  FeedPostCard,
+  FeedSkeleton,
+} from "./community-feed-presentation";
 
 export function CommunityFeed({
   composerOpen: controlledComposerOpen,
@@ -410,12 +73,16 @@ export function CommunityFeed({
   const [internalComposerOpen, setInternalComposerOpen] = useState(false);
   const composerOpen = controlledComposerOpen ?? internalComposerOpen;
 
-  const setComposerOpen = useCallback((open: boolean) => {
-    if (controlledComposerOpen === undefined) {
-      setInternalComposerOpen(open);
-    }
-    onComposerOpenChange?.(open);
-  }, [controlledComposerOpen, onComposerOpenChange]);
+  const setComposerOpen = useCallback(
+    (open: boolean) => {
+      if (controlledComposerOpen === undefined) {
+        setInternalComposerOpen(open);
+      }
+      onComposerOpenChange?.(open);
+    },
+    [controlledComposerOpen, onComposerOpenChange],
+  );
+
   const [availableEvents, setAvailableEvents] = useState<FeedEvent[]>([]);
   const [postEventId, setPostEventId] = useState("");
   const [postSaving, setPostSaving] = useState(false);
@@ -425,7 +92,9 @@ export function CommunityFeed({
   const [pinPost, setPinPost] = useState(false);
   const [lockComments, setLockComments] = useState(false);
   const [composerMode, setComposerMode] = useState<"edit" | "preview">("edit");
-  const [previewAuthorName, setPreviewAuthorName] = useState("Pengurus Revolt Riders");
+  const [previewAuthorName, setPreviewAuthorName] = useState(
+    "Pengurus Revolt Riders",
+  );
   const [editingPost, setEditingPost] = useState<FeedPost | null>(null);
   const [existingMedia, setExistingMedia] = useState<FeedMedia[]>([]);
   const [previewMedia, setPreviewMedia] = useState<FeedMedia[]>([]);
@@ -460,163 +129,64 @@ export function CommunityFeed({
   );
 
   const activeMember = account?.status === "active";
-  const isStaff = account?.status === "active" && SOCIAL_FEED_STAFF_ROLES.includes(account.role);
+  const isStaff =
+    account?.status === "active" &&
+    SOCIAL_FEED_STAFF_ROLES.includes(account.role);
 
-  const loadFeed = useCallback(async ({
-    from = 0,
-    append = false,
-    pageSize = FEED_PAGE_SIZE,
-    quiet = false,
-  }: {
-    from?: number;
-    append?: boolean;
-    pageSize?: number;
-    quiet?: boolean;
-  } = {}) => {
-    if (!activeMember || !user) {
-      setPosts([]);
-      setHasMore(false);
-      setLoading(false);
-      setLoadingMore(false);
-      return;
-    }
+  const loadFeed = useCallback(
+    async ({
+      from = 0,
+      append = false,
+      pageSize = FEED_PAGE_SIZE,
+      quiet = false,
+    }: {
+      from?: number;
+      append?: boolean;
+      pageSize?: number;
+      quiet?: boolean;
+    } = {}) => {
+      if (!activeMember || !user) {
+        setPosts([]);
+        setHasMore(false);
+        setLoading(false);
+        setLoadingMore(false);
+        return;
+      }
 
-    if (append) setLoadingMore(true);
-    else if (!quiet) setLoading(true);
-    setError("");
+      if (append) setLoadingMore(true);
+      else if (!quiet) setLoading(true);
+      setError("");
 
-    try {
-      const supabase = getSupabaseBrowserClient();
-      const { data: rawPosts, error: postError } = await supabase
-        .from("feed_posts")
-        .select("id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at),is_pinned,comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)")
-        .eq("status", "published")
-        .order("is_pinned", { ascending: false })
-        .order("published_at", { ascending: false })
-        .range(from, from + pageSize - 1);
-      if (postError) throw postError;
+      try {
+        const page = await fetchFeedPage({
+          userId: user.id,
+          from,
+          pageSize,
+        });
 
-      const rows = (rawPosts ?? []) as FeedPostRow[];
-      const postIds = rows.map((post) => post.id);
-      const media = rows.flatMap((post) => post.feed_post_media ?? []);
-      const mediaUrlByPath = new Map<string, string>();
-
-      if (media.length > 0) {
-        const { data: signedMedia, error: mediaError } = await supabase.storage
-          .from("community-feed")
-          .createSignedUrls(media.map((item) => item.object_path), 60 * 60);
-        if (mediaError) throw mediaError;
-        for (const item of signedMedia ?? []) {
-          if (item.path && item.signedUrl) {
-            mediaUrlByPath.set(item.path, item.signedUrl);
-          }
+        if (append) {
+          const incomingIds = new Set(page.posts.map((post) => post.id));
+          setPosts((current) => [
+            ...current.filter((post) => !incomingIds.has(post.id)),
+            ...page.posts,
+          ]);
+          loadedCountRef.current = from + page.rowCount;
+        } else {
+          setPosts(page.posts);
+          loadedCountRef.current = page.rowCount;
         }
+
+        setHasMore(page.hasMore);
+      } catch (cause) {
+        console.error("Gagal memuat Kabar Revolt.", cause);
+        setError(feedErrorMessage(cause));
+      } finally {
+        if (append) setLoadingMore(false);
+        else if (!quiet) setLoading(false);
       }
-
-      const voyagerEventIds = Array.from(
-        new Set(
-          rows
-            .map((post) => post.attached_event)
-            .filter(
-              (event): event is FeedEvent =>
-                Boolean(event && event.type === "voyager"),
-            )
-            .map((event) => event.id),
-        ),
-      );
-
-      const [likesResult, participantsResult, photosResult] = await Promise.all([
-        postIds.length > 0
-          ? supabase
-              .from("feed_post_likes")
-              .select("post_id")
-              .in("post_id", postIds)
-              .eq("user_id", user.id)
-          : Promise.resolve({ data: [], error: null }),
-        voyagerEventIds.length > 0
-          ? supabase
-              .from("event_participants")
-              .select("event_id")
-              .in("event_id", voyagerEventIds)
-          : Promise.resolve({ data: [], error: null }),
-        voyagerEventIds.length > 0
-          ? supabase
-              .from("club_gallery")
-              .select("event_id")
-              .in("event_id", voyagerEventIds)
-          : Promise.resolve({ data: [], error: null }),
-      ]);
-
-      if (likesResult.error) throw likesResult.error;
-      if (participantsResult.error) throw participantsResult.error;
-      if (photosResult.error) throw photosResult.error;
-
-      const likedIds = new Set(
-        ((likesResult.data ?? []) as { post_id: string }[]).map((like) => like.post_id),
-      );
-      const participantCountByEvent = new Map<string, number>();
-      for (const row of (participantsResult.data ?? []) as { event_id: string }[]) {
-        participantCountByEvent.set(
-          row.event_id,
-          (participantCountByEvent.get(row.event_id) ?? 0) + 1,
-        );
-      }
-
-      const photoCountByEvent = new Map<string, number>();
-      for (const row of (photosResult.data ?? []) as { event_id: string | null }[]) {
-        if (!row.event_id) continue;
-        photoCountByEvent.set(
-          row.event_id,
-          (photoCountByEvent.get(row.event_id) ?? 0) + 1,
-        );
-      }
-      const hydrated = rows.map((post) => ({
-        ...post,
-        attached_event: post.attached_event
-          ? {
-              ...post.attached_event,
-              participantCount:
-                post.attached_event.type === "voyager"
-                  ? participantCountByEvent.get(post.attached_event.id) ?? 0
-                  : undefined,
-              photoCount:
-                post.attached_event.type === "voyager"
-                  ? photoCountByEvent.get(post.attached_event.id) ?? 0
-                  : undefined,
-            }
-          : null,
-        media: (post.feed_post_media ?? [])
-          .sort((a, b) => a.sort_order - b.sort_order)
-          .map((item) => ({
-            ...item,
-            signedUrl: mediaUrlByPath.get(item.object_path),
-          })),
-        likeCount: post.like_count ?? 0,
-        commentCount: post.comment_count ?? 0,
-        likedByMe: likedIds.has(post.id),
-      }));
-
-      if (append) {
-        const incomingIds = new Set(hydrated.map((post) => post.id));
-        setPosts((current) => [
-          ...current.filter((post) => !incomingIds.has(post.id)),
-          ...hydrated,
-        ]);
-        loadedCountRef.current = from + rows.length;
-      } else {
-        setPosts(hydrated);
-        loadedCountRef.current = rows.length;
-      }
-
-      setHasMore(rows.length === pageSize);
-    } catch (cause) {
-      console.error("Gagal memuat Kabar Revolt.", cause);
-      setError(feedErrorMessage(cause));
-    } finally {
-      if (append) setLoadingMore(false);
-      else if (!quiet) setLoading(false);
-    }
-  }, [activeMember, user]);
+    },
+    [activeMember, user],
+  );
 
   useEffect(() => {
     if (!accessLoading) void loadFeed();
@@ -632,122 +202,31 @@ export function CommunityFeed({
 
     let active = true;
     const loadEvents = async () => {
-      const supabase = getSupabaseBrowserClient();
-      const now = new Date().toISOString();
+      try {
+        const result = await fetchFeedComposerOptions({
+          memberExternalId: account?.member_external_id,
+          editingEvent: editingPost?.attached_event,
+        });
 
-      const [agendaResult, voyagerResult, profileResult] = await Promise.all([
-        supabase
-          .from("events")
-          .select("id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at")
-          .eq("status", "published")
-          .neq("type", "voyager")
-          .gte("start_at", now)
-          .order("start_at", { ascending: true })
-          .limit(12),
-        supabase
-          .from("events")
-          .select("id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at")
-          .eq("status", "published")
-          .eq("type", "voyager")
-          .order("start_at", { ascending: false })
-          .limit(8),
-        account?.member_external_id
-          ? supabase
-              .from("member_profiles")
-              .select("full_name,nickname")
-              .eq("member_external_id", account.member_external_id)
-              .maybeSingle()
-          : Promise.resolve({ data: null, error: null }),
-      ]);
-
-      if (!active) return;
-      if (agendaResult.error || voyagerResult.error) {
-        console.error(
-          "Agenda/Voyager untuk composer gagal dimuat.",
-          agendaResult.error ?? voyagerResult.error,
-        );
-        return;
+        if (!active) return;
+        if (result.authorName) setPreviewAuthorName(result.authorName);
+        setAvailableEvents(result.events);
+      } catch (cause) {
+        if (!active) return;
+        console.error("Agenda/Voyager untuk composer gagal dimuat.", cause);
       }
-
-      if (!profileResult.error && profileResult.data) {
-        const profile = profileResult.data as {
-          full_name: string;
-          nickname: string | null;
-        };
-        setPreviewAuthorName(profile.nickname || profile.full_name);
-      }
-
-      const agendaRows = (agendaResult.data ?? []) as FeedEvent[];
-      const voyagerRows = (voyagerResult.data ?? []) as FeedEvent[];
-      const voyagerIds = voyagerRows.map((event) => event.id);
-
-      if (voyagerIds.length === 0) {
-        const options = [...agendaRows, ...voyagerRows];
-        if (
-          editingPost?.attached_event &&
-          !options.some((event) => event.id === editingPost.attached_event?.id)
-        ) {
-          options.unshift(editingPost.attached_event);
-        }
-        setAvailableEvents(options);
-        return;
-      }
-
-      const [participantsResult, photosResult] = await Promise.all([
-        supabase
-          .from("event_participants")
-          .select("event_id")
-          .in("event_id", voyagerIds),
-        supabase
-          .from("club_gallery")
-          .select("event_id")
-          .in("event_id", voyagerIds),
-      ]);
-
-      if (!active) return;
-
-      const participantCountByEvent = new Map<string, number>();
-      if (!participantsResult.error) {
-        for (const row of (participantsResult.data ?? []) as { event_id: string }[]) {
-          participantCountByEvent.set(
-            row.event_id,
-            (participantCountByEvent.get(row.event_id) ?? 0) + 1,
-          );
-        }
-      }
-
-      const photoCountByEvent = new Map<string, number>();
-      if (!photosResult.error) {
-        for (const row of (photosResult.data ?? []) as { event_id: string | null }[]) {
-          if (!row.event_id) continue;
-          photoCountByEvent.set(
-            row.event_id,
-            (photoCountByEvent.get(row.event_id) ?? 0) + 1,
-          );
-        }
-      }
-
-      const voyagerOptions = voyagerRows.map((event) => ({
-        ...event,
-        participantCount: participantCountByEvent.get(event.id) ?? 0,
-        photoCount: photoCountByEvent.get(event.id) ?? 0,
-      }));
-      const options = [...agendaRows, ...voyagerOptions];
-
-      if (
-        editingPost?.attached_event &&
-        !options.some((event) => event.id === editingPost.attached_event?.id)
-      ) {
-        options.unshift(editingPost.attached_event);
-      }
-
-      setAvailableEvents(options);
     };
+
     void loadEvents();
     return () => {
       active = false;
     };
-  }, [account?.member_external_id, composerOpen, editingPost?.attached_event, isStaff]);
+  }, [
+    account?.member_external_id,
+    composerOpen,
+    editingPost?.attached_event,
+    isStaff,
+  ]);
 
   useEffect(() => {
     if (!activeMember) return;
@@ -778,9 +257,7 @@ export function CommunityFeed({
           if (change.eventType === "DELETE") {
             const id = change.old?.id;
             if (typeof id !== "string") return;
-            setPosts((current) =>
-              current.filter((post) => post.id !== id),
-            );
+            setPosts((current) => current.filter((post) => post.id !== id));
             return;
           }
 
@@ -794,9 +271,7 @@ export function CommunityFeed({
             typeof record.status === "string" &&
             record.status !== "published"
           ) {
-            setPosts((current) =>
-              current.filter((post) => post.id !== id),
-            );
+            setPosts((current) => current.filter((post) => post.id !== id));
             return;
           }
 
@@ -845,7 +320,6 @@ export function CommunityFeed({
     return () => observer.disconnect();
   }, [activeMember, hasMore, loadFeed, loading, loadingMore, posts.length]);
 
-
   const refreshFromBanner = () => {
     setNewPostsAvailable(false);
     void loadFeed();
@@ -854,14 +328,30 @@ export function CommunityFeed({
 
   const toggleLike = async (post: FeedPost) => {
     if (!user || !activeMember) return;
-    setPosts((current) => current.map((item) => item.id === post.id ? { ...item, likedByMe: !item.likedByMe, likeCount: Math.max(0, item.likeCount + (item.likedByMe ? -1 : 1)) } : item));
-    const supabase = getSupabaseBrowserClient();
-    const result = post.likedByMe
-      ? await supabase.from("feed_post_likes").delete().eq("post_id", post.id).eq("user_id", user.id)
-      : await supabase.from("feed_post_likes").insert({ post_id: post.id, user_id: user.id });
-    if (result.error) {
-      setError(result.error.message);
-      void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
+
+    setPosts((current) =>
+      current.map((item) =>
+        item.id === post.id
+          ? {
+              ...item,
+              likedByMe: !item.likedByMe,
+              likeCount: Math.max(
+                0,
+                item.likeCount + (item.likedByMe ? -1 : 1),
+              ),
+            }
+          : item,
+      ),
+    );
+
+    try {
+      await toggleFeedLike({ post, userId: user.id });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Suka belum dapat diperbarui.");
+      void loadFeed({
+        pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current),
+        quiet: true,
+      });
     }
   };
 
@@ -880,55 +370,30 @@ export function CommunityFeed({
     setComposerOpen(true);
   };
 
-  const managePost = async (post: FeedPost, action: "pin" | "comments" | "archive") => {
-    const supabase = getSupabaseBrowserClient();
-
-    if (action === "pin" && !post.is_pinned) {
-      const otherPinned = posts
-        .filter((item) => item.is_pinned && item.id !== post.id)
-        .sort(
-          (a, b) =>
-            new Date(b.published_at ?? b.created_at).getTime() -
-            new Date(a.published_at ?? a.created_at).getTime(),
-        );
-
-      if (otherPinned.length >= 2) {
-        const oldestPinned = otherPinned[otherPinned.length - 1];
-        const { error: unpinError } = await supabase
-          .from("feed_posts")
-          .update({ is_pinned: false })
-          .eq("id", oldestPinned.id);
-
-        if (unpinError) {
-          setError(unpinError.message);
-          return;
-        }
-      }
+  const managePost = async (post: FeedPost, action: FeedManageAction) => {
+    try {
+      await manageFeedPost({ post, posts, action });
+      void loadFeed({
+        pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current),
+        quiet: true,
+      });
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Post belum dapat diperbarui.");
     }
-
-    const payload =
-      action === "pin"
-        ? { is_pinned: !post.is_pinned }
-        : action === "comments"
-          ? { comments_locked: !post.comments_locked }
-          : { status: "archived" };
-
-    const { error: updateError } = await supabase
-      .from("feed_posts")
-      .update(payload)
-      .eq("id", post.id);
-
-    if (updateError) setError(updateError.message);
-    else void loadFeed({ pageSize: Math.max(FEED_PAGE_SIZE, loadedCountRef.current), quiet: true });
   };
 
   const handleFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
-    const availableSlots = Math.max(0, 4 - existingMedia.length);
+    const availableSlots = Math.max(0, FEED_MAX_MEDIA - existingMedia.length);
     const combined = [...postFiles, ...files].slice(0, availableSlots);
-    const invalid = combined.find((file) => !allowedImageTypes.has(file.type) || file.size > 8 * 1024 * 1024);
-    if (invalid) { setError("Gunakan JPG, PNG, atau WEBP dengan ukuran maksimal 8 MB per foto."); return; }
+    const validationError = validateFeedFiles(combined);
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setPostFiles(combined);
   };
 
@@ -951,118 +416,19 @@ export function CommunityFeed({
 
     setPostSaving(true);
     setError("");
-    const supabase = getSupabaseBrowserClient();
 
     try {
-      let postId = editingPost?.id ?? "";
-
-      if (editingPost) {
-        const { error: updateError } = await supabase
-          .from("feed_posts")
-          .update({
-            body: postBody.trim(),
-            link_url: postLink.trim() || null,
-            event_id: postEventId || null,
-            is_pinned: pinPost,
-            comments_locked: lockComments,
-          })
-          .eq("id", editingPost.id);
-
-        if (updateError) throw updateError;
-
-        const keptIds = new Set(existingMedia.map((item) => item.id));
-        const removedMedia = editingPost.media.filter(
-          (item) => !keptIds.has(item.id),
-        );
-
-        if (removedMedia.length > 0) {
-          const { error: mediaDeleteError } = await supabase
-            .from("feed_post_media")
-            .delete()
-            .in("id", removedMedia.map((item) => item.id));
-
-          if (mediaDeleteError) throw mediaDeleteError;
-
-          const paths = removedMedia
-            .map((item) => item.object_path)
-            .filter(Boolean);
-
-          if (paths.length > 0) {
-            const { error: storageDeleteError } = await supabase.storage
-              .from("community-feed")
-              .remove(paths);
-
-            if (storageDeleteError) {
-              console.error(
-                "Media post terhapus dari database, tapi file storage belum bersih.",
-                storageDeleteError,
-              );
-            }
-          }
-        }
-
-        for (const [index, item] of existingMedia.entries()) {
-          if (item.sort_order === index) continue;
-          const { error: sortError } = await supabase
-            .from("feed_post_media")
-            .update({ sort_order: index })
-            .eq("id", item.id);
-
-          if (sortError) throw sortError;
-        }
-      } else {
-        const { data: post, error: createError } = await supabase
-          .from("feed_posts")
-          .insert({
-            body: postBody.trim(),
-            link_url: postLink.trim() || null,
-            event_id: postEventId || null,
-            status: publish ? "published" : "draft",
-            is_pinned: pinPost,
-            comments_locked: lockComments,
-          })
-          .select("id")
-          .single();
-
-        if (createError || !post) {
-          throw createError ?? new Error("Post tidak dapat dibuat.");
-        }
-
-        postId = post.id;
-      }
-
-      for (const [index, file] of postFiles.entries()) {
-        const extension =
-          file.type === "image/png"
-            ? "png"
-            : file.type === "image/webp"
-              ? "webp"
-              : "jpg";
-        const objectPath = `${postId}/${crypto.randomUUID()}.${extension}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("community-feed")
-          .upload(objectPath, file, {
-            cacheControl: "3600",
-            upsert: false,
-          });
-
-        if (uploadError) throw uploadError;
-
-        const { error: mediaError } = await supabase
-          .from("feed_post_media")
-          .insert({
-            post_id: postId,
-            object_path: objectPath,
-            sort_order: existingMedia.length + index,
-            alt_text: `Dokumentasi post Revolt Riders ${existingMedia.length + index + 1}`,
-          });
-
-        if (mediaError) {
-          await supabase.storage.from("community-feed").remove([objectPath]);
-          throw mediaError;
-        }
-      }
+      await saveFeedPost({
+        editingPost,
+        body: postBody,
+        linkUrl: postLink,
+        eventId: postEventId,
+        pinned: pinPost,
+        commentsLocked: lockComments,
+        existingMedia,
+        files: postFiles,
+        publish,
+      });
 
       closeComposer();
       invalidateCache("dashboard_");
@@ -1083,7 +449,9 @@ export function CommunityFeed({
     }
   };
 
-  const emptyCopy = isStaff ? "Belum ada post. Bagikan kabar pertama untuk member Revolt Riders." : "Belum ada kabar dari pengurus. Post terbaru akan muncul di sini.";
+  const emptyCopy = isStaff
+    ? "Belum ada post. Bagikan kabar pertama untuk member Revolt Riders."
+    : "Belum ada kabar dari pengurus. Post terbaru akan muncul di sini.";
   const pinnedPosts = useMemo(
     () => posts.filter((post) => post.is_pinned).slice(0, 2),
     [posts],
@@ -1100,30 +468,110 @@ export function CommunityFeed({
       </header>
 
       {!activeMember && !accessLoading ? (
-        <section className="community-feed-gate"><LockKeyhole aria-hidden="true" /><h3>Feed khusus member aktif</h3><p>Masuk dan aktifkan akun member untuk mengikuti kabar komunitas Revolt Riders.</p></section>
+        <section className="community-feed-gate">
+          <LockKeyhole aria-hidden="true" />
+          <h3>Feed khusus member aktif</h3>
+          <p>
+            Masuk dan aktifkan akun member untuk mengikuti kabar komunitas Revolt Riders.
+          </p>
+        </section>
       ) : (
         <>
-          {newPostsAvailable && <button className="community-new-posts" type="button" onClick={refreshFromBanner}><Sparkles aria-hidden="true" /> Post baru tersedia</button>}
-          {error && <p className="community-feed-error" role="alert">{error}</p>}
-          {loading ? <FeedSkeleton /> : (
+          {newPostsAvailable ? (
+            <button
+              className="community-new-posts"
+              type="button"
+              onClick={refreshFromBanner}
+            >
+              <Sparkles aria-hidden="true" /> Post baru tersedia
+            </button>
+          ) : null}
+          {error ? (
+            <p className="community-feed-error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {loading ? (
+            <FeedSkeleton />
+          ) : (
             <div className="community-feed-list">
-              {pinnedPosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onEdit={openEditPost} onManage={managePost} />)}
-              {visiblePosts.map((post) => <FeedPostCard key={post.id} post={post} isStaff={isStaff} currentRole={account?.role} currentUserId={user?.id} onToggleLike={toggleLike} onOpenDiscussion={(item) => router.push(`/post/${item.id}`)} onEdit={openEditPost} onManage={managePost} />)}
-              {posts.length === 0 && <section className="community-feed-empty"><MessageCircle aria-hidden="true" /><h3>Belum ada kabar</h3><p>{emptyCopy}</p>{isStaff && <button type="button" onClick={() => setComposerOpen(true)}><Plus aria-hidden="true" /> Buat post pertama</button>}</section>}
+              {pinnedPosts.map((post) => (
+                <FeedPostCard
+                  key={post.id}
+                  post={post}
+                  isStaff={isStaff}
+                  currentRole={account?.role}
+                  currentUserId={user?.id}
+                  onToggleLike={toggleLike}
+                  onOpenDiscussion={(item) => router.push(`/post/${item.id}`)}
+                  onEdit={openEditPost}
+                  onManage={managePost}
+                />
+              ))}
+              {visiblePosts.map((post) => (
+                <FeedPostCard
+                  key={post.id}
+                  post={post}
+                  isStaff={isStaff}
+                  currentRole={account?.role}
+                  currentUserId={user?.id}
+                  onToggleLike={toggleLike}
+                  onOpenDiscussion={(item) => router.push(`/post/${item.id}`)}
+                  onEdit={openEditPost}
+                  onManage={managePost}
+                />
+              ))}
+              {posts.length === 0 ? (
+                <section className="community-feed-empty">
+                  <MessageCircle aria-hidden="true" />
+                  <h3>Belum ada kabar</h3>
+                  <p>{emptyCopy}</p>
+                  {isStaff ? (
+                    <button type="button" onClick={() => setComposerOpen(true)}>
+                      <Plus aria-hidden="true" /> Buat post pertama
+                    </button>
+                  ) : null}
+                </section>
+              ) : null}
               {posts.length > 0 && hasMore ? (
-                <div ref={loadMoreRef} className="community-feed-sentinel" aria-live="polite">
-                  {loadingMore ? <><LoaderCircle className="spin" aria-hidden="true" /> Memuat kabar lainnya…</> : <span aria-hidden="true" />}
+                <div
+                  ref={loadMoreRef}
+                  className="community-feed-sentinel"
+                  aria-live="polite"
+                >
+                  {loadingMore ? (
+                    <>
+                      <LoaderCircle className="spin" aria-hidden="true" />
+                      Memuat kabar lainnya…
+                    </>
+                  ) : (
+                    <span aria-hidden="true" />
+                  )}
                 </div>
               ) : null}
-              {posts.length > 0 && !hasMore ? <p className="community-feed-end">Semua kabar sudah dilihat.</p> : null}
+              {posts.length > 0 && !hasMore ? (
+                <p className="community-feed-end">Semua kabar sudah dilihat.</p>
+              ) : null}
             </div>
           )}
         </>
       )}
 
-      <ModalSheet open={Boolean(isStaff && composerOpen)} onClose={closeComposer} title={editingPost ? "Edit post" : "Buat post"} eyebrow="">
-        <form className="community-composer" onSubmit={(event) => void submitPost(event, true)}>
-          <div className="community-composer-mode" role="tablist" aria-label="Mode composer">
+      <ModalSheet
+        open={Boolean(isStaff && composerOpen)}
+        onClose={closeComposer}
+        title={editingPost ? "Edit post" : "Buat post"}
+        eyebrow=""
+      >
+        <form
+          className="community-composer"
+          onSubmit={(event) => void submitPost(event, true)}
+        >
+          <div
+            className="community-composer-mode"
+            role="tablist"
+            aria-label="Mode composer"
+          >
             <button
               type="button"
               role="tab"
