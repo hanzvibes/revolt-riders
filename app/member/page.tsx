@@ -5,17 +5,17 @@ import { AppShell } from "@/components/app-shell";
 import { CountUpNumber } from "@/components/count-up-number";
 import { ModalSheet } from "@/components/modal-sheet";
 import { PageState } from "@/components/page-state";
-import {
-  RideLogEditModal,
-  type RideLogEditData,
-} from "@/components/ride-log-edit-modal";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import {
   getMemberInitials,
   getMemberRoleClass,
 } from "@/features/members/member-display";
-import { deleteRideLog } from "@/lib/services/ride-log-service";
+import {
+  RideLogEditModal,
+  type RideLogEditData,
+} from "@/features/riding/components/ride-log-edit-modal";
+import { deleteRideLog } from "@/features/riding/mutations";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Compass,
