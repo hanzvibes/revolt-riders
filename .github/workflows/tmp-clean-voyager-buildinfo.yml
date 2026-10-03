@@ -1,0 +1,27 @@
+name: Temporary Voyager build cache cleanup
+
+on:
+  push:
+    branches:
+      - refactor/voyager-complete
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/voyager-complete
+          fetch-depth: 0
+      - name: Restore generated cache and remove helper
+        run: |
+          git checkout origin/main -- tsconfig.tsbuildinfo
+          rm .github/workflows/tmp-clean-voyager-buildinfo.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: remove generated Voyager build cache"
+          git push origin HEAD:refactor/voyager-complete
