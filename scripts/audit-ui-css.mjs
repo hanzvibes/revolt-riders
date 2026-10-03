@@ -251,7 +251,7 @@ const mobileA11yContracts = {
     'role="status" aria-live="polite"',
     'className="error-message" role="alert"',
   ],
-  "app/voyager/page.tsx": [
+  "app/voyager/voyager-manage-sheet.tsx": [
     'aria-label="Cari participant Voyager"',
   ],
 };
