@@ -8,6 +8,7 @@ import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-ed
 import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import { getMemberRoleClass as getRoleClass } from "@/features/members/member-display";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getRiderProgress } from "@/lib/rider-progression";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
@@ -84,27 +85,6 @@ type ProfileSnapshot = {
   rides: Ride[];
   rsvpActivities: RsvpActivity[];
   activityEvents: ActivityEvent[];
-};
-
-const getRoleClass = (role: string | null) => {
-  const r = (role ?? "").toUpperCase().trim();
-  if (r === "PRESIDENT") return "badge-president";
-  if (r === "FOUNDER") return "badge-founder";
-  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-  if (r === "NEGOSIATOR") return "badge-negosiator";
-  if (r === "CAPROS") return "badge-capros";
-  if (r === "PROSPEK") return "badge-prospek";
-  if (r === "VIRGIN") return "badge-virgin";
-  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-  if (r.includes("CAPTAIN")) return "badge-rc";
-  if (
-    r.includes("ADMIN") ||
-    r.includes("KETUA") ||
-    r.includes("SEKRETARIS") ||
-    r.includes("BENDAHARA")
-  )
-    return "badge-admin";
-  return "";
 };
 
 export default function ProfilePage() {
