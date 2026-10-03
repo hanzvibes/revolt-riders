@@ -68,3 +68,24 @@ test("Admin members derives search, filter, indexes, and counts outside the scre
   assert.match(view, /full_name\.toLowerCase\(\)\.includes\(normalizedQuery\)/);
   assert.match(view, /detail\?\.motorcycle \?\? ""/);
 });
+
+test("Admin members keeps desktop and mobile directory presentation outside the screen", async () => {
+  const screen = await read("app/admin/members/manage-members-page.tsx");
+  const directory = await read("app/admin/members/member-admin-directory.tsx");
+
+  assert.match(screen, /from "\.\/member-admin-directory"/);
+  assert.match(screen, /<MemberAdminDesktopTable/);
+  assert.match(screen, /<MemberAdminMobileCards/);
+  assert.doesNotMatch(screen, /className="admin-member-table-card"/);
+  assert.doesNotMatch(screen, /className="admin-member-cards-mobile"/);
+  assert.doesNotMatch(screen, /<Pencil/);
+
+  assert.match(directory, /export function MemberAdminDesktopTable/);
+  assert.match(directory, /export function MemberAdminMobileCards/);
+  assert.match(directory, /className="admin-member-table-card"/);
+  assert.match(directory, /className="admin-member-cards-mobile"/);
+  assert.match(directory, /onClick=\{\(\) => onEdit\(member\)\}/);
+  assert.match(directory, /event\.stopPropagation\(\);[\s\S]*onEdit\(member\);/);
+  assert.match(directory, /Member Tidak Ditemukan/);
+  assert.match(directory, /Belum Ada Akun/);
+});
