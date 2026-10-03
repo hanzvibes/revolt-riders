@@ -4,14 +4,17 @@ import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { CountUpNumber } from "@/components/count-up-number";
-import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
+import {
+  RideLogEditModal,
+  type RideLogEditData,
+} from "@/features/riding/components/ride-log-edit-modal";
 import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { getMemberRoleClass as getRoleClass } from "@/features/members/member-display";
+import { deleteRideLog } from "@/features/riding/mutations";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getRiderProgress } from "@/lib/rider-progression";
-import { deleteRideLog } from "@/lib/services/ride-log-service";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Bike,
