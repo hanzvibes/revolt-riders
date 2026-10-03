@@ -29,6 +29,7 @@ const eslintConfig = defineConfig([
     files: [
       "app/admin/bulletins/page.tsx",
       "app/admin/members/page.tsx",
+      "app/admin/members/manage-members-page.tsx",
       "app/bulletin/page.tsx",
       "app/profil/page.tsx",
       "app/riding/approval/page.tsx",

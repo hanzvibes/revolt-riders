@@ -282,6 +282,7 @@ test("ModalSheet keeps input focus across parent renders", async () => {
   assert.match(sheet, /\}, \[open, requestClose\]\);/);
 });
 
+
 test("Mobile navigation is inert while the drawer is hidden", async () => {
   const shell = await read("components/app-shell.tsx");
 
@@ -292,6 +293,7 @@ test("Mobile navigation is inert while the drawer is hidden", async () => {
   assert.match(shell, /aria-expanded=\{open\}/);
 });
 
+
 test("Audit hardening keeps shared controls touch friendly", async () => {
   const css = await read("app/system-ui.css");
   const tokens = await read("app/tokens.css");
@@ -301,6 +303,7 @@ test("Audit hardening keeps shared controls touch friendly", async () => {
   assert.match(css, /role-panel \.role-list select[\s\S]*min-height: var\(--rr-control-lg\)/);
   assert.match(css, /@media \(max-width: 720px\)[\s\S]*font-size: max\(1rem, var\(--rr-type-body\)\)/);
 });
+
 
 test("Reduced motion preserves state changes without blanket-killing the app", async () => {
   const css = await read("app/system-ui.css");
@@ -314,6 +317,7 @@ test("Reduced motion preserves state changes without blanket-killing the app", a
   assert.match(chart, /isAnimationActive=\{!reduceMotion\}/);
   assert.match(chart, /animationDuration=\{reduceMotion \? 0 : 240\}/);
 });
+
 
 test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   const voyager = await read("app/voyager/page.tsx");
@@ -332,6 +336,7 @@ test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   assert.match(riding, /dynamic\(/);
   assert.match(riding, /components\/riding-stat-chart/);
 });
+
 
 test("Voyager gallery images decode lazily", async () => {
   const voyager = await read("app/voyager/page.tsx");
@@ -360,6 +365,7 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
   assert.match(css, /riding-stat-range button[\s\S]*min-height: var\(--rr-control-lg\)/);
 });
 
+
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
   const cash = await read("app/kas/page.tsx");
   const profile = await read("app/profil/page.tsx");
@@ -379,6 +385,7 @@ test("Cash and profile pages reuse authenticated cache without blank-page reload
   assert.doesNotMatch(profile, /auth\.getUser\(\)/);
 });
 
+
 test("Join request admin refreshes the cached shell badge after workflow changes", async () => {
   const joinRequests = await read("app/admin/join-requests/page.tsx");
 
@@ -388,6 +395,7 @@ test("Join request admin refreshes the cached shell badge after workflow changes
   assert.match(joinRequests, /invalidateCache\("shell:pending-join-count"\)/);
   assert.match(joinRequests, /loadRequests\(true\)/);
 });
+
 
 test("Data cache evicts stale and cross-user entries", async () => {
   const cache = await read("context/data-cache-context.tsx");
@@ -416,17 +424,22 @@ test("Fullscreen check-in QR behaves like an accessible modal", async () => {
   assert.match(qr, /opener\?\.focus\(\)/);
 });
 
+
 test("High-traffic admin workspaces reuse shared access and cache state", async () => {
-  const files = [
-    "app/admin/events/page.tsx",
-    "app/admin/insights/page.tsx",
-    "app/admin/attendance/page.tsx",
-    "app/admin/members/page.tsx",
-    "app/riding/approval/page.tsx",
+  const workspaces = [
+    ["app/admin/events/page.tsx"],
+    ["app/admin/insights/page.tsx"],
+    ["app/admin/attendance/page.tsx"],
+    [
+      "app/admin/members/page.tsx",
+      "app/admin/members/manage-members-page.tsx",
+    ],
+    ["app/riding/approval/page.tsx"],
   ];
 
-  for (const file of files) {
-    const source = await read(file);
+  for (const workspaceFiles of workspaces) {
+    const sources = await Promise.all(workspaceFiles.map(read));
+    const source = sources.join("\n");
     assert.match(source, /useMemberAccess/);
     assert.match(source, /useDataCache/);
     assert.match(source, /fetchWithCache/);
@@ -442,6 +455,7 @@ test("High-traffic admin workspaces reuse shared access and cache state", async 
   assert.match(attendance, /postgres_changes/);
 });
 
+
 test("UI audit budgets prevent legacy design debt from silently increasing", async () => {
   const audit = await read("scripts/audit-ui-css.mjs");
 
@@ -453,6 +467,7 @@ test("UI audit budgets prevent legacy design debt from silently increasing", asy
   assert.match(audit, /confirm\|prompt/);
   assert.match(audit, /24-43px height/);
 });
+
 
 test("Audit next pass keeps active admin microcopy and touch targets readable", async () => {
   const css = await read("app/system-ui.css");
@@ -522,6 +537,7 @@ test("Event deletion stays behind the authorized RPC", async () => {
   assert.match(migration, /event\.delete/);
 });
 
+
 test("Database performance hardening is migration-tracked", async () => {
   const migration = await read(
     "supabase/migrations/20260921030223_optimize_rls_and_foreign_key_indexes.sql",
@@ -549,6 +565,7 @@ test("Admin rejection stays behind its authorized RPC", async () => {
   );
   assert.match(admin, /Tolak Pendaftaran/);
 });
+
 
 test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
@@ -581,6 +598,7 @@ test("Join request admin mutations stay behind scoped RPCs", async () => {
   assert.doesNotMatch(page, /from\("member_profiles"\)\s*\.insert\(/);
 });
 
+
 test("Static and Voyager gallery images use Next Image", async () => {
   const voyager = await read("app/voyager/page.tsx");
   const invitation = await read("app/undangan/[token]/page.tsx");
@@ -596,6 +614,7 @@ test("Static and Voyager gallery images use Next Image", async () => {
   assert.match(config, /uloqjgwgupuaatdixvsa\.supabase\.co/);
   assert.match(voyager, /sizes="\(max-width: 520px\) 50vw, 320px"/);
 });
+
 test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () => {
   const admin = await read("app/admin/events/page.tsx");
 
@@ -609,6 +628,7 @@ test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () =>
     "save, manual sync, and publish/complete lifecycle must share the sync guard",
   );
 });
+
 
 test("Ride mutations invalidate derived KM caches", async () => {
   const riding = await read("app/riding/page.tsx");
@@ -629,6 +649,7 @@ test("Ride mutations invalidate derived KM caches", async () => {
   assert.match(riding, /invalidateRideDerivedCaches\(\)/);
 });
 
+
 test("Ride approval refreshes Member Directory and member detail caches", async () => {
   const approval = await read("app/riding/approval/page.tsx");
 
@@ -637,6 +658,7 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
   assert.match(approval, /invalidateCache\("riding_leaderboard_data"\)/);
   assert.match(approval, /invalidateCache\("admin_dashboard_overview"\)/);
 });
+
 
 test("Legacy Admin agenda status flow preserves Official KM sync invariant", async () => {
   const admin = await read("app/admin/page.tsx");
@@ -651,6 +673,7 @@ test("Legacy Admin agenda status flow preserves Official KM sync invariant", asy
   );
 });
 
+
 test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
   const profile = await read("app/profil/page.tsx");
 
@@ -661,4 +684,3 @@ test("Profile ride actions use shared dialog and derived cache invalidation", as
   assert.ok(!profile.includes("confirm("));
   assert.ok(!profile.includes("alert("));
 });
-
