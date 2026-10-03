@@ -147,7 +147,9 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const rideGuard = await read("supabase/migrations/20260920121743_allow_voyager_official_ride_logs.sql");
   const page = await read("app/voyager/page.tsx");
   const data = await read("app/voyager/voyager-data.ts");
-  const voyagerWorkspace = `${page}\n${data}`;
+  const actions = await read("app/voyager/voyager-actions.ts");
+  const manage = await read("app/voyager/voyager-manage-sheet.tsx");
+  const voyagerWorkspace = [page, data, actions, manage].join("\n");
   const nav = await read("components/app-shell.tsx");
   const riding = await read("app/riding/page.tsx");
 
@@ -161,12 +163,11 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   assert.match(migration, /revoke all.*sync_event_official_rides.*anon/);
 
   assert.match(rideGuard, /'voyager'::public\.event_type/);
-
-  assert.match(page, /rpc\(\s*"save_event_activity"/);
-  assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
+  assert.match(actions, /rpc\(\s*"save_event_activity"/);
+  assert.match(actions, /rpc\(\s*"sync_event_official_rides"/);
   assert.match(data, /from\("event_participants"\)/);
-  assert.match(data, /from\("club-activity"\)/);
-  assert.match(page, /Tidak ada minimum KM/);
+  assert.match(actions, /from\("club-activity"\)/);
+  assert.match(manage, /Tidak ada minimum KM/);
   assert.ok(!voyagerWorkspace.includes('.from("event_attendance")'));
   assert.ok(!voyagerWorkspace.includes('.from("event_checkin_codes")'));
 
@@ -174,7 +175,6 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   assert.match(riding, /Official Agenda Distance/);
   assert.match(riding, /source_type !== "official_agenda"/);
 });
-
 
 test("Mandatory Ride can be enabled on managed agendas without check-in dependency", async () => {
   const admin = await read("app/admin/events/page.tsx");
@@ -227,27 +227,28 @@ test("Riding create and review mutations are routed through authorized RPCs", as
 
 
 test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
-  const page = await read("app/voyager/page.tsx");
+  const hub = await read("app/voyager/voyager-hub.tsx");
+  const derived = await read("app/voyager/voyager-derived.ts");
   const css = await read("app/system-ui.css");
 
-  assert.match(page, /voyager-overview-grid/);
-  assert.match(page, /Voyager berikutnya/);
-  assert.match(page, /Progress riding resmi/);
-  assert.match(page, /Activity & History/);
-  assert.match(page, /Activity Gallery/);
-  assert.match(page, /Gallery siap digunakan/);
-  assert.match(page, /Buat Voyager Pertama/);
-  assert.match(page, /\/admin\/events\?create=voyager/);
-  assert.match(page, /galleryPreview\.length === 0/);
-  assert.match(page, /uniqueParticipantCount/);
-  assert.match(page, /totalOfficialKm/);
+  assert.match(hub, /voyager-overview-grid/);
+  assert.match(hub, /Voyager berikutnya/);
+  assert.match(hub, /Progress riding resmi/);
+  assert.match(hub, /Activity & History/);
+  assert.match(hub, /Activity Gallery/);
+  assert.match(hub, /Gallery siap digunakan/);
+  assert.match(hub, /Buat Voyager Pertama/);
+  assert.match(hub, /\/admin\/events\?create=voyager/);
+  assert.match(hub, /galleryPreview\.length === 0/);
+  assert.match(hub, /uniqueParticipantCount/);
+  assert.match(hub, /totalOfficialKm/);
+  assert.match(derived, /journalEvents/);
 
   assert.match(css, /VOYAGER HUB/);
   assert.match(css, /voyager-gallery-hub-grid/);
   assert.match(css, /voyager-mandatory-card/);
   assert.match(css, /voyager-structured-empty/);
 });
-
 
 test("Voyager create shortcut opens a prefilled Voyager agenda form", async () => {
   const admin = await read("app/admin/events/page.tsx");
@@ -341,13 +342,13 @@ test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
 
 
 test("Voyager gallery images decode lazily", async () => {
-  const voyager = await read("app/voyager/page.tsx");
+  const page = await read("app/voyager/page.tsx");
+  const hub = await read("app/voyager/voyager-hub.tsx");
 
-  assert.match(voyager, /loading="lazy"/);
-  assert.match(voyager, /decoding="async"/);
-  assert.match(voyager, /PageSkeleton/);
+  assert.match(hub, /loading="lazy"/);
+  assert.match(hub, /decoding="async"/);
+  assert.match(page, /PageSkeleton/);
 });
-
 
 test("Audit polish keeps navigation, cache, and microcopy resilient", async () => {
   const shell = await read("components/app-shell.tsx");
@@ -491,6 +492,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
     "app/garage/page.tsx",
     "app/kas/page.tsx",
     "app/voyager/page.tsx",
+    "app/voyager/voyager-manage-sheet.tsx",
   ];
 
   assert.match(layout, /ActionDialogProvider/);
@@ -506,22 +508,21 @@ test("Shared action dialogs replace native browser prompts", async () => {
   }
 });
 
-
 test("Voyager makes member status and evidence visible", async () => {
-  const voyager = await read("app/voyager/page.tsx");
+  const hub = await read("app/voyager/voyager-hub.tsx");
+  const derived = await read("app/voyager/voyager-derived.ts");
   const css = await read("app/system-ui.css");
 
-  assert.match(voyager, /currentMemberVoyagerEvents/);
-  assert.match(voyager, /featuredMemberStatus/);
-  assert.match(voyager, /aria-label="Status Voyager saya"/);
-  assert.match(voyager, /BUKTI FOTO/);
-  assert.match(voyager, /setDetailEvent\(featuredEvent\)/);
+  assert.match(derived, /currentMemberVoyagerEvents/);
+  assert.match(derived, /featuredMemberStatus/);
+  assert.match(hub, /aria-label="Status Voyager saya"/);
+  assert.match(hub, /BUKTI FOTO/);
+  assert.match(hub, /onOpenDetail\(state\.featuredEvent/);
 
   assert.match(css, /voyager-member-progress/);
   assert.match(css, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.match(css, /@media \(max-width: 390px\)/);
 });
-
 
 test("Event deletion stays behind the authorized RPC", async () => {
   const eventsAdmin = await read("app/admin/events/page.tsx");
@@ -576,6 +577,7 @@ test("Destructive action dialogs use explicit safe labels", async () => {
     "app/garage/page.tsx",
     "app/kas/page.tsx",
     "app/voyager/page.tsx",
+    "app/voyager/voyager-manage-sheet.tsx",
   ];
 
   const sources = await Promise.all(files.map(read));
@@ -589,7 +591,6 @@ test("Destructive action dialogs use explicit safe labels", async () => {
   assert.match(combined, /Koreksi Transaksi/);
 });
 
-
 test("Join request admin mutations stay behind scoped RPCs", async () => {
   const page = await read("app/admin/join-requests/page.tsx");
 
@@ -602,19 +603,22 @@ test("Join request admin mutations stay behind scoped RPCs", async () => {
 
 
 test("Static and Voyager gallery images use Next Image", async () => {
-  const voyager = await read("app/voyager/page.tsx");
+  const voyagerHub = await read("app/voyager/voyager-hub.tsx");
+  const voyagerDetail = await read("app/voyager/voyager-detail-sheet.tsx");
+  const voyagerManage = await read("app/voyager/voyager-manage-sheet.tsx");
   const invitation = await read("app/undangan/[token]/page.tsx");
   const setup = await read("app/setup/page.tsx");
   const offline = await read("app/offline/page.tsx");
   const config = await read("next.config.ts");
 
-  for (const source of [voyager, invitation, setup, offline]) {
+  for (const source of [voyagerHub, voyagerDetail, voyagerManage, invitation, setup, offline]) {
     assert.match(source, /from "next\/image"/);
     assert.doesNotMatch(source, /<img\b/);
   }
 
   assert.match(config, /uloqjgwgupuaatdixvsa\.supabase\.co/);
-  assert.match(voyager, /sizes="\(max-width: 520px\) 50vw, 320px"/);
+  assert.match(voyagerDetail, /sizes="\(max-width: 520px\) 50vw, 320px"/);
+  assert.match(voyagerManage, /sizes="\(max-width: 520px\) 50vw, 320px"/);
 });
 
 test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () => {

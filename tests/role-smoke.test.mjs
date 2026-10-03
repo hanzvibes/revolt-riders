@@ -66,6 +66,7 @@ test("Treasurer cash mutations are guarded in UI and database", async () => {
 test("Voyager management is Admin or Superadmin only at both layers", async () => {
   const page = await read("app/voyager/page.tsx");
   const model = await read("app/voyager/voyager-model.ts");
+  const actions = await read("app/voyager/voyager-actions.ts");
   const migration = await read(
     "supabase/migrations/20260920121211_add_voyager_activity_system.sql",
   );
@@ -75,8 +76,8 @@ test("Voyager management is Admin or Superadmin only at both layers", async () =
     model,
     /export const isAdminRole = \(role\?: string\) =>\s*role === "admin" \|\| role === "superadmin"/,
   );
-  assert.match(page, /rpc\(\s*"save_event_activity"/);
-  assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
+  assert.match(actions, /rpc\(\s*"save_event_activity"/);
+  assert.match(actions, /rpc\(\s*"sync_event_official_rides"/);
 
   const adminGuard =
     /v_role not in \('admin'::public\.app_role, 'superadmin'::public\.app_role\)/g;
