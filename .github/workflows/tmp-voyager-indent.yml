@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   patch:
-    if: "${{ github.event.head_commit.message == 'chore(voyager): normalize loader indentation' }}"
+    if: github.event.head_commit.message == 'voyager-indent-patch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -31,7 +31,6 @@ jobs:
             () => fetchVoyagerSnapshot(activeAccount.member_external_id, year),
             { ttlMs: 90_000, forceRefresh },
           );'''
-          # The regex replacement may have stripped common indentation.
           unindented = '''      const year = new Date().getFullYear();
 const cacheKey = `voyager:${activeAccount.member_external_id}:${year}`;
 
