@@ -3,8 +3,9 @@
 import { AppShell } from "@/components/app-shell";
 import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
-import { formatEventDate, formatShortDate } from "@/features/events/formatters";
+import { formatEventDate } from "@/features/events/formatters";
 import type { EventRecord } from "@/lib/domain";
+import { formatShortDate } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { CalendarDays, Clock3, MapPin, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
