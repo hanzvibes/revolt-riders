@@ -4,11 +4,14 @@ import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { useDataCache } from "@/context/data-cache-context";
 import { CountUpNumber } from "@/components/count-up-number";
-import { RideLogEditModal, type RideLogEditData } from "@/components/ride-log-edit-modal";
+import {
+  RideLogEditModal,
+  type RideLogEditData,
+} from "@/features/riding/components/ride-log-edit-modal";
 import { PageSkeleton } from "@/components/skeleton";
 import dynamic from "next/dynamic";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { deleteRideLog, saveRideLog } from "@/lib/services/ride-log-service";
+import { deleteRideLog, saveRideLog } from "@/features/riding/mutations";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Bike,
@@ -27,7 +30,7 @@ import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react
 
 const RidingStatChart = dynamic(
   () =>
-    import("@/components/riding-stat-chart").then(
+    import("@/features/riding/components/riding-stat-chart").then(
       (module) => module.RidingStatChart,
     ),
   {
