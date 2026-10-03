@@ -25,11 +25,13 @@ test("Voyager keeps model types and format helpers outside the page", async () =
 
 test("Voyager refactor preserves activity, official KM, and media boundaries", async () => {
   const page = await read("app/voyager/page.tsx");
+  const data = await read("app/voyager/voyager-data.ts");
+  const workspace = `${page}\n${data}`;
 
   assert.match(page, /rpc\(\s*"save_event_activity"/);
   assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
-  assert.match(page, /from\("event_participants"\)/);
-  assert.match(page, /from\("club-activity"\)/);
-  assert.doesNotMatch(page, /from\("event_attendance"\)/);
-  assert.doesNotMatch(page, /from\("event_checkin_codes"\)/);
+  assert.match(data, /from\("event_participants"\)/);
+  assert.match(data, /from\("club-activity"\)/);
+  assert.doesNotMatch(workspace, /from\("event_attendance"\)/);
+  assert.doesNotMatch(workspace, /from\("event_checkin_codes"\)/);
 });
