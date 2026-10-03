@@ -89,3 +89,27 @@ test("Admin members keeps desktop and mobile directory presentation outside the 
   assert.match(directory, /Member Tidak Ditemukan/);
   assert.match(directory, /Belum Ada Akun/);
 });
+
+test("Admin members keeps member form presentation outside the screen", async () => {
+  const screen = await read("app/admin/members/manage-members-page.tsx");
+  const form = await read("app/admin/members/member-admin-form.tsx");
+
+  assert.match(screen, /from "\.\/member-admin-form"/);
+  assert.match(screen, /<MemberAdminForm/);
+  assert.match(screen, /onResetPassword=\{resetMemberPassword\}/);
+  assert.match(screen, /onSubmit=\{saveMember\}/);
+  assert.match(screen, /canManageRole=\{account\?\.role === "superadmin"\}/);
+  assert.doesNotMatch(screen, /<ModalSheet/);
+  assert.doesNotMatch(screen, /className="member-modal-section"/);
+
+  assert.match(form, /export function MemberAdminForm/);
+  assert.match(form, /<ModalSheet/);
+  assert.match(form, /className="sheet-form member-sheet-form member-modal-form"/);
+  assert.match(form, /1\. Profil Member Resmi/);
+  assert.match(form, /2\. Data Kendaraan & Jarak Tempuh/);
+  assert.match(form, /3\. Akses Akun Aplikasi/);
+  assert.match(form, /RESET PASSWORD/);
+  assert.match(form, /disabled=\{resettingPassword \|\| newPassword\.length < 8\}/);
+  assert.match(form, /onClick=\{onClose\}/);
+  assert.match(form, /SIMPAN MEMBER/);
+});
