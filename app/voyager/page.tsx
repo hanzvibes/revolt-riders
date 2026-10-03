@@ -10,6 +10,18 @@ import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
+  formatDate,
+  formatKm,
+  isAdminRole,
+  type GalleryPhoto,
+  type Member,
+  type Participant,
+  type RideRow,
+  type VoyagerEvent,
+  type VoyagerEventRow,
+  type VoyagerSnapshot,
+} from "./voyager-model";
+import {
   Bike,
   CalendarDays,
   Camera,
@@ -33,72 +45,6 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-
-type VoyagerEvent = {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  location_name: string | null;
-  location_url: string | null;
-  start_at: string;
-  end_at: string | null;
-  status: "draft" | "published" | "completed";
-  counts_as_mandatory: boolean;
-  official_distance_km: number | null;
-  official_support: string | null;
-  activity_summary: string | null;
-  completed_at: string | null;
-};
-
-type Member = {
-  member_external_id: string;
-  full_name: string;
-  nickname: string | null;
-  city: string | null;
-};
-
-type Participant = {
-  event_id: string;
-  member_external_id: string;
-};
-
-type GalleryPhoto = {
-  id: string;
-  event_id: string | null;
-  title: string;
-  image_url: string;
-  location: string | null;
-  ride_date: string | null;
-  signedUrl?: string;
-};
-
-type RideRow = {
-  distance_km: number | null;
-};
-
-type VoyagerEventRow = Omit<VoyagerEvent, "official_distance_km"> & {
-  official_distance_km: number | string | null;
-};
-
-type VoyagerSnapshot = {
-  events: VoyagerEvent[];
-  members: Member[];
-  participants: Participant[];
-  photos: GalleryPhoto[];
-  mandatoryKm: number;
-};
-
-const isAdminRole = (role?: string) => role === "admin" || role === "superadmin";
-
-const formatDate = (value: string) =>
-  new Intl.DateTimeFormat("id-ID", {
-    dateStyle: "medium",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(value));
-
-const formatKm = (value: number | null | undefined) =>
-  new Intl.NumberFormat("id-ID", { maximumFractionDigits: 1 }).format(Number(value) || 0);
 
 export default function VoyagerPage() {
   const { confirmAction } = useActionDialog();
@@ -1030,12 +976,12 @@ export default function VoyagerPage() {
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
                         <Image
-                        src={photo.signedUrl}
-                        alt={photo.title || "Dokumentasi Voyager"}
-                        width={640}
-                        height={640}
-                        sizes="(max-width: 520px) 50vw, 320px"
-                      />
+                          src={photo.signedUrl}
+                          alt={photo.title || "Dokumentasi Voyager"}
+                          width={640}
+                          height={640}
+                          sizes="(max-width: 520px) 50vw, 320px"
+                        />
                       ) : (
                         <span>Foto tidak tersedia</span>
                       )}
@@ -1203,12 +1149,12 @@ export default function VoyagerPage() {
                     <figure key={photo.id}>
                       {photo.signedUrl ? (
                         <Image
-                        src={photo.signedUrl}
-                        alt={photo.title || "Dokumentasi Voyager"}
-                        width={640}
-                        height={640}
-                        sizes="(max-width: 520px) 50vw, 320px"
-                      />
+                          src={photo.signedUrl}
+                          alt={photo.title || "Dokumentasi Voyager"}
+                          width={640}
+                          height={640}
+                          sizes="(max-width: 520px) 50vw, 320px"
+                        />
                       ) : (
                         <span>Foto</span>
                       )}
