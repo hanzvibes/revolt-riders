@@ -43,15 +43,16 @@ jobs:
 
           path = Path("scripts/audit-ui-css.mjs")
           source = path.read_text()
-          old = '''  "app/voyager/page.tsx": [
-            'aria-label="Cari participant Voyager"',
-          ],'''
-          new = '''  "app/voyager/voyager-manage-sheet.tsx": [
-            'aria-label="Cari participant Voyager"',
-          ],'''
-          if old not in source:
-              raise SystemExit("Voyager mobile accessibility contract shape changed")
-          path.write_text(source.replace(old, new, 1))
+          marker = "const mobileA11yContracts = {"
+          if marker not in source:
+              raise SystemExit("mobile accessibility contract map not found")
+          head, tail = source.split(marker, 1)
+          old = '"app/voyager/page.tsx": ['
+          new = '"app/voyager/voyager-manage-sheet.tsx": ['
+          if old not in tail:
+              raise SystemExit("Voyager mobile accessibility contract not found")
+          tail = tail.replace(old, new, 1)
+          path.write_text(head + marker + tail)
           PY
 
       - name: Contract tests
