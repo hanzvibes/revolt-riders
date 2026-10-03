@@ -151,7 +151,7 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const manage = await read("app/voyager/voyager-manage-sheet.tsx");
   const voyagerWorkspace = [page, data, actions, manage].join("\n");
   const nav = await read("components/app-shell.tsx");
-  const riding = await read("app/riding/page.tsx");
+  const ridingHistory = await read("app/riding/riding-history.tsx");
 
   assert.match(migration, /create table if not exists public\.event_participants/);
   assert.match(migration, /ride_logs_official_event_member_unique/);
@@ -172,8 +172,8 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   assert.ok(!voyagerWorkspace.includes('.from("event_checkin_codes")'));
 
   assert.match(nav, /\["Voyager", "\/voyager", Route\]/);
-  assert.match(riding, /Official Agenda Distance/);
-  assert.match(riding, /source_type !== "official_agenda"/);
+  assert.match(ridingHistory, /Official Agenda Distance/);
+  assert.match(ridingHistory, /source_type !== "official_agenda"/);
 });
 
 test("Mandatory Ride can be enabled on managed agendas without check-in dependency", async () => {
@@ -201,7 +201,10 @@ test("Mandatory Ride can be enabled on managed agendas without check-in dependen
 
 test("Riding create and review mutations are routed through authorized RPCs", async () => {
   const service = await read("lib/services/ride-log-service.ts");
-  const riding = await read("app/riding/page.tsx");
+  const ridingPage = await read("app/riding/page.tsx");
+  const ridingForm = await read("app/riding/riding-form.tsx");
+  const ridingHistory = await read("app/riding/riding-history.tsx");
+  const ridingWorkspace = [ridingPage, ridingForm, ridingHistory].join("\n");
   const approval = await read("app/riding/approval/page.tsx");
   const migration = await read(
     "supabase/migrations/20260920153036_extend_ride_log_rpc_flow.sql",
@@ -213,8 +216,8 @@ test("Riding create and review mutations are routed through authorized RPCs", as
   assert.match(service, /p_odometer_end:/);
   assert.match(service, /"review_ride_log"/);
 
-  assert.match(riding, /await saveRideLog\(/);
-  assert.doesNotMatch(riding, /from\("ride_logs"\)\.insert/);
+  assert.match(ridingForm, /await saveRideLog\(/);
+  assert.doesNotMatch(ridingWorkspace, /from\("ride_logs"\)\.insert/);
 
   assert.match(approval, /await reviewRideLog\(/);
   assert.doesNotMatch(approval, /from\("ride_logs"\)\.update/);
@@ -224,7 +227,6 @@ test("Riding create and review mutations are routed through authorized RPCs", as
   assert.match(migration, /revoke all on function public\.review_ride_log.*from anon/);
   assert.match(migration, /grant execute on function public\.review_ride_log.*to authenticated/);
 });
-
 
 test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
@@ -325,6 +327,7 @@ test("Reduced motion preserves state changes without blanket-killing the app", a
 test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   const voyager = await read("app/voyager/page.tsx");
   const riding = await read("app/riding/page.tsx");
+  const ridingSummary = await read("app/riding/riding-summary.tsx");
   const garage = await read("app/garage/page.tsx");
 
   for (const source of [voyager, riding, garage]) {
@@ -336,10 +339,9 @@ test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   assert.match(voyager, /ttlMs: 90_000/);
   assert.match(riding, /ttlMs: 60_000/);
   assert.match(garage, /ttlMs: 90_000/);
-  assert.match(riding, /dynamic\(/);
-  assert.match(riding, /components\/riding-stat-chart/);
+  assert.match(ridingSummary, /dynamic\(/);
+  assert.match(ridingSummary, /components\/riding-stat-chart/);
 });
-
 
 test("Voyager gallery images decode lazily", async () => {
   const page = await read("app/voyager/page.tsx");
@@ -578,6 +580,7 @@ test("Destructive action dialogs use explicit safe labels", async () => {
     "app/kas/page.tsx",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
+    "app/riding/riding-history.tsx",
   ];
 
   const sources = await Promise.all(files.map(read));
