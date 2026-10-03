@@ -6,6 +6,10 @@ import { ModalSheet } from "@/components/modal-sheet";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
+import {
+  getMemberInitials as getInitials,
+  getMemberRoleClass as getRoleClass,
+} from "@/features/members/member-display";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -74,36 +78,6 @@ const emptyForm: MemberForm = {
   motorcycle: "",
 };
 const roles = ["member", "road_captain", "treasurer", "admin", "superadmin"];
-
-const getInitials = (name: string, nickname: string | null) => {
-  const text = (nickname || name || "RR").trim();
-  const parts = text.split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return text.slice(0, 2).toUpperCase();
-};
-
-const getRoleClass = (role: string | null) => {
-  const r = (role ?? "").toUpperCase().trim();
-  if (r === "PRESIDENT") return "badge-president";
-  if (r === "FOUNDER") return "badge-founder";
-  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-  if (r === "NEGOSIATOR") return "badge-negosiator";
-  if (r === "CAPROS") return "badge-capros";
-  if (r === "PROSPEK") return "badge-prospek";
-  if (r === "VIRGIN") return "badge-virgin";
-  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-  if (r.includes("CAPTAIN")) return "badge-rc";
-  if (
-    r.includes("ADMIN") ||
-    r.includes("KETUA") ||
-    r.includes("SEKRETARIS") ||
-    r.includes("BENDAHARA")
-  )
-    return "badge-admin";
-  return "";
-};
 
 export default function ManageMembersPage() {
   const { confirmAction } = useActionDialog();
