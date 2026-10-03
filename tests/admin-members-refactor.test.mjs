@@ -28,3 +28,23 @@ test("Admin members keeps model helpers and snapshot loading modular", async () 
   assert.match(data, /\.from\("member_accounts"\)/);
   assert.match(data, /total_km: Number\(member\.total_km\)/);
 });
+
+test("Admin members routes mutations through the action service", async () => {
+  const screen = await read("app/admin/members/manage-members-page.tsx");
+  const actions = await read("app/admin/members/member-admin-actions.ts");
+
+  assert.match(screen, /from "\.\/member-admin-actions"/);
+  assert.match(screen, /await resetMemberAccountPassword\(form\.memberId, newPassword\)/);
+  assert.match(screen, /const saveError = await upsertMemberProfile\(form\)/);
+  assert.match(screen, /await syncMemberAccountAccess\(\{/);
+  assert.doesNotMatch(screen, /getSupabaseBrowserClient/);
+  assert.doesNotMatch(screen, /\.rpc\(/);
+  assert.doesNotMatch(screen, /functions\.invoke\(/);
+
+  assert.match(actions, /rpc\("upsert_member_profile"/);
+  assert.match(actions, /rpc\("set_member_account_status"/);
+  assert.match(actions, /rpc\("set_member_account_role"/);
+  assert.match(actions, /functions\.invoke\(/);
+  assert.match(actions, /"admin-reset-member-password"/);
+  assert.match(actions, /return error;/);
+});
