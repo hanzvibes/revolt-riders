@@ -146,6 +146,8 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
   const rideGuard = await read("supabase/migrations/20260920121743_allow_voyager_official_ride_logs.sql");
   const page = await read("app/voyager/page.tsx");
+  const data = await read("app/voyager/voyager-data.ts");
+  const voyagerWorkspace = `${page}\n${data}`;
   const nav = await read("components/app-shell.tsx");
   const riding = await read("app/riding/page.tsx");
 
@@ -162,11 +164,11 @@ test("Voyager activity keeps participants, official KM, and media server-authori
 
   assert.match(page, /rpc\(\s*"save_event_activity"/);
   assert.match(page, /rpc\(\s*"sync_event_official_rides"/);
-  assert.match(page, /from\("event_participants"\)/);
-  assert.match(page, /from\("club-activity"\)/);
+  assert.match(data, /from\("event_participants"\)/);
+  assert.match(data, /from\("club-activity"\)/);
   assert.match(page, /Tidak ada minimum KM/);
-  assert.ok(!page.includes('.from("event_attendance")'));
-  assert.ok(!page.includes('.from("event_checkin_codes")'));
+  assert.ok(!voyagerWorkspace.includes('.from("event_attendance")'));
+  assert.ok(!voyagerWorkspace.includes('.from("event_checkin_codes")'));
 
   assert.match(nav, /\["Voyager", "\/voyager", Route\]/);
   assert.match(riding, /Official Agenda Distance/);
