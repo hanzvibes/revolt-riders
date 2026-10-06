@@ -44,9 +44,10 @@ test("main CI runs a real non-destructive Chrome browser smoke flow", async () =
   const pkg = JSON.parse(await read("package.json"));
   assert.equal(
     pkg.scripts["test:browser"],
-    "node --test tests/browser/public-smoke.test.mjs",
+    "node --test tests/browser/public-smoke.mjs",
   );
-  assert.equal(await exists("tests/browser/public-smoke.test.mjs"), true);
+  assert.equal(await exists("tests/browser/public-smoke.test.mjs"), false);
+  assert.equal(await exists("tests/browser/public-smoke.mjs"), true);
 
   const workflow = await read(".github/workflows/ui-quality.yml");
   assert.match(workflow, /google-chrome --version/);
