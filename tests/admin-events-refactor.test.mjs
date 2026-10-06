@@ -136,3 +136,15 @@ test("admin events action layer keeps database errors throwable", async () => {
   assert.ok((actions.match(/throw/g) ?? []).length >= 5);
   assert.ok((actions.match(/if \(error\) throw error;/g) ?? []).length >= 4);
 });
+
+test("admin dashboard delegates event creation and status changes to the events workspace", async () => {
+  const dashboard = await read("app/admin/page.tsx");
+
+  assert.match(dashboard, /href="\/admin\/events"/);
+  assert.doesNotMatch(dashboard, /const createEvent =/);
+  assert.doesNotMatch(dashboard, /onSubmit=\{createEvent\}/);
+  assert.doesNotMatch(dashboard, /new Date\(start\)\.toISOString\(\)/);
+  assert.doesNotMatch(dashboard, /const changeEventStatus =/);
+  assert.doesNotMatch(dashboard, /const deleteEventPermanently =/);
+  assert.doesNotMatch(dashboard, /setAgendaFormOpen/);
+});
