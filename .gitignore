@@ -42,5 +42,6 @@ next-env.d.ts
 /.sites-runtime/
 /.agents/
 /.codex/
+/.codex-remote-attachments/
 /outputs/
 /work/
