@@ -39,6 +39,9 @@ test("join requests keeps a stable route entry and modular screen boundary", asy
   const data = await read("app/admin/join-requests/join-requests-data.ts");
   const actions = await read("app/admin/join-requests/join-requests-actions.ts");
   const view = await read("app/admin/join-requests/join-requests-view.tsx");
+  const desktop = await read("app/admin/join-requests/join-requests-desktop-table.tsx");
+  const mobile = await read("app/admin/join-requests/join-requests-mobile-cards.tsx");
+  const modals = await read("app/admin/join-requests/join-requests-modals.tsx");
 
   assert.match(entry, /^"use client";/);
   assert.match(entry, /import AdminJoinRequestsScreen from "\.\/join-requests-screen";/);
@@ -48,7 +51,11 @@ test("join requests keeps a stable route entry and modular screen boundary", asy
   assert.match(screen, /from "\.\/join-requests-data"/);
   assert.match(screen, /from "\.\/join-requests-actions"/);
   assert.match(screen, /from "\.\/join-requests-view"/);
+  assert.match(screen, /from "\.\/join-requests-desktop-table"/);
+  assert.match(screen, /from "\.\/join-requests-mobile-cards"/);
+  assert.match(screen, /from "\.\/join-requests-modals"/);
   assert.doesNotMatch(screen, /accept_join_request|reject_join_request|activate_join_request/);
+  assert.doesNotMatch(screen, /admin-member-table-card|admin-join-cards-mobile|<ModalSheet/);
   assert.match(screen, /admin:join-requests/);
   assert.match(screen, /shell:pending-join-count/);
 
@@ -60,6 +67,16 @@ test("join requests keeps a stable route entry and modular screen boundary", asy
   assert.match(actions, /if \(error\) throw error;/);
   assert.match(view, /join-badge-pending/);
   assert.match(view, /https:\/\/wa\.me/);
+
+  assert.match(desktop, /admin-member-table-card/);
+  assert.match(desktop, /onAccept/);
+  assert.match(desktop, /onActivate/);
+  assert.match(desktop, /onReject/);
+  assert.match(mobile, /admin-join-cards-mobile/);
+  assert.match(mobile, /onCopyConfirmation/);
+  assert.match(modals, /DETAIL CALON MEMBER/);
+  assert.match(modals, /TOLAK PENDAFTARAN/);
+  assert.match(modals, /AKTIVASI ANGGOTA RESMI/);
 });
 
 test("join request model handles counts and normal filters", async () => {

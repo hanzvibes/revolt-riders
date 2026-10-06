@@ -1,43 +1,36 @@
 "use client";
 
 import { AppShell } from "@/components/app-shell";
-import { ModalSheet } from "@/components/modal-sheet";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
 import {
   Check,
   CheckCircle2,
   Clock,
-  Copy,
-  Eye,
-  MapPin,
-  MessageCircle,
-  Phone,
   RefreshCw,
   Search,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   UserCheck,
-  UserPlus,
   UserX,
   UsersRound,
   X,
 } from "lucide-react";
-import { InstagramIcon } from "@/components/icons/instagram";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { acceptJoinRequest, activateJoinRequest, rejectJoinRequest } from "./join-requests-actions";
 import { fetchJoinRequestsSnapshot } from "./join-requests-data";
+import { JoinRequestsDesktopTable } from "./join-requests-desktop-table";
+import { JoinRequestsMobileCards } from "./join-requests-mobile-cards";
+import { JoinRequestsModals } from "./join-requests-modals";
 import {
   filterJoinRequests,
-  getInitials,
   getJoinRequestCounts,
   type JoinRequest,
   type JoinRequestsSnapshot,
   type JoinRequestTab,
   type JoinRequestToast,
 } from "./join-requests-model";
-import { getConfirmationLink, getStatusBadge, getWhatsAppLink } from "./join-requests-view";
+import { getConfirmationLink } from "./join-requests-view";
 
 export default function AdminJoinRequestsPage() {
   const { account, loading: authLoading } = useMemberAccess();
@@ -50,6 +43,13 @@ export default function AdminJoinRequestsPage() {
   const [tab, setTab] = useState<JoinRequestTab>("pending");
   const [error, setError] = useState("");
   const [toast, setToast] = useState<JoinRequestToast | null>(null);
+  const [detailItem, setDetailItem] = useState<JoinRequest | null>(null);
+  const [rejectItem, setRejectItem] = useState<JoinRequest | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [activateItem, setActivateItem] = useState<JoinRequest | null>(null);
+  const [suggestedMemberId, setSuggestedMemberId] = useState("RR-028");
+  const [customMemberId, setCustomMemberId] = useState("");
+  const [actionLoading, setActionLoading] = useState(false);
 
   useEffect(() => {
     if (!toast) return;
@@ -63,16 +63,6 @@ export default function AdminJoinRequestsPage() {
     setToast({ text, type });
   };
 
-  // Modals state
-  const [detailItem, setDetailItem] = useState<JoinRequest | null>(null);
-  const [rejectItem, setRejectItem] = useState<JoinRequest | null>(null);
-  const [rejectReason, setRejectReason] = useState("");
-  const [activateItem, setActivateItem] = useState<JoinRequest | null>(null);
-  const [suggestedMemberId, setSuggestedMemberId] = useState("RR-028");
-  const [customMemberId, setCustomMemberId] = useState("");
-  const [actionLoading, setActionLoading] = useState(false);
-
-  // Load Data
   const loadRequests = useCallback(async (forceRefresh = false) => {
     try {
       setLoading(true);
@@ -109,15 +99,12 @@ export default function AdminJoinRequestsPage() {
     }
   }, [isStaff, loadRequests]);
 
-  // Derived view data
   const counts = useMemo(() => getJoinRequestCounts(requests), [requests]);
-
   const filteredRequests = useMemo(
     () => filterJoinRequests(requests, tab, search),
     [requests, tab, search],
   );
 
-  // Actions
   const handleAccept = async (item: JoinRequest) => {
     setActionLoading(true);
 
@@ -190,6 +177,16 @@ export default function AdminJoinRequestsPage() {
     }
   };
 
+  const openReject = (item: JoinRequest) => {
+    setRejectItem(item);
+    setRejectReason("");
+  };
+
+  const openActivate = (item: JoinRequest) => {
+    setActivateItem(item);
+    setCustomMemberId(suggestedMemberId);
+  };
+
   const copyConfirmationLink = (item: JoinRequest) => {
     if (!item.confirmation_token) return;
     const url = getConfirmationLink(item, window.location.origin);
@@ -225,7 +222,6 @@ export default function AdminJoinRequestsPage() {
   return (
     <AppShell active="Join Requests" title="Kelola Join Requests">
       <div className="page-wrap">
-        {/* Header & Refresh */}
         <section className="page-intro">
           <div>
             <em>PENDAFTARAN ANGGOTA BARU</em>
@@ -240,7 +236,6 @@ export default function AdminJoinRequestsPage() {
         </section>
         {error && <p className="error-message">{error}</p>}
 
-        {/* 1. Status Filter Tabs (Segmented & Responsive) */}
         <div className="admin-member-tabs" role="tablist" aria-label="Filter status pendaftaran">
           <button
             type="button"
@@ -315,12 +310,11 @@ export default function AdminJoinRequestsPage() {
           </button>
         </div>
 
-        {/* 2. Search Bar Toolbar */}
         <div className="admin-member-search-wrap">
           <Search className="search-icon" />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Cari berdasarkan nama, domisili kota, nomor WhatsApp, atau akun Instagram…"
           />
           {search && (
@@ -336,380 +330,30 @@ export default function AdminJoinRequestsPage() {
           )}
         </div>
 
-        {/* 3. Main List: Desktop / Tablet Table (>= 768px) */}
-        <div className="admin-member-table-card">
-          <div className="admin-member-table-wrap">
-            <table className="admin-member-table">
-              <thead>
-                <tr>
-                  <th>Calon Member</th>
-                  <th>Domisili & Instagram</th>
-                  <th>WhatsApp & Pendaftaran</th>
-                  <th>Status Verifikasi</th>
-                  <th style={{ textAlign: "right" }}>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredRequests.length === 0 ? (
-                  <tr>
-                    <td colSpan={5} style={{ textAlign: "center", padding: "40px 16px" }}>
-                      <UserPlus size={40} style={{ color: "var(--red)", margin: "0 auto 10px" }} />
-                      <div style={{ fontWeight: 800, fontSize: "0.88rem", color: "var(--ink)" }}>
-                        Tidak Ada Data Pendaftaran
-                      </div>
-                      <div style={{ fontSize: "0.72rem", color: "#64748b", marginTop: 4 }}>
-                        {search
-                          ? "Tidak ada calon member yang cocok dengan kata kunci pencarian Anda."
-                          : tab === "pending"
-                          ? "Bagus! Saat ini tidak ada pendaftaran baru yang menunggu verifikasi."
-                          : "Belum ada data pendaftar pada kategori status ini."}
-                      </div>
-                    </td>
-                  </tr>
-                ) : (
-                  filteredRequests.map((item) => (
-                    <tr key={item.id}>
-                      {/* 1. Calon Member */}
-                      <td>
-                        <div className="admin-table-rider-cell">
-                          <div className="member-avatar" style={{ width: 34, height: 34, fontSize: "0.68rem" }}>
-                            {getInitials(item.full_name)}
-                          </div>
-                          <div className="admin-table-rider-names">
-                            <span className="admin-table-rider-name" title={item.full_name}>
-                              {item.full_name}
-                            </span>
-                            <span className="admin-table-rider-sub">
-                              TTL: {item.birth_place},{" "}
-                              {item.birth_date
-                                ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.birth_date))
-                                : "—"}
-                            </span>
-                          </div>
-                        </div>
-                      </td>
+        <JoinRequestsDesktopTable
+          requests={filteredRequests}
+          search={search}
+          tab={tab}
+          actionLoading={actionLoading}
+          onAccept={handleAccept}
+          onActivate={openActivate}
+          onReject={openReject}
+          onDetail={setDetailItem}
+          onCopyConfirmation={copyConfirmationLink}
+        />
 
-                      {/* 2. Domisili & IG */}
-                      <td>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: "0.72rem" }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 700, color: "#1e293b" }}>
-                            <MapPin size={13} style={{ color: "var(--red)", flexShrink: 0 }} />
-                            {item.city}
-                          </span>
-                          <a
-                            href={`https://instagram.com/${item.instagram.replace(/^@/, "")}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 4,
-                              color: "#e1306c",
-                              fontWeight: 700,
-                              textDecoration: "none",
-                            }}
-                          >
-                            <InstagramIcon size={12} />
-                            <span>@{item.instagram.replace(/^@/, "")}</span>
-                          </a>
-                        </div>
-                      </td>
+        <JoinRequestsMobileCards
+          requests={filteredRequests}
+          search={search}
+          tab={tab}
+          actionLoading={actionLoading}
+          onAccept={handleAccept}
+          onActivate={openActivate}
+          onReject={openReject}
+          onDetail={setDetailItem}
+          onCopyConfirmation={copyConfirmationLink}
+        />
 
-                      {/* 3. WhatsApp & Daftar */}
-                      <td>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 3, fontSize: "0.72rem" }}>
-                          <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontWeight: 800, color: "#334155" }}>
-                            <Phone size={12} style={{ color: "#16a34a", flexShrink: 0 }} />
-                            {item.whatsapp}
-                          </span>
-                          <span style={{ color: "#94a3b8", fontSize: "0.68rem" }}>
-                            Daftar: {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.created_at))}
-                          </span>
-                        </div>
-                      </td>
-
-                      {/* 4. Status Verifikasi */}
-                      <td>
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-start" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            {getStatusBadge(item.status)}
-                            {item.assigned_member_id && (
-                              <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
-                                {item.assigned_member_id}
-                              </span>
-                            )}
-                          </div>
-
-                          {item.status === "accepted" && item.confirmation_token && (
-                            <button
-                              type="button"
-                              onClick={() => copyConfirmationLink(item)}
-                              className="join-action-copy"
-                              title="Salin tautan konfirmasi pendaftar"
-                            >
-                              <Copy size={11} />
-                              <span>Salin Link</span>
-                            </button>
-                          )}
-
-                          {item.status === "confirmed" && (
-                            <span style={{ fontSize: "0.66rem", color: "#166534", fontWeight: 800 }}>
-                              ✓ Komitmen Terkonfirmasi
-                            </span>
-                          )}
-
-                          {item.status === "rejected" && item.rejection_reason && (
-                            <span style={{ fontSize: "0.65rem", color: "#dc2626", maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={item.rejection_reason}>
-                              Alasan: {item.rejection_reason}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* 5. Aksi */}
-                      <td style={{ textAlign: "right" }}>
-                        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, justifyContent: "flex-end" }}>
-                          {/* WhatsApp Quick Chat */}
-                          <a
-                            href={getWhatsAppLink(item)}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="join-action-btn join-action-wa"
-                            title="Hubungi via WhatsApp"
-                          >
-                            <MessageCircle size={13} />
-                            <span>WA</span>
-                          </a>
-
-                          {/* Accept (if pending) */}
-                          {item.status === "pending" && (
-                            <button
-                              type="button"
-                              onClick={() => void handleAccept(item)}
-                              disabled={actionLoading}
-                              className="join-action-btn join-action-accept"
-                              title="Setujui pendaftaran calon member"
-                            >
-                              <Check size={13} />
-                              <span>Setujui</span>
-                            </button>
-                          )}
-
-                          {/* Activate (if confirmed or accepted) */}
-                          {(item.status === "confirmed" || item.status === "accepted") && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setActivateItem(item);
-                                setCustomMemberId(suggestedMemberId);
-                              }}
-                              disabled={actionLoading}
-                              className="join-action-btn join-action-activate"
-                              title="Terbitkan nomor ID RR resmi"
-                            >
-                              <Sparkles size={13} />
-                              <span>Aktivasi</span>
-                            </button>
-                          )}
-
-                          {/* Reject (if pending or accepted) */}
-                          {(item.status === "pending" || item.status === "accepted") && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setRejectItem(item);
-                                setRejectReason("");
-                              }}
-                              disabled={actionLoading}
-                              className="join-action-btn join-action-reject"
-                              title="Tolak permohonan pendaftaran"
-                            >
-                              Tolak
-                            </button>
-                          )}
-
-                          {/* Detail */}
-                          <button
-                            type="button"
-                            onClick={() => setDetailItem(item)}
-                            className="join-action-btn join-action-detail"
-                            title="Lihat detail lengkap calon member"
-                          >
-                            <Eye size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* 4. Mobile View: Clean & Uniform Cards (< 768px) */}
-        <div className="admin-join-cards-mobile">
-          {filteredRequests.length === 0 ? (
-            <section className="empty-state card">
-              <UserPlus size={40} style={{ color: "var(--red)", margin: "0 auto 10px" }} />
-              <h3>Tidak Ada Data Pendaftaran</h3>
-              <p>
-                {search
-                  ? "Tidak ada calon member yang cocok dengan kata kunci pencarian Anda."
-                  : tab === "pending"
-                  ? "Bagus! Saat ini tidak ada pendaftaran baru yang menunggu verifikasi."
-                  : "Belum ada data pendaftar pada kategori status ini."}
-              </p>
-            </section>
-          ) : (
-            filteredRequests.map((item) => (
-              <article key={item.id} className="admin-join-card">
-                {/* Head: Avatar, Name, Status Badge, ID */}
-                <div className="admin-join-card-head">
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                    <div className="member-avatar" style={{ width: 38, height: 38, fontSize: "0.72rem", flexShrink: 0 }}>
-                      {getInitials(item.full_name)}
-                    </div>
-                    <div className="admin-join-card-name-group">
-                      <span className="admin-join-card-name">{item.full_name}</span>
-                      <span className="admin-join-card-sub">
-                        Daftar: {new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(item.created_at))}
-                      </span>
-                    </div>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4, flexShrink: 0 }}>
-                    {getStatusBadge(item.status)}
-                    {item.assigned_member_id && (
-                      <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
-                        {item.assigned_member_id}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Body: Info Rows */}
-                <div className="admin-join-card-body">
-                  <div className="admin-join-card-info-row">
-                    <MapPin size={13} style={{ color: "var(--red)", flexShrink: 0 }} />
-                    <span>Domisili: <b>{item.city}</b> (TTL: {item.birth_place},{" "}
-                      {item.birth_date ? new Intl.DateTimeFormat("id-ID", { dateStyle: "short" }).format(new Date(item.birth_date)) : "-"}
-                    )</span>
-                  </div>
-
-                  <div className="admin-join-card-info-row" style={{ justifyContent: "space-between" }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>
-                      <Phone size={13} style={{ color: "#16a34a", flexShrink: 0 }} />
-                      <b>{item.whatsapp}</b>
-                    </span>
-                    <a
-                      href={`https://instagram.com/${item.instagram.replace(/^@/, "")}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: "#e1306c", fontWeight: 700, textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 3 }}
-                    >
-                      <InstagramIcon size={12} />
-                      <span>@{item.instagram.replace(/^@/, "")}</span>
-                    </a>
-                  </div>
-
-                  {item.status === "accepted" && item.confirmation_token && (
-                    <div style={{ paddingTop: 4, borderTop: "1px solid #e2e8f0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: "0.68rem", color: "#64748b" }}>Tautan Konfirmasi:</span>
-                      <button
-                        type="button"
-                        onClick={() => copyConfirmationLink(item)}
-                        className="join-action-copy"
-                      >
-                        <Copy size={11} />
-                        <span>Salin Link</span>
-                      </button>
-                    </div>
-                  )}
-
-                  {item.status === "confirmed" && (
-                    <div style={{ fontSize: "0.68rem", color: "#166534", fontWeight: 800 }}>
-                      ✓ Calon telah konfirmasi kesiapan bergabung
-                    </div>
-                  )}
-
-                  {item.status === "rejected" && item.rejection_reason && (
-                    <div style={{ fontSize: "0.68rem", color: "#dc2626" }}>
-                      Alasan: {item.rejection_reason}
-                    </div>
-                  )}
-                </div>
-
-                {/* Footer: Action Buttons */}
-                <div className="admin-join-card-actions">
-                  <a
-                    href={getWhatsAppLink(item)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="join-action-btn join-action-wa"
-                    style={{ flex: 1 }}
-                  >
-                    <MessageCircle size={14} />
-                    <span>WhatsApp</span>
-                  </a>
-
-                  {item.status === "pending" && (
-                    <button
-                      type="button"
-                      onClick={() => void handleAccept(item)}
-                      disabled={actionLoading}
-                      className="join-action-btn join-action-accept"
-                      style={{ flex: 1.2 }}
-                    >
-                      <Check size={14} />
-                      <span>Setujui</span>
-                    </button>
-                  )}
-
-                  {(item.status === "confirmed" || item.status === "accepted") && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setActivateItem(item);
-                        setCustomMemberId(suggestedMemberId);
-                      }}
-                      disabled={actionLoading}
-                      className="join-action-btn join-action-activate"
-                      style={{ flex: 1.2 }}
-                    >
-                      <Sparkles size={14} />
-                      <span>Aktivasi</span>
-                    </button>
-                  )}
-
-                  {(item.status === "pending" || item.status === "accepted") && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRejectItem(item);
-                        setRejectReason("");
-                      }}
-                      disabled={actionLoading}
-                      className="join-action-btn join-action-reject"
-                    >
-                      Tolak
-                    </button>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={() => setDetailItem(item)}
-                    className="join-action-btn join-action-detail"
-                    aria-label="Lihat detail lengkap"
-                  >
-                    <Eye size={15} />
-                  </button>
-                </div>
-              </article>
-            ))
-          )}
-        </div>
-
-        {/* Floating Toast Notification (Zero push) */}
         {toast && (
           <aside
             className={`admin-floating-toast toast-${toast.type}`}
@@ -734,357 +378,34 @@ export default function AdminJoinRequestsPage() {
         )}
       </div>
 
-      {/* Detail Modal with Integrated Actions */}
-      {detailItem && (
-        <ModalSheet
-          open={Boolean(detailItem)}
-          onClose={() => setDetailItem(null)}
-          eyebrow="DETAIL CALON MEMBER"
-          title="Informasi Lengkap Pendaftaran"
-        >
-          <div className="join-detail-container">
-            {/* Hero Head */}
-            <div className="join-detail-hero">
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div className="member-avatar" style={{ width: 44, height: 44, fontSize: "0.85rem" }}>
-                  {getInitials(detailItem.full_name)}
-                </div>
-                <div>
-                  <h3 style={{ margin: 0, fontSize: "1.1rem", color: "#0f172a" }}>{detailItem.full_name}</h3>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-                    {getStatusBadge(detailItem.status)}
-                    {detailItem.assigned_member_id && (
-                      <span className="member-id-tag" style={{ background: "rgba(229, 29, 42, 0.08)", color: "var(--red)", border: "1px solid rgba(229, 29, 42, 0.22)", padding: "1px 6px", borderRadius: 4, fontSize: "0.66rem", fontWeight: 800 }}>
-                        {detailItem.assigned_member_id}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Sections 2-column grid */}
-            <div className="join-detail-sections">
-              {/* Box 1: Identitas Pribadi */}
-              <div className="join-detail-box">
-                <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "var(--ink)", paddingBottom: 4, borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 5 }}>
-                  <UsersRound size={13} style={{ color: "var(--red)" }} />
-                  <span>IDENTITAS PRIBADI</span>
-                </div>
-
-                <div className="join-detail-row">
-                  <span className="join-detail-label">Tempat, Tanggal Lahir</span>
-                  <span className="join-detail-val">
-                    {detailItem.birth_place},{" "}
-                    {detailItem.birth_date
-                      ? new Intl.DateTimeFormat("id-ID", { dateStyle: "long" }).format(new Date(detailItem.birth_date))
-                      : "—"}
-                  </span>
-                </div>
-
-                <div className="join-detail-row">
-                  <span className="join-detail-label">Domisili / Kota</span>
-                  <span className="join-detail-val">{detailItem.city}</span>
-                </div>
-
-                <div className="join-detail-row">
-                  <span className="join-detail-label">Nomor WhatsApp</span>
-                  <span className="join-detail-val" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    {detailItem.whatsapp}
-                    <a
-                      href={getWhatsAppLink(detailItem)}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: "#16a34a", fontWeight: 800, fontSize: "0.72rem", textDecoration: "none" }}
-                    >
-                      Chat WA ↗
-                    </a>
-                  </span>
-                </div>
-
-                <div className="join-detail-row">
-                  <span className="join-detail-label">Akun Instagram</span>
-                  <span className="join-detail-val">
-                    <a
-                      href={`https://instagram.com/${detailItem.instagram.replace(/^@/, "")}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      style={{ color: "#e1306c", fontWeight: 800, textDecoration: "none" }}
-                    >
-                      @{detailItem.instagram.replace(/^@/, "")} ↗
-                    </a>
-                  </span>
-                </div>
-              </div>
-
-              {/* Box 2: Riwayat Pendaftaran */}
-              <div className="join-detail-box">
-                <div style={{ fontSize: "0.7rem", fontWeight: 800, color: "var(--ink)", paddingBottom: 4, borderBottom: "1px solid #e2e8f0", display: "flex", alignItems: "center", gap: 5 }}>
-                  <Clock size={13} style={{ color: "var(--red)" }} />
-                  <span>RIWAYAT STATUS SELEKSI</span>
-                </div>
-
-                <div className="join-detail-row">
-                  <span className="join-detail-label">Waktu Registrasi Masuk</span>
-                  <span className="join-detail-val" style={{ color: "#475569" }}>
-                    {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.created_at))} WIB
-                  </span>
-                </div>
-
-                {detailItem.accepted_at && (
-                  <div className="join-detail-row">
-                    <span className="join-detail-label">Disetujui Pengurus Pada</span>
-                    <span className="join-detail-val" style={{ color: "#1e40af" }}>
-                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.accepted_at))} WIB
-                    </span>
-                  </div>
-                )}
-
-                {detailItem.confirmed_at && (
-                  <div className="join-detail-row">
-                    <span className="join-detail-label">Konfirmasi Komitmen Calon</span>
-                    <span className="join-detail-val" style={{ color: "#166534" }}>
-                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.confirmed_at))} WIB
-                    </span>
-                  </div>
-                )}
-
-                {detailItem.activated_at && (
-                  <div className="join-detail-row">
-                    <span className="join-detail-label">Diresmikan Sebagai Member</span>
-                    <span className="join-detail-val" style={{ color: "#86198f" }}>
-                      {new Intl.DateTimeFormat("id-ID", { dateStyle: "long", timeStyle: "short" }).format(new Date(detailItem.activated_at))} WIB
-                    </span>
-                  </div>
-                )}
-
-                {detailItem.rejection_reason && (
-                  <div className="join-detail-row">
-                    <span className="join-detail-label" style={{ color: "#dc2626" }}>Alasan Penolakan</span>
-                    <span className="join-detail-val" style={{ color: "#b91c1c" }}>
-                      {detailItem.rejection_reason}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Direct Action Footer inside Modal */}
-            <div className="join-detail-modal-footer">
-              <button
-                type="button"
-                onClick={() => setDetailItem(null)}
-                className="join-action-btn join-action-detail"
-              >
-                Tutup
-              </button>
-
-              <a
-                href={getWhatsAppLink(detailItem)}
-                target="_blank"
-                rel="noreferrer"
-                className="join-action-btn join-action-wa"
-              >
-                <MessageCircle size={14} />
-                <span>Chat WhatsApp</span>
-              </a>
-
-              {(detailItem.status === "pending" || detailItem.status === "accepted") && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const target = detailItem;
-                    setDetailItem(null);
-                    setRejectItem(target);
-                    setRejectReason("");
-                  }}
-                  disabled={actionLoading}
-                  className="join-action-btn join-action-reject"
-                >
-                  Tolak
-                </button>
-              )}
-
-              {detailItem.status === "pending" && (
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await handleAccept(detailItem);
-                    setDetailItem(null);
-                  }}
-                  disabled={actionLoading}
-                  className="join-action-btn join-action-accept"
-                >
-                  <Check size={14} />
-                  <span>Setujui Pendaftaran</span>
-                </button>
-              )}
-
-              {(detailItem.status === "confirmed" || detailItem.status === "accepted") && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    const target = detailItem;
-                    setDetailItem(null);
-                    setActivateItem(target);
-                    setCustomMemberId(suggestedMemberId);
-                  }}
-                  disabled={actionLoading}
-                  className="join-action-btn join-action-activate"
-                >
-                  <Sparkles size={14} />
-                  <span>Aktivasi Member Resmi</span>
-                </button>
-              )}
-            </div>
-          </div>
-        </ModalSheet>
-      )}
-
-      {/* Reject Confirmation Modal */}
-      {rejectItem && (
-        <ModalSheet
-          open={Boolean(rejectItem)}
-          onClose={() => setRejectItem(null)}
-          eyebrow="TOLAK PENDAFTARAN"
-          title="Konfirmasi Penolakan"
-        >
-          <div style={{ fontSize: "0.82rem" }}>
-            <p style={{ color: "#475569", lineHeight: 1.5, margin: "0 0 14px" }}>
-              Apakah Anda yakin ingin menolak permohonan dari <b>{rejectItem.full_name}</b>? Pendaftar yang ditolak dapat
-              mengajukan pendaftaran ulang di kemudian hari.
-            </p>
-
-            <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 800, marginBottom: 6 }}>
-              Alasan Penolakan (Opsional):
-            </label>
-            <textarea
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-              placeholder="Contoh: Nomor WhatsApp tidak dapat dihubungi atau data belum lengkap."
-              style={{
-                width: "100%",
-                minHeight: 80,
-                border: "1px solid #cbd5e1",
-                borderRadius: 8,
-                padding: "10px",
-                marginBottom: 20,
-              }}
-            />
-
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button
-                type="button"
-                onClick={() => setRejectItem(null)}
-                style={{
-                  background: "#f1f5f9",
-                  border: 0,
-                  borderRadius: 8,
-                  padding: "9px 18px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleReject}
-                disabled={actionLoading}
-                style={{
-                  background: "#dc2626",
-                  color: "#fff",
-                  border: 0,
-                  borderRadius: 8,
-                  padding: "9px 18px",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                }}
-              >
-                {actionLoading ? "Memproses…" : "Ya, Tolak Permohonan"}
-              </button>
-            </div>
-          </div>
-        </ModalSheet>
-      )}
-
-      {/* Activate Member Modal */}
-      {activateItem && (
-        <ModalSheet
-          open={Boolean(activateItem)}
-          onClose={() => setActivateItem(null)}
-          eyebrow="AKTIVASI ANGGOTA RESMI"
-          title="Penerbitan ID RR"
-        >
-          <div style={{ fontSize: "0.82rem" }}>
-            <p style={{ color: "#475569", lineHeight: 1.5, margin: "0 0 14px" }}>
-              Calon anggota <b>{activateItem.full_name}</b> akan resmi didaftarkan ke basis data keanggotaan Revolt Riders.
-              Data akan otomatis tampil di Statistik Club, Direktori Member, dan Klasemen Leaderboard.
-            </p>
-
-            <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 10, padding: 14, marginBottom: 18 }}>
-              <label style={{ display: "block", fontSize: "0.74rem", fontWeight: 800, marginBottom: 6, color: "#334155" }}>
-                Nomor Anggota (ID RR Resmi):
-              </label>
-              <div style={{ display: "flex", gap: 8 }}>
-                <input
-                  value={customMemberId}
-                  onChange={(e) => setCustomMemberId(e.target.value.toUpperCase())}
-                  placeholder="RR-028"
-                  style={{
-                    flex: 1,
-                    border: "1.5px solid var(--red)",
-                    borderRadius: 8,
-                    padding: "10px 12px",
-                    fontWeight: 800,
-                    letterSpacing: "0.08em",
-                  }}
-                />
-              </div>
-              <small style={{ color: "#64748b", marginTop: 5, display: "block" }}>
-                Saran sistem nomor urut berikutnya: <b>{suggestedMemberId}</b>. Anda dapat mengubah nomor jika diperlukan.
-              </small>
-            </div>
-
-            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-              <button
-                type="button"
-                onClick={() => setActivateItem(null)}
-                style={{
-                  background: "#f1f5f9",
-                  border: 0,
-                  borderRadius: 8,
-                  padding: "9px 18px",
-                  fontWeight: 700,
-                  cursor: "pointer",
-                }}
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={handleActivate}
-                disabled={actionLoading}
-                style={{
-                  background: "var(--red)",
-                  color: "#fff",
-                  border: 0,
-                  borderRadius: 8,
-                  padding: "9px 20px",
-                  fontWeight: 800,
-                  cursor: "pointer",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                }}
-              >
-                <Sparkles size={15} />
-                <span>{actionLoading ? "Mengaktivasi…" : "AKTIFKAN RESMI"}</span>
-              </button>
-            </div>
-          </div>
-        </ModalSheet>
-      )}
+      <JoinRequestsModals
+        detailItem={detailItem}
+        rejectItem={rejectItem}
+        rejectReason={rejectReason}
+        activateItem={activateItem}
+        suggestedMemberId={suggestedMemberId}
+        customMemberId={customMemberId}
+        actionLoading={actionLoading}
+        onCloseDetail={() => setDetailItem(null)}
+        onAcceptDetail={async (item) => {
+          await handleAccept(item);
+          setDetailItem(null);
+        }}
+        onRejectFromDetail={(item) => {
+          setDetailItem(null);
+          openReject(item);
+        }}
+        onActivateFromDetail={(item) => {
+          setDetailItem(null);
+          openActivate(item);
+        }}
+        onCloseReject={() => setRejectItem(null)}
+        onRejectReasonChange={setRejectReason}
+        onReject={handleReject}
+        onCloseActivate={() => setActivateItem(null)}
+        onCustomMemberIdChange={setCustomMemberId}
+        onActivate={handleActivate}
+      />
     </AppShell>
   );
 }
