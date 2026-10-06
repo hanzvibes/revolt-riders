@@ -489,7 +489,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const provider = await read("components/action-dialog-provider.tsx");
   const layout = await read("app/layout.tsx");
   const auditedPages = [
-    "app/admin/events/page.tsx",
+    "app/admin/events/events-screen.tsx",
     "app/admin/page.tsx",
     "app/garage/page.tsx",
     "app/kas/page.tsx",
@@ -575,7 +575,7 @@ test("Admin rejection stays behind its authorized RPC", async () => {
 
 test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
-    "app/admin/events/page.tsx",
+    "app/admin/events/events-screen.tsx",
     "app/admin/page.tsx",
     "app/garage/page.tsx",
     "app/kas/page.tsx",
