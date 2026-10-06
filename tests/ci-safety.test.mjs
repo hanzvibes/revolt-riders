@@ -24,12 +24,14 @@ test("normal CI isolates mutable production database integrity checks", async ()
 
   assert.equal(await exists("tests/database-integrity.test.mjs"), false);
   assert.equal(await exists("tests/production/database-integrity.mjs"), true);
-  assert.equal(await exists(".github/workflows/production-integrity.yml"), true);
 
-  const workflow = await read(".github/workflows/production-integrity.yml");
-  assert.match(workflow, /workflow_dispatch:/);
+  const workflow = await read(".github/workflows/ui-quality.yml");
   assert.match(workflow, /schedule:/);
+  assert.match(workflow, /production_integrity:/);
+  assert.match(workflow, /name: Production database integrity/);
   assert.match(workflow, /pnpm test:production-integrity/);
+  assert.match(workflow, /github\.event_name == 'schedule'/);
+  assert.match(workflow, /github\.event_name != 'schedule'/);
 });
 
 test("main CI gates high production dependency vulnerabilities", async () => {
