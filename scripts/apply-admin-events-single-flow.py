@@ -3,7 +3,7 @@ import re
 
 
 def replace_once(text: str, pattern: str, replacement: str, label: str, flags: int = 0) -> str:
-    updated, count = re.subn(pattern, replacement, text, count=1, flags=flags)
+    updated, count = re.subn(pattern, lambda _match: replacement, text, count=1, flags=flags)
     if count != 1:
         raise RuntimeError(f"{label}: expected exactly one match, found {count}")
     return updated
