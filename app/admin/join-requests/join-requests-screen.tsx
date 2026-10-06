@@ -4,7 +4,6 @@ import { AppShell } from "@/components/app-shell";
 import { ModalSheet } from "@/components/modal-sheet";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Check,
   CheckCircle2,
@@ -27,37 +26,18 @@ import {
 } from "lucide-react";
 import { InstagramIcon } from "@/components/icons/instagram";
 import { useCallback, useEffect, useMemo, useState } from "react";
-
-type JoinRequest = {
-  id: string;
-  full_name: string;
-  birth_place: string;
-  birth_date: string;
-  city: string;
-  instagram: string;
-  whatsapp: string;
-  status: "pending" | "accepted" | "confirmed" | "active" | "rejected" | "expired";
-  confirmation_token: string | null;
-  accepted_at: string | null;
-  confirmed_at: string | null;
-  activated_at: string | null;
-  rejected_at: string | null;
-  rejection_reason: string | null;
-  assigned_member_id: string | null;
-  created_at: string;
-};
-type JoinRequestsSnapshot = {
-  requests: JoinRequest[];
-  suggestedMemberId: string;
-};
-
-const getInitials = (name: string) => {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
-};
+import { acceptJoinRequest, activateJoinRequest, rejectJoinRequest } from "./join-requests-actions";
+import { fetchJoinRequestsSnapshot } from "./join-requests-data";
+import {
+  filterJoinRequests,
+  getInitials,
+  getJoinRequestCounts,
+  type JoinRequest,
+  type JoinRequestsSnapshot,
+  type JoinRequestTab,
+  type JoinRequestToast,
+} from "./join-requests-model";
+import { getConfirmationLink, getStatusBadge, getWhatsAppLink } from "./join-requests-view";
 
 export default function AdminJoinRequestsPage() {
   const { account, loading: authLoading } = useMemberAccess();
@@ -67,9 +47,9 @@ export default function AdminJoinRequestsPage() {
   const [requests, setRequests] = useState<JoinRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [tab, setTab] = useState<"all" | "pending" | "accepted" | "confirmed" | "active" | "archived">("pending");
+  const [tab, setTab] = useState<JoinRequestTab>("pending");
   const [error, setError] = useState("");
-  const [toast, setToast] = useState<{ text: string; type: "success" | "error" } | null>(null);
+  const [toast, setToast] = useState<JoinRequestToast | null>(null);
 
   useEffect(() => {
     if (!toast) return;
@@ -100,35 +80,7 @@ export default function AdminJoinRequestsPage() {
 
       const snapshot = await fetchWithCache<JoinRequestsSnapshot>(
         "admin:join-requests",
-        async () => {
-          const supabase = getSupabaseBrowserClient();
-
-          const [requestsResult, profilesResult] = await Promise.all([
-            supabase
-              .from("join_requests")
-              .select("*")
-              .order("created_at", { ascending: false }),
-            supabase
-              .from("member_profiles")
-              .select("member_external_id"),
-          ]);
-
-          if (requestsResult.error) throw requestsResult.error;
-          if (profilesResult.error) throw profilesResult.error;
-
-          let maxNum = 27;
-          for (const profile of profilesResult.data ?? []) {
-            const match = profile.member_external_id?.match(/^RR-(\d+)$/);
-            if (!match) continue;
-            const value = Number.parseInt(match[1], 10);
-            if (Number.isFinite(value) && value > maxNum) maxNum = value;
-          }
-
-          return {
-            requests: (requestsResult.data ?? []) as JoinRequest[],
-            suggestedMemberId: `RR-${String(maxNum + 1).padStart(3, "0")}`,
-          };
-        },
+        fetchJoinRequestsSnapshot,
         { ttlMs: 30_000, forceRefresh },
       );
 
@@ -157,53 +109,20 @@ export default function AdminJoinRequestsPage() {
     }
   }, [isStaff, loadRequests]);
 
-  // Status counts
-  const counts = useMemo(() => {
-    const p = requests.filter((r) => r.status === "pending").length;
-    const a = requests.filter((r) => r.status === "accepted").length;
-    const c = requests.filter((r) => r.status === "confirmed").length;
-    const act = requests.filter((r) => r.status === "active").length;
-    const arc = requests.filter((r) => r.status === "rejected" || r.status === "expired").length;
-    return { all: requests.length, pending: p, accepted: a, confirmed: c, active: act, archived: arc };
-  }, [requests]);
+  // Derived view data
+  const counts = useMemo(() => getJoinRequestCounts(requests), [requests]);
 
-  // Filtered requests
-  const filteredRequests = useMemo(() => {
-    return requests.filter((r) => {
-      // Tab filter
-      if (tab === "pending" && r.status !== "pending") return false;
-      if (tab === "accepted" && r.status !== "accepted") return false;
-      if (tab === "confirmed" && r.status !== "confirmed") return false;
-      if (tab === "active" && r.status !== "active") return false;
-      if (tab === "archived" && r.status !== "rejected" && r.status !== "expired") return false;
-
-      // Search filter
-      if (search.trim()) {
-        const q = search.toLowerCase();
-        return (
-          r.full_name.toLowerCase().includes(q) ||
-          r.city.toLowerCase().includes(q) ||
-          r.whatsapp.includes(q) ||
-          r.instagram.toLowerCase().includes(q) ||
-          (r.assigned_member_id && r.assigned_member_id.toLowerCase().includes(q))
-        );
-      }
-      return true;
-    });
-  }, [requests, tab, search]);
+  const filteredRequests = useMemo(
+    () => filterJoinRequests(requests, tab, search),
+    [requests, tab, search],
+  );
 
   // Actions
   const handleAccept = async (item: JoinRequest) => {
     setActionLoading(true);
 
     try {
-      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
-        "accept_join_request",
-        { p_request_id: item.id },
-      );
-
-      if (rpcErr) throw rpcErr;
-
+      await acceptJoinRequest(item.id);
       showToast(`Pendaftaran ${item.full_name} berhasil disetujui (Accepted).`, "success");
       invalidateCache("admin:join-requests");
       invalidateCache("shell:pending-join-count");
@@ -223,16 +142,7 @@ export default function AdminJoinRequestsPage() {
     setActionLoading(true);
 
     try {
-      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
-        "reject_join_request",
-        {
-          p_request_id: rejectItem.id,
-          p_reason: rejectReason.trim() || null,
-        },
-      );
-
-      if (rpcErr) throw rpcErr;
-
+      await rejectJoinRequest(rejectItem.id, rejectReason);
       showToast(`Pendaftaran ${rejectItem.full_name} telah ditolak.`, "success");
       setRejectItem(null);
       setRejectReason("");
@@ -261,16 +171,7 @@ export default function AdminJoinRequestsPage() {
     setActionLoading(true);
 
     try {
-      const { error: rpcErr } = await getSupabaseBrowserClient().rpc(
-        "activate_join_request",
-        {
-          p_request_id: activateItem.id,
-          p_member_id: memberIdToAssign,
-        },
-      );
-
-      if (rpcErr) throw rpcErr;
-
+      await activateJoinRequest(activateItem.id, memberIdToAssign);
       showToast(
         `Member resmi berhasil diaktivasi dengan ID ${memberIdToAssign}!`,
         "success",
@@ -289,45 +190,12 @@ export default function AdminJoinRequestsPage() {
     }
   };
 
-  // WhatsApp helpers
-  const getWhatsAppLink = (item: JoinRequest, customMsg?: string) => {
-    let cleanWa = item.whatsapp.replace(/[^0-9]/g, "");
-    if (cleanWa.startsWith("08")) cleanWa = "628" + cleanWa.slice(2);
-
-    let defaultMsg = `Halo ${item.full_name}, kami dari Pengurus Revolt Riders Situbondo.`;
-
-    if (item.status === "accepted" && item.confirmation_token) {
-      const confirmUrl = `${typeof window !== "undefined" ? window.location.origin : "https://revolt-riders.com"}/join/confirm/${item.confirmation_token}`;
-      defaultMsg = `Halo ${item.full_name}! Pendaftaran Anda di Revolt Riders telah DISETUJUI oleh pengurus. Silakan lakukan konfirmasi komitmen bergabung Anda dalam 7 hari melalui tautan resmi berikut:\n\n${confirmUrl}\n\nSalam Satu Aspal!`;
-    } else if (item.status === "active" && item.assigned_member_id) {
-      defaultMsg = `Selamat bergabung ${item.full_name}! Pendaftaran Anda telah DIRESMIKAN. Nomor Anggota (ID RR) resmi Anda adalah: ${item.assigned_member_id}. Silakan masuk ke Portal Member untuk melengkapi profil motor Anda. Salam Satu Aspal!`;
-    }
-
-    return `https://wa.me/${cleanWa}?text=${encodeURIComponent(customMsg || defaultMsg)}`;
-  };
-
   const copyConfirmationLink = (item: JoinRequest) => {
     if (!item.confirmation_token) return;
-    const url = `${window.location.origin}/join/confirm/${item.confirmation_token}`;
+    const url = getConfirmationLink(item, window.location.origin);
+    if (!url) return;
     navigator.clipboard.writeText(url);
     showToast(`Link konfirmasi untuk ${item.full_name} berhasil disalin ke clipboard!`, "success");
-  };
-
-  const getStatusBadge = (status: JoinRequest["status"]) => {
-    switch (status) {
-      case "pending":
-        return <span className="join-badge join-badge-pending">Pending</span>;
-      case "accepted":
-        return <span className="join-badge join-badge-accepted">Accepted</span>;
-      case "confirmed":
-        return <span className="join-badge join-badge-confirmed">Confirmed</span>;
-      case "active":
-        return <span className="join-badge join-badge-active">Active</span>;
-      case "rejected":
-        return <span className="join-badge join-badge-rejected">Rejected</span>;
-      case "expired":
-        return <span className="join-badge join-badge-expired">Expired</span>;
-    }
   };
 
   if (authLoading) {
