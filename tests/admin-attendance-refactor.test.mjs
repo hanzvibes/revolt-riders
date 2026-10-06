@@ -15,7 +15,7 @@ const importTsModule = async (path) => {
 
 test("admin attendance keeps data and mutations behind focused modules", async () => {
   const page = await read("app/admin/attendance/page.tsx");
-  const model = await read("app/admin/attendance/attendance-model.ts");
+  await read("app/admin/attendance/attendance-model.ts");
   const data = await read("app/admin/attendance/attendance-data.ts");
   const actions = await read("app/admin/attendance/attendance-actions.ts");
 
