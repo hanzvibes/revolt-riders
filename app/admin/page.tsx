@@ -3,8 +3,6 @@
 import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
-import { ModalSheet } from "@/components/modal-sheet";
-import { FloatingActionButton } from "@/components/floating-action-button";
 import type { EventRecord } from "@/lib/domain";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
@@ -17,10 +15,8 @@ import {
   Link2,
   RefreshCw,
   ScanLine,
-  Send,
   ShieldAlert,
   ShieldCheck,
-  Trash2,
   Users,
   UsersRound,
   X,
@@ -127,14 +123,6 @@ export default function AdminPage() {
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
   const [managedAccounts, setManagedAccounts] = useState<ManagedAccount[]>([]);
-  const [title, setTitle] = useState("");
-  const [type, setType] = useState("kopdar");
-  const [location, setLocation] = useState("");
-  const [locationUrl, setLocationUrl] = useState("");
-  const [description, setDescription] = useState("");
-  const [start, setStart] = useState("");
-  const [meetup, setMeetup] = useState("");
-  const [end, setEnd] = useState("");
   const [memberId, setMemberId] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("");
   const [rsvpEvent, setRsvpEvent] = useState("");
@@ -148,24 +136,6 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [bulkLoading, setBulkLoading] = useState(false);
-  const [agendaFormOpen, setAgendaFormOpen] = useState(false);
-
-  const invalidateAgendaCaches = () => {
-    invalidateCache("admin_dashboard_overview");
-    invalidateCache("admin:events:");
-    invalidateCache("dashboard_upcoming_events");
-    invalidateCache("voyager:");
-  };
-
-  const invalidateRideDerivedCaches = () => {
-    invalidateCache("riding:");
-    invalidateCache("profile:");
-    invalidateCache("dashboard_member_profile_");
-    invalidateCache("dashboard_club_stats");
-    invalidateCache("riding_leaderboard_data");
-    invalidateCache("member_profiles_list");
-    invalidateCache("member_touring:");
-  };
 
   const publishedEvents = useMemo(
     () => events.filter((event) => event.status === "published"),
@@ -333,45 +303,6 @@ export default function AdminPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, cachedAccount]);
 
-
-  const createEvent = async (event: FormEvent) => {
-    event.preventDefault();
-    setError("");
-    setMessage("");
-    const supabase = getSupabaseBrowserClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return setError("Sesi admin tidak ditemukan.");
-    const { error: insertError } = await supabase.from("events").insert({
-      title,
-      slug: `${slugify(title)}-${Date.now().toString().slice(-6)}`,
-      type,
-      location_name: location,
-      location_url: locationUrl.trim() || null,
-      description: description.trim() || null,
-      start_at: new Date(start).toISOString(),
-      meetup_at: meetup ? new Date(meetup).toISOString() : null,
-      end_at: end ? new Date(end).toISOString() : null,
-      status: "published",
-      published_at: new Date().toISOString(),
-      created_by: user.id,
-    });
-    if (insertError) setError(insertError.message);
-    else {
-      setMessage("Agenda berhasil dipublikasikan.");
-      setTitle("");
-      setLocation("");
-      setLocationUrl("");
-      setDescription("");
-      setStart("");
-      setMeetup("");
-      setEnd("");
-      setAgendaFormOpen(false);
-      invalidateAgendaCaches();
-      await load(true);
-    }
-  };
 
   const generateInvite = async (event: FormEvent) => {
     event.preventDefault();
@@ -556,88 +487,6 @@ export default function AdminPage() {
     await load(true);
   };
 
-  const deleteEventPermanently = async (eventRecord: EventRecord) => {
-    if (
-      !await confirmAction({
-        title: "Hapus agenda permanen?",
-        description: `Agenda "${eventRecord.title}" beserta undangan dan respons terkait akan dibersihkan dari sistem.`,
-        confirmLabel: "Hapus Permanen",
-        cancelLabel: "Batal",
-        destructive: true,
-      })
-    )
-      return;
-    setError("");
-    setMessage("");
-    const supabase = getSupabaseBrowserClient();
-    const { error: rpcError } = await supabase.rpc("delete_event", {
-      p_event_id: eventRecord.id,
-    });
-    if (rpcError) {
-      setError(rpcError.message);
-      return;
-    }
-    setMessage(`Agenda "${eventRecord.title}" berhasil dihapus secara permanen.`);
-    invalidateAgendaCaches();
-    invalidateRideDerivedCaches();
-    await load(true);
-  };
-
-  const changeEventStatus = async (
-    eventRecord: AdminEventRecord,
-    nextStatus: EventRecord["status"],
-  ) => {
-    if (eventRecord.status === nextStatus) return;
-    setError("");
-    setMessage("");
-    const payload: {
-      status: EventRecord["status"];
-      published_at?: string | null;
-    } = { status: nextStatus };
-    if (nextStatus === "published")
-      payload.published_at = new Date().toISOString();
-    const { error: statusError } = await getSupabaseBrowserClient()
-      .from("events")
-      .update(payload)
-      .eq("id", eventRecord.id);
-    if (statusError) return setError(statusError.message);
-
-    let syncedMembers = 0;
-    if (
-      nextStatus !== "draft" &&
-      eventRecord.counts_as_mandatory &&
-      eventRecord.official_distance_km &&
-      eventRecord.official_distance_km > 0
-    ) {
-      const { data, error: syncError } = await getSupabaseBrowserClient().rpc(
-        "sync_event_official_rides",
-        { p_event_id: eventRecord.id },
-      );
-
-      if (syncError) {
-        setError(
-          `Status agenda sudah diperbarui, tetapi Official KM belum tersinkron: ${syncError.message}`,
-        );
-        invalidateAgendaCaches();
-        invalidateRideDerivedCaches();
-        await load(true);
-        return;
-      }
-
-      syncedMembers =
-        Number((data as { synced_members?: number } | null)?.synced_members) || 0;
-    }
-
-    setMessage(
-      syncedMembers > 0
-        ? `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}. Official KM tersinkron ke ${syncedMembers} member.`
-        : `Status agenda ${eventRecord.title} diperbarui menjadi ${nextStatus}.`,
-    );
-    invalidateAgendaCaches();
-    if (syncedMembers > 0) invalidateRideDerivedCaches();
-    await load(true);
-  };
-
   if (authLoading || (loading && !account))
     return (
       <AppShell active="Admin" title="Dashboard Admin">
@@ -734,162 +583,6 @@ export default function AdminPage() {
               KELOLA AGENDA
             </a>
           </span>
-        </section>
-        <FloatingActionButton
-          label="Buat agenda"
-          onClick={() => setAgendaFormOpen(true)}
-        />
-        <ModalSheet
-          open={agendaFormOpen}
-          onClose={() => setAgendaFormOpen(false)}
-          eyebrow="AGENDA BARU"
-          title="Buat & publish agenda"
-        >
-          <form className="event-create-form sheet-form" onSubmit={createEvent}>
-            <label className="field-title">
-              Judul agenda
-              <input
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                required
-                minLength={3}
-              />
-            </label>
-            <label className="field-type">
-              Jenis
-              <select
-                value={type}
-                onChange={(event) => setType(event.target.value)}
-              >
-                <option value="kopdar">Kopdar</option>
-                <option value="riding">Riding</option>
-                <option value="touring">Touring</option>
-                <option value="social">Sosial</option>
-                <option value="other">Lainnya</option>
-              </select>
-            </label>
-            <label className="field-location">
-              Lokasi
-              <input
-                value={location}
-                onChange={(event) => setLocation(event.target.value)}
-                required
-              />
-            </label>
-            <label className="field-url">
-              Link lokasi (opsional)
-              <input
-                type="url"
-                value={locationUrl}
-                onChange={(event) => setLocationUrl(event.target.value)}
-                placeholder="https://maps.google.com/..."
-              />
-            </label>
-            <label className="field-description">
-              Deskripsi agenda (opsional)
-              <input
-                value={description}
-                onChange={(event) => setDescription(event.target.value)}
-                placeholder="Info singkat untuk member"
-                maxLength={500}
-              />
-            </label>
-            <label className="field-start">
-              Mulai (WIB)
-              <input
-                type="datetime-local"
-                value={start}
-                onChange={(event) => setStart(event.target.value)}
-                required
-              />
-            </label>
-            <label className="field-meetup">
-              Titik kumpul (opsional)
-              <input
-                type="datetime-local"
-                value={meetup}
-                onChange={(event) => setMeetup(event.target.value)}
-              />
-            </label>
-            <label className="field-end">
-              Selesai (opsional)
-              <input
-                type="datetime-local"
-                value={end}
-                onChange={(event) => setEnd(event.target.value)}
-              />
-            </label>
-            <button className="primary-action">
-              <Send />
-              PUBLISH AGENDA
-            </button>
-          </form>
-        </ModalSheet>
-
-        <section className="card event-management admin-wide">
-          <div className="section-title">
-            <span>
-              <em>Status agenda</em>
-              <h3>Kelola agenda terbit</h3>
-            </span>
-            <CalendarPlus />
-          </div>
-          <p className="role-panel-intro">
-            Tandai agenda selesai agar masuk ke riwayat komunitas, atau hapus agenda jika batal diselenggarakan.
-          </p>
-          {events.length === 0 ? (
-            <p className="system-message">Belum ada agenda untuk dikelola.</p>
-          ) : (
-            <div className="event-management-list admin-event-status-list">
-              {events.filter((e) => (e.status as string) !== "cancelled").slice(0, 6).map((eventRecord) => (
-                <article key={eventRecord.id}>
-                  <time>
-                    {new Intl.DateTimeFormat("id-ID", {
-                      day: "2-digit",
-                      month: "short",
-                      timeZone: "Asia/Jakarta",
-                    }).format(new Date(eventRecord.start_at))}
-                  </time>
-                  <span>
-                    <b>{eventRecord.title}</b>
-                    <small>
-                      {eventRecord.location_name || "Lokasi belum ditentukan"}
-                    </small>
-                  </span>
-                  <em
-                    className={`event-status event-status-${eventRecord.status}`}
-                  >
-                    {eventRecord.status}
-                  </em>
-                  <div className="admin-event-status-actions">
-                    <select
-                      value={eventRecord.status}
-                      onChange={(event) =>
-                        void changeEventStatus(
-                          eventRecord,
-                          event.target.value as EventRecord["status"],
-                        )
-                      }
-                      aria-label={`Status agenda ${eventRecord.title}`}
-                    >
-                      <option value="draft">Draft</option>
-                      <option value="published">Published</option>
-                      <option value="completed">Selesai</option>
-                    </select>
-                    <button
-                      type="button"
-                      className="danger admin-icon-danger"
-                      title="Hapus agenda ini secara permanen"
-                      aria-label={`Hapus agenda ${eventRecord.title} secara permanen`}
-                      onClick={() => void deleteEventPermanently(eventRecord)}
-                    >
-                      <Trash2 size={15} aria-hidden="true" />
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
         </section>
 
         <section className="form-card card">

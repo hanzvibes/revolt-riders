@@ -346,9 +346,17 @@ const finalConsistencyContracts = {
   ],
   "app/admin/page.tsx": [
     "counts_as_mandatory,official_distance_km",
-    "sync_event_official_rides",
-    "invalidateRideDerivedCaches",
+    'href="/admin/events"',
     'role="status"',
+  ],
+  "app/admin/events/events-actions.ts": [
+    "sync_event_official_rides",
+    "syncOfficialRidesIfReady",
+  ],
+  "app/admin/events/events-screen.tsx": [
+    "invalidateAgendaCaches",
+    'invalidateCache("riding:")',
+    "syncOfficialRidesIfReady",
   ],
 };
 

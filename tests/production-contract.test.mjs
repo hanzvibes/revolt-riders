@@ -489,7 +489,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const provider = await read("components/action-dialog-provider.tsx");
   const layout = await read("app/layout.tsx");
   const auditedPages = [
-    "app/admin/events/page.tsx",
+    "app/admin/events/events-screen.tsx",
     "app/admin/page.tsx",
     "app/garage/page.tsx",
     "app/kas/page.tsx",
@@ -527,12 +527,13 @@ test("Voyager makes member status and evidence visible", async () => {
 });
 
 test("Event deletion stays behind the authorized RPC", async () => {
-  const eventsAdmin = await read("app/admin/events/page.tsx");
+  const eventActions = await read("app/admin/events/events-actions.ts");
   const adminDashboard = await read("app/admin/page.tsx");
   const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
 
-  for (const source of [eventsAdmin, adminDashboard]) {
-    assert.match(source, /rpc\("delete_event"/);
+  assert.match(eventActions, /rpc\("delete_event"/);
+  assert.doesNotMatch(adminDashboard, /rpc\("delete_event"/);
+  for (const source of [eventActions, adminDashboard]) {
     assert.doesNotMatch(source, /from\("events"\)\.delete/);
     assert.doesNotMatch(source, /from\("ride_logs"\)\.(?:delete|update)/);
   }
@@ -574,7 +575,7 @@ test("Admin rejection stays behind its authorized RPC", async () => {
 
 test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
-    "app/admin/events/page.tsx",
+    "app/admin/events/events-screen.tsx",
     "app/admin/page.tsx",
     "app/garage/page.tsx",
     "app/kas/page.tsx",
@@ -625,13 +626,14 @@ test("Static and Voyager gallery images use Next Image", async () => {
 });
 
 test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () => {
-  const admin = await read("app/admin/events/page.tsx");
+  const screen = await read("app/admin/events/events-screen.tsx");
+  const actions = await read("app/admin/events/events-actions.ts");
 
-  assert.match(admin, /const syncOfficialRidesIfReady = useCallback/);
-  assert.match(admin, /status === "draft"/);
-  assert.match(admin, /Official KM tersinkron ke/);
+  assert.match(actions, /export const syncOfficialRidesIfReady/);
+  assert.match(actions, /status === "draft"/);
+  assert.match(screen, /Official KM tersinkron ke/);
 
-  const calls = admin.match(/await syncOfficialRidesIfReady\(/g) ?? [];
+  const calls = screen.match(/await syncOfficialRidesIfReady\(/g) ?? [];
   assert.ok(
     calls.length >= 3,
     "save, manual sync, and publish/complete lifecycle must share the sync guard",
@@ -669,17 +671,14 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
 });
 
 
-test("Legacy Admin agenda status flow preserves Official KM sync invariant", async () => {
+test("Admin dashboard delegates agenda lifecycle to the events workspace", async () => {
   const admin = await read("app/admin/page.tsx");
+  const actions = await read("app/admin/events/events-actions.ts");
 
-  assert.ok(admin.includes("counts_as_mandatory,official_distance_km"));
-  assert.ok(admin.includes('"sync_event_official_rides"'));
-  assert.ok(admin.includes("invalidateRideDerivedCaches"));
-  assert.ok(
-    admin.includes(
-      "Status agenda sudah diperbarui, tetapi Official KM belum tersinkron",
-    ),
-  );
+  assert.doesNotMatch(admin, /sync_event_official_rides/);
+  assert.doesNotMatch(admin, /from\("events"\)\s*\.update/);
+  assert.match(actions, /sync_event_official_rides/);
+  assert.match(actions, /export const updateEventStatus/);
 });
 
 
