@@ -68,7 +68,7 @@ export default function AttendancePage() {
         setLoading(false);
       }
     },
-    [accessLoading, account?.role, account?.status, fetchWithCache],
+    [accessLoading, account, fetchWithCache],
   );
 
   useEffect(() => {
