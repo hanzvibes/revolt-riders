@@ -30,6 +30,8 @@
 ### Task 1: Audit Playwright config and package scripts
 Audit duplicate browser-test config and unused scripts. Change only proven dead/duplicate items.
 
+Audit result: no Playwright config or Playwright package/script is tracked, so the Playwright half is a verified no-op. Package-script decisions remain tied to the legacy-stack audit below.
+
 ### Task 2: Refactor Admin Insights
 Extract model/data helpers, fix bounded analytics correctness issues, and add characterization tests.
 
