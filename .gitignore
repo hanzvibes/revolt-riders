@@ -55,4 +55,5 @@ next-env.d.ts
 /DataMember.md
 /members.csv
 /public/members_import.csv
+/lib/data/member-touring-data.ts
 /private-data/
