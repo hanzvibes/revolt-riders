@@ -3,6 +3,7 @@ import { access, readFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import test from "node:test";
 
+// TDD guardrails for delivery-safety infrastructure.
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const exists = async (path) => {
   try {
