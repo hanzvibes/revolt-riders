@@ -28,6 +28,7 @@ const eslintConfig = defineConfig([
     // Their state updates are intentionally initiated from effects.
     files: [
       "app/admin/bulletins/page.tsx",
+      "app/admin/join-requests/join-requests-screen.tsx",
       "app/admin/members/page.tsx",
       "app/admin/members/manage-members-page.tsx",
       "app/bulletin/page.tsx",
