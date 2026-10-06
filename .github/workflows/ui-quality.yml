@@ -142,3 +142,54 @@ jobs:
 
       - name: Production database integrity
         run: pnpm test:production-integrity
+
+  dependency_repair:
+    name: dependency-repair
+    if: github.event_name == 'push' && github.ref == 'refs/heads/chore/harden-ci-repo-safety-v1'
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout feature branch
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate minimal audited dependency update
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if grep -q '"next": "16.3.6"' package.json && pnpm audit --prod --audit-level high; then
+            echo "Production dependencies already satisfy the security gate."
+            exit 0
+          fi
+
+          pnpm up next@16.3.6 --save-exact
+          pnpm audit --fix --prod || true
+          pnpm audit --prod --audit-level high
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json pnpm-lock.yaml pnpm-workspace.yaml
+
+          if git diff --cached --quiet; then
+            echo "No dependency repair changes generated."
+            exit 0
+          fi
+
+          git commit -m "fix: patch audited production dependencies"
+          git push origin HEAD:${GITHUB_REF_NAME}
