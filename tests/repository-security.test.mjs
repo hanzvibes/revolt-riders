@@ -8,6 +8,7 @@ const privatePaths = [
   "DataMember.md",
   "members.csv",
   "public/members_import.csv",
+  "lib/data/member-touring-data.ts",
 ];
 
 async function exists(path) {
@@ -41,8 +42,34 @@ test("private member source files are not tracked or shipped", async () => {
 
 test("private member source paths stay ignored", async () => {
   const ignore = await readFile(new URL(".gitignore", rootUrl), "utf8");
-  for (const path of ["/DataMember.md", "/members.csv", "/public/members_import.csv", "/private-data/"]) {
+  for (const path of [
+    "/DataMember.md",
+    "/members.csv",
+    "/public/members_import.csv",
+    "/lib/data/member-touring-data.ts",
+    "/private-data/",
+  ]) {
     assert.ok(ignore.split(/\r?\n/).includes(path), `${path} must be ignored`);
+  }
+});
+
+test("historical Supabase migrations do not embed the private member dataset", async () => {
+  const seed = await readFile(
+    new URL("supabase/migrations/202609170001_seed_members_data.sql", rootUrl),
+    "utf8",
+  );
+  const touring = await readFile(
+    new URL("supabase/migrations/202609170002_migrate_touring_and_permissions.sql", rootUrl),
+    "utf8",
+  );
+
+  for (const [path, source] of [
+    ["202609170001_seed_members_data.sql", seed],
+    ["202609170002_migrate_touring_and_permissions.sql", touring],
+  ]) {
+    assert.doesNotMatch(source, /RR-\d{3}/, `${path} must not contain real member IDs`);
+    assert.doesNotMatch(source, /insert\s+into\s+public\.member_profiles/i, `${path} must not seed real profiles`);
+    assert.doesNotMatch(source, /insert\s+into\s+public\.ride_logs/i, `${path} must not seed member ride history`);
   }
 });
 
