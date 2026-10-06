@@ -1,0 +1,35 @@
+name: Admin Events Single Flow Patch
+
+on:
+  push:
+    branches:
+      - fix/admin-events-single-flow-20261007
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Apply deterministic patch
+        run: python3 scripts/apply-admin-events-single-flow.py
+      - name: Verify intended diff markers
+        run: |
+          grep -q 'href="/admin/events"' app/admin/page.tsx
+          ! grep -q 'const createEvent =' app/admin/page.tsx
+          ! grep -q 'new Date(start).toISOString()' app/admin/page.tsx
+          ! grep -q 'const changeEventStatus =' app/admin/page.tsx
+          ! grep -q 'const deleteEventPermanently =' app/admin/page.tsx
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add app/admin/page.tsx tests/production-contract.test.mjs
+          git diff --cached --check
+          git commit -m "fix: centralize admin event lifecycle"
+          git push
