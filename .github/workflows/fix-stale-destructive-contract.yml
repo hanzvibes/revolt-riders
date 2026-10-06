@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Point destructive dialog contract at modular events screen
+      - name: Point event dialog contracts at modular events screen
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -22,12 +22,12 @@ jobs:
           source = path.read_text()
           old = '    "app/admin/events/page.tsx",\n    "app/admin/page.tsx",\n    "app/garage/page.tsx",'
           new = '    "app/admin/events/events-screen.tsx",\n    "app/admin/page.tsx",\n    "app/garage/page.tsx",'
-          if source.count(old) != 1:
-              raise SystemExit(f'expected one destructive-dialog file-list match, got {source.count(old)}')
-          path.write_text(source.replace(old, new, 1))
+          if source.count(old) != 2:
+              raise SystemExit(f'expected two event dialog file-list matches, got {source.count(old)}')
+          path.write_text(source.replace(old, new))
           PY
           git diff --check
-          grep -q 'app/admin/events/events-screen.tsx' tests/production-contract.test.mjs
+          test "$(grep -c 'app/admin/events/events-screen.tsx' tests/production-contract.test.mjs)" -ge 2
       - name: Commit patch
         run: |
           git config user.name "github-actions[bot]"
