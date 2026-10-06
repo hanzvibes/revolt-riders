@@ -27,25 +27,41 @@
 
 ---
 
-### Task 1: Audit Playwright config and package scripts
-Audit duplicate browser-test config and unused scripts. Change only proven dead/duplicate items.
+### Task 1: Audit Playwright config and package scripts — DONE
+- No Playwright config, dependency, or package script is tracked: verified no-op.
+- Existing package scripts remain purposeful. `db:generate` is paired with the tracked Drizzle/D1 scaffold; test/lint/build/audit scripts are active in CI/workflows.
 
-Audit result: no Playwright config or Playwright package/script is tracked, so the Playwright half is a verified no-op. Package-script decisions remain tied to the legacy-stack audit below.
+### Task 2: Refactor Admin Insights — DONE
+- Extracted `insights-model.ts` and `insights-data.ts`.
+- RSVP response rate now uses unique invited member-event pairs as the denominator and ignores orphan responses, so it cannot exceed 100%.
+- Attendance rate now uses unique `attending` RSVP member-event pairs and counts only matching check-ins, matching Admin Attendance semantics.
+- `club_cash_transactions` excludes voided transactions. The legacy `cash_transactions` + current `club_cash_transactions` union is intentional and already used by database summary/dashboard functions, so both sources remain.
+- Added characterization tests for normal, duplicate, empty-denominator, and data-error behavior.
 
-### Task 2: Refactor Admin Insights
-Extract model/data helpers, fix bounded analytics correctness issues, and add characterization tests.
+### Task 3: Audit Profile, Kas, Garage, Leaderboard — DONE / VERIFIED NO-OP
+- Profile is large but remains one cohesive member workspace and already delegates ride mutation logic to shared services/cache/dialogs.
+- Kas is a cohesive finance workspace with secure RPC boundaries and production-contract coverage; no correctness defect was found that justifies a risky structural split.
+- Garage is a bounded owner-managed CRUD workspace with RPC-only mutation contracts.
+- Leaderboard is primarily read/presentation logic with one KM source and existing contract coverage.
+- File length alone is not used as a reason to refactor; no behavior-preserving split was compelling enough to justify churn in this batch.
 
-### Task 3: Audit Profile, Kas, Garage, Leaderboard
-Measure complexity and refactor only where clearly justified; otherwise close as verified no-op.
+### Task 4: Audit Admin Dashboard responsibilities — DONE / VERIFIED NO-OP
+- Dedicated Events, Members, Attendance, Join Requests, and Insights pages now exist.
+- `/admin` still acts as a consolidated operations cockpit: event context is shared by invitation generation, RSVP monitoring, QR rotation, account-request handling, and quick operational actions.
+- Existing production contracts also protect the legacy Official KM sync and Superadmin role boundary in this route.
+- Removing event/role controls would change current admin UX rather than merely remove dead responsibility, so no dashboard workflow was deleted in this low-risk pass.
 
-### Task 4: Audit Admin Dashboard responsibilities
-Remove only responsibilities already replaced by dedicated admin pages and preserve navigation/workflows.
+### Task 5: Audit CSS ownership — DONE / VERIFIED NO-OP
+- Ownership remains layered: `tokens.css` for tokens, `globals.css` for global/base legacy rules, `system-ui.css` for shared application UI, `native-admin.css` for admin surfaces, `social-feed.css` for feed surfaces, `landing.css` for landing, plus route-specific Dashboard/Profile/QR styles.
+- `scripts/audit-ui-css.mjs` already enforces UI debt budgets in CI.
+- Without browser E2E (explicitly skipped), deleting legacy selectors would be speculative and could create visual regressions, so no selector churn was performed.
 
-### Task 5: Audit CSS ownership
-Reduce only proven legacy duplication without redesign or selector churn.
+### Task 6: Audit legacy stack and generated state — DONE
+- Vite/vinext, Cloudflare plugin/types/wrangler, `.openai/hosting.json`, and `build/sites-vite-plugin.ts` are connected by `vite.config.ts` and remain active alternate-hosting/tooling infrastructure.
+- Drizzle ORM/Kit, `db/`, `drizzle.config.ts`, `drizzle/`, and `examples/d1/` remain an intentional opt-in D1 scaffold; `db:generate` is therefore retained.
+- `cloudflare-env.d.ts` supports the Cloudflare/D1 scaffold and remains.
+- Removed unused `app/chatgpt-auth.ts`; no imports/usages exist, while local Sites auth mocking lives in the active Vite plugin.
+- Stopped tracking generated `tsconfig.tsbuildinfo` and `supabase/.temp/cli-latest`; added `*.tsbuildinfo` and `/supabase/.temp/` ignore rules.
 
-### Task 6: Audit legacy stack and generated state
-Audit Vite, Cloudflare, Drizzle, examples/d1, hosting/auth files, dependencies, tsbuildinfo, and Supabase temp state. Remove only proven unused tracked state/config/deps.
-
-### Task 7: Full verification
+### Task 7: Full verification — IN PROGRESS
 Run contract tests, UI guardrails, TypeScript, lint, production build, smoke server, branch CI, squash merge `[deploy]`, main CI, and Vercel status.
