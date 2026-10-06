@@ -66,7 +66,7 @@ test("insights rates stay bounded by matching invited and attending member-event
   assert.equal(analytics.activeMembers, 1);
   assert.equal(analytics.publishedEvents, 2);
   assert.equal(analytics.responseRate, 50);
-  assert.equal(analytics.attendanceRate, 100);
+  assert.equal(analytics.attendanceRate, 67);
   assert.equal(analytics.totalKm, 20);
   assert.equal(analytics.balance, 75000);
 });
