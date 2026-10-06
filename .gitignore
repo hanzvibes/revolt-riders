@@ -50,3 +50,9 @@ next-env.d.ts
 /.codex-remote-attachments/
 /outputs/
 /work/
+
+# Private member source data must never be committed or shipped publicly.
+/DataMember.md
+/members.csv
+/public/members_import.csv
+/private-data/
