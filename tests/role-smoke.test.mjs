@@ -7,7 +7,8 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 test("Member role stays outside privileged navigation and mutations", async () => {
   const shell = await read("components/app-shell.tsx");
   const ridingApproval = await read("app/riding/approval/page.tsx");
-  const cash = await read("app/kas/page.tsx");
+  const cash = await read("components/cash/cash-screen.tsx");
+  const cashModel = await read("lib/features/cash/cash-model.ts");
   const voyager = await read("app/voyager/page.tsx");
   const voyagerModel = await read("app/voyager/voyager-model.ts");
 
@@ -21,7 +22,7 @@ test("Member role stays outside privileged navigation and mutations", async () =
   );
 
   assert.match(ridingApproval, /\["road_captain", "admin", "superadmin"\]\.includes/);
-  assert.match(cash, /\["treasurer", "admin", "superadmin"\]\.includes/);
+  assert.match(cashModel, /\["treasurer", "admin", "superadmin"\]\.includes/);
   assert.match(voyager, /from "\.\/voyager-model"/);
   assert.match(voyagerModel, /role === "admin" \|\| role === "superadmin"/);
 });
@@ -45,14 +46,15 @@ test("Road Captain riding review is guarded in UI and database", async () => {
 });
 
 test("Treasurer cash mutations are guarded in UI and database", async () => {
-  const page = await read("app/kas/page.tsx");
+  const page = await read("components/cash/cash-screen.tsx");
+  const model = await read("lib/features/cash/cash-model.ts");
   const migration = await read(
     "supabase/migrations/20260916123000_add_cash_controls_and_checkin_rotation.sql",
   );
 
   assert.match(
-    page,
-    /const isStaffRole = \(role\?: string\) =>[\s\S]*\["treasurer", "admin", "superadmin"\]\.includes/,
+    model,
+    /export function isCashStaffRole[\s\S]*\["treasurer", "admin", "superadmin"\]\.includes/,
   );
   assert.match(page, /rpc\(\s*"void_club_cash_transaction"/);
 
@@ -88,21 +90,20 @@ test("Voyager management is Admin or Superadmin only at both layers", async () =
 });
 
 test("Admin dashboard and role management preserve Superadmin boundary", async () => {
-  const page = await read("app/admin/page.tsx");
+  const dashboard = await read("components/admin/admin-overview-screen.tsx");
+  const members = await read("app/admin/members/manage-members-page.tsx");
+  const actions = await read("app/admin/members/member-admin-actions.ts");
   const migration = await read(
     "supabase/migrations/20260918000100_revolt_riders_comprehensive_fixes.sql",
   );
 
   assert.match(
-    page,
+    dashboard,
     /\["admin", "superadmin"\]\.includes\(effectiveAccount\.role\)/,
   );
-  assert.match(
-    page,
-    /const isSuperadmin =\s*isActiveAdmin && effectiveAccount\?\.role === "superadmin"/,
-  );
-  assert.match(page, /isSuperadmin[\s\S]*from\("member_accounts"\)/);
-  assert.match(page, /rpc\(\s*"set_member_account_role"/);
+  assert.doesNotMatch(dashboard, /rpc\(\s*"set_member_account_role"/);
+  assert.match(members, /canManageRole:\s*account\?\.role === "superadmin"/);
+  assert.match(actions, /rpc\("set_member_account_role"/);
 
   assert.match(migration, /v_role not in \('admin', 'superadmin'\)/);
 });
