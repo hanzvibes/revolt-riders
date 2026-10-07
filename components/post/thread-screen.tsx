@@ -17,7 +17,12 @@ import {
 } from "@/components/community-feed-utils";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
-import { getThreadDataClient } from "@/lib/features/post/thread-data";
+import {
+  createThreadMediaUrlMap,
+  fetchPublishedThreadPost,
+  fetchThreadEngagement,
+  getThreadDataClient,
+} from "@/lib/features/post/thread-data";
 import { buildRepliesByParent, getRootComments } from "@/lib/features/post/thread-model";
 import {
   ExternalLink,
@@ -115,17 +120,7 @@ export function ThreadScreen() {
     setError("");
 
     try {
-      const supabase = getThreadDataClient();
-      const { data: rawPost, error: postError } = await supabase
-        .from("feed_posts")
-        .select(
-          "id,body,link_url,event_id,attached_event:events!feed_posts_event_id_fkey(id,title,slug,type,location_name,start_at,end_at,status,counts_as_mandatory,official_distance_km,official_support,activity_summary,completed_at),comments_locked,author_id,author_name,author_role,published_at,created_at,like_count,comment_count,feed_post_media(id,object_path,alt_text,sort_order)",
-        )
-        .eq("id", postId)
-        .eq("status", "published")
-        .maybeSingle();
-
-      if (postError) throw postError;
+      const rawPost = await fetchPublishedThreadPost(postId);
       if (!rawPost) {
         setPost(null);
         setComments([]);
@@ -137,62 +132,19 @@ export function ThreadScreen() {
       const media = [...(row.feed_post_media ?? [])].sort(
         (a, b) => a.sort_order - b.sort_order,
       );
-      const mediaUrlByPath = new Map<string, string>();
-
-      if (media.length > 0) {
-        const { data: signedMedia, error: mediaError } = await supabase.storage
-          .from("community-feed")
-          .createSignedUrls(
-            media.map((item) => item.object_path),
-            60 * 60,
-          );
-
-        if (mediaError) throw mediaError;
-        for (const item of signedMedia ?? []) {
-          if (item.path && item.signedUrl) {
-            mediaUrlByPath.set(item.path, item.signedUrl);
-          }
-        }
-      }
+      const mediaUrlByPath = await createThreadMediaUrlMap(
+        media.map((item) => item.object_path),
+      );
 
       const voyagerEventId =
         row.attached_event?.type === "voyager"
           ? row.attached_event.id
           : null;
-
-      const [likeResult, commentResult, participantsResult, photosResult] =
-        await Promise.all([
-          supabase
-            .from("feed_post_likes")
-            .select("post_id")
-            .eq("post_id", postId)
-            .eq("user_id", user.id)
-            .maybeSingle(),
-          supabase
-            .from("feed_post_comments")
-            .select(
-              "id,post_id,parent_comment_id,body,author_id,author_name,author_role,created_at",
-            )
-            .eq("post_id", postId)
-            .order("created_at", { ascending: true }),
-          voyagerEventId
-            ? supabase
-                .from("event_participants")
-                .select("event_id")
-                .eq("event_id", voyagerEventId)
-            : Promise.resolve({ data: [], error: null }),
-          voyagerEventId
-            ? supabase
-                .from("club_gallery")
-                .select("event_id")
-                .eq("event_id", voyagerEventId)
-            : Promise.resolve({ data: [], error: null }),
-        ]);
-
-      if (likeResult.error) throw likeResult.error;
-      if (commentResult.error) throw commentResult.error;
-      if (participantsResult.error) throw participantsResult.error;
-      if (photosResult.error) throw photosResult.error;
+      const engagement = await fetchThreadEngagement(
+        postId,
+        user.id,
+        voyagerEventId,
+      );
 
       setPost({
         ...row,
@@ -201,11 +153,11 @@ export function ThreadScreen() {
               ...row.attached_event,
               participantCount:
                 row.attached_event.type === "voyager"
-                  ? (participantsResult.data ?? []).length
+                  ? engagement.participantCount
                   : undefined,
               photoCount:
                 row.attached_event.type === "voyager"
-                  ? (photosResult.data ?? []).length
+                  ? engagement.photoCount
                   : undefined,
             }
           : null,
@@ -215,9 +167,9 @@ export function ThreadScreen() {
         })),
         likeCount: row.like_count ?? 0,
         commentCount: row.comment_count ?? 0,
-        likedByMe: Boolean(likeResult.data),
+        likedByMe: engagement.likedByMe,
       });
-      setComments((commentResult.data ?? []) as ThreadComment[]);
+      setComments(engagement.comments as ThreadComment[]);
     } catch (cause) {
       console.error("Thread gagal dimuat.", cause);
       setError(
