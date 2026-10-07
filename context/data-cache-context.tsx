@@ -2,6 +2,7 @@
 
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
+import { hasMemberAccessChanged } from "./access-cache-policy";
 import {
   createContext,
   useCallback,
@@ -63,6 +64,24 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
   const accessRefreshRef = useRef<Promise<void> | null>(null);
   const lastFocusRefreshAtRef = useRef(0);
   const userIdRef = useRef<string | null>(null);
+  const accountRef = useRef<MemberAccess | null>(null);
+  const cacheEpochRef = useRef(0);
+
+  const clearProtectedCache = useCallback(() => {
+    cacheEpochRef.current += 1;
+    cacheRef.current.clear();
+    inFlightRef.current.clear();
+  }, []);
+
+  const failClosedAccess = useCallback(
+    (message: string) => {
+      accountRef.current = null;
+      setAccount(null);
+      clearProtectedCache();
+      setError(message);
+    },
+    [clearProtectedCache],
+  );
 
   const refreshAccess = useCallback((): Promise<void> => {
     const inFlight = accessRefreshRef.current;
@@ -70,44 +89,45 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
 
     const refreshPromise = (async () => {
       try {
-      const supabase = getSupabaseBrowserClient();
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      const nextUser = userData.user;
+        const supabase = getSupabaseBrowserClient();
+        const { data: userData, error: userError } = await supabase.auth.getUser();
+        const nextUser = userData.user;
 
-      if (nextUser && userIdRef.current && userIdRef.current !== nextUser.id) {
-        cacheRef.current.clear();
-        inFlightRef.current.clear();
-      }
-      userIdRef.current = nextUser?.id ?? null;
-      setUser(nextUser);
-
-      if (userError || !nextUser) {
-        cacheRef.current.clear();
-        inFlightRef.current.clear();
-        setAccount(null);
-        if (userError && !userError.message.includes("Auth session missing")) {
-          setError("Sesi akun belum dapat diperiksa.");
-        } else {
-          setError("");
+        if (nextUser && userIdRef.current && userIdRef.current !== nextUser.id) {
+          clearProtectedCache();
         }
-        setLoading(false);
-        return;
-      }
+        userIdRef.current = nextUser?.id ?? null;
+        setUser(nextUser);
 
-      const { data, error: accountError } = await supabase
-        .from("member_accounts")
-        .select("member_external_id,role,status")
-        .eq("user_id", nextUser.id)
-        .maybeSingle();
+        if (userError || !nextUser) {
+          failClosedAccess(
+            userError && !userError.message.includes("Auth session missing")
+              ? "Sesi akun belum dapat diperiksa."
+              : "",
+          );
+          return;
+        }
 
-      setAccount((data as MemberAccess | null) ?? null);
-      if (accountError) {
-        setError("Status akun member belum dapat dimuat.");
-      } else {
+        const { data, error: accountError } = await supabase
+          .from("member_accounts")
+          .select("member_external_id,role,status")
+          .eq("user_id", nextUser.id)
+          .maybeSingle();
+
+        if (accountError) {
+          failClosedAccess("Status akun member belum dapat dimuat.");
+          return;
+        }
+
+        const nextAccount = (data as MemberAccess | null) ?? null;
+        if (hasMemberAccessChanged(accountRef.current, nextAccount)) {
+          clearProtectedCache();
+        }
+        accountRef.current = nextAccount;
+        setAccount(nextAccount);
         setError("");
-      }
       } catch {
-        setError("Gagal memeriksa sesi pengguna.");
+        failClosedAccess("Gagal memeriksa sesi pengguna.");
       } finally {
         setLoading(false);
       }
@@ -128,7 +148,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     );
 
     return refreshPromise;
-  }, []);
+  }, [clearProtectedCache, failClosedAccess]);
 
   useEffect(() => {
     lastFocusRefreshAtRef.current = Date.now();
@@ -141,11 +161,11 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
       (_event: AuthChangeEvent, session: Session | null) => {
         if (!session) {
           userIdRef.current = null;
+          accountRef.current = null;
           setUser(null);
           setAccount(null);
           setLoading(false);
-          cacheRef.current.clear();
-          inFlightRef.current.clear();
+          clearProtectedCache();
           return;
         }
         window.setTimeout(() => void refreshAccess(), 0);
@@ -171,7 +191,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
     };
-  }, [refreshAccess]);
+  }, [clearProtectedCache, refreshAccess]);
 
   const getCached = useCallback(<T,>(key: string): T | undefined => {
     const entry = cacheRef.current.get(key) as CacheEntry<T> | undefined;
@@ -214,6 +234,7 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
     ): Promise<T> => {
       const ttlMs = options?.ttlMs ?? DEFAULT_TTL_MS;
       const forceRefresh = options?.forceRefresh ?? false;
+      const requestEpoch = cacheEpochRef.current;
 
       if (!forceRefresh) {
         const cached = cacheRef.current.get(key) as CacheEntry<T> | undefined;
@@ -232,11 +253,13 @@ export function DataCacheProvider({ children }: { children: ReactNode }) {
       const promise = (async () => {
         try {
           const freshData = await fetcher();
-          cacheRef.current.set(key, {
-            data: freshData,
-            timestamp: Date.now(),
-            ttl: ttlMs,
-          });
+          if (cacheEpochRef.current === requestEpoch) {
+            cacheRef.current.set(key, {
+              data: freshData,
+              timestamp: Date.now(),
+              ttl: ttlMs,
+            });
+          }
           return freshData;
         } finally {
           inFlightRef.current.delete(key);
