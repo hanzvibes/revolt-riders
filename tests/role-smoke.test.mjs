@@ -7,7 +7,6 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 test("Member role stays outside privileged navigation and mutations", async () => {
   const shell = await read("components/app-shell.tsx");
   const ridingApproval = await read("app/riding/approval/page.tsx");
-  const cash = await read("components/cash/cash-screen.tsx");
   const cashModel = await read("lib/features/cash/cash-model.ts");
   const voyager = await read("app/voyager/page.tsx");
   const voyagerModel = await read("app/voyager/voyager-model.ts");
