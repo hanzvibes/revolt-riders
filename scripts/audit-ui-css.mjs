@@ -316,12 +316,12 @@ if (!fs.existsSync(sharedPageStatePath)) {
 }
 
 const sharedPageStateTargets = [
-  "app/profil/page.tsx",
+  "components/profile-screen.tsx",
   "app/agenda/page.tsx",
   "app/garage/page.tsx",
-  "app/kas/page.tsx",
-  "app/member/page.tsx",
-  "app/leaderboard/page.tsx",
+  "components/cash-screen.tsx",
+  "components/member-screen.tsx",
+  "components/leaderboard-screen.tsx",
   "app/admin/insights/page.tsx",
   "app/voyager/page.tsx",
 ];
@@ -338,13 +338,13 @@ for (const file of sharedPageStateTargets) {
 }
 
 const finalConsistencyContracts = {
-  "app/profil/page.tsx": [
+  "components/profile-screen.tsx": [
     "confirmAction",
     "profile-ride-status",
     "profile-ride-action",
     'role="status" aria-live="polite"',
   ],
-  "app/admin/page.tsx": [
+  "components/admin-overview-screen.tsx": [
     "counts_as_mandatory,official_distance_km",
     'href="/admin/events"',
     'role="status"',
@@ -378,7 +378,7 @@ const uiFiles = roots
 const strictTokenizedUiTargets = new Set([
   "app/check-in/page.tsx",
   "app/admin/insights/page.tsx",
-  "app/admin/page.tsx",
+  "components/admin-overview-screen.tsx",
   "app/agenda/page.tsx",
   "components/page-state.tsx",
 ]);
