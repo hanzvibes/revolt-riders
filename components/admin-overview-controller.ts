@@ -11,6 +11,17 @@ import {
   type FormEvent,
 } from "react";
 import {
+  approveAdminAccountRequest,
+  changeAdminAccountRole,
+  rejectAdminAccountRequest,
+} from "./admin-overview-account-actions";
+import {
+  createAdminCheckinCode,
+  createBulkInvitations,
+  createPersonalInvitation,
+  downloadAdminInviteLinks,
+} from "./admin-overview-invitation-actions";
+import {
   fetchAdminOverviewSnapshot,
   type AdminAccount,
   type AdminOverviewSnapshot,
@@ -28,64 +39,7 @@ const EMPTY_SNAPSHOT: AdminOverviewSnapshot = {
   managedAccounts: [],
 };
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
-async function sha256(value: string) {
-  const bytes = new TextEncoder().encode(value);
-  const hash = await crypto.subtle.digest("SHA-256", bytes);
-  return Array.from(new Uint8Array(hash))
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function secureToken() {
-  const bytes = new Uint8Array(32);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes)
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("");
-}
-
-function csvCell(value: string) {
-  return '"' + value.replaceAll('"', '""') + '"';
-}
-
-export function downloadAdminInviteLinks(
-  links: BulkLink[],
-  eventTitle: string,
-) {
-  const rows = [
-    ["Member ID", "Nama", "Link Undangan"],
-    ...links.map((link) => [
-      link.memberId,
-      link.name,
-      link.url,
-    ]),
-  ];
-  const csv = rows
-    .map((row) => row.map(csvCell).join(","))
-    .join("\n");
-  const blob = new Blob(["\ufeff", csv], {
-    type: "text/csv;charset=utf-8",
-  });
-  const href = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = href;
-  anchor.download =
-    "undangan-" +
-    slugify(eventTitle || "revolt-riders") +
-    ".csv";
-  document.body.appendChild(anchor);
-  anchor.click();
-  anchor.remove();
-  URL.revokeObjectURL(href);
-}
+export { downloadAdminInviteLinks };
 
 export function useAdminOverviewController() {
   const { confirmAction } = useActionDialog();
@@ -287,50 +241,34 @@ export function useAdminOverviewController() {
     void load(true);
   }, [invalidateCache, load]);
 
+  const refreshAfterMutation = useCallback(async () => {
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
+  }, [invalidateCache, load]);
+
   const generateInvite = useCallback(
     async (event: FormEvent) => {
       event.preventDefault();
       setError("");
       setInvitation("");
 
-      const token = secureToken();
-      const tokenHash = await sha256(token);
-      const { error: upsertError } =
-        await getSupabaseBrowserClient()
-          .from("event_invitations")
-          .upsert(
-            {
-              event_id: selectedEvent,
-              member_external_id: memberId
-                .trim()
-                .toUpperCase(),
-              token_hash: tokenHash,
-            },
-            {
-              onConflict:
-                "event_id,member_external_id",
-            },
-          );
-
-      if (upsertError) {
-        setError(upsertError.message);
-        return;
+      try {
+        const url = await createPersonalInvitation({
+          eventId: selectedEvent,
+          memberId,
+          origin: window.location.origin,
+        });
+        setInvitation(url);
+        await refreshAfterMutation();
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "Undangan belum berhasil dibuat.",
+        );
       }
-
-      setInvitation(
-        window.location.origin +
-          "/undangan/" +
-          token,
-      );
-      invalidateCache("admin_dashboard_overview");
-      await load(true);
     },
-    [
-      invalidateCache,
-      load,
-      memberId,
-      selectedEvent,
-    ],
+    [memberId, refreshAfterMutation, selectedEvent],
   );
 
   const generateBulkInvites = useCallback(async () => {
@@ -372,39 +310,11 @@ export function useAdminOverviewController() {
     setBulkLinks([]);
 
     try {
-      const tokens = snapshot.members.map((member) => ({
-        member,
-        token: secureToken(),
-      }));
-      const rows = await Promise.all(
-        tokens.map(async ({ member, token }) => ({
-          event_id: selectedEvent,
-          member_external_id:
-            member.member_external_id,
-          token_hash: await sha256(token),
-        })),
-      );
-      const { error: upsertError } =
-        await getSupabaseBrowserClient()
-          .from("event_invitations")
-          .upsert(rows, {
-            onConflict:
-              "event_id,member_external_id",
-          });
-
-      if (upsertError) throw upsertError;
-
-      const links = tokens.map(
-        ({ member, token }) => ({
-          memberId: member.member_external_id,
-          name:
-            member.nickname || member.full_name,
-          url:
-            window.location.origin +
-            "/undangan/" +
-            token,
-        }),
-      );
+      const links = await createBulkInvitations({
+        eventId: selectedEvent,
+        members: snapshot.members,
+        origin: window.location.origin,
+      });
 
       setBulkLinks(links);
       downloadAdminInviteLinks(links, event.title);
@@ -412,8 +322,7 @@ export function useAdminOverviewController() {
         links.length +
           " undangan personal dibuat. CSV link sudah diunduh; simpan sebelum meninggalkan halaman.",
       );
-      invalidateCache("admin_dashboard_overview");
-      await load(true);
+      await refreshAfterMutation();
     } catch (caught) {
       setError(
         caught instanceof Error
@@ -425,8 +334,7 @@ export function useAdminOverviewController() {
     }
   }, [
     confirmAction,
-    invalidateCache,
-    load,
+    refreshAfterMutation,
     selectedEvent,
     snapshot.events,
     snapshot.invitations,
@@ -441,41 +349,24 @@ export function useAdminOverviewController() {
       setCheckinExpiresAt("");
       setCheckinUrl("");
 
-      const raw =
-        "RR-" +
-        secureToken().slice(0, 12).toUpperCase();
-      const codeHash = await sha256(raw);
-      const now = Date.now();
-      const activeUntil = new Date(
-        now + 12 * 60 * 60 * 1000,
-      ).toISOString();
-
-      const { error: insertError } =
-        await getSupabaseBrowserClient().rpc(
-          "create_event_checkin_code",
-          {
-            p_event_id: checkinEvent,
-            p_code_hash: codeHash,
-            p_active_until: activeUntil,
-          },
+      try {
+        const result = await createAdminCheckinCode({
+          eventId: checkinEvent,
+          origin:
+            typeof window !== "undefined"
+              ? window.location.origin
+              : "",
+        });
+        setCheckinCode(result.code);
+        setCheckinExpiresAt(result.activeUntil);
+        setCheckinUrl(result.url);
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "Kode check-in belum berhasil dibuat.",
         );
-
-      if (insertError) {
-        setError(insertError.message);
-        return;
       }
-
-      setCheckinCode(raw);
-      setCheckinExpiresAt(activeUntil);
-      const origin =
-        typeof window !== "undefined"
-          ? window.location.origin
-          : "";
-      setCheckinUrl(
-        origin +
-          "/check-in?code=" +
-          encodeURIComponent(raw),
-      );
     },
     [checkinEvent],
   );
@@ -483,28 +374,23 @@ export function useAdminOverviewController() {
   const approveRequest = useCallback(
     async (request: PendingRequest) => {
       setError("");
-      const { error: approveError } =
-        await getSupabaseBrowserClient().rpc(
-          "approve_member_account_request",
-          {
-            p_request_id: request.id,
-            p_role: "member",
-          },
+
+      try {
+        await approveAdminAccountRequest(request);
+        setMessage(
+          request.member_external_id +
+            " berhasil diverifikasi sebagai member.",
         );
-
-      if (approveError) {
-        setError(approveError.message);
-        return;
+        await refreshAfterMutation();
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "Permintaan akun belum dapat disetujui.",
+        );
       }
-
-      setMessage(
-        request.member_external_id +
-          " berhasil diverifikasi sebagai member.",
-      );
-      invalidateCache("admin_dashboard_overview");
-      await load(true);
     },
-    [invalidateCache, load],
+    [refreshAfterMutation],
   );
 
   const rejectRequest = useCallback(
@@ -526,28 +412,23 @@ export function useAdminOverviewController() {
       setError("");
       setMessage("");
 
-      const { error: rpcError } =
-        await getSupabaseBrowserClient().rpc(
-          "reject_member_account_request",
-          {
-            p_request_id: request.id,
-          },
+      try {
+        await rejectAdminAccountRequest(request);
+        setMessage(
+          "Pendaftaran " +
+            request.member_external_id +
+            " dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.",
         );
-
-      if (rpcError) {
-        setError(rpcError.message);
-        return;
+        await refreshAfterMutation();
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "Pendaftaran belum dapat ditolak.",
+        );
       }
-
-      setMessage(
-        "Pendaftaran " +
-          request.member_external_id +
-          " dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.",
-      );
-      invalidateCache("admin_dashboard_overview");
-      await load(true);
     },
-    [confirmAction, invalidateCache, load],
+    [confirmAction, refreshAfterMutation],
   );
 
   const changeRole = useCallback(
@@ -573,31 +454,28 @@ export function useAdminOverviewController() {
       setError("");
       setMessage("");
 
-      const { error: roleError } =
-        await getSupabaseBrowserClient().rpc(
-          "set_member_account_role",
-          {
-            p_account_id: managedAccount.id,
-            p_role: nextRole,
-          },
+      try {
+        await changeAdminAccountRole(
+          managedAccount,
+          nextRole,
         );
-
-      if (roleError) {
-        setError(roleError.message);
-        return;
+        setMessage(
+          "Role " +
+            managedAccount.member_external_id +
+            " diperbarui menjadi " +
+            nextRole.replaceAll("_", " ") +
+            ".",
+        );
+        await refreshAfterMutation();
+      } catch (caught) {
+        setError(
+          caught instanceof Error
+            ? caught.message
+            : "Role member belum dapat diperbarui.",
+        );
       }
-
-      setMessage(
-        "Role " +
-          managedAccount.member_external_id +
-          " diperbarui menjadi " +
-          nextRole.replaceAll("_", " ") +
-          ".",
-      );
-      invalidateCache("admin_dashboard_overview");
-      await load(true);
     },
-    [confirmAction, invalidateCache, load],
+    [confirmAction, refreshAfterMutation],
   );
 
   return {
