@@ -204,7 +204,15 @@ Shared design tokens live in:
 app/tokens.css
 ```
 
-The global CSS stack still contains legacy rules, so cleanup is intentionally incremental.
+The large stylesheet entrypoints are now thin ownership routers:
+
+```text
+app/system-ui.css        -> app/styles/system/
+app/social-feed.css      -> app/styles/social/
+app/native-admin.css     -> app/styles/admin/
+```
+
+`app/globals.css` is limited to framework/theme concerns. Older global surfaces were moved without changing cascade order into explicit owners under `app/styles/legacy/`, `app/styles/shared/`, and `app/styles/invitation.css`.
 
 The floating mobile navigation is owned by:
 
@@ -212,7 +220,7 @@ The floating mobile navigation is owned by:
 app/bottom-navigation.css
 ```
 
-Do not add another late `final-polish` stylesheet to override existing rules. Move ownership feature-by-feature and remove the superseded rule in the same change.
+Do not add another late `final-polish` stylesheet to override existing rules. Extend the existing feature owner and remove superseded rules in the same change.
 
 ## Privacy
 
