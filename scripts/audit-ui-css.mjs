@@ -335,58 +335,82 @@ if (!fs.existsSync(sharedPageStatePath)) {
   );
 }
 
-const sharedPageStateTargets = [
-  "components/profile-screen.tsx",
-  "app/agenda/page.tsx",
-  "app/garage/page.tsx",
-  "components/cash-screen.tsx",
-  "components/member-screen.tsx",
-  "components/leaderboard-screen.tsx",
-  "app/admin/insights/page.tsx",
-  "app/voyager/page.tsx",
-];
+const sharedPageStateTargets = {
+  "components/profile-screen.tsx": [
+    "components/profile-screen.tsx",
+    "components/profile-access-states.tsx",
+  ],
+  "app/agenda/page.tsx": ["app/agenda/page.tsx"],
+  "app/garage/page.tsx": ["app/garage/page.tsx"],
+  "components/cash-screen.tsx": ["components/cash-screen.tsx"],
+  "components/member-screen.tsx": ["components/member-screen.tsx"],
+  "components/leaderboard-screen.tsx": ["components/leaderboard-screen.tsx"],
+  "app/admin/insights/page.tsx": ["app/admin/insights/page.tsx"],
+  "app/voyager/page.tsx": ["app/voyager/page.tsx"],
+};
 
-for (const file of sharedPageStateTargets) {
-  const abs = path.join(ROOT, file);
-  if (!fs.existsSync(abs)) continue;
-  const content = fs.readFileSync(abs, "utf8");
+for (const [owner, sourceFiles] of Object.entries(sharedPageStateTargets)) {
+  const existingFiles = sourceFiles.filter((file) => fs.existsSync(path.join(ROOT, file)));
+  if (existingFiles.length === 0) continue;
+  const content = existingFiles
+    .map((file) => fs.readFileSync(path.join(ROOT, file), "utf8"))
+    .join("\n");
   if (!content.includes("PageState")) {
     fatal.push(
-      `${file}: use the shared PageState component for page-level empty/error/restricted states`,
+      `${owner}: use the shared PageState component for page-level empty/error/restricted states`,
     );
   }
 }
 
 const finalConsistencyContracts = {
-  "components/profile-screen.tsx": [
-    "confirmAction",
-    "profile-ride-status",
-    "profile-ride-action",
-    'role="status" aria-live="polite"',
-  ],
-  "components/admin-overview-screen.tsx": [
-    "counts_as_mandatory,official_distance_km",
-    'href="/admin/events"',
-    'role="status"',
-  ],
-  "app/admin/events/events-actions.ts": [
-    "sync_event_official_rides",
-    "syncOfficialRidesIfReady",
-  ],
-  "app/admin/events/events-screen.tsx": [
-    "invalidateAgendaCaches",
-    'invalidateCache("riding:")',
-    "syncOfficialRidesIfReady",
-  ],
+  "components/profile-screen.tsx": {
+    sources: [
+      "components/profile-screen.tsx",
+      "components/use-profile-screen.ts",
+      "components/profile-screen-model.ts",
+    ],
+    snippets: [
+      "confirmAction",
+      "profile-ride-status",
+      "profile-ride-action",
+      'role="status" aria-live="polite"',
+    ],
+  },
+  "components/admin-overview-screen.tsx": {
+    sources: [
+      "components/admin-overview-screen.tsx",
+      "components/use-admin-overview.ts",
+      "components/admin-overview-model.ts",
+    ],
+    snippets: [
+      "counts_as_mandatory,official_distance_km",
+      'href="/admin/events"',
+      'role="status"',
+    ],
+  },
+  "app/admin/events/events-actions.ts": {
+    sources: ["app/admin/events/events-actions.ts"],
+    snippets: ["sync_event_official_rides", "syncOfficialRidesIfReady"],
+  },
+  "app/admin/events/events-screen.tsx": {
+    sources: ["app/admin/events/events-screen.tsx"],
+    snippets: [
+      "invalidateAgendaCaches",
+      'invalidateCache("riding:")',
+      "syncOfficialRidesIfReady",
+    ],
+  },
 };
 
-for (const [file, snippets] of Object.entries(finalConsistencyContracts)) {
-  const abs = path.join(ROOT, file);
-  if (!fs.existsSync(abs)) continue;
-  const content = fs.readFileSync(abs, "utf8");
-  for (const snippet of snippets) {
+for (const [owner, contract] of Object.entries(finalConsistencyContracts)) {
+  const existingFiles = contract.sources.filter((file) => fs.existsSync(path.join(ROOT, file)));
+  if (existingFiles.length === 0) continue;
+  const content = existingFiles
+    .map((file) => fs.readFileSync(path.join(ROOT, file), "utf8"))
+    .join("\n");
+  for (const snippet of contract.snippets) {
     if (!content.includes(snippet)) {
-      fatal.push(`${file}: final consistency contract missing ${snippet}`);
+      fatal.push(`${owner}: final consistency contract missing ${snippet}`);
     }
   }
 }
