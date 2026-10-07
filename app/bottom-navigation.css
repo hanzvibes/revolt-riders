@@ -4,3 +4,25 @@
 /* 68 Floating Bottom Nav Audit: consistent safe-area, spacing, and touch geometry. */
 @media (max-width:720px){.app-shell.social-shell .bottom{bottom:max(10px,calc(env(safe-area-inset-bottom) + 8px))}.app-shell.social-shell .bottom a{touch-action:manipulation;-webkit-tap-highlight-color:transparent}.app-shell.social-shell .bottom a svg{pointer-events:none}}
 @media (prefers-reduced-motion:reduce){.app-shell .bottom,.app-shell .bottom a{transition:none}}
+
+/* Bottom navigation owns its typography, motion, and coarse-pointer target size. */
+.app-shell .bottom a {
+  font-size: var(--rr-type-small);
+  transition:
+    transform var(--rr-motion-fast) ease-out,
+    background-color var(--rr-motion-fast) ease,
+    border-color var(--rr-motion-fast) ease,
+    color var(--rr-motion-fast) ease,
+    box-shadow var(--rr-motion-fast) ease;
+}
+
+.app-shell .bottom a small {
+  font-size: var(--rr-type-caption);
+  line-height: 1.3;
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell .bottom a {
+    min-height: var(--rr-control-lg);
+  }
+}
