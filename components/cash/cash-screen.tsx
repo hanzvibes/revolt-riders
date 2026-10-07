@@ -9,7 +9,14 @@ import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { getCashDataClient } from "@/lib/features/cash/cash-data";
+import {
+  fetchCashSnapshot,
+  getCashDataClient,
+  type CashDue as Due,
+  type CashSnapshot,
+  type CashSummary as Summary,
+  type CashTransaction as Transaction,
+} from "@/lib/features/cash/cash-data";
 import { calculateCashFlow, calculateExpenseCategories, filterCashTransactions, formatRupiah, getCashMonthKey, getCashMonthLabel, isCashStaffRole, sortCashTransactions, type CashFilterType } from "@/lib/features/cash/cash-model";
 import {
   ArrowDownLeft,
@@ -24,39 +31,12 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 
-type Summary = {
-  total_balance: number;
-  income_this_month: number;
-  expense_this_month: number;
-  last_updated: string | null;
-};
 type Account = {
   role: string;
   status: "pending" | "active" | "inactive";
   member_external_id: string;
 };
-type Due = {
-  id: string;
-  member_external_id: string;
-  period_label: string;
-  amount_paid: number | string;
-  recorded_at: string | null;
-};
-type Transaction = {
-  id: string;
-  transaction_type: "income" | "expense" | "advance";
-  transaction_date: string | null;
-  description: string;
-  category: string | null;
-  amount: number;
-  created_at: string;
-  voided_at: string | null;
-  void_reason: string | null;
-  source: "import" | "production";
-};
-type TransactionRow = Omit<Transaction, "source" | "amount"> & {
-  amount: number | string;
-};
+
 export function CashScreen() {
   const { promptAction } = useActionDialog();
   const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
@@ -147,85 +127,7 @@ export function CashScreen() {
       const cacheKey = `cash:${nextAccount.member_external_id}:${nextAccount.role}`;
       const snapshot = await fetchWithCache<CashSnapshot>(
         cacheKey,
-        async () => {
-          const supabase = getCashDataClient();
-
-          if (isStaffRole(nextAccount.role)) {
-            const [summaryResult, imported, production, dueResult] = await Promise.all([
-              supabase.rpc("get_member_cash_summary"),
-              supabase
-                .from("cash_transactions")
-                .select(
-                  "id,transaction_type,transaction_date,description,amount,created_at",
-                )
-                .order("transaction_date", { ascending: false })
-                .limit(250),
-              supabase
-                .from("club_cash_transactions")
-                .select(
-                  "id,transaction_type,transaction_date,category,description,amount,created_at,voided_at,void_reason",
-                )
-                .order("transaction_date", { ascending: false })
-                .limit(250),
-              supabase
-                .from("member_dues")
-                .select("id,member_external_id,period_label,amount_paid,recorded_at")
-                .order("recorded_at", { ascending: false })
-                .limit(250),
-            ]);
-
-            if (summaryResult.error) throw summaryResult.error;
-            if (imported.error) throw imported.error;
-            if (production.error) throw production.error;
-            if (dueResult.error) throw dueResult.error;
-
-            const importedRows = (
-              (imported.data ?? []) as Omit<
-                TransactionRow,
-                "category" | "voided_at" | "void_reason"
-              >[]
-            ).map((row) => ({
-              ...row,
-              category: "Data awal",
-              amount: Number(row.amount),
-              voided_at: null,
-              void_reason: null,
-              source: "import" as const,
-            }));
-            const productionRows = ((production.data ?? []) as TransactionRow[]).map(
-              (row) => ({
-                ...row,
-                amount: Number(row.amount),
-                source: "production" as const,
-              }),
-            );
-
-            return {
-              summary: (summaryResult.data?.[0] ?? null) as Summary | null,
-              transactions: [...importedRows, ...productionRows],
-              dues: (dueResult.data ?? []) as Due[],
-            };
-          }
-
-          const [summaryResult, dueResult] = await Promise.all([
-            supabase.rpc("get_member_cash_summary"),
-            supabase
-              .from("member_dues")
-              .select("id,member_external_id,period_label,amount_paid,recorded_at")
-              .eq("member_external_id", nextAccount.member_external_id)
-              .order("recorded_at", { ascending: false })
-              .limit(24),
-          ]);
-
-          if (summaryResult.error) throw summaryResult.error;
-          if (dueResult.error) throw dueResult.error;
-
-          return {
-            summary: (summaryResult.data?.[0] ?? null) as Summary | null,
-            transactions: [],
-            dues: (dueResult.data ?? []) as Due[],
-          };
-        },
+        () => fetchCashSnapshot(nextAccount),
         { ttlMs: 30_000, forceRefresh },
       );
 
