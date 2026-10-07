@@ -372,8 +372,8 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
 
 
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
-  const cash = await read("app/kas/page.tsx");
-  const profile = await read("app/profil/page.tsx");
+  const cash = await read("components/cash-screen.tsx");
+  const profile = await read("components/profile-screen.tsx");
 
   assert.match(cash, /useMemberAccess/);
   assert.match(cash, /fetchWithCache<CashSnapshot>/);
@@ -490,9 +490,9 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const layout = await read("app/layout.tsx");
   const auditedPages = [
     "app/admin/events/events-screen.tsx",
-    "app/admin/page.tsx",
+    "components/admin-overview-screen.tsx",
     "app/garage/page.tsx",
-    "app/kas/page.tsx",
+    "components/cash-screen.tsx",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
   ];
@@ -528,7 +528,7 @@ test("Voyager makes member status and evidence visible", async () => {
 
 test("Event deletion stays behind the authorized RPC", async () => {
   const eventActions = await read("app/admin/events/events-actions.ts");
-  const adminDashboard = await read("app/admin/page.tsx");
+  const adminDashboard = await read("components/admin-overview-screen.tsx");
   const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
 
   assert.match(eventActions, /rpc\("delete_event"/);
@@ -562,7 +562,7 @@ test("Database performance hardening is migration-tracked", async () => {
 
 
 test("Admin rejection stays behind its authorized RPC", async () => {
-  const admin = await read("app/admin/page.tsx");
+  const admin = await read("components/admin-overview-screen.tsx");
 
   assert.match(admin, /rpc\(\s*"reject_member_account_request"/);
   assert.doesNotMatch(
@@ -576,9 +576,9 @@ test("Admin rejection stays behind its authorized RPC", async () => {
 test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
     "app/admin/events/events-screen.tsx",
-    "app/admin/page.tsx",
+    "components/admin-overview-screen.tsx",
     "app/garage/page.tsx",
-    "app/kas/page.tsx",
+    "components/cash-screen.tsx",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
     "app/riding/riding-history.tsx",
@@ -672,7 +672,7 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
 
 
 test("Admin dashboard delegates agenda lifecycle to the events workspace", async () => {
-  const admin = await read("app/admin/page.tsx");
+  const admin = await read("components/admin-overview-screen.tsx");
   const actions = await read("app/admin/events/events-actions.ts");
 
   assert.doesNotMatch(admin, /sync_event_official_rides/);
@@ -683,7 +683,7 @@ test("Admin dashboard delegates agenda lifecycle to the events workspace", async
 
 
 test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
-  const profile = await read("app/profil/page.tsx");
+  const profile = await read("components/profile-screen.tsx");
 
   assert.ok(profile.includes("confirmAction"));
   assert.ok(profile.includes("profile-ride-action"));

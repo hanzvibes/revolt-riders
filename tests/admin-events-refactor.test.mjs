@@ -138,7 +138,7 @@ test("admin events action layer keeps database errors throwable", async () => {
 });
 
 test("admin dashboard delegates event creation and status changes to the events workspace", async () => {
-  const dashboard = await read("app/admin/page.tsx");
+  const dashboard = await read("components/admin-overview-screen.tsx");
 
   assert.match(dashboard, /href="\/admin\/events"/);
   assert.doesNotMatch(dashboard, /const createEvent =/);
