@@ -1,126 +1,243 @@
-# vinext-starter
+# Revolt Riders
 
-A clean full-stack starter running on [vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and Drizzle support.
+Official web app and PWA for **Revolt Riders Situbondo**. The application manages member access, riding activity, agenda and invitations, check-in, club cash, leaderboard, community feed, Voyager activity, and admin operations.
 
-## Prerequisites
+Production: **https://www.revoltriders.my.id**
 
-- Node.js `>=22.13.0`
-- Portable: Windows, macOS, or Linux; no Bash required
-- Managed Linux: managed Linux runtime with Bash, `flock`, `curl`, `sha256sum`, and GNU `timeout`
-- Git is required only for publishing
+## Stack
 
-## Sites Lifecycle
+- **Next.js 16** + React 19 + TypeScript
+- **Supabase** for Auth, PostgreSQL, RLS, RPC, Realtime, Storage, and Edge Functions
+- **Vercel** for production hosting and analytics
+- **Google Sheets API** for optional read-only member, riding, and finance synchronization
+- **PWA** service worker + web manifest for installable/mobile use
+- **pnpm 11.25.0** on Node.js **>= 22.13.0**
 
-The Sites initializer copies the shared starter and selects managed-linux only when `SITES_MANAGED_LINUX_CONTAINER=1`; otherwise it selects portable. It saves the selection only in ignored `.sites-runtime/execution-profile.json`. Both profiles copy/configure first, then use the plugin's separate `install-dependencies.mjs` step to measure installation independently. Edit source under `app/` and follow the Sites skill for installation, preview, builds, and publishing.
+The production application does **not** use Cloudflare Workers, D1, Drizzle, Vite, Vinext, or Wrangler.
 
-Whenever reopening or moving a checkout, run `node <plugin-root>/scripts/configure-execution-profile.mjs` before project commands. Profile changes do not alter tracked source or require reinstalling otherwise-valid dependencies; restart an existing preview to use the new selection. Do not commit or upload `.sites-runtime/`.
+## Main Modules
 
-This starter does not use `wrangler.jsonc`.
+- Dashboard / community feed
+- Member directory and digital member profile
+- Riding log, approval, and verified KM
+- Agenda, invitations, RSVP, and attendance
+- QR/manual check-in
+- Kas Revolt
+- Leaderboard
+- Voyager activity and photo verification
+- Garage
+- Bulletins and notifications
+- Admin workspaces for members, events, attendance, join requests, and insights
 
-`install:ci` runs `npm ci` once against the shared lockfile, disables parent-workspace discovery, and includes required dev/optional dependencies despite production/omit settings. Sharp defaults to prebuilt binaries unless explicitly configured otherwise. Do not overlap installers.
+## Local Setup
 
-- **Portable:** Preserve host HOME, npm cache, registry, proxy, temporary paths, retry/concurrency settings, and lifecycle-script policy. Use `--prefer-offline --no-audit --no-fund`.
-- **Managed Linux:** Use the existing project-local HOME/cache/tmp setup and Linux install lock, tarball preflight, and timeout. Restore the image-seeded npm cache only when its lockfile hash matches; retain network fallback. Builds keep their existing timeout. These helpers are not invoked by the portable profile.
+### Requirements
 
-`scripts/sites-env.mjs` preserves the caller's HOME, npm cache, proxy, XDG, and temporary-directory configuration while defaulting Wrangler and Miniflare state to the checkout. If npm reports an unwritable cache, select a writable path with `npm_config_cache` for that install. The `dev` and `start` scripts also keep Wrangler logs inside the checkout. Generated `.sites-runtime/` and `.wrangler/` directories are disposable and ignored by Git.
+- Node.js >= 22.13.0
+- pnpm 11.25.0
 
-On portable, `npm run dev` uses `vinext dev` with HMR, starting at port 5173. Vinext records the running server in ignored `.vinext/` state, rejects an ordinary duplicate launch, and recovers stale state after a stopped process; exactly simultaneous starts can race. Pass `--port <port>` or `--hostname <host>` after `npm run dev --` when needed; keep portable previews on loopback.
+### Install
 
-On managed Linux, use `sites-preview start` only for requested browser QA. The project's dev script runs Vite and accepts the supervisor's `--host 0.0.0.0 --port 4173 --strictPort` arguments. The internal browser uses `http://terminal.local:4173/`; it is not a user-facing URL. The supervisor owns the preview lifecycle. The ignored local profile survives the supervisor's cleared process environment.
-
-The portable profile simulates ChatGPT sign-in only for loopback development requests. Visit `/signin-with-chatgpt?return_to=/` to sign in as `local_seedy` (`seedy@sites.test`, display name `Seedy`) and `/signout-with-chatgpt?return_to=/` to sign out. The development cookie preserves that identity across server restarts. Mock auth is disabled in the managed-linux profile and is not included in production builds; hosted authentication remains dispatch-owned.
-
-The Worker uses `vinext/server/fetch-handler`, including Vinext's config-aware image handling. After building, `npm start` runs that Worker locally through Wrangler on `127.0.0.1`, sharing `.wrangler/state` with dev preview and local D1 migrations; it does not deploy the site or simulate sign-in. Use the URL printed by the server. Pass `npm start -- --port <port>` to select a different built-preview port.
-
-Local previews use Miniflare's placeholder `Request.cf` metadata without a network lookup. Set `CLOUDFLARE_CF_FETCH_ENABLED=true` to opt into fetching preview metadata; this setting does not change hosted request metadata.
-
-Local tool usage metrics are disabled by default. Set `WRANGLER_SEND_METRICS=true` to opt in.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `@cloudflare/workers-types` provides Worker types; `cloudflare-env.d.ts` declares optional `DB`/`BUCKET` bindings—update these declarations if binding names change
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-Signed-in visitors receive both `oai-authenticated-user-id` and `oai-authenticated-user-email`. Private Sites require every visitor to sign in; public Sites may also have anonymous visitors, for whom neither header is present.
-
-The user ID is stable for the same user on the same Site and different across Sites. Use it as the durable user key; use email and name for display or contact purposes.
-
-SIWC-authenticated workspace sites may also receive `oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty `name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by `oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const userId = requestHeaders.get("oai-authenticated-user-id");
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```bash
+pnpm install --frozen-lockfile
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+Create a local `.env.local` with the environment variables required for the surfaces you are testing. Never commit environment files or credentials.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs optional or required ChatGPT sign-in:
+### Run development server
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use the returned `userId` as the stable user key for user-owned records; do not use email as a durable identifier.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send anonymous visitors through Sign in with ChatGPT.
-- In a Server Component, start sign-in with `<a href={chatGPTSignInPath(returnTo)} target="_top">`. The auth helper module is server-only; do not import it into a Client Component.
-- Do not use `fetch`, XHR, a client-side router, or a framework link that can prefetch the sign-in route. SIWC must start as a top-level navigation.
-- Never request the AuthAPI authorization endpoint directly. The dispatch-owned `/signin-with-chatgpt` route must start the SIWC flow.
-- Use `chatGPTSignOutPath(returnTo)` for browser sign-out links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because they depend on per-request identity headers.
-
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the OAuth cookies, and identity header injection. Do not implement app routes for those reserved paths. Routes that do not import and call the helper remain anonymous-compatible.
-
-SIWC establishes identity only; it does not prove workspace membership. Use the Sites hosting platform's access policy controls for workspace-wide restrictions, or enforce explicit server-side membership or allowlist checks.
-
-Use SIWC for account pages, user-specific dashboards, saved records, and write actions tied to the current ChatGPT user. Leave public content anonymous.
-
-## Local D1 migrations
-
-For a D1-backed local preview, generate SQL with `npm run db:generate`. Build once through the Sites skill's build entrypoint (or `npm run build` for standalone use) to generate `dist/server/wrangler.json`, rebuilding if bindings change. From the project root, apply each pending migration in order:
-
-```sh
-node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_example.sql
+```bash
+pnpm dev
 ```
 
-Replace the filename with the pending migration and `DB` with your D1 binding name if different. Use `.wrangler/state`, not `.wrangler/state/v3`; Wrangler adds the versioned directories. Do not replay migrations already applied locally. This updates only the preview database; publishing applies production migrations separately.
+Open `http://localhost:3000`.
 
-## Diagnostic Commands
+## Environment Variables
 
-- `npm run install:ci`: perform the one locked dependency install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build the deployable Sites artifact
-- `npm run start`: preview the built Worker locally with D1/R2 support
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+### Supabase
 
-When using the Sites plugin, follow its skill instructions for installation, builds, and publishing. These npm commands remain available for standalone use.
+Required by the web application:
 
-The portable build runs Vinext directly without a host `timeout` command. The managed-linux build uses `scripts/build-verified.sh` and its existing `SITES_BUILD_TIMEOUT` setting.
+```text
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```
 
-## Learn More
+The browser key is intentionally publishable. Never expose a Supabase `service_role` or secret key to client code.
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+The password-reset Edge Function uses Supabase-managed server secrets:
+
+```text
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+```
+
+`SUPABASE_SERVICE_ROLE_KEY` must exist only in the Supabase server/Edge Function environment.
+
+### Google Sheets
+
+Only needed when the Google Sheets synchronization endpoints are enabled:
+
+```text
+GOOGLE_SERVICE_ACCOUNT_EMAIL=
+GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY=
+
+GOOGLE_MEMBERS_SPREADSHEET_ID=
+GOOGLE_MEMBERS_RANGE=
+
+GOOGLE_RIDING_SPREADSHEET_ID=
+GOOGLE_RIDING_RANGE=
+
+GOOGLE_FINANCE_SPREADSHEET_ID=
+GOOGLE_FINANCE_RANGE=
+```
+
+The service account uses read-only spreadsheet scope.
+
+### Site URL
+
+Vercel config sets:
+
+```text
+NEXT_PUBLIC_SITE_URL=https://www.revoltriders.my.id
+```
+
+## Commands
+
+```bash
+# Development
+pnpm dev
+
+# Repository tests
+pnpm test
+
+# CSS/UI guardrails
+pnpm audit:ui
+
+# TypeScript check
+pnpm exec tsc --noEmit
+
+# Lint
+pnpm lint
+
+# Production build
+pnpm build
+
+# Run the production build locally
+pnpm start
+```
+
+## Verification
+
+The GitHub Actions **UI Quality** workflow runs on `main`, `fix/**`, and `feat/**` changes and verifies:
+
+1. frozen dependency install
+2. repository/contract tests
+3. UI/CSS guardrails
+4. TypeScript
+5. ESLint
+6. production Next.js build
+7. production-server smoke test
+
+A successful build is not treated as proof that every authenticated interaction works. Browser/manual verification is still required for UI changes that depend on real sessions or production data.
+
+## Deployment
+
+Production is hosted on Vercel.
+
+`vercel.json` intentionally deploys only commits whose message contains:
+
+```text
+[deploy]
+```
+
+Use one grouped deploy commit after a batch has passed verification instead of pushing deploy-triggering micro-commits.
+
+## Supabase
+
+Database history lives in:
+
+```text
+supabase/migrations/
+```
+
+Important rules:
+
+- keep RLS enabled on exposed user-data tables
+- prefer scoped RPCs for sensitive mutations
+- never use user-editable metadata as authorization
+- review `SECURITY DEFINER` functions carefully
+- keep service-role credentials server-only
+- verify migration changes against the live Supabase project before declaring them production-safe
+
+The repository also contains:
+
+```text
+supabase/functions/admin-reset-member-password/
+```
+
+for the authenticated admin password-reset flow.
+
+## Project Structure
+
+```text
+app/                 Next.js App Router pages, route handlers, and CSS
+components/          shared UI and feature components
+context/             authenticated client data/cache context
+hooks/               shared React hooks
+lib/                 domain helpers and server/client integrations
+public/              PWA assets, icons, manifest, service worker
+scripts/             repository verification utilities
+supabase/migrations/ database schema and security history
+supabase/functions/  Supabase Edge Functions
+tests/               repository, contract, behavior, and security tests
+```
+
+Several larger product surfaces are already split into model/data/action/view modules. New refactors should follow existing modular areas rather than adding another global abstraction layer.
+
+## CSS Ownership
+
+Shared design tokens live in:
+
+```text
+app/tokens.css
+```
+
+The global CSS stack still contains legacy rules, so cleanup is intentionally incremental.
+
+The floating mobile navigation is owned by:
+
+```text
+app/bottom-navigation.css
+```
+
+Do not add another late `final-polish` stylesheet to override existing rules. Move ownership feature-by-feature and remove the superseded rule in the same change.
+
+## Privacy
+
+This repository is public.
+
+Do **not** commit real member source datasets, exports, addresses, birth dates, private contact data, or production CSV files.
+
+Protected paths include:
+
+```text
+DataMember.md
+members.csv
+public/members_import.csv
+lib/data/member-touring-data.ts
+private-data/
+```
+
+Use anonymized/fake fixtures for tests and examples.
+
+> Note: removing a sensitive file from the current tree does not remove it from older Git history. Historical sensitive-data cleanup must be handled as a separate repository-history operation.
+
+## Working Rules
+
+- Keep changes small and YAGNI.
+- Preserve existing business behavior during structural refactors.
+- Add regression coverage for bug fixes and architecture boundaries.
+- Run tests, TypeScript, lint, build, and smoke checks before a deploy commit.
+- Prefer one logical `[deploy]` commit per verified batch.
