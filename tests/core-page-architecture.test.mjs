@@ -75,3 +75,11 @@ test("admin root is a launcher instead of duplicating member-account workflows",
   assert.doesNotMatch(screen, /Pengaturan pengurus/);
   assert.doesNotMatch(data, /from\("member_accounts"\)/);
 });
+
+test("refactored read loaders preserve legacy partial-data tolerance", async () => {
+  const memberData = await read("lib/features/member/member-data.ts");
+  const adminData = await read("lib/features/admin/admin-overview-data.ts");
+
+  assert.doesNotMatch(memberData, /throw profilesRes\.error|throw detailsRes\.error|throw rideCountsRes\.error/);
+  assert.doesNotMatch(adminData, /for \(const result of[\s\S]*throw result\.error/);
+});
