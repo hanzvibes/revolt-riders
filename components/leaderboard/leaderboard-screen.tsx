@@ -5,7 +5,8 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { PageState } from "@/components/page-state";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getLeaderboardDataClient } from "@/lib/features/leaderboard/leaderboard-data";
+import { buildLeaderboardRankMap, filterLeaderboardRiders, getLeaderboardInitials, getLeaderboardTopStack } from "@/lib/features/leaderboard/leaderboard-model";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   ChevronLeft,
@@ -45,7 +46,7 @@ export function LeaderboardScreen() {
       const data = await fetchWithCache<Rider[]>(
         "riding_leaderboard_data",
         async () => {
-          const supabase = getSupabaseBrowserClient();
+          const supabase = getLeaderboardDataClient();
           type ProfileRow = {
             member_external_id: string;
             full_name: string;
@@ -113,23 +114,15 @@ export function LeaderboardScreen() {
   const kmToNext =
     myIndex > 0 ? riders[myIndex - 1].total_km - (myRider?.total_km ?? 0) : 0;
 
-  const rankByMemberId = useMemo(() => {
-    const ranks = new Map<string, number>();
-    riders.forEach((rider, index) => {
-      ranks.set(rider.member_external_id, index + 1);
-    });
-    return ranks;
-  }, [riders]);
+  const rankByMemberId = useMemo(
+    () => buildLeaderboardRankMap(riders),
+    [riders],
+  );
 
-  const filteredRiders = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return riders;
-    return riders.filter(
-      (r) =>
-        r.full_name.toLowerCase().includes(q) ||
-        r.member_external_id.toLowerCase().includes(q),
-    );
-  }, [riders, query]);
+  const filteredRiders = useMemo(
+    () => filterLeaderboardRiders(riders, query),
+    [riders, query],
+  );
 
   const top3 = useMemo(() => {
     return riders.slice(0, 3);
@@ -152,12 +145,7 @@ export function LeaderboardScreen() {
   );
 
   const top3Stack = useMemo(
-    () =>
-      top3.map((rider, index) => ({
-        rider,
-        rank: index + 1,
-        layer: (index - activeTopIndex + top3.length) % top3.length,
-      })),
+    () => getLeaderboardTopStack(top3, activeTopIndex),
     [activeTopIndex, top3],
   );
 
@@ -167,14 +155,6 @@ export function LeaderboardScreen() {
     }
     return riders.slice(3);
   }, [query, filteredRiders, riders]);
-
-  const getInitials = (name: string) => {
-    const parts = name.trim().split(/\s+/).filter(Boolean);
-    if (parts.length >= 2) {
-      return (parts[0][0] + parts[1][0]).toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
-  };
 
   return (
     <AppShell active="Leaderboard" title="Leaderboard">
@@ -552,7 +532,7 @@ export function LeaderboardScreen() {
                           #{originalRank}
                         </span>
                         <div className="leaderboard-row-avatar">
-                          {getInitials(r.full_name)}
+                          {getLeaderboardInitials(r.full_name)}
                         </div>
                         <div className="leaderboard-row-main">
                           <div className="leaderboard-row-title">
