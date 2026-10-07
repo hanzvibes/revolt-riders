@@ -1,0 +1,62 @@
+/* Shared overlay motion performance + accessibility */
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="sheet-overlay"],
+[data-slot="sheet-content"],
+[data-slot="drawer-overlay"],
+[data-slot="drawer-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[data-slot="popover-content"],
+[data-slot="select-content"],
+[data-slot="tooltip-content"],
+[data-slot="accordion-content"],
+[data-slot="collapsible-content"] {
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-overlay"],
+  [data-slot="dialog-content"],
+  [data-slot="sheet-overlay"],
+  [data-slot="sheet-content"],
+  [data-slot="drawer-overlay"],
+  [data-slot="drawer-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="dropdown-menu-sub-content"],
+  [data-slot="popover-content"],
+  [data-slot="select-content"],
+  [data-slot="tooltip-content"],
+  [data-slot="accordion-content"],
+  [data-slot="collapsible-content"] {
+    animation: none;
+    transition: none;
+  }
+}
+
+
+/* Native/custom control typography outside AppShell */
+.invitation-page select,
+.invitation-page select option,
+.native-sheet .sheet-form select,
+.native-sheet .sheet-form select option {
+  font-size: .8125rem !important;
+  font-weight: 600 !important;
+  line-height: 1.25;
+}
+
+.invitation-page {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Alert dialogs render through a portal outside .app-shell, so their motion
+   preference handling must stay global. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="alert-dialog-overlay"],
+  [data-slot="alert-dialog-content"] {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+

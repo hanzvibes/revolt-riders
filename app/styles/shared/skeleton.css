@@ -1,0 +1,15 @@
+/* Reusable Skeleton Shimmer Animation */
+@keyframes revolt-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #eceeef 25%, #f7f8f9 37%, #eceeef 63%);
+  background-size: 300% 100%;
+  animation: revolt-shimmer 1.5s ease-in-out infinite;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+
+

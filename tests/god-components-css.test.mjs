@@ -89,3 +89,39 @@ test("feature CSS ownership files exist", async () => {
     assert.equal(await exists(path), true, `${path} must exist`);
   }
 });
+
+test("globals.css keeps only global framework/theme concerns", async () => {
+  const globals = await read("app/globals.css");
+  assert.ok(globals.split(/\r?\n/).length <= 60, "app/globals.css should stay compact");
+  assert.match(globals, /@theme inline/);
+  assert.doesNotMatch(globals, /\.invitation-page-v2/);
+  assert.doesNotMatch(globals, /\.app-shell/);
+});
+
+test("legacy global surfaces are moved into explicit ownership files in original order", async () => {
+  const expected = [
+    "app/styles/legacy/application-surfaces.css",
+    "app/styles/shared/skeleton.css",
+    "app/styles/invitation.css",
+    "app/styles/shared/overlays.css",
+  ];
+  for (const path of expected) {
+    assert.equal(await exists(path), true, `${path} must exist`);
+  }
+
+  const layout = await read("app/layout.tsx");
+  const orderedImports = [
+    './globals.css',
+    './styles/legacy/application-surfaces.css',
+    './styles/shared/skeleton.css',
+    './styles/invitation.css',
+    './styles/shared/overlays.css',
+    './polish.css',
+  ];
+  let previous = -1;
+  for (const target of orderedImports) {
+    const current = layout.indexOf(target);
+    assert.ok(current > previous, `${target} must preserve CSS cascade order`);
+    previous = current;
+  }
+});

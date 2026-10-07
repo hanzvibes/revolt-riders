@@ -226,7 +226,7 @@ test("Skeleton components and shimmer animation are available for zero CLS", asy
   assert.match(skeletonContent, /export function StatsGridSkeleton/);
   assert.match(skeletonContent, /export function PageSkeleton/);
 
-  const cssContent = await read("app/globals.css");
+  const cssContent = await read("app/styles/shared/skeleton.css");
   assert.match(cssContent, /@keyframes revolt-shimmer/);
 });
 

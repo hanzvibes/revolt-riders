@@ -111,12 +111,36 @@ function countImportant(content) {
   return [...content.matchAll(/!important/g)].length;
 }
 
+const cssAuditBundles = {
+  "app/globals.css": [
+    "app/globals.css",
+    "app/styles/legacy/application-surfaces.css",
+    "app/styles/shared/skeleton.css",
+    "app/styles/invitation.css",
+    "app/styles/shared/overlays.css",
+  ],
+};
+
+function readCssAuditTarget(file) {
+  if (file === "app/system-ui.css" || file === "app/native-admin.css") {
+    return readCssBundle(file);
+  }
+
+  const bundle = cssAuditBundles[file];
+  if (bundle) {
+    return bundle
+      .filter((entry) => fs.existsSync(path.join(ROOT, entry)))
+      .map((entry) => fs.readFileSync(path.join(ROOT, entry), "utf8"))
+      .join("\n");
+  }
+
+  return fs.readFileSync(path.join(ROOT, file), "utf8");
+}
+
 for (const file of cssTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  const content = ["app/system-ui.css", "app/native-admin.css"].includes(file)
-    ? readCssBundle(file)
-    : fs.readFileSync(abs, "utf8");
+  const content = readCssAuditTarget(file);
 
   for (const match of content.matchAll(/font-weight\s*:\s*(\d{3})/g)) {
     const value = match[1];
