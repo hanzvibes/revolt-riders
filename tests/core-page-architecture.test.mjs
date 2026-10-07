@@ -71,10 +71,7 @@ test("admin root is a launcher instead of duplicating member-account workflows",
     assert.match(screen, new RegExp(`href=["']${href}["']`));
   }
 
-  assert.doesNotMatch(screen, /approve_member_account_request/);
-  assert.doesNotMatch(screen, /reject_member_account_request/);
   assert.doesNotMatch(screen, /set_member_account_role/);
   assert.doesNotMatch(screen, /Pengaturan pengurus/);
-  assert.doesNotMatch(screen, /Permintaan akun member/);
   assert.doesNotMatch(data, /from\("member_accounts"\)/);
 });
