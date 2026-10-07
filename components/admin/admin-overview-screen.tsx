@@ -10,7 +10,6 @@ import {
   type AdminInvitation as Invitation,
   type AdminMember as Member,
   type AdminRsvp as Rsvp,
-  type ManagedAccount,
   type PendingRequest,
 } from "@/lib/features/admin/admin-overview-data";
 import { calculateAdminEventStats, slugifyAdminValue } from "@/lib/features/admin/admin-overview-model";
@@ -25,24 +24,14 @@ import {
   RefreshCw,
   ScanLine,
   ShieldAlert,
-  ShieldCheck,
   Users,
   UsersRound,
-  X,
 } from "lucide-react";
 import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
 type BulkLink = { memberId: string; name: string; url: string };
-const roles: ManagedAccount["role"][] = [
-  "member",
-  "road_captain",
-  "treasurer",
-  "admin",
-  "superadmin",
-];
-
 async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest("SHA-256", bytes);
@@ -94,7 +83,6 @@ export function AdminOverviewScreen() {
   const [members, setMembers] = useState<Member[]>([]);
   const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [rsvps, setRsvps] = useState<Rsvp[]>([]);
-  const [managedAccounts, setManagedAccounts] = useState<ManagedAccount[]>([]);
   const [memberId, setMemberId] = useState("");
   const [selectedEvent, setSelectedEvent] = useState("");
   const [rsvpEvent, setRsvpEvent] = useState("");
@@ -140,9 +128,6 @@ export function AdminOverviewScreen() {
     const isActiveAdmin =
       effectiveAccount?.status === "active" &&
       ["admin", "superadmin"].includes(effectiveAccount.role);
-    const isSuperadmin =
-      isActiveAdmin && effectiveAccount?.role === "superadmin";
-
     if (!isActiveAdmin) {
       if (!authLoading) setLoading(false);
       return;
@@ -151,7 +136,7 @@ export function AdminOverviewScreen() {
     try {
       const data = await fetchWithCache(
         "admin_dashboard_overview",
-        () => fetchAdminOverviewSnapshot(isSuperadmin),
+        fetchAdminOverviewSnapshot,
         { ttlMs: 60 * 1000, forceRefresh },
       );
 
@@ -160,7 +145,6 @@ export function AdminOverviewScreen() {
       setMembers(data.members);
       setInvitations(data.invitations);
       setRsvps(data.rsvps);
-      setManagedAccounts(data.managedAccounts);
     } catch {
       setError("Gagal memuat data dashboard pengurus.");
     } finally {
@@ -311,77 +295,6 @@ export function AdminOverviewScreen() {
     }
   };
 
-  const approveRequest = async (request: PendingRequest) => {
-    setError("");
-    const { error: approveError } = await getAdminOverviewDataClient().rpc(
-      "approve_member_account_request",
-      { p_request_id: request.id, p_role: "member" },
-    );
-    if (approveError) return setError(approveError.message);
-    setMessage(
-      `${request.member_external_id} berhasil diverifikasi sebagai member.`,
-    );
-    invalidateCache("admin_dashboard_overview");
-    await load(true);
-  };
-
-  const rejectRequest = async (request: PendingRequest) => {
-    if (
-      !await confirmAction({
-        title: "Tolak pendaftaran?",
-        description: `${request.member_external_id} (${request.email}) akan ditolak dan ID RR dibuka kembali untuk pendaftaran ulang.`,
-        confirmLabel: "Tolak Pendaftaran",
-        cancelLabel: "Batal",
-        destructive: true,
-      })
-    )
-      return;
-    setError("");
-    setMessage("");
-    const supabase = getAdminOverviewDataClient();
-    const { error: rpcError } = await supabase.rpc(
-      "reject_member_account_request",
-      { p_request_id: request.id },
-    );
-    if (rpcError) {
-      setError(rpcError.message);
-      return;
-    }
-    setMessage(
-      `Pendaftaran ${request.member_external_id} dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.`,
-    );
-    invalidateCache("admin_dashboard_overview");
-    await load(true);
-  };
-
-  const changeRole = async (
-    managedAccount: ManagedAccount,
-    nextRole: ManagedAccount["role"],
-  ) => {
-    if (managedAccount.role === nextRole) return;
-    if (
-      !await confirmAction({
-        title: "Ubah role member?",
-        description: `${managedAccount.member_external_id} akan memiliki role ${nextRole.replaceAll("_", " ")}.`,
-        confirmLabel: "Ubah Role",
-        cancelLabel: "Batal",
-      })
-    )
-      return;
-    setError("");
-    setMessage("");
-    const { error: roleError } = await getAdminOverviewDataClient().rpc(
-      "set_member_account_role",
-      { p_account_id: managedAccount.id, p_role: nextRole },
-    );
-    if (roleError) return setError(roleError.message);
-    setMessage(
-      `Role ${managedAccount.member_external_id} diperbarui menjadi ${nextRole.replaceAll("_", " ")}.`,
-    );
-    invalidateCache("admin_dashboard_overview");
-    await load(true);
-  };
-
   if (authLoading || (loading && !account))
     return (
       <AppShell active="Admin" title="Dashboard Admin">
@@ -476,6 +389,70 @@ export function AdminOverviewScreen() {
           <span>
             <a className="outline-action" href="/admin/events">
               KELOLA AGENDA
+            </a>
+          </span>
+        </section>
+
+        <section className="card admin-launch-card">
+          <div>
+            <UsersRound />
+            <span>
+              <em>MEMBER</em>
+              <h2>Direktori & akses member</h2>
+              <p>Kelola data member dan akses akun dari workspace khusus.</p>
+            </span>
+          </div>
+          <span>
+            <a className="outline-action" href="/admin/members">
+              KELOLA MEMBER
+            </a>
+          </span>
+        </section>
+
+        <section className="card admin-launch-card">
+          <div>
+            <ShieldAlert />
+            <span>
+              <em>JOIN REQUEST</em>
+              <h2>Verifikasi pendaftaran</h2>
+              <p>Review akun baru tanpa menduplikasi workflow di dashboard.</p>
+            </span>
+          </div>
+          <span>
+            <a className="outline-action" href="/admin/join-requests">
+              REVIEW REQUEST
+            </a>
+          </span>
+        </section>
+
+        <section className="card admin-launch-card">
+          <div>
+            <CheckCircle2 />
+            <span>
+              <em>ATTENDANCE</em>
+              <h2>Kelola kehadiran</h2>
+              <p>Review check-in dan kehadiran agenda dari workspace attendance.</p>
+            </span>
+          </div>
+          <span>
+            <a className="outline-action" href="/admin/attendance">
+              BUKA ATTENDANCE
+            </a>
+          </span>
+        </section>
+
+        <section className="card admin-launch-card">
+          <div>
+            <Users />
+            <span>
+              <em>INSIGHTS</em>
+              <h2>Insight operasional</h2>
+              <p>Lihat ringkasan aktivitas komunitas tanpa menambah logic di dashboard.</p>
+            </span>
+          </div>
+          <span>
+            <a className="outline-action" href="/admin/insights">
+              BUKA INSIGHTS
             </a>
           </span>
         </section>
@@ -773,111 +750,6 @@ export function AdminOverviewScreen() {
           )}
         </section>
 
-        <section className="card approval-card">
-          <div className="section-title">
-            <span>
-              <em>VERIFIKASI</em>
-              <h3>Permintaan akun member</h3>
-            </span>
-            <b>{requests.length}</b>
-          </div>
-          {requests.length === 0 ? (
-            <p className="system-message">
-              Tidak ada permintaan yang menunggu.
-            </p>
-          ) : (
-            requests.map((request) => (
-              <article key={request.id}>
-                <span>
-                  <b>{request.member_external_id}</b>
-                  <small>{request.email ?? "Email tidak tersedia"}</small>
-                </span>
-                <div className="approval-actions">
-                  <button type="button" onClick={() => void approveRequest(request)}>
-                    <Check />
-                    Setujui
-                  </button>
-                  <button
-                    type="button"
-                    className="approval-reject-action"
-                    onClick={() => void rejectRequest(request)}
-                  >
-                    <X size={14} aria-hidden="true" />
-                    Tolak
-                  </button>
-                </div>
-              </article>
-            ))
-          )}
-        </section>
-        {account.role === "superadmin" && (
-          <section className="card role-panel admin-wide">
-            <div className="section-title">
-              <span>
-                <em>ROLE & AKSES</em>
-                <h3>Pengaturan pengurus</h3>
-              </span>
-              <ShieldCheck />
-            </div>
-            <p className="role-panel-intro">
-              Tentukan akses operasional member. Role Superadmin terakhir tidak
-              dapat diturunkan untuk menjaga akses pengelolaan.
-            </p>
-            {managedAccounts.length === 0 ? (
-              <p className="system-message">
-                Belum ada akun member aktif untuk dikelola.
-              </p>
-            ) : (
-              <div className="role-list">
-                {managedAccounts.map((managedAccount) => {
-                  const member = memberById.get(
-                    managedAccount.member_external_id,
-                  );
-                  return (
-                    <article key={managedAccount.id}>
-                      <i>
-                        {(
-                          member?.nickname ||
-                          member?.full_name ||
-                          managedAccount.member_external_id
-                        )
-                          .slice(0, 2)
-                          .toUpperCase()}
-                      </i>
-                      <span>
-                        <b>
-                          {member?.nickname ||
-                            member?.full_name ||
-                            managedAccount.member_external_id}
-                        </b>
-                        <small>
-                          {managedAccount.member_external_id} ·{" "}
-                          {managedAccount.status}
-                        </small>
-                      </span>
-                      <select
-                        value={managedAccount.role}
-                        onChange={(event) =>
-                          void changeRole(
-                            managedAccount,
-                            event.target.value as ManagedAccount["role"],
-                          )
-                        }
-                        aria-label={`Role ${managedAccount.member_external_id}`}
-                      >
-                        {roles.map((role) => (
-                          <option key={role} value={role}>
-                            {role.replaceAll("_", " ")}
-                          </option>
-                        ))}
-                      </select>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-          </section>
-        )}
         {error && (
           <p className="error-message admin-message" role="alert">{error}</p>
         )}
