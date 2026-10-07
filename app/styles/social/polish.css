@@ -1,0 +1,3878 @@
+/* Threads-inspired social timeline */
+.app-shell .dashboard-social-feed-v1 .community-feed-heading {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  padding: 0;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  border-top: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post:first-child {
+  border-top: 0;
+}
+
+.app-shell .community-threads-layout {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 12px;
+  padding: 16px 16px 18px;
+}
+
+.app-shell .community-threads-rail {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.app-shell .community-threads-rail .community-avatar-logo {
+  z-index: 2;
+  margin: 0;
+  box-shadow: 0 0 0 3px var(--rr-surface);
+}
+
+.app-shell .community-threads-connector {
+  position: absolute;
+  top: 50px;
+  bottom: 2px;
+  left: 50%;
+  width: 2px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rr-line-strong) 78%, transparent);
+}
+
+.app-shell .community-threads-body {
+  min-width: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+  padding: 0 0 7px;
+  font-size: .67rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-header {
+  min-height: 42px;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 1px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author {
+  gap: 1px;
+  padding-top: 1px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author strong {
+  color: var(--rr-ink);
+  font-size: .94rem;
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.018em;
+  line-height: 1.2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author small {
+  gap: 5px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  line-height: 1.35;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-author small b {
+  color: var(--rr-muted);
+  font-weight: var(--rr-fw-medium);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu {
+  margin-left: auto;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary {
+  width: 40px;
+  height: 40px;
+  margin-top: -6px;
+  margin-right: -8px;
+  border-radius: 50%;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary svg {
+  width: 19px;
+  height: 19px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-copy {
+  padding: 3px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-copy p {
+  max-width: none;
+  font-size: .9rem;
+  line-height: 1.5;
+  letter-spacing: -.006em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-expand {
+  margin-top: 5px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  margin: 11px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media {
+  margin: 12px 0 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+  display: grid;
+  gap: 4px;
+  padding: 8px 0 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 0;
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-ink);
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button + button {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+  transform: scale(.94);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked {
+  color: var(--rr-danger);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions svg {
+  width: 21px;
+  height: 21px;
+  stroke-width: 1.8;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+  stroke-width: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts {
+  display: flex;
+  min-height: 0;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+  color: inherit;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button:hover {
+  color: var(--rr-ink);
+  text-decoration: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-comments-locked {
+  margin-top: 8px;
+  border-top: 0;
+  border-radius: 9px;
+  background: var(--rr-surface-soft);
+  padding: 9px 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-end {
+  padding: 22px 16px 28px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    padding-top: 0;
+  }
+
+  .app-shell .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 11px;
+    padding: 14px 14px 16px;
+  }
+
+  .app-shell .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .app-shell .community-threads-connector {
+    top: 48px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-header {
+    min-height: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu summary {
+    width: 44px;
+    height: 44px;
+    margin-top: -8px;
+    margin-right: -10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media {
+    margin-inline: 0;
+    border-inline: 1px solid var(--rr-line);
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .community-threads-layout {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 10px;
+    padding-inline: 11px;
+  }
+
+  .app-shell .community-threads-rail .community-avatar-logo {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .app-shell .community-threads-connector {
+    top: 46px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    transition: none;
+  }
+}
+
+/* Threads-inspired header and loading polish */
+.app-shell .content > header.social-app-header {
+  border-bottom-color: var(--rr-line);
+  box-shadow: none;
+}
+
+.app-shell .content > header.social-app-header h1 {
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.025em;
+}
+
+.app-shell .social-header-create svg,
+.app-shell .content > header.social-app-header .header-bell-btn svg {
+  stroke-width: 1.9;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  column-gap: 12px;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header {
+  display: contents;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > .community-skeleton-avatar {
+  grid-column: 1;
+  grid-row: 1 / span 4;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > span:last-child {
+  grid-column: 2;
+  align-self: start;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-copy,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  grid-column: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-copy {
+  margin-top: 11px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media {
+  margin-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  margin-top: 10px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .content > header.social-app-header h1 {
+    font-size: .92rem !important;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 11px;
+    padding: 14px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > .community-skeleton-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton .community-skeleton-media {
+    width: 100%;
+    margin-inline: 0;
+    border-radius: 12px;
+  }
+}
+
+/* Social post cards */
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  display: grid;
+  gap: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  overflow: visible;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+  box-shadow:
+    0 1px 2px rgba(20, 22, 24, .035),
+    0 8px 24px rgba(20, 22, 24, .035);
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    box-shadow 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post:first-child {
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned {
+  border-color: color-mix(in srgb, var(--rr-red) 28%, var(--rr-line));
+  box-shadow:
+    0 1px 2px rgba(20, 22, 24, .035),
+    0 8px 24px rgba(20, 22, 24, .035),
+    inset 3px 0 0 color-mix(in srgb, var(--rr-red) 72%, transparent);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    border-color: var(--rr-line-strong);
+    box-shadow:
+      0 2px 5px rgba(20, 22, 24, .045),
+      0 12px 28px rgba(20, 22, 24, .045);
+  }
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  padding: 16px 16px 17px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+  box-shadow: 0 0 0 3px var(--rr-surface);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-end {
+  margin-top: 2px;
+  border: 0;
+  background: transparent;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+  box-shadow:
+    0 1px 2px rgba(20, 22, 24, .025),
+    0 8px 22px rgba(20, 22, 24, .025);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    padding:
+      10px
+      10px
+      calc(var(--rr-mobile-dashboard-clearance) + 20px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-list {
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post {
+    border-radius: 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding: 14px 13px 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: 15px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .dashboard-social-feed-v1 {
+    padding-inline: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding-inline: 11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post {
+    transition: none;
+  }
+}
+
+/* Social card refinement */
+.app-shell .dashboard-social-feed-v1 {
+  position: relative;
+  isolation: isolate;
+}
+
+.app-shell .dashboard-social-feed-v1::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  position: relative;
+  background: var(--rr-surface);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  box-shadow: 0 18px 42px rgba(20, 22, 24, .025);
+  opacity: 0;
+  transition: opacity 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  left: 0;
+  width: 3px;
+  height: 34px;
+  border-radius: 0 999px 999px 0;
+  background: var(--rr-red);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+  margin-top: 9px;
+  border-top: 1px solid color-mix(in srgb, var(--rr-line) 76%, transparent);
+  padding-top: 8px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  gap: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  color: color-mix(in srgb, var(--rr-ink) 88%, transparent);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: color-mix(in srgb, var(--rr-surface-soft) 86%, transparent);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts {
+  padding-left: 2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  box-shadow: 0 1px 2px rgba(20, 22, 24, .025);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-menu>div {
+  border-color: var(--rr-line-strong);
+  box-shadow: 0 14px 34px rgba(20, 22, 24, .14);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: translateY(-1px);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover::after {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 {
+    position: relative;
+  }
+
+  .app-shell .dashboard-social-feed-v1::before {
+    background: color-mix(in srgb, var(--rr-surface-soft) 52%, transparent);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post {
+    box-shadow:
+      0 1px 2px rgba(20, 22, 24, .028),
+      0 7px 20px rgba(20, 22, 24, .028);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-post-footer {
+    margin-top: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+    top: 13px;
+    height: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: none;
+  }
+}
+
+/* Published post editor */
+.app-shell .community-existing-media {
+  display: grid;
+  gap: 9px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 11px 12px;
+}
+
+.app-shell .community-existing-media > span {
+  display: grid;
+  gap: 2px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-small);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .community-existing-media > span small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-medium);
+  line-height: 1.4;
+}
+
+.app-shell .community-existing-media > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.app-shell .community-existing-media > div > span {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: 9px;
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  padding: 0 4px 0 9px;
+}
+
+.app-shell .community-existing-media b {
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .community-existing-media button {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+}
+
+.app-shell .community-existing-media button:hover {
+  background: var(--rr-danger-soft);
+  color: var(--rr-danger);
+}
+
+.app-shell .community-existing-media button svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-existing-media button {
+    width: 44px;
+    height: 44px;
+  }
+
+  .app-shell .community-existing-media > div > span {
+    min-height: 44px;
+    padding-left: 10px;
+  }
+}
+
+/* Swipeable media viewer */
+.app-shell .community-media-viewer-stage {
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.app-shell .community-media-viewer-stage > figure {
+  will-change: transform, opacity;
+  transition:
+    transform 180ms var(--rr-ease-out),
+    opacity 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-media-viewer-stage.is-swiping {
+  cursor: grabbing;
+}
+
+.app-shell .community-media-viewer-stage.is-swiping > figure {
+  transition: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .community-media-viewer-stage {
+    cursor: grab;
+  }
+
+  .app-shell .community-media-viewer-stage.is-swiping {
+    cursor: grabbing;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .app-shell .community-media-viewer-nav {
+    background: rgba(0, 0, 0, .42);
+    opacity: .72;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-media-viewer-stage > figure {
+    transition: none;
+  }
+}
+
+/* Restore floating dashboard bottom navigation */
+@media (max-width: 720px) {
+
+  .app-shell.social-shell:has(.dashboard-social-feed-v1) .dashboard-social-feed-v1 {
+    padding-bottom:
+      calc(
+        var(--rr-mobile-dashboard-clearance)
+        + 30px
+        + env(safe-area-inset-bottom)
+      );
+  }
+}
+
+@media (max-width: 390px) {
+}
+
+
+
+/* Dashboard polish 01 · Feed card system */
+.app-shell .dashboard-social-feed-v1 {
+  --feed-card-radius: 18px;
+  --feed-card-radius-mobile: 16px;
+  --feed-card-border: color-mix(in srgb, var(--rr-line-strong) 72%, var(--rr-line));
+  --feed-card-shadow:
+    0 1px 2px rgba(20, 22, 24, .025),
+    0 10px 28px rgba(20, 22, 24, .045);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-list {
+  gap: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post,
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  border: 1px solid var(--feed-card-border);
+  border-radius: var(--feed-card-radius);
+  background: var(--rr-surface);
+  box-shadow: var(--feed-card-shadow);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  overflow: visible;
+  transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post::after {
+  display: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  padding: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body {
+  min-width: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-feed-media,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-voyager-attachment {
+  overflow: hidden;
+  border-color: var(--rr-line);
+  border-radius: 13px;
+  box-shadow: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post:hover {
+    transform: none;
+    border-color: var(--rr-line-strong);
+    box-shadow:
+      0 2px 5px rgba(20, 22, 24, .035),
+      0 14px 32px rgba(20, 22, 24, .055);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-list {
+    gap: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: var(--feed-card-radius-mobile);
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding: 14px 13px 15px;
+  }
+}
+
+
+/* Dashboard polish 02 · Vertical timeline alignment */
+.app-shell .dashboard-social-feed-v1 .community-threads-layout {
+  grid-template-columns: 44px minmax(0, 1fr);
+  column-gap: 12px;
+  align-items: stretch;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  align-items: center;
+  flex-direction: column;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  z-index: 2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-connector {
+  position: absolute;
+  z-index: 1;
+  top: 50px;
+  bottom: 7px;
+  left: 50%;
+  width: 1px;
+  min-height: 14px;
+  transform: translateX(-50%);
+  border-radius: var(--rr-radius-pill);
+  background: color-mix(in srgb, var(--rr-line-strong) 82%, transparent);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 42px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-connector {
+    top: 48px;
+    bottom: 6px;
+  }
+}
+
+@media (max-width: 370px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 9px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-connector {
+    top: 46px;
+  }
+}
+
+
+/* Dashboard polish 03 · Author hierarchy */
+.app-shell .dashboard-social-feed-v1 .community-post-header {
+  align-items: flex-start;
+  min-height: 42px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  padding-top: 1px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author strong {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: .9rem;
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: -.012em;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author small {
+  display: inline-flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  color: var(--rr-muted-2);
+  font-size: .68rem;
+  font-weight: var(--rr-fw-medium);
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author small b {
+  color: var(--rr-muted);
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-author time {
+  color: var(--rr-muted-2);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-menu {
+  flex: 0 0 auto;
+  margin-top: -4px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-post-header {
+    min-height: 40px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-author strong {
+    font-size: .88rem;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-author small {
+    font-size: .67rem;
+  }
+}
+
+
+/* Dashboard polish 04 · Caption readability */
+.app-shell .dashboard-social-feed-v1 .community-post-copy {
+  margin-top: 7px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-copy p {
+  max-width: 64ch;
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: .9rem;
+  font-weight: var(--rr-fw-regular);
+  letter-spacing: -.006em;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-copy p.is-clamped {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-expand {
+  display: inline-flex;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  gap: 4px;
+  margin-top: 1px;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0 2px;
+  font-size: .7rem;
+  font-weight: var(--rr-fw-semibold);
+  line-height: 1.2;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-expand:hover {
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-expand svg {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-post-copy {
+    margin-top: 6px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-copy p {
+    max-width: none;
+    font-size: .89rem;
+    line-height: 1.58;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-copy p.is-clamped {
+    -webkit-line-clamp: 4;
+  }
+}
+
+
+/* Dashboard polish 05 · Post action bar */
+.app-shell .dashboard-social-feed-v1 .community-post-footer {
+  margin-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--rr-line) 80%, transparent);
+  padding-top: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-left: -10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+  display: grid;
+  width: var(--rr-control-lg);
+  height: var(--rr-control-lg);
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+  place-items: center;
+  border: 0;
+  border-radius: var(--rr-radius-pill);
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  box-shadow: none;
+  transition:
+    transform var(--rr-motion-fast) var(--rr-ease-out),
+    background-color var(--rr-motion-fast) var(--rr-ease-out),
+    color var(--rr-motion-fast) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+  transform: scale(.94);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button:focus-visible {
+  outline: 2px solid var(--rr-focus-outline);
+  outline-offset: -2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button svg {
+  width: 20px;
+  height: 20px;
+  stroke-width: 1.9;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked {
+  color: var(--rr-red);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-post-footer {
+    margin-top: 9px;
+    padding-top: 5px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions {
+    margin-left: -11px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:active {
+    transform: none;
+  }
+}
+
+
+/* Dashboard polish 06 · Like microinteraction */
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+  transform-origin: center;
+  animation: rr-dashboard-like-confirm 180ms cubic-bezier(.16, 1, .3, 1);
+}
+
+@keyframes rr-dashboard-like-confirm {
+  from {
+    transform: scale(.86);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button.is-liked svg {
+    animation: none;
+  }
+}
+
+
+/* Dashboard polish 07 · Engagement counters */
+.app-shell .dashboard-social-feed-v1 .community-threads-counts {
+  min-height: 20px;
+  gap: 5px;
+  padding-left: 1px;
+  color: var(--rr-muted-2);
+  font-size: .69rem;
+  font-weight: var(--rr-fw-medium);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.005em;
+  line-height: 1.3;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+  border-radius: 4px;
+  color: inherit;
+  font: inherit;
+  transition: color var(--rr-motion-fast) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button:hover {
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-counts > span[aria-hidden="true"] {
+  color: var(--rr-line-strong);
+  user-select: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-counts {
+    font-size: .68rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+    transition: none;
+  }
+}
+
+
+/* Dashboard polish 08 · Pinned post treatment */
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface) 94%, var(--rr-surface-soft));
+  box-shadow:
+    0 1px 2px rgba(20, 22, 24, .035),
+    0 8px 24px rgba(20, 22, 24, .035);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned::before {
+  display: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 22px;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-pill);
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted);
+  padding: 0 8px;
+  font-size: .66rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label svg {
+  width: 12px;
+  height: 12px;
+  color: currentColor;
+  stroke-width: 2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post.is-pinned:hover {
+    border-color: var(--rr-line-strong);
+    box-shadow:
+      0 2px 5px rgba(20, 22, 24, .04),
+      0 12px 28px rgba(20, 22, 24, .045);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-body .community-pin-label {
+    min-height: 21px;
+    margin-bottom: 5px;
+    padding-inline: 7px;
+    font-size: .65rem;
+  }
+}
+
+
+/* Dashboard polish 09 · Media gallery */
+.app-shell .dashboard-social-feed-v1 .community-feed-media {
+  gap: 2px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 14px;
+  background: var(--rr-surface-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media figure {
+  min-height: 0;
+  background: var(--rr-surface-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media.count-1 {
+  aspect-ratio: 4 / 3;
+  max-height: 560px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media.count-1 figure {
+  min-height: 0;
+  height: 100%;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media.count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  aspect-ratio: 2 / 1;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media.count-3,
+.app-shell .dashboard-social-feed-v1 .community-feed-media.count-4 {
+  aspect-ratio: 4 / 3;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media img {
+  transition: transform 220ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img {
+  transform: scale(1.012);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-media figure b {
+  background: rgba(0, 0, 0, .54);
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-media {
+    margin-top: 11px;
+    border-radius: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media.count-1 {
+    aspect-ratio: 1 / 1;
+    max-height: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media.count-2 {
+    aspect-ratio: 1 / 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-media img {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img {
+    transform: none;
+  }
+}
+
+
+/* Dashboard polish 10 · Fullscreen photo viewer */
+.app-shell .community-media-viewer {
+  background: rgba(0, 0, 0, .985);
+}
+
+.app-shell .community-media-viewer > header {
+  min-height: 60px;
+  border-bottom: 1px solid rgba(255, 255, 255, .08);
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(12px);
+}
+
+.app-shell .community-media-viewer > header span {
+  color: rgba(255, 255, 255, .82);
+  font-size: .74rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .community-media-viewer > header button,
+.app-shell .community-media-viewer-nav {
+  border-color: rgba(255, 255, 255, .14);
+  background: rgba(255, 255, 255, .07);
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    border-color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-media-viewer > header button:hover,
+.app-shell .community-media-viewer-nav:hover {
+  border-color: rgba(255, 255, 255, .24);
+  background: rgba(255, 255, 255, .13);
+}
+
+.app-shell .community-media-viewer > header button:active,
+.app-shell .community-media-viewer-nav:active {
+  transform: scale(.96);
+}
+
+.app-shell .community-media-viewer-stage {
+  gap: 14px;
+  padding: 18px 20px calc(18px + env(safe-area-inset-bottom));
+}
+
+.app-shell .community-media-viewer-stage figure {
+  max-width: min(1240px, calc(100vw - 170px));
+  max-height: calc(100dvh - 108px);
+}
+
+.app-shell .community-media-viewer-stage figure img {
+  user-select: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-media-viewer {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .app-shell .community-media-viewer > header {
+    min-height: 56px;
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      12px
+      8px;
+  }
+
+  .app-shell .community-media-viewer > header button {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-shell .community-media-viewer-stage {
+    grid-template-columns: 42px minmax(0, 1fr) 42px;
+    gap: 6px;
+    padding:
+      8px
+      max(6px, env(safe-area-inset-right))
+      calc(10px + env(safe-area-inset-bottom))
+      max(6px, env(safe-area-inset-left));
+  }
+
+  .app-shell .community-media-viewer-stage figure {
+    max-width: 100%;
+    max-height: calc(100dvh - 86px - env(safe-area-inset-top));
+  }
+
+  .app-shell .community-media-viewer-nav {
+    width: 42px;
+    height: 42px;
+  }
+
+  .app-shell .community-media-viewer-nav svg {
+    width: 21px;
+    height: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-media-viewer > header button,
+  .app-shell .community-media-viewer-nav {
+    transition: none;
+  }
+
+  .app-shell .community-media-viewer > header button:active,
+  .app-shell .community-media-viewer-nav:active {
+    transform: none;
+  }
+}
+
+
+/* Dashboard polish 11 · Agenda attachment card */
+.app-shell .dashboard-social-feed-v1 .community-agenda-attachment {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 10px;
+  min-height: 70px;
+  margin: 12px 0 0;
+  border-color: var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface-soft);
+  padding: 10px 11px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-attachment:hover {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface-soft) 88%, var(--rr-surface));
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: var(--rr-charcoal);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-copy {
+  gap: 2px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-copy > small {
+  color: var(--rr-muted);
+  font-size: .6rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: .035em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-copy > strong {
+  font-size: .83rem;
+  font-weight: var(--rr-fw-bold);
+  line-height: 1.28;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-agenda-copy > span {
+  color: var(--rr-muted);
+  font-size: .67rem;
+  line-height: 1.35;
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-social-feed-v1 .community-agenda-attachment {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 9px;
+    padding-inline: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-agenda-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* Dashboard polish 12 · Voyager attachment card */
+.app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+  gap: 9px;
+  margin: 12px 0 0;
+  border-color: var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface-soft);
+  padding: 11px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-attachment:hover {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface-soft) 90%, var(--rr-surface));
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-head {
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  gap: 9px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-head small {
+  color: var(--rr-muted);
+  font-size: .59rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: .04em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-head strong {
+  font-size: .83rem;
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-head > b {
+  border-color: var(--rr-line);
+  background: var(--rr-surface);
+  color: var(--rr-muted);
+  padding: 4px 7px;
+  font-size: .57rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-meta {
+  gap: 4px 10px;
+  color: var(--rr-muted);
+  font-size: .67rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-voyager-progress {
+  border-color: var(--rr-line);
+  padding-block: 8px;
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+    padding: 10px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-voyager-head {
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-voyager-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* Dashboard polish 13 · Link preview */
+.app-shell .dashboard-social-feed-v1 .community-link-preview {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 7px;
+  min-height: 50px;
+  margin: 12px 0 0;
+  border-color: var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 8px 10px;
+  box-shadow: none;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview:hover {
+  border-color: var(--rr-line-strong);
+  background: color-mix(in srgb, var(--rr-surface-soft) 88%, var(--rr-surface));
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > span {
+  gap: 7px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > span svg {
+  width: 14px;
+  height: 14px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview small {
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview b {
+  color: var(--rr-muted);
+  font-size: .66rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview > svg {
+  width: 13px;
+  height: 13px;
+  color: var(--rr-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-link-preview {
+    transition: none;
+  }
+}
+
+
+/* Dashboard polish 14 · Feed loading skeleton */
+.app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+  display: grid;
+  gap: 10px;
+  border-top: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+  border: 1px solid var(--feed-card-border, var(--rr-line));
+  border-radius: var(--feed-card-radius, 18px);
+  background: var(--rr-surface);
+  padding: 16px;
+  box-shadow: var(--feed-card-shadow, none);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header {
+  gap: 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > header > span:last-child,
+.app-shell .dashboard-social-feed-v1 .community-skeleton-copy {
+  gap: 6px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton i,
+.app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+  background:
+    linear-gradient(
+      100deg,
+      var(--rr-surface-muted) 24%,
+      color-mix(in srgb, var(--rr-surface-soft) 76%, var(--rr-surface)) 42%,
+      var(--rr-surface-muted) 60%
+    );
+  background-size: 220% 100%;
+  animation-duration: 1.5s;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-copy {
+  margin-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+  aspect-ratio: 4 / 3;
+  margin-top: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer {
+  gap: 14px;
+  margin-top: 11px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-skeleton > footer i {
+  width: 58px;
+  height: 8px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-skeleton {
+    gap: 9px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: var(--feed-card-radius-mobile, 16px);
+    padding: 14px 13px 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+    width: 100%;
+    margin: 11px 0 0;
+    border-radius: 13px;
+  }
+}
+
+
+/* Dashboard polish 15 · New post indicator */
+.app-shell .dashboard-social-feed-v1 .community-new-posts {
+  min-height: 38px;
+  border: 1px solid var(--rr-line-strong);
+  border-radius: var(--rr-radius-pill);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  color: var(--rr-ink);
+  padding: 0 13px;
+  font-size: .72rem;
+  font-weight: var(--rr-fw-semibold);
+  box-shadow:
+    0 2px 8px rgba(20, 22, 24, .06),
+    0 10px 24px rgba(20, 22, 24, .06);
+  backdrop-filter: blur(12px);
+  transition:
+    background-color 180ms var(--rr-ease-out),
+    border-color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts svg {
+  width: 14px;
+  height: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts:hover {
+  border-color: var(--rr-ink);
+  background: var(--rr-surface);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+  transform: scale(.98);
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-new-posts {
+    top: max(8px, env(safe-area-inset-top));
+    min-height: 36px;
+    margin-bottom: 10px;
+    padding-inline: 12px;
+    font-size: .7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-new-posts {
+    transition: none;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+    transform: none;
+  }
+}
+
+
+/* Dashboard polish 16 · Empty and error states */
+.app-shell .dashboard-social-feed-v1 .community-feed-gate,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty {
+  min-height: 210px;
+  align-content: center;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface);
+  padding: 28px 22px;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate > svg,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty > svg {
+  width: 26px;
+  height: 26px;
+  margin-bottom: 10px;
+  color: var(--rr-muted);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate h3,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty h3 {
+  font-size: .98rem;
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: -.02em;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-gate p,
+.app-shell .dashboard-social-feed-v1 .community-feed-empty p {
+  max-width: 38ch;
+  margin-top: 6px;
+  color: var(--rr-muted);
+  font-size: .75rem;
+  line-height: 1.5;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-empty button {
+  min-height: 40px;
+  margin-top: 14px;
+  border-radius: 10px;
+  padding-inline: 13px;
+  font-size: .72rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-feed-error {
+  margin: 0 0 12px;
+  border: 1px solid color-mix(in srgb, var(--rr-danger) 24%, var(--rr-line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--rr-danger-soft) 54%, var(--rr-surface));
+  color: color-mix(in srgb, var(--rr-danger) 82%, var(--rr-ink));
+  padding: 10px 12px;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 720px) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-gate,
+  .app-shell .dashboard-social-feed-v1 .community-feed-empty {
+    min-height: 190px;
+    margin-inline: 12px;
+    padding: 24px 18px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-error {
+    margin-inline: 12px;
+  }
+}
+
+
+/* Dashboard polish 17 · Desktop feed layout */
+@media (min-width: 1280px) {
+  .app-shell .dashboard-social-feed-v1 {
+    width: min(calc(100% - 48px), 1020px);
+    grid-template-columns: minmax(0, 700px) 288px;
+    gap: 32px;
+    padding-top: 12px;
+    padding-bottom: 48px;
+  }
+
+  .app-shell .dashboard-social-feed-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-heading {
+    margin-bottom: 14px;
+  }
+
+  .app-shell .desktop-feed-rail {
+    top: 88px;
+    max-height: calc(100dvh - 108px);
+    border-left-color: color-mix(in srgb, var(--rr-line) 82%, transparent);
+    padding-left: 24px;
+  }
+
+  .app-shell .desktop-feed-rail-section {
+    padding-block: 17px 19px;
+  }
+
+  .app-shell .desktop-feed-rail-section > header {
+    margin-bottom: 11px;
+  }
+
+  .app-shell .desktop-feed-rail-section > header > span {
+    font-size: .72rem;
+  }
+
+  .app-shell .desktop-feed-rail-event > strong {
+    font-size: .86rem;
+    line-height: 1.3;
+  }
+}
+
+@media (min-width: 1536px) {
+  .app-shell .dashboard-social-feed-v1 {
+    width: 1040px;
+    grid-template-columns: minmax(0, 712px) 296px;
+  }
+}
+
+
+/* Dashboard polish 18 · Tablet responsive pass */
+@media (min-width: 721px) and (max-width: 1279px) {
+  .app-shell .dashboard-social-feed-v1 {
+    display: block;
+    width: min(100%, 736px);
+    margin-inline: auto;
+    padding: 10px 18px 44px;
+  }
+
+  .app-shell .dashboard-social-feed-main {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-list {
+    gap: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton {
+    border-radius: 17px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    padding: 15px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-feed-media,
+  .app-shell .dashboard-social-feed-v1 .community-link-preview,
+  .app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+    max-width: 100%;
+  }
+
+  .app-shell .desktop-feed-rail {
+    display: none;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 900px) {
+  .app-shell .dashboard-social-feed-v1 {
+    width: min(100%, 700px);
+    padding-inline: 16px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-layout {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-rail .community-avatar-logo {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
+
+
+/* Dashboard polish 20 · Interaction and motion audit */
+.app-shell .dashboard-social-feed-v1 {
+  --feed-motion-fast: 160ms;
+  --feed-motion-base: 180ms;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-actions button,
+.app-shell .dashboard-social-feed-v1 .community-post-menu summary,
+.app-shell .dashboard-social-feed-v1 .community-threads-counts button {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--feed-motion-fast) var(--rr-ease-out),
+    color var(--feed-motion-fast) var(--rr-ease-out),
+    transform var(--feed-motion-fast) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-threads-post {
+  transition:
+    border-color var(--feed-motion-base) var(--rr-ease-out),
+    box-shadow var(--feed-motion-base) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-link-preview,
+.app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+.app-shell .dashboard-social-feed-v1 .community-voyager-attachment {
+  transition:
+    border-color var(--feed-motion-base) var(--rr-ease-out),
+    background-color var(--feed-motion-base) var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-post-menu[open] > div {
+  transform-origin: top right;
+  animation: rr-dashboard-menu-in var(--feed-motion-fast) var(--rr-ease-out) both;
+}
+
+@keyframes rr-dashboard-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:hover,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary:hover {
+    background: var(--rr-surface-soft);
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open:hover img {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .dashboard-social-feed-v1 .community-threads-post,
+  .app-shell .dashboard-social-feed-v1 .community-threads-post::after,
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu[open] > div,
+  .app-shell .dashboard-social-feed-v1 .community-threads-counts button,
+  .app-shell .dashboard-social-feed-v1 .community-link-preview,
+  .app-shell .dashboard-social-feed-v1 .community-agenda-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-cta svg,
+  .app-shell .dashboard-social-feed-v1 .community-feed-media img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open img,
+  .app-shell .dashboard-social-feed-v1 .community-new-posts,
+  .app-shell .dashboard-social-feed-v1 .community-post-skeleton i,
+  .app-shell .dashboard-social-feed-v1 .community-skeleton-media {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-threads-actions button:active,
+  .app-shell .dashboard-social-feed-v1 .community-post-menu summary:active,
+  .app-shell .dashboard-social-feed-v1 .community-feed-media figure:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-media-open:hover img,
+  .app-shell .dashboard-social-feed-v1 .community-voyager-attachment:hover .community-voyager-cta svg,
+  .app-shell .dashboard-social-feed-v1 .community-new-posts:active {
+    transform: none !important;
+  }
+}
+
+/* Post detail polish v2 */
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 720px);
+  padding-top: 10px;
+}
+
+.app-shell .community-thread-page .community-thread-back {
+  width: fit-content;
+  min-height: 38px;
+  margin: 0 2px 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 999px;
+  background: var(--rr-surface);
+  color: var(--rr-muted);
+  padding: 0 12px 0 10px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-back:hover {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  transform: translateY(-1px);
+}
+
+.app-shell .community-thread-page .community-thread-back:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin {
+  overflow: hidden;
+  margin-bottom: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 20px;
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding: 16px 16px 10px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy {
+  padding-inline: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy p {
+  font-size: var(--rr-type-body);
+  line-height: 1.68;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-link-preview {
+  margin-inline: 16px;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+  overflow: hidden;
+  margin: 14px 14px 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  min-height: 34px;
+  padding: 8px 16px 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  gap: 8px;
+  padding: 8px 14px 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 0 12px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    color 180ms var(--rr-ease-out),
+    transform 180ms var(--rr-ease-out);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button:hover {
+  border-color: var(--rr-line);
+  background: var(--rr-surface-muted);
+  transform: translateY(-1px);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button.is-liked {
+  border-color: var(--rr-red-line);
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+}
+
+.app-shell .community-thread-page .community-thread-discussion {
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 20px;
+  background: var(--rr-surface);
+  padding: 18px 16px 0;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  margin-bottom: 18px;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head h2 {
+  font-size: 1.05rem;
+  letter-spacing: -.025em;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head > span {
+  min-width: 30px;
+  height: 30px;
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .community-no-comments {
+  margin: 8px 0 22px;
+  border: 1px dashed var(--rr-line-strong);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+  padding: 18px 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  padding-bottom: 20px;
+}
+
+.app-shell .community-thread-page .thread-comment-root + .thread-comment-root {
+  padding-top: 20px;
+}
+
+.app-shell .community-thread-page .thread-comment-line {
+  gap: 11px;
+}
+
+.app-shell .community-thread-page .thread-comment-line > .community-avatar.small {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .thread-comment-content > header {
+  gap: 5px 7px;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header span {
+  border-radius: 999px;
+  background: var(--rr-red-soft);
+  color: var(--rr-red);
+  padding: 2px 6px;
+  font-size: .62rem;
+  line-height: 1.2;
+}
+
+.app-shell .community-thread-page .thread-comment-content > p {
+  margin-top: 7px;
+  line-height: 1.62;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button {
+  min-height: 32px;
+  border-radius: 999px;
+  padding-inline: 8px;
+  transition:
+    background-color 160ms var(--rr-ease-out),
+    color 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .community-thread-page .thread-comment-actions button.danger:hover {
+  background: color-mix(in srgb, var(--rr-danger) 9%, transparent);
+}
+
+.app-shell .community-thread-page .thread-replies {
+  gap: 16px;
+  margin-top: 16px;
+  margin-left: 15px;
+  padding-left: 24px;
+}
+
+.app-shell .community-thread-page .thread-replies::before {
+  width: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rr-line-strong) 68%, transparent);
+}
+
+.app-shell .community-thread-page .community-comments-locked {
+  margin: 4px -16px 0;
+  border-top: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  padding: 13px 16px;
+}
+
+.app-shell .community-thread-page .community-thread-composer {
+  z-index: 8;
+  margin: 10px -16px 0;
+  border-top: 1px solid var(--rr-line);
+  background: color-mix(in srgb, var(--rr-surface) 92%, transparent);
+  padding: 12px 16px;
+  box-shadow: 0 -10px 30px color-mix(in srgb, var(--rr-charcoal) 8%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child {
+  grid-template-columns: minmax(0, 1fr) 46px;
+  gap: 9px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  min-height: 46px;
+  max-height: 160px;
+  border-radius: 16px;
+  background: var(--rr-surface-soft);
+  padding: 12px 13px;
+  transition:
+    border-color 180ms var(--rr-ease-out),
+    background-color 180ms var(--rr-ease-out),
+    box-shadow 180ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea:focus {
+  background: var(--rr-surface);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+  width: 46px;
+  height: 46px;
+  background: var(--rr-red);
+  box-shadow: 0 8px 20px color-mix(in srgb, var(--rr-red) 24%, transparent);
+  transition:
+    opacity 160ms var(--rr-ease-out),
+    transform 160ms var(--rr-ease-out),
+    box-shadow 160ms var(--rr-ease-out);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px color-mix(in srgb, var(--rr-red) 30%, transparent);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):active {
+  transform: scale(.96);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:focus-visible {
+  outline: none;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .community-thread-page .community-reply-target {
+  margin-bottom: 10px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 7px 8px 7px 10px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-top: 6px;
+    padding-inline: 12px;
+  }
+
+  .app-shell .community-thread-page .community-thread-back {
+    margin-inline: 2px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin,
+  .app-shell .community-thread-page .community-thread-discussion {
+    border-radius: 18px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+    margin-inline: 12px;
+    border-radius: 14px;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion {
+    padding-inline: 14px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer {
+    margin-inline: -14px;
+    padding-inline: 14px;
+  }
+
+  .app-shell .community-thread-page .community-comments-locked {
+    margin-inline: -14px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-inline: 8px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+    padding-inline: 11px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+    min-width: 0;
+    flex: 1 1 0;
+    justify-content: center;
+    padding-inline: 8px;
+  }
+
+  .app-shell .community-thread-page .thread-replies {
+    margin-left: 11px;
+    padding-left: 18px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .community-thread-page .community-thread-back,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button,
+  .app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+    transition: none;
+  }
+}
+
+/* Post detail polish v3 · Threads reference */
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 660px);
+  padding-top: 0;
+  background: var(--rr-surface);
+}
+
+.app-shell .community-thread-page .community-thread-back {
+  min-width: 40px;
+  min-height: 40px;
+  margin: 2px 8px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-ink);
+  padding-inline: 10px 12px;
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-back:hover {
+  border-color: transparent;
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  transform: none;
+}
+
+.app-shell .community-thread-page .community-thread-back svg {
+  width: 21px;
+  height: 21px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding: 14px 16px 7px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy {
+  padding: 0 16px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy p {
+  line-height: 1.55;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-link-preview {
+  margin: 10px 16px 0;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+  margin: 12px 16px 0;
+  border-radius: 14px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  min-height: auto;
+  gap: 12px;
+  padding: 11px 16px 0;
+  color: var(--rr-muted);
+  font-size: .7rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  gap: 8px;
+  padding: 6px 10px 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+  width: 38px;
+  min-width: 38px;
+  height: 38px;
+  min-height: 38px;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  font-size: 0;
+  color: var(--rr-ink);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button svg {
+  width: 21px;
+  height: 21px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button:hover {
+  border-color: transparent;
+  background: var(--rr-surface-soft);
+  transform: none;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button.is-liked {
+  border-color: transparent;
+  background: transparent;
+  color: var(--rr-red);
+}
+
+.app-shell .community-thread-page .community-thread-discussion {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  min-height: 48px;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0 16px;
+  align-items: center;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head h2 {
+  font-size: .82rem;
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: -.01em;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head > span {
+  min-width: auto;
+  height: auto;
+  border: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  font-size: .72rem;
+}
+
+.app-shell .community-thread-page .community-no-comments {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: transparent;
+  padding: 24px 16px;
+  color: var(--rr-muted);
+  text-align: center;
+}
+
+.app-shell .community-thread-page .community-thread-list {
+  display: block;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  position: relative;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 14px 16px 16px;
+}
+
+.app-shell .community-thread-page .thread-comment-root + .thread-comment-root {
+  padding-top: 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-line {
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.app-shell .community-thread-page .thread-comment-line > .community-avatar.small {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid var(--rr-line);
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-content {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header {
+  gap: 4px 6px;
+  align-items: baseline;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header strong {
+  font-size: .8rem;
+  letter-spacing: -.01em;
+}
+
+.app-shell .community-thread-page .thread-comment-content > header span {
+  border-radius: 0;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+  font-size: .66rem;
+  font-weight: var(--rr-fw-medium);
+}
+
+.app-shell .community-thread-page .thread-comment-content > header time {
+  margin-left: 1px;
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-content > p {
+  margin-top: 5px;
+  color: var(--rr-ink);
+  font-size: .8rem;
+  line-height: 1.52;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  gap: 6px;
+  margin-top: 7px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button {
+  min-height: 30px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-muted);
+  padding-inline: 7px;
+  font-size: .68rem;
+}
+
+.app-shell .community-thread-page .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell .community-thread-page .thread-replies {
+  position: relative;
+  gap: 17px;
+  margin-top: 15px;
+  margin-left: 17px;
+  padding-left: 29px;
+}
+
+.app-shell .community-thread-page .thread-replies::before {
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--rr-line);
+}
+
+.app-shell .community-thread-page .thread-replies .thread-comment-line {
+  position: relative;
+}
+
+.app-shell .community-thread-page .thread-replies .thread-comment-line::before {
+  content: "";
+  position: absolute;
+  top: 17px;
+  left: -29px;
+  width: 18px;
+  height: 1px;
+  background: var(--rr-line);
+}
+
+.app-shell .community-thread-page .community-comments-locked {
+  margin: 0;
+  border-top: 0;
+  border-bottom: 1px solid var(--rr-line);
+  background: transparent;
+  padding: 14px 16px;
+}
+
+.app-shell .community-thread-page .community-thread-composer {
+  z-index: 20;
+  margin: 0;
+  border-top: 1px solid var(--rr-line);
+  background: color-mix(in srgb, var(--rr-surface) 94%, transparent);
+  padding: 10px 12px;
+  box-shadow: 0 -8px 22px color-mix(in srgb, var(--rr-charcoal) 5%, transparent);
+  backdrop-filter: blur(18px);
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child {
+  grid-template-columns: minmax(0, 1fr) 42px;
+  gap: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  min-height: 42px;
+  max-height: 132px;
+  border: 1px solid var(--rr-line);
+  border-radius: 999px;
+  background: var(--rr-surface-soft);
+  padding: 10px 14px;
+  line-height: 1.35;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea:focus {
+  border-color: var(--rr-line-strong);
+  background: var(--rr-surface);
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+  width: 42px;
+  height: 42px;
+  background: var(--rr-ink);
+  color: var(--rr-surface);
+  box-shadow: none;
+}
+
+.app-shell .community-thread-page .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: none;
+  box-shadow: none;
+  opacity: .88;
+}
+
+.app-shell .community-thread-page .community-reply-target {
+  margin: 0 2px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--rr-surface-soft);
+  padding: 7px 9px;
+}
+
+@media (max-width: 720px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    width: 100%;
+    padding: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-back {
+    width: 42px;
+    margin: 2px 8px 6px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin,
+  .app-shell .community-thread-page .community-thread-discussion {
+    border-radius: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-feed-media {
+    margin-inline: 12px;
+    border-radius: 12px;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion {
+    padding-inline: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer,
+  .app-shell .community-thread-page .community-comments-locked {
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-inline: 0;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-copy,
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+    padding-inline: 13px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+    padding-inline: 7px;
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button {
+    flex: 0 0 38px;
+    padding-inline: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-discussion-head,
+  .app-shell .community-thread-page .thread-comment-root,
+  .app-shell .community-thread-page .community-no-comments {
+    padding-inline: 13px;
+  }
+
+  .app-shell .community-thread-page .thread-replies {
+    margin-left: 16px;
+    padding-left: 25px;
+  }
+
+  .app-shell .community-thread-page .thread-replies .thread-comment-line::before {
+    left: -25px;
+    width: 15px;
+  }
+}
+
+
+
+/* Post detail polish v4 · compact Threads pass */
+.app-shell .content > header.social-app-header .social-back-link {
+  display: grid;
+  place-items: center;
+  color: var(--rr-ink);
+  text-decoration: none;
+}
+
+.app-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 640px);
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+  padding-top: 12px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-footer {
+  display: flex;
+  min-height: 46px;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px 9px;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions {
+  order: 1;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1px;
+  border: 0;
+  padding: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-actions button + button {
+  border-left: 0;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts {
+  order: 2;
+  min-height: auto;
+  justify-content: flex-start;
+  gap: 0;
+  padding: 0 6px;
+  font-size: .67rem;
+}
+
+.app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-counts span + span::before {
+  content: "·";
+  margin-inline: 6px;
+}
+
+.app-shell .community-thread-page .community-thread-discussion-head {
+  min-height: 44px;
+}
+
+.app-shell .community-thread-page .thread-comment-root {
+  padding-block: 13px 14px;
+}
+
+.app-shell .community-thread-page .thread-comment-actions {
+  margin-left: -7px;
+}
+
+.app-shell .community-thread-page .community-thread-composer textarea {
+  height: 42px;
+  min-height: 42px;
+  resize: none;
+  overflow-y: auto;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+  gap: 8px;
+  margin: 10px 16px 2px;
+  border-radius: 13px;
+  background: transparent;
+  padding: 10px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+  gap: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head strong {
+  font-size: .78rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head small,
+.app-shell .community-thread-page .community-thread-origin .community-voyager-head > b,
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress small {
+  font-size: .55rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-meta {
+  gap: 4px 10px;
+  font-size: .66rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress {
+  padding-block: 7px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress > span {
+  min-width: 0;
+  padding-inline: 8px;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-progress b {
+  font-size: .72rem;
+}
+
+.app-shell .community-thread-page .community-thread-origin .community-voyager-cta {
+  font-size: .66rem;
+}
+
+@media (max-width: 720px) {
+  .app-shell .content > header.social-app-header {
+    min-height: calc(56px + env(safe-area-inset-top));
+  }
+
+  .app-shell .content > header.social-app-header .social-back-link {
+    margin-right: 4px;
+  }
+
+  .app-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 72px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell .dashboard-social-feed-v1 .community-thread-origin .community-post-header {
+    padding-top: 10px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+    margin-inline: 13px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head > b {
+    grid-column: auto;
+    justify-self: end;
+    margin-top: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-meta {
+    display: flex;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-progress {
+    overflow: visible;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-progress > span {
+    min-width: 0;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer {
+    position: fixed;
+    right: 12px;
+    bottom: calc(var(--rr-mobile-dashboard-clearance) + 8px + env(safe-area-inset-bottom));
+    left: 12px;
+    width: auto;
+    margin: 0;
+    border: 1px solid var(--rr-line);
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--rr-surface) 96%, transparent);
+    padding: 7px 8px 7px 12px;
+    box-shadow: 0 10px 30px rgba(20, 22, 24, .12);
+  }
+
+  .app-shell .community-thread-page .community-thread-composer > div:last-child {
+    grid-template-columns: minmax(0, 1fr) 40px;
+    gap: 6px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer textarea {
+    height: 40px;
+    min-height: 40px;
+    border: 0;
+    background: transparent;
+    padding: 10px 8px;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer textarea:focus {
+    border-color: transparent;
+    background: transparent;
+  }
+
+  .app-shell .community-thread-page .community-thread-composer > div:last-child > button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .app-shell .community-thread-page .community-reply-target {
+    margin: 0 0 5px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-attachment {
+    margin-inline: 11px;
+    padding: 9px;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head > b {
+    display: none;
+  }
+
+  .app-shell .community-thread-page .community-thread-origin .community-voyager-head {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+}
+
+
+/* Post detail polish v5 · proper social layout */
+.app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+  width: min(100%, 720px);
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 0 120px;
+  background: #fff;
+}
+
+.app-shell.social-shell .community-thread-origin {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-header {
+  gap: 12px;
+  padding: 18px 18px 8px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-avatar-logo {
+  width: 44px;
+  height: 44px;
+  flex-basis: 44px;
+  border-color: var(--rr-line);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author {
+  gap: 4px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author strong {
+  font-size: .9rem;
+  line-height: 1.15;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author small {
+  gap: 5px;
+  font-size: .7rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-author small b {
+  color: var(--rr-muted);
+  font-size: .7rem;
+  font-weight: var(--rr-fw-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-copy {
+  padding: 4px 18px 0;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-copy p {
+  font-size: .92rem;
+  line-height: 1.55;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+  gap: 9px;
+  margin: 14px 18px 8px;
+  border: 1px solid var(--rr-line);
+  border-radius: 16px;
+  background: var(--rr-surface-soft);
+  padding: 12px;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head {
+  gap: 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head strong {
+  font-size: .82rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-head small,
+.app-shell.social-shell .community-thread-origin .community-voyager-head > b,
+.app-shell.social-shell .community-thread-origin .community-voyager-progress small {
+  font-size: .59rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-meta {
+  gap: 6px 12px;
+  color: var(--rr-muted);
+  font-size: .68rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress {
+  padding-block: 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress > span {
+  min-height: 36px;
+  padding-inline: 10px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-progress b {
+  font-size: .76rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-cta {
+  min-height: 30px;
+  align-items: center;
+  font-size: .68rem;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-footer {
+  display: flex;
+  min-height: 58px;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px 9px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions {
+  order: 1;
+  gap: 2px;
+  padding: 0;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  padding: 0;
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-actions button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.app-shell.social-shell .community-thread-origin .community-post-counts {
+  order: 2;
+  gap: 0;
+  padding: 0 4px;
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+.app-shell.social-shell .community-thread-discussion {
+  overflow: visible;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-discussion-head {
+  min-height: 52px;
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 0 18px;
+}
+
+.app-shell.social-shell .community-thread-discussion-head h2 {
+  font-size: .86rem;
+  font-weight: var(--rr-fw-extrabold);
+}
+
+.app-shell.social-shell .community-thread-discussion-head > span {
+  color: var(--rr-muted);
+  font-size: .72rem;
+}
+
+.app-shell.social-shell .community-no-comments {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  border-radius: 0;
+  background: #fff;
+  padding: 28px 18px;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  margin: 0;
+  border-bottom: 1px solid var(--rr-line);
+  padding: 16px 18px 17px;
+}
+
+.app-shell.social-shell .thread-comment-line {
+  gap: 11px;
+}
+
+.app-shell.social-shell .thread-comment-line > .community-avatar.small {
+  width: 36px;
+  height: 36px;
+  flex-basis: 36px;
+  border: 1px solid var(--rr-line);
+  background: #fff;
+  color: var(--rr-ink);
+  font-size: .62rem;
+}
+
+.app-shell.social-shell .thread-comment-content {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.app-shell.social-shell .thread-comment-content > header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px 6px;
+  align-items: baseline;
+}
+
+.app-shell.social-shell .thread-comment-content > header strong {
+  color: var(--rr-ink);
+  font-size: .82rem;
+  line-height: 1.25;
+}
+
+.app-shell.social-shell .thread-comment-content > header span,
+.app-shell.social-shell .thread-comment-content > header time {
+  color: var(--rr-muted);
+  font-size: .68rem;
+  font-weight: var(--rr-fw-regular);
+}
+
+.app-shell.social-shell .thread-comment-content > p {
+  margin: 6px 0 0;
+  color: var(--rr-ink);
+  font-size: .84rem;
+  line-height: 1.48;
+}
+
+.app-shell.social-shell .thread-comment-actions {
+  display: flex;
+  gap: 2px;
+  margin: 6px 0 0 -8px;
+}
+
+.app-shell.social-shell .thread-comment-actions button {
+  min-height: 30px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0 8px;
+  font-size: .68rem;
+  font-weight: var(--rr-fw-semibold);
+}
+
+.app-shell.social-shell .thread-comment-actions button:hover {
+  background: var(--rr-surface-soft);
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .thread-comment-actions button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-shell.social-shell .thread-comment-actions button.danger {
+  color: var(--rr-muted);
+}
+
+.app-shell.social-shell .thread-comment-actions button.danger:hover {
+  color: var(--rr-danger);
+}
+
+.app-shell.social-shell .thread-replies {
+  position: relative;
+  gap: 16px;
+  margin: 12px 0 0 18px;
+  padding-left: 30px;
+}
+
+.app-shell.social-shell .thread-replies::before {
+  left: 0;
+  width: 2px;
+  border-radius: 999px;
+  background: #e4e6e7;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line::before {
+  top: 18px;
+  left: -30px;
+  width: 19px;
+  height: 2px;
+  border-radius: 999px;
+  background: #e4e6e7;
+}
+
+.app-shell.social-shell .community-thread-composer {
+  z-index: 24;
+  margin: 0;
+  border: 1px solid #dde0e2;
+  border-radius: 999px;
+  background: rgba(255,255,255,.97);
+  padding: 6px 7px 6px 16px;
+  box-shadow:
+    0 12px 32px rgba(20,22,24,.10),
+    0 2px 8px rgba(20,22,24,.04);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 42px;
+  align-items: center;
+  gap: 6px;
+}
+
+.app-shell.social-shell .community-thread-composer textarea {
+  width: 100%;
+  height: 42px;
+  min-height: 42px;
+  max-height: 112px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 10px 0;
+  color: var(--rr-ink);
+  line-height: 1.35;
+  resize: none;
+  outline: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer textarea:focus {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:disabled {
+  background: #aeb3b7;
+  color: #fff;
+  opacity: 1;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  transform: scale(1.03);
+  background: #111315;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.app-shell.social-shell .community-reply-target {
+  margin: 0 0 5px -5px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--rr-surface-soft);
+  padding: 7px 9px;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    width: 100%;
+    max-width: none;
+    padding: 0 0 calc(var(--rr-mobile-dashboard-clearance) + 92px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-header {
+    padding: 16px 16px 8px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-copy {
+    padding-inline: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+    margin: 12px 16px 7px;
+    padding: 11px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-footer {
+    padding-inline: 10px;
+  }
+
+  .app-shell.social-shell .community-thread-discussion-head,
+  .app-shell.social-shell .thread-comment-root,
+  .app-shell.social-shell .community-no-comments {
+    padding-inline: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: fixed;
+    right: auto;
+    bottom: calc(var(--rr-mobile-dashboard-clearance) + 12px + env(safe-area-inset-bottom));
+    left: 50%;
+    width: min(calc(100% - 24px), 696px);
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-origin .community-post-header {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-post-copy {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+    margin-inline: 14px;
+  }
+
+  .app-shell.social-shell .community-thread-discussion-head,
+  .app-shell.social-shell .thread-comment-root,
+  .app-shell.social-shell .community-no-comments {
+    padding-inline: 14px;
+  }
+
+  .app-shell.social-shell .thread-replies {
+    margin-left: 18px;
+    padding-left: 27px;
+  }
+
+  .app-shell.social-shell .thread-replies .thread-comment-line::before {
+    left: -27px;
+    width: 16px;
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    width: calc(100% - 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell.social-shell .community-thread-origin .community-post-actions button,
+  .app-shell.social-shell .thread-comment-actions button,
+  .app-shell.social-shell .community-thread-composer > div:last-child > button {
+    transition: none;
+  }
+}
+
+
+/* Post detail polish v6 · full white + connected thread */
+.app-shell.social-shell,
+.app-shell.social-shell .content,
+.app-shell.social-shell .content > header.social-app-header,
+.app-shell.social-shell .community-thread-page.dashboard-social-feed-v1,
+.app-shell.social-shell .community-thread-origin,
+.app-shell.social-shell .community-thread-discussion,
+.app-shell.social-shell .community-thread-list,
+.app-shell.social-shell .thread-comment-root {
+  background: #fff;
+}
+
+.app-shell.social-shell,
+.app-shell.social-shell .content {
+  min-height: 100dvh;
+}
+
+.app-shell.social-shell .content > header.social-app-header {
+  border-bottom-color: #eceeef;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-origin .community-voyager-attachment {
+  background: #fff;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  --thread-root-gutter: 18px;
+  --thread-avatar-size: 36px;
+  position: relative;
+}
+
+/* Continuous Threads-style connector: parent avatar -> replies */
+.app-shell.social-shell .thread-comment-root.has-replies::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: calc(16px + var(--thread-avatar-size));
+  bottom: 35px;
+  left: calc(var(--thread-root-gutter) + (var(--thread-avatar-size) / 2) - 1px);
+  width: 2px;
+  border-radius: 999px;
+  background: #dfe2e4;
+  pointer-events: none;
+}
+
+.app-shell.social-shell .thread-comment-root.has-replies > .thread-comment-line,
+.app-shell.social-shell .thread-comment-root.has-replies > .thread-replies {
+  position: relative;
+  z-index: 1;
+}
+
+/* Remove the old detached reply rail */
+.app-shell.social-shell .thread-replies::before {
+  display: none;
+}
+
+/* Keep child replies aligned with the parent's vertical connector */
+.app-shell.social-shell .thread-replies {
+  margin: 12px 0 0 18px;
+  padding-left: 30px;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line {
+  position: relative;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: 18px;
+  left: -30px;
+  width: 30px;
+  height: 2px;
+  border-radius: 999px;
+  background: #dfe2e4;
+  pointer-events: none;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line > .community-avatar.small {
+  position: relative;
+  z-index: 1;
+  background: #fff;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    background: #fff;
+  }
+
+  .app-shell.social-shell .thread-comment-root {
+    --thread-root-gutter: 16px;
+  }
+
+  .app-shell.social-shell .thread-comment-root.has-replies::before {
+    top: calc(16px + var(--thread-avatar-size));
+    bottom: 34px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .thread-comment-root {
+    --thread-root-gutter: 14px;
+  }
+
+  .app-shell.social-shell .thread-replies {
+    margin-left: 18px;
+    padding-left: 27px;
+  }
+
+  .app-shell.social-shell .thread-replies .thread-comment-line::before {
+    left: -27px;
+    width: 27px;
+  }
+}
+
+
+/* Post detail polish v7 · inline composer below comments */
+.app-shell.social-shell .community-thread-discussion {
+  padding-bottom: 0;
+}
+
+.app-shell.social-shell .community-thread-list {
+  display: block;
+}
+
+/* Composer lives in normal document flow, directly after the comments list */
+.app-shell.social-shell .community-thread-composer {
+  position: relative;
+  right: auto;
+  bottom: auto;
+  left: auto;
+  width: auto;
+  max-width: none;
+  transform: none;
+  margin: 14px 16px 22px;
+  border: 1px solid #e2e4e6;
+  border-radius: 18px;
+  background: #fff;
+  padding: 10px;
+  box-shadow: 0 4px 18px rgba(20,22,24,.06);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 42px;
+  align-items: end;
+  gap: 8px;
+}
+
+.app-shell.social-shell .community-thread-composer textarea {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  max-height: 120px;
+  border: 1px solid #e1e4e6;
+  border-radius: 14px;
+  background: #fff;
+  padding: 11px 12px;
+  color: var(--rr-ink);
+  font: inherit;
+  font-size: .82rem;
+  line-height: 1.4;
+  resize: vertical;
+  outline: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer textarea::placeholder {
+  color: #9aa0a5;
+}
+
+.app-shell.social-shell .community-thread-composer textarea:focus {
+  border: 1px solid color-mix(in srgb, var(--rr-red) 72%, #fff);
+  background: #fff;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rr-red) 10%, transparent);
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  align-self: end;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-charcoal);
+  color: #fff;
+  padding: 0;
+  box-shadow: none;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:disabled {
+  background: #c5c9cc;
+  color: #fff;
+  opacity: 1;
+}
+
+.app-shell.social-shell .community-thread-composer > div:last-child > button:not(:disabled):hover {
+  background: #111315;
+  transform: translateY(-1px);
+}
+
+.app-shell.social-shell .community-reply-target {
+  display: flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 8px;
+  border: 0;
+  border-radius: 12px;
+  background: #f6f7f7;
+  padding: 8px 10px 8px 12px;
+}
+
+.app-shell.social-shell .community-reply-target span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: .72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell.social-shell .community-reply-target span b {
+  color: var(--rr-ink);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell.social-shell .community-reply-target button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--rr-muted);
+  padding: 0;
+}
+
+.app-shell.social-shell .community-reply-target button:hover {
+  background: #eceeef;
+  color: var(--rr-ink);
+}
+
+.app-shell.social-shell .community-reply-target button svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 18px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: relative;
+    right: auto;
+    bottom: auto;
+    left: auto;
+    width: auto;
+    transform: none;
+    margin: 14px 14px 22px;
+    border-radius: 17px;
+    padding: 9px;
+  }
+
+  .app-shell.social-shell .community-thread-composer textarea {
+    min-height: 42px;
+    height: 42px;
+    max-height: 112px;
+    border-radius: 13px;
+    font-size: .8rem;
+  }
+
+  .app-shell.social-shell .community-thread-composer > div:last-child {
+    grid-template-columns: minmax(0,1fr) 40px;
+    gap: 7px;
+  }
+
+  .app-shell.social-shell .community-thread-composer > div:last-child > button {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-composer {
+    width: auto;
+    margin-inline: 12px;
+    padding: 8px;
+  }
+
+  .app-shell.social-shell .community-reply-target {
+    min-height: 36px;
+    padding-block: 7px;
+  }
+}
+
+
+/* Post detail polish v8 · composer after discussion */
+/* Hard reset legacy sticky/fixed composer behavior */
+.app-shell.social-shell .community-thread-composer {
+  position: static !important;
+  inset: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: auto;
+  width: auto !important;
+  max-width: none;
+  transform: none !important;
+  clear: both;
+  margin: 16px 16px 28px !important;
+}
+
+.app-shell.social-shell .community-thread-discussion {
+  display: block;
+  overflow: visible;
+}
+
+.app-shell.social-shell .community-thread-list {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-comment-root {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-replies {
+  position: relative !important;
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.app-shell.social-shell .thread-replies .thread-comment-line {
+  position: relative !important;
+  min-height: 48px;
+}
+
+.app-shell.social-shell .thread-comment-root:last-child {
+  padding-bottom: 20px;
+}
+
+.app-shell.social-shell .community-thread-discussion + .community-thread-composer {
+  border-top: 1px solid #eef0f1;
+  padding-top: 12px;
+}
+
+/* No viewport offset when keyboard/input is focused */
+.app-shell.social-shell:has(.community-thread-composer textarea:focus) .community-thread-composer {
+  position: static !important;
+  inset: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+}
+
+@media (max-width: 720px) {
+  .app-shell.social-shell .community-thread-page.dashboard-social-feed-v1 {
+    padding-bottom: calc(var(--rr-mobile-dashboard-clearance) + 28px + env(safe-area-inset-bottom));
+  }
+
+  .app-shell.social-shell .community-thread-composer {
+    position: static !important;
+    inset: auto !important;
+    width: auto !important;
+    margin: 16px 14px 26px !important;
+    transform: none !important;
+  }
+
+  .app-shell.social-shell .community-thread-discussion + .community-thread-composer {
+    padding-top: 10px;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell.social-shell .community-thread-composer {
+    margin-inline: 12px !important;
+  }
+}
+
