@@ -500,7 +500,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const layout = await read("app/layout.tsx");
   const auditedPages = [
     "app/admin/events/events-screen.tsx",
-    "components/admin-overview-screen.tsx",
+    "components/admin-overview-controller.ts",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
     "app/voyager/page.tsx",
@@ -573,13 +573,20 @@ test("Database performance hardening is migration-tracked", async () => {
 
 test("Admin rejection stays behind its authorized RPC", async () => {
   const admin = await read("components/admin-overview-screen.tsx");
+  const controller = await read(
+    "components/admin-overview-controller.ts",
+  );
+  const workspace = [admin, controller].join("\n");
 
-  assert.match(admin, /rpc\(\s*"reject_member_account_request"/);
+  assert.match(
+    controller,
+    /rpc\(\s*"reject_member_account_request"/,
+  );
   assert.doesNotMatch(
-    admin,
+    workspace,
     /from\("member_account_requests"\)\s*\.delete\(/,
   );
-  assert.match(admin, /Tolak Pendaftaran/);
+  assert.match(controller, /Tolak Pendaftaran/);
 });
 
 
