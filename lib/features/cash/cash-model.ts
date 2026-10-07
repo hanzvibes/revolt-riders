@@ -1,7 +1,7 @@
 export type CashTransactionLike = {
   transaction_date: string | null;
   created_at: string;
-  transaction_type: "income" | "expense";
+  transaction_type: "income" | "expense" | "advance";
   description: string;
   category: string | null;
   amount: number;
@@ -32,17 +32,22 @@ export function getCashMonthLabel(value: string) {
   );
 }
 
+export function sortCashTransactions<T extends CashTransactionLike>(
+  transactions: readonly T[],
+): T[] {
+  return [...transactions].sort((a, b) =>
+    `${b.transaction_date || ""}${b.created_at}`.localeCompare(
+      `${a.transaction_date || ""}${a.created_at}`,
+    ),
+  );
+}
+
 export function filterCashTransactions<T extends CashTransactionLike>(
   transactions: readonly T[],
   options: { period: string; type: CashFilterType; query: string; limit?: number },
 ): T[] {
   const normalizedQuery = options.query.trim().toLowerCase();
-  return [...transactions]
-    .sort((a, b) =>
-      `${b.transaction_date || ""}${b.created_at}`.localeCompare(
-        `${a.transaction_date || ""}${a.created_at}`,
-      ),
-    )
+  return sortCashTransactions(transactions)
     .filter((transaction) => {
       const matchesPeriod =
         options.period === "all" || getCashMonthKey(transaction) === options.period;
