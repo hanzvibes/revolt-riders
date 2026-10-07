@@ -114,7 +114,9 @@ function countImportant(content) {
 for (const file of cssTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  const content = readCssBundle(file);
+  const content = ["app/system-ui.css", "app/native-admin.css"].includes(file)
+    ? readCssBundle(file)
+    : fs.readFileSync(abs, "utf8");
 
   for (const match of content.matchAll(/font-weight\s*:\s*(\d{3})/g)) {
     const value = match[1];
