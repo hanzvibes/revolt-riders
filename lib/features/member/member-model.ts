@@ -3,8 +3,8 @@ export type MemberSearchable = {
   nickname: string | null;
   member_external_id: string;
   club_role: string | null;
-  city: string | null;
-  motorcycle: string | null;
+  city?: string | null;
+  motorcycle?: string | null;
 };
 
 export function filterMembers<T extends MemberSearchable>(
