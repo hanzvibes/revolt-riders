@@ -9,7 +9,7 @@ import { Bike, Calendar, CalendarDays, Check, LogOut, MapPin, Pencil, Plus, QrCo
 import Image from "next/image";
 import Link from "next/link";
 
-import { Ride, getRoleClass } from "./profile-screen-model";
+import { getRoleClass } from "./profile-screen-model";
 
 import { ProfileLoadingState, ProfileLoginState, ProfileVerificationState } from "./profile-access-states";
 

@@ -14,7 +14,7 @@ import { useCashScreen } from "./use-cash-screen";
 
 export default function CashPage() {
 
-  const { accessLoading, summary, account, transactions, dues, message, loadingData, error, success, type, setType, date, setDate, category, setCategory, amount, setAmount, description, setDescription, saving, formOpen, setFormOpen, period, setPeriod, filterType, setFilterType, query, setQuery, staff, periods, visibleTransactions, flow, categories, maxCategory, duesTotal, addTransaction, voidTransaction, downloadLedger } = useCashScreen();
+  const { accessLoading, summary, account, dues, message, loadingData, error, success, type, setType, date, setDate, category, setCategory, amount, setAmount, description, setDescription, saving, formOpen, setFormOpen, period, setPeriod, filterType, setFilterType, query, setQuery, staff, periods, visibleTransactions, flow, categories, maxCategory, duesTotal, addTransaction, voidTransaction, downloadLedger } = useCashScreen();
 
   if (accessLoading || loadingData) {
     return (

@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
 import { CalendarDays, CalendarPlus, Check, CheckCircle2, Copy, Download, Link2, RefreshCw, ScanLine, ShieldAlert, ShieldCheck, Users, UsersRound, X } from "lucide-react";
 
-import { Member, ManagedAccount, roles, downloadLinks } from "./admin-overview-model";
+import { ManagedAccount, roles, downloadLinks } from "./admin-overview-model";
 
 import { AdminLoadingState, AdminRestrictedState } from "./admin-overview-access";
 

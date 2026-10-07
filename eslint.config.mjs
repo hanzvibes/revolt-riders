@@ -53,6 +53,11 @@ const eslintConfig = defineConfig([
       "components/post-thread-screen.tsx",
       "components/leaderboard-screen.tsx",
       "components/admin-overview-screen.tsx",
+      "components/use-profile-screen.ts",
+      "components/use-admin-overview.ts",
+      "components/use-member-screen.ts",
+      "components/use-cash-screen.ts",
+      "components/use-leaderboard-screen.ts",
       "hooks/use-member-access.ts",
     ],
     rules: {
