@@ -9,9 +9,10 @@ import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
+import { getProfileDataClient } from "@/lib/features/profile/profile-data";
+import { getProfileRideStats, getProfileRoleClass } from "@/lib/features/profile/profile-model";
 import { getRiderProgress } from "@/lib/rider-progression";
 import { deleteRideLog } from "@/lib/services/ride-log-service";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import {
   Bike,
   Calendar,
@@ -86,27 +87,6 @@ type ProfileSnapshot = {
   activityEvents: ActivityEvent[];
 };
 
-const getRoleClass = (role: string | null) => {
-  const r = (role ?? "").toUpperCase().trim();
-  if (r === "PRESIDENT") return "badge-president";
-  if (r === "FOUNDER") return "badge-founder";
-  if (r === "EXCECUTOR" || r === "EXECUTOR") return "badge-executor";
-  if (r === "NEGOSIATOR") return "badge-negosiator";
-  if (r === "CAPROS") return "badge-capros";
-  if (r === "PROSPEK") return "badge-prospek";
-  if (r === "VIRGIN") return "badge-virgin";
-  if (r === "LIFE MEMBER" || r === "LIFEMEMBER") return "badge-lifemember";
-  if (r.includes("CAPTAIN")) return "badge-rc";
-  if (
-    r.includes("ADMIN") ||
-    r.includes("KETUA") ||
-    r.includes("SEKRETARIS") ||
-    r.includes("BENDAHARA")
-  )
-    return "badge-admin";
-  return "";
-};
-
 export function ProfileScreen() {
   const { confirmAction } = useActionDialog();
   const router = useRouter();
@@ -179,7 +159,7 @@ export function ProfileScreen() {
       const snapshot = await fetchWithCache<ProfileSnapshot>(
         `profile:${nextAccount.member_external_id}`,
         async () => {
-          const supabase = getSupabaseBrowserClient();
+          const supabase = getProfileDataClient();
           const [profileResult, detailResult, rideResult, rsvpResult, garageResult] =
             await Promise.all([
               supabase
@@ -324,7 +304,7 @@ export function ProfileScreen() {
     setMessage("");
     setError("");
     try {
-      const supabase = getSupabaseBrowserClient();
+      const supabase = getProfileDataClient();
       if (!user || !account) throw new Error("Sesi member tidak ditemukan.");
       const { error: upsertError } = await supabase.from("member_details").upsert({
         member_external_id: account.member_external_id,
@@ -350,7 +330,7 @@ export function ProfileScreen() {
   };
 
   const logout = async () => {
-    await getSupabaseBrowserClient().auth.signOut();
+    await getProfileDataClient().auth.signOut();
     router.replace("/");
     router.refresh();
   };
@@ -405,8 +385,10 @@ export function ProfileScreen() {
     );
   }
 
-  const approvedRidesCount = rides.filter((r) => r.status === "approved").length;
-  const attendedAgendaCount = rsvpActivities.filter((rsvp) => rsvp.status === "attending").length;
+  const { approvedRidesCount, attendedAgendaCount } = getProfileRideStats(
+    rides,
+    rsvpActivities,
+  );
   const joinDate = profile?.join_date ? new Date(profile.join_date) : null;
   const joinYear =
     joinDate && !Number.isNaN(joinDate.getTime()) ? joinDate.getFullYear() : null;
@@ -490,7 +472,7 @@ export function ProfileScreen() {
               <div className="profile-social-handle-row">
                 <code>@{account.member_external_id}</code>
                 {profile?.club_role ? (
-                  <span className={`member-role-badge ${getRoleClass(profile.club_role)}`}>
+                  <span className={`member-role-badge ${getProfileRoleClass(profile.club_role)}`}>
                     {profile.club_role}
                   </span>
                 ) : null}
