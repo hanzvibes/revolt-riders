@@ -3,8 +3,16 @@
 import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
-import type { EventRecord } from "@/lib/domain";
-import { getAdminOverviewDataClient } from "@/lib/features/admin/admin-overview-data";
+import {
+  fetchAdminOverviewSnapshot,
+  getAdminOverviewDataClient,
+  type AdminEventRecord,
+  type AdminInvitation as Invitation,
+  type AdminMember as Member,
+  type AdminRsvp as Rsvp,
+  type ManagedAccount,
+  type PendingRequest,
+} from "@/lib/features/admin/admin-overview-data";
 import { calculateAdminEventStats, slugifyAdminValue } from "@/lib/features/admin/admin-overview-model";
 import {
   CalendarDays,
@@ -26,36 +34,7 @@ import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
 type Account = { role: string; status: "pending" | "active" | "inactive" };
-type AdminEventRecord = EventRecord & {
-  counts_as_mandatory: boolean;
-  official_distance_km: number | null;
-};
-type PendingRequest = {
-  id: string;
-  user_id: string;
-  member_external_id: string;
-  email: string | null;
-};
-type Member = {
-  member_external_id: string;
-  full_name: string;
-  nickname: string | null;
-};
-type Invitation = { event_id: string; member_external_id: string };
-type Rsvp = {
-  event_id: string;
-  member_external_id: string;
-  status: "attending" | "declined" | "maybe";
-  guest_count: number;
-  responded_at: string;
-};
 type BulkLink = { memberId: string; name: string; url: string };
-type ManagedAccount = {
-  id: string;
-  member_external_id: string;
-  role: "member" | "road_captain" | "treasurer" | "admin" | "superadmin";
-  status: string;
-};
 const roles: ManagedAccount["role"][] = [
   "member",
   "road_captain",
@@ -172,63 +151,7 @@ export function AdminOverviewScreen() {
     try {
       const data = await fetchWithCache(
         "admin_dashboard_overview",
-        async () => {
-          const supabase = getAdminOverviewDataClient();
-          const [
-            eventResult,
-            requestResult,
-            memberResult,
-            invitationResult,
-            rsvpResult,
-            managedAccountResult,
-          ] = await Promise.all([
-            supabase
-              .from("events")
-              .select(
-                "id,title,slug,type,description,location_name,location_url,start_at,end_at,meetup_at,status,counts_as_mandatory,official_distance_km",
-              )
-              .order("start_at", { ascending: false }),
-            supabase
-              .from("member_account_requests")
-              .select("id,user_id,member_external_id,email")
-              .eq("status", "pending")
-              .order("created_at"),
-            supabase
-              .from("member_profiles")
-              .select("member_external_id,full_name,nickname")
-              .order("full_name"),
-            supabase
-              .from("event_invitations")
-              .select("event_id,member_external_id"),
-            supabase
-              .from("event_rsvps")
-              .select(
-                "event_id,member_external_id,status,guest_count,responded_at",
-              ),
-            isSuperadmin
-              ? supabase
-                  .from("member_accounts")
-                  .select("id,member_external_id,role,status")
-                  .order("member_external_id")
-              : Promise.resolve({ data: [] }),
-          ]);
-          return {
-            events: ((eventResult.data ?? []) as AdminEventRecord[]).map(
-              (event) => ({
-                ...event,
-                official_distance_km:
-                  event.official_distance_km === null
-                    ? null
-                    : Number(event.official_distance_km),
-              }),
-            ),
-            requests: (requestResult.data ?? []) as PendingRequest[],
-            members: (memberResult.data ?? []) as Member[],
-            invitations: (invitationResult.data ?? []) as Invitation[],
-            rsvps: (rsvpResult.data ?? []) as Rsvp[],
-            managedAccounts: (managedAccountResult.data ?? []) as ManagedAccount[],
-          };
-        },
+        () => fetchAdminOverviewSnapshot(isSuperadmin),
         { ttlMs: 60 * 1000, forceRefresh },
       );
 
