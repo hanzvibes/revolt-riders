@@ -4,7 +4,8 @@ import { useActionDialog } from "@/components/action-dialog-provider";
 import { AppShell } from "@/components/app-shell";
 import { CheckinQr } from "@/components/checkin-qr";
 import type { EventRecord } from "@/lib/domain";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getAdminOverviewDataClient } from "@/lib/features/admin/admin-overview-data";
+import { calculateAdminEventStats, slugifyAdminValue } from "@/lib/features/admin/admin-overview-model";
 import {
   CalendarDays,
   CalendarPlus,
@@ -63,14 +64,6 @@ const roles: ManagedAccount["role"][] = [
   "superadmin",
 ];
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-
 async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest("SHA-256", bytes);
@@ -101,7 +94,7 @@ function downloadLinks(links: BulkLink[], eventTitle: string) {
   const href = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = href;
-  anchor.download = `undangan-${slugify(eventTitle || "revolt-riders")}.csv`;
+  anchor.download = `undangan-${slugifyAdminValue(eventTitle || "revolt-riders")}.csv`;
   document.body.appendChild(anchor);
   anchor.click();
   anchor.remove();
@@ -151,37 +144,16 @@ export function AdminOverviewScreen() {
     [members],
   );
 
-  const eventStats = useMemo(() => {
-    const invited = invitations.filter(
-      (row) => row.event_id === selectedRsvpEvent,
-    );
-    const answers = rsvps.filter((row) => row.event_id === selectedRsvpEvent);
-    const responseByMember = new Map(
-      answers.map((row) => [row.member_external_id, row]),
-    );
-    const attending = answers.filter((row) => row.status === "attending");
-    return {
-      invited: invited.length,
-      attending: attending.length,
-      declined: answers.filter((row) => row.status === "declined").length,
-      maybe: answers.filter((row) => row.status === "maybe").length,
-      noResponse: Math.max(invited.length - responseByMember.size, 0),
-      guests: attending.reduce(
-        (total, row) => total + Math.max(row.guest_count || 0, 0),
-        0,
+  const eventStats = useMemo(
+    () =>
+      calculateAdminEventStats(
+        selectedRsvpEvent,
+        invitations,
+        rsvps,
+        memberById,
       ),
-      responseRate: invited.length
-        ? Math.round((responseByMember.size / invited.length) * 100)
-        : 0,
-      attendees: answers
-        .slice()
-        .sort((a, b) => b.responded_at.localeCompare(a.responded_at))
-        .map((rsvp) => ({
-          rsvp,
-          member: memberById.get(rsvp.member_external_id),
-        })),
-    };
-  }, [invitations, memberById, rsvps, selectedRsvpEvent]);
+    [invitations, memberById, rsvps, selectedRsvpEvent],
+  );
 
   const load = async (forceRefresh = false) => {
     const effectiveAccount = cachedAccount;
@@ -201,7 +173,7 @@ export function AdminOverviewScreen() {
       const data = await fetchWithCache(
         "admin_dashboard_overview",
         async () => {
-          const supabase = getSupabaseBrowserClient();
+          const supabase = getAdminOverviewDataClient();
           const [
             eventResult,
             requestResult,
@@ -277,7 +249,7 @@ export function AdminOverviewScreen() {
     if (!authLoading) {
       void load();
     }
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getAdminOverviewDataClient();
     const channel = supabase
       .channel("admin-rsvp-live")
       .on(
@@ -310,7 +282,7 @@ export function AdminOverviewScreen() {
     setInvitation("");
     const token = secureToken();
     const tokenHash = await sha256(token);
-    const { error: upsertError } = await getSupabaseBrowserClient()
+    const { error: upsertError } = await getAdminOverviewDataClient()
       .from("event_invitations")
       .upsert(
         {
@@ -361,7 +333,7 @@ export function AdminOverviewScreen() {
           token_hash: await sha256(token),
         })),
       );
-      const { error: upsertError } = await getSupabaseBrowserClient()
+      const { error: upsertError } = await getAdminOverviewDataClient()
         .from("event_invitations")
         .upsert(rows, { onConflict: "event_id,member_external_id" });
       if (upsertError) throw upsertError;
@@ -396,7 +368,7 @@ export function AdminOverviewScreen() {
     setCheckinUrl("");
     const raw = `RR-${secureToken().slice(0, 12).toUpperCase()}`;
     const codeHash = await sha256(raw);
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getAdminOverviewDataClient();
     const now = Date.now();
     const activeUntil = new Date(now + 12 * 60 * 60 * 1000).toISOString();
     const { error: insertError } = await supabase.rpc(
@@ -418,7 +390,7 @@ export function AdminOverviewScreen() {
 
   const approveRequest = async (request: PendingRequest) => {
     setError("");
-    const { error: approveError } = await getSupabaseBrowserClient().rpc(
+    const { error: approveError } = await getAdminOverviewDataClient().rpc(
       "approve_member_account_request",
       { p_request_id: request.id, p_role: "member" },
     );
@@ -443,7 +415,7 @@ export function AdminOverviewScreen() {
       return;
     setError("");
     setMessage("");
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getAdminOverviewDataClient();
     const { error: rpcError } = await supabase.rpc(
       "reject_member_account_request",
       { p_request_id: request.id },
@@ -475,7 +447,7 @@ export function AdminOverviewScreen() {
       return;
     setError("");
     setMessage("");
-    const { error: roleError } = await getSupabaseBrowserClient().rpc(
+    const { error: roleError } = await getAdminOverviewDataClient().rpc(
       "set_member_account_role",
       { p_account_id: managedAccount.id, p_role: nextRole },
     );
