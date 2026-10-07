@@ -5711,12 +5711,10 @@
 }
 
 .app-shell .sidebar-accordion-header,
-.app-shell > aside .sidebar-subnav a,
-.app-shell .bottom a {
+.app-shell > aside .sidebar-subnav a {
   font-size: var(--rr-type-small) !important;
 }
 
-.app-shell .bottom a small,
 .app-shell .sidebar-badge-pill {
   font-size: var(--rr-type-caption) !important;
 }
@@ -6185,7 +6183,6 @@
 
 .app-shell .floating-action-button,
 .app-shell .native-sheet > header button,
-.app-shell .bottom a,
 .app-shell .sidebar-user-btn {
   transition:
     transform var(--rr-motion-fast) ease-out,
@@ -9928,7 +9925,6 @@
 .app-shell .section-title em,
 .app-shell .form-heading em,
 .app-shell .ledger-head em,
-.app-shell .bottom a small,
 .app-shell .dashboard-premium .hero-tag,
 .app-shell .dashboard-premium .hero-eyebrow em,
 .app-shell .dashboard-premium .stats article span > small:first-child,
@@ -10012,7 +10008,6 @@
 }
 
 @media (pointer: coarse) and (max-width: 900px) {
-  .app-shell .bottom a,
   .app-shell .login-link,
   .app-shell .agenda-tabs button,
   .app-shell .finance-segments button,
