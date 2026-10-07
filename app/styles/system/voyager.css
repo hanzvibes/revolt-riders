@@ -1,0 +1,3312 @@
+/* ==========================================================================
+   MY GARAGE / MOTORCYCLE PASSPORT
+   ========================================================================== */
+
+.app-shell .garage-page {
+  display: grid;
+  gap: 16px;
+}
+
+.app-shell .garage-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid #292c2f;
+  border-radius: var(--rr-radius-lg);
+  background: var(--rr-charcoal);
+  color: #fff;
+  box-shadow: var(--rr-shadow-md);
+}
+
+.app-shell .garage-hero-copy {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.app-shell .garage-hero-copy > span {
+  min-width: 0;
+}
+
+.app-shell .garage-hero-copy small {
+  color: #b7bcc0;
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  letter-spacing: .1em;
+}
+
+.app-shell .garage-hero-copy h2 {
+  margin: 4px 0 3px;
+  color: #fff;
+  font-size: clamp(1.45rem,4vw,2rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+}
+
+.app-shell .garage-hero-copy p {
+  max-width: 560px;
+  margin: 0;
+  color: #aeb4b8;
+  font-size: var(--rr-type-small);
+  line-height: 1.5;
+}
+
+.app-shell .garage-hero-icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: none;
+  place-items: center;
+  border: 1px solid #35393c;
+  border-radius: 13px;
+  background: #202326;
+  color: var(--rr-red);
+}
+
+.app-shell .garage-hero-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.app-shell .garage-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  gap: 1px;
+  margin-top: 17px;
+  overflow: hidden;
+  border: 1px solid #303438;
+  border-radius: 11px;
+  background: #303438;
+}
+
+.app-shell .garage-hero-stats > span {
+  min-width: 0;
+  padding: 11px 12px;
+  background: #1d2022;
+}
+
+.app-shell .garage-hero-stats small {
+  display: block;
+  color: #888f94;
+  font-size: var(--rr-type-caption);
+  font-weight: 700;
+}
+
+.app-shell .garage-hero-stats b {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #f4f4f4;
+  font-size: var(--rr-type-small);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .garage-section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.app-shell .garage-section-head > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.app-shell .garage-section-head em {
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.app-shell .garage-section-head h3 {
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-section);
+  font-weight: 800;
+}
+
+.app-shell .garage-section-head > small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  font-weight: 600;
+}
+
+.app-shell .garage-empty {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 28px 18px;
+  text-align: center;
+}
+
+.app-shell .garage-empty > svg {
+  width: 32px;
+  height: 32px;
+  color: var(--rr-red);
+}
+
+.app-shell .garage-empty h3,
+.app-shell .garage-empty p {
+  margin: 0;
+}
+
+.app-shell .garage-empty p {
+  max-width: 420px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-small);
+}
+
+.app-shell .garage-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+}
+
+.app-shell .garage-bike-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-lg);
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-sm);
+}
+
+.app-shell .garage-bike-card.is-primary {
+  border-color: color-mix(in srgb, var(--rr-red) 38%, var(--rr-line));
+}
+
+.app-shell .garage-bike-card > header {
+  display: grid;
+  grid-template-columns: 42px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  border-bottom: 1px solid var(--rr-line);
+}
+
+.app-shell .garage-bike-mark {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--rr-charcoal);
+  color: #fff;
+}
+
+.app-shell .garage-bike-mark svg {
+  width: 20px;
+  height: 20px;
+}
+
+.app-shell .garage-bike-card header > span {
+  min-width: 0;
+}
+
+.app-shell .garage-bike-card header small {
+  display: block;
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .garage-bike-card header h3 {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-card);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .garage-bike-card header p {
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .garage-primary-badge {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 8px;
+  background: #fff0f1;
+  color: var(--rr-red);
+}
+
+.app-shell .garage-primary-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-shell .garage-bike-specs {
+  display: grid;
+  grid-template-columns: repeat(3,minmax(0,1fr));
+  padding: 12px 14px;
+  gap: 8px;
+}
+
+.app-shell .garage-bike-specs > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 16px minmax(0,1fr);
+  column-gap: 5px;
+  align-items: center;
+}
+
+.app-shell .garage-bike-specs svg {
+  grid-row: 1 / span 2;
+  width: 14px;
+  height: 14px;
+  color: var(--rr-muted);
+}
+
+.app-shell .garage-bike-specs small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 600;
+}
+
+.app-shell .garage-bike-specs b {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-meta);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .garage-bike-notes {
+  margin: 0 14px 12px;
+  padding: 10px 11px;
+  border-radius: 9px;
+  background: var(--rr-bg);
+}
+
+.app-shell .garage-bike-notes b {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .garage-bike-notes p {
+  margin: 3px 0 0;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  line-height: 1.45;
+}
+
+.app-shell .garage-bike-card > footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 14px;
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .garage-bike-card > footer > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 700;
+}
+
+.app-shell .garage-bike-card > footer > span svg {
+  width: 13px;
+  height: 13px;
+}
+
+.app-shell .garage-bike-card > footer > span.is-visible svg {
+  color: #16845a;
+}
+
+.app-shell .garage-bike-card > footer > span.is-private svg {
+  color: var(--rr-red);
+}
+
+.app-shell .garage-bike-card > footer > div {
+  display: flex;
+  gap: 6px;
+}
+
+.app-shell .garage-bike-card > footer button {
+  display: grid;
+  width: var(--rr-control-sm);
+  height: var(--rr-control-sm);
+  place-items: center;
+  border: 1px solid var(--rr-line);
+  border-radius: 9px;
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  cursor: pointer;
+}
+
+.app-shell .garage-bike-card > footer button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.app-shell .garage-form {
+  display: grid;
+  gap: 14px;
+}
+
+.app-shell .garage-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 11px;
+}
+
+.app-shell .garage-form-grid label {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.app-shell .garage-form-grid label > span {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-meta);
+  font-weight: 700;
+}
+
+.app-shell .garage-form-grid input,
+.app-shell .garage-form-grid select,
+.app-shell .garage-form-grid textarea {
+  width: 100%;
+  min-height: var(--rr-control-md);
+  border: 1px solid var(--rr-line);
+  border-radius: 10px;
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+  font: inherit;
+  font-size: var(--rr-type-small);
+  outline: none;
+}
+
+.app-shell .garage-form-grid input,
+.app-shell .garage-form-grid select {
+  padding: 0 11px;
+}
+
+.app-shell .garage-form-grid textarea {
+  min-height: 92px;
+  padding: 10px 11px;
+  resize: vertical;
+}
+
+.app-shell .garage-form-grid input:focus,
+.app-shell .garage-form-grid select:focus,
+.app-shell .garage-form-grid textarea:focus {
+  border-color: color-mix(in srgb, var(--rr-red) 62%, var(--rr-line));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--rr-red) 10%, transparent);
+}
+
+.app-shell .garage-form-wide {
+  grid-column: 1 / -1;
+}
+
+.app-shell .garage-form-toggles {
+  display: grid;
+  gap: 7px;
+}
+
+.app-shell .garage-form-toggles label {
+  display: grid;
+  grid-template-columns: 18px minmax(0,1fr);
+  align-items: flex-start;
+  gap: 9px;
+  padding: 10px 11px;
+  border: 1px solid var(--rr-line);
+  border-radius: 10px;
+  background: var(--rr-bg);
+}
+
+.app-shell .garage-form-toggles input {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--rr-red);
+}
+
+.app-shell .garage-form-toggles span {
+  display: grid;
+  gap: 2px;
+}
+
+.app-shell .garage-form-toggles b {
+  color: var(--rr-ink);
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .garage-form-toggles small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  line-height: 1.4;
+}
+
+.app-shell .garage-save-action {
+  width: 100%;
+}
+
+@media (max-width: 720px) {
+  .app-shell .garage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell .garage-hero {
+    padding: 15px;
+  }
+
+  .app-shell .garage-hero-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app-shell .garage-hero-stats > span:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .garage-section-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .app-shell .garage-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .garage-form-wide {
+    grid-column: auto;
+  }
+
+  .app-shell .garage-bike-specs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app-shell .garage-bike-specs > span:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+
+.app-shell .member-passport-meta-link {
+  grid-column: 2;
+  color: var(--rr-red);
+  font-size: .56rem;
+  font-weight: 800;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.app-shell .member-passport-meta-link:hover {
+  text-decoration: underline;
+}
+
+
+/* ==============================================================================
+   VOYAGER / CLUB ACTIVITY
+   ============================================================================== */
+
+.app-shell .voyager-page {
+  max-width: 1180px;
+}
+
+.app-shell .voyager-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  margin-bottom: 16px;
+  padding: 22px;
+  border: 1px solid var(--rr-line);
+  border-radius: 18px;
+  background: #171819;
+  color: #fff;
+}
+
+.app-shell .voyager-hero em,
+.app-shell .voyager-hero h2,
+.app-shell .voyager-hero p {
+  margin: 0;
+}
+
+.app-shell .voyager-hero em {
+  display: block;
+  color: #aeb3b7;
+  font-size: var(--rr-type-caption);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.app-shell .voyager-hero h2 {
+  margin-top: 6px;
+  color: #fff;
+  font-size: clamp(1.35rem, 3vw, 2.1rem);
+  letter-spacing: -.045em;
+}
+
+.app-shell .voyager-hero p {
+  max-width: 610px;
+  margin-top: 7px;
+  color: #b8bdc1;
+  font-size: .7rem;
+  line-height: 1.6;
+}
+
+.app-shell .voyager-km {
+  min-width: 205px;
+  padding: 14px 16px;
+  border: 1px solid #34373a;
+  border-radius: 13px;
+  background: #202225;
+}
+
+.app-shell .voyager-km small,
+.app-shell .voyager-km span {
+  display: block;
+  color: #999fa4;
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-km small {
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.app-shell .voyager-km strong {
+  display: block;
+  margin: 5px 0 3px;
+  color: #fff;
+  font-size: 1.25rem;
+  letter-spacing: -.035em;
+}
+
+.app-shell .voyager-member-progress {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(330px, .72fr);
+  gap: 14px;
+  align-items: stretch;
+  margin-bottom: 16px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 15px;
+  background: var(--rr-charcoal);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .voyager-member-progress-copy {
+  min-width: 0;
+  padding: 4px 5px;
+}
+
+.app-shell .voyager-member-progress-copy small {
+  display: block;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .09em;
+}
+
+.app-shell .voyager-member-progress-copy strong {
+  display: block;
+  margin-top: 5px;
+  font-size: 1.12rem;
+  line-height: 1.15;
+}
+
+.app-shell .voyager-member-progress-copy p {
+  margin: 6px 0 0;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-meta);
+  line-height: 1.5;
+}
+
+.app-shell .voyager-member-progress-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.app-shell .voyager-member-progress-metrics > span,
+.app-shell .voyager-member-progress-metrics > button {
+  min-width: 0;
+  min-height: var(--rr-control-lg);
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 11px;
+  background: var(--rr-charcoal-2);
+  padding: 9px;
+  color: var(--rr-ink-inverse);
+  text-align: left;
+}
+
+.app-shell .voyager-member-progress-metrics > button {
+  cursor: pointer;
+}
+
+.app-shell .voyager-member-progress-metrics > button:hover {
+  border-color: rgba(255, 255, 255, .24);
+}
+
+.app-shell .voyager-member-progress-metrics svg {
+  width: 16px;
+  height: 16px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-member-progress-metrics small,
+.app-shell .voyager-member-progress-metrics b {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.app-shell .voyager-member-progress-metrics small {
+  margin-top: 6px;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  line-height: 1.15;
+}
+
+.app-shell .voyager-member-progress-metrics b {
+  margin-top: 4px;
+  font-size: var(--rr-type-small);
+  line-height: 1.2;
+}
+
+@media (max-width: 760px) {
+  .app-shell .voyager-member-progress {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .voyager-member-progress {
+    padding: 12px;
+  }
+
+  .app-shell .voyager-member-progress-metrics {
+    gap: 5px;
+  }
+
+  .app-shell .voyager-member-progress-metrics > span,
+  .app-shell .voyager-member-progress-metrics > button {
+    padding: 8px 6px;
+  }
+}
+
+.app-shell .voyager-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: #f3f4f5;
+}
+
+.app-shell .voyager-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--rr-control-lg);
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  padding: 0 11px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-tabs button svg {
+  width: 15px;
+}
+
+.app-shell .voyager-tabs button b {
+  display: grid;
+  min-width: 19px;
+  height: 19px;
+  place-items: center;
+  border-radius: 999px;
+  background: #e4e6e8;
+  color: #62676b;
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-tabs button.active {
+  background: #fff;
+  color: var(--rr-ink);
+  box-shadow: 0 2px 8px rgba(18, 20, 22, .07);
+}
+
+.app-shell .voyager-tabs button.active svg {
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.app-shell .voyager-card {
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .voyager-card-main {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 1fr);
+  gap: 12px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 15px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.app-shell .voyager-date {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 50px;
+  border-radius: 11px;
+  background: #f3f4f5;
+}
+
+.app-shell .voyager-date b {
+  color: var(--rr-ink);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.app-shell .voyager-date small {
+  margin-top: 4px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-card-copy {
+  min-width: 0;
+}
+
+.app-shell .voyager-card-copy em {
+  display: block;
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.app-shell .voyager-card-copy strong {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: .86rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-card-copy small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-card-copy small svg {
+  width: 12px;
+  flex: none;
+}
+
+.app-shell .voyager-card-meta {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--rr-line);
+  border-bottom: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-card-meta > span {
+  display: grid;
+  grid-template-columns: 17px minmax(0, 1fr);
+  column-gap: 6px;
+  padding: 10px 12px;
+}
+
+.app-shell .voyager-card-meta > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-card-meta svg {
+  grid-row: 1 / span 2;
+  width: 15px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-card-meta b {
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: .7rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-card-meta small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-card-foot {
+  display: flex;
+  min-height: 45px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  padding: 8px 12px;
+}
+
+.app-shell .voyager-card-foot > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.app-shell .voyager-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border-radius: 999px;
+  background: #fff0f1;
+  padding: 0 8px;
+  color: #ad1420;
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-badge.neutral {
+  background: #f0f2f3;
+  color: #62676b;
+}
+
+.app-shell .voyager-card-foot > button {
+  min-height: var(--rr-control-lg);
+  border: 1px solid var(--rr-line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 9px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-detail,
+.app-shell .voyager-manage {
+  display: grid;
+  gap: 14px;
+}
+
+.app-shell .voyager-detail-head {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.app-shell .voyager-detail-head > span {
+  min-width: 0;
+  padding: 12px;
+}
+
+.app-shell .voyager-detail-head > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-detail-head small {
+  display: block;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  letter-spacing: .06em;
+}
+
+.app-shell .voyager-detail-head b {
+  display: block;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--rr-ink);
+  font-size: .68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-transform: capitalize;
+}
+
+.app-shell .voyager-detail-block,
+.app-shell .voyager-manage-section {
+  padding: 15px;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: #fff;
+}
+
+.app-shell .voyager-detail-block .section-title,
+.app-shell .voyager-manage-section .section-title {
+  margin-bottom: 11px;
+}
+
+.app-shell .voyager-detail-block > p {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 7px 0;
+  color: var(--rr-muted);
+  font-size: .64rem;
+}
+
+.app-shell .voyager-detail-block > p svg {
+  width: 15px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-detail-block > a {
+  display: inline-flex;
+  margin-top: 4px;
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-story {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rr-line);
+  color: #555b60;
+  font-size: .66rem;
+  line-height: 1.6;
+}
+
+.app-shell .voyager-support {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid #303337;
+  border-radius: 13px;
+  background: #1b1d1f;
+}
+
+.app-shell .voyager-support small {
+  color: #8f969a;
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  letter-spacing: .09em;
+}
+
+.app-shell .voyager-support strong {
+  color: #fff;
+  font-size: .78rem;
+}
+
+.app-shell .voyager-participant-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.app-shell .voyager-participant-list > span {
+  display: grid;
+  grid-template-columns: 33px minmax(0, 1fr);
+  column-gap: 8px;
+  align-items: center;
+  min-width: 0;
+  padding: 8px;
+  border-radius: 10px;
+  background: #f6f7f7;
+}
+
+.app-shell .voyager-participant-list i {
+  grid-row: 1 / span 2;
+  display: grid;
+  width: 33px;
+  height: 33px;
+  place-items: center;
+  border-radius: 9px;
+  background: #202225;
+  color: #fff;
+  font-size: var(--rr-type-caption);
+  font-style: normal;
+  font-weight: 800;
+}
+
+.app-shell .voyager-participant-list b,
+.app-shell .voyager-participant-list small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-participant-list b {
+  color: var(--rr-ink);
+  font-size: .65rem;
+}
+
+.app-shell .voyager-participant-list small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-gallery,
+.app-shell .voyager-admin-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.app-shell .voyager-gallery figure,
+.app-shell .voyager-admin-gallery figure {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 10px;
+  background: #f1f2f3;
+}
+
+.app-shell .voyager-gallery img,
+.app-shell .voyager-admin-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-shell .voyager-gallery figure > span,
+.app-shell .voyager-admin-gallery figure > span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-admin-gallery button {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  width: var(--rr-control-lg);
+  height: var(--rr-control-lg);
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, .65);
+  border-radius: 8px;
+  background: rgba(20, 22, 24, .86);
+  color: #fff;
+  cursor: pointer;
+}
+
+.app-shell .voyager-admin-gallery button svg {
+  width: 14px;
+}
+
+.app-shell .voyager-manage-section {
+  display: grid;
+  gap: 11px;
+}
+
+.app-shell .voyager-manage-section > label:not(.voyager-switch):not(.voyager-member-search):not(.voyager-upload) {
+  display: grid;
+  gap: 6px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-manage-section input:not([type="checkbox"]):not([type="file"]),
+.app-shell .voyager-manage-section textarea {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--rr-line);
+  border-radius: 9px;
+  background: #fafbfb;
+  padding: 10px 11px;
+  color: var(--rr-ink);
+  font: inherit;
+  font-size: .72rem;
+  outline: 0;
+}
+
+.app-shell .voyager-manage-section input:not([type="checkbox"]):not([type="file"]) {
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell .voyager-manage-section label > small,
+.app-shell .voyager-manage-section > small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-distance-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 46px;
+}
+
+.app-shell .voyager-distance-input input {
+  border-radius: 9px 0 0 9px !important;
+}
+
+.app-shell .voyager-distance-input span {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--rr-line);
+  border-left: 0;
+  border-radius: 0 9px 9px 0;
+  background: #f0f2f3;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 12px;
+  border: 1px solid var(--rr-line);
+  border-radius: 10px;
+  background: #fafbfb;
+  cursor: pointer;
+}
+
+.app-shell .voyager-switch input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--rr-red);
+}
+
+.app-shell .voyager-switch span {
+  display: grid;
+  gap: 2px;
+}
+
+.app-shell .voyager-switch b {
+  color: var(--rr-ink);
+  font-size: .64rem;
+}
+
+.app-shell .voyager-switch small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-member-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: var(--rr-control-lg);
+  border: 1px solid var(--rr-line);
+  border-radius: 9px;
+  background: #fafbfb;
+  padding: 0 10px;
+}
+
+.app-shell .voyager-member-search svg {
+  width: 16px;
+  color: var(--rr-muted);
+}
+
+.app-shell .voyager-member-search input {
+  min-height: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.app-shell .voyager-member-picker {
+  max-height: 260px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--rr-line);
+  border-radius: 10px;
+}
+
+.app-shell .voyager-member-picker > label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--rr-line);
+  cursor: pointer;
+}
+
+.app-shell .voyager-member-picker > label:last-child {
+  border-bottom: 0;
+}
+
+.app-shell .voyager-member-picker input {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  accent-color: var(--rr-red);
+}
+
+.app-shell .voyager-member-picker span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.app-shell .voyager-member-picker b,
+.app-shell .voyager-member-picker small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-member-picker b {
+  color: var(--rr-ink);
+  font-size: .64rem;
+}
+
+.app-shell .voyager-member-picker small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 58px;
+  border: 1px dashed #bdc1c4;
+  border-radius: 11px;
+  background: #fafbfb;
+  padding: 10px 12px;
+  cursor: pointer;
+}
+
+.app-shell .voyager-upload > svg {
+  width: 21px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-upload > span {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+}
+
+.app-shell .voyager-upload b {
+  color: var(--rr-ink);
+  font-size: .64rem;
+}
+
+.app-shell .voyager-upload small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-upload input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.app-shell .voyager-manage-actions {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: 8px;
+  position: sticky;
+  bottom: 0;
+  padding-top: 8px;
+  background: #fff;
+}
+
+.app-shell .voyager-manage-actions button {
+  min-width: 0;
+}
+
+.app-shell .riding-official-source {
+  display: block;
+  margin-top: 3px;
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .app-shell .voyager-hero {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    padding: 18px;
+  }
+
+  .app-shell .voyager-km {
+    min-width: 0;
+  }
+
+  .app-shell .voyager-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-shell .voyager-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .app-shell .voyager-tabs button {
+    justify-content: center;
+  }
+
+  .app-shell .voyager-card-meta > span {
+    grid-template-columns: 15px minmax(0, 1fr);
+    padding: 9px 8px;
+  }
+
+  .app-shell .voyager-detail-head {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-detail-head > span + span {
+    border-top: 1px solid var(--rr-line);
+    border-left: 0;
+  }
+
+  .app-shell .voyager-participant-list {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-gallery,
+  .app-shell .voyager-admin-gallery {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-manage-actions {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+.app-shell .voyager-admin-activity-fields {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 11px;
+  margin-top: 4px;
+  padding: 14px;
+  border: 1px solid var(--rr-line);
+  border-radius: 12px;
+  background: #f8f9f9;
+}
+
+.app-shell .voyager-admin-activity-fields .section-title {
+  margin-bottom: 0;
+}
+
+.app-shell .voyager-admin-distance {
+  display: grid;
+  gap: 6px;
+  color: var(--rr-ink);
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+}
+
+.app-shell .voyager-admin-distance > small,
+.app-shell .voyager-admin-helper {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-admin-sync {
+  display: inline-flex;
+  min-height: var(--rr-control-lg);
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 9px;
+  background: #171819;
+  padding: 0 14px;
+  color: #fff;
+  font-size: var(--rr-type-caption);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-admin-sync svg {
+  width: 16px;
+}
+
+.app-shell .voyager-admin-sync:disabled {
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+@media (max-width: 720px) {
+  .app-shell .voyager-admin-activity-fields {
+    padding: 12px;
+  }
+}
+
+
+/* ==============================================================================
+   VOYAGER HUB — persistent activity structure, including empty states
+   ============================================================================== */
+
+.app-shell .voyager-page {
+  display: grid;
+  gap: 16px;
+}
+
+.app-shell .voyager-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.app-shell .voyager-overview-grid > article {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+  min-height: 86px;
+  padding: 13px;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .voyager-overview-grid > article > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-overview-grid > article > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.app-shell .voyager-overview-grid small {
+  color: var(--rr-muted);
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-overview-grid strong {
+  color: var(--rr-ink);
+  font-size: 1.05rem;
+  line-height: 1.05;
+}
+
+.app-shell .voyager-overview-grid em {
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: .5rem;
+  font-style: normal;
+  line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-featured-section,
+.app-shell .voyager-mandatory-section,
+.app-shell .voyager-journal-section,
+.app-shell .voyager-gallery-hub {
+  display: grid;
+  gap: 11px;
+  min-width: 0;
+}
+
+.app-shell .voyager-section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.app-shell .voyager-section-heading > span {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.app-shell .voyager-section-heading em {
+  color: var(--rr-red);
+  font-size: .5rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.app-shell .voyager-section-heading h3 {
+  margin: 0;
+  color: var(--rr-ink);
+  font-size: .92rem;
+  letter-spacing: -.025em;
+}
+
+.app-shell .voyager-section-heading p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--rr-muted);
+  font-size: .58rem;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-create-action {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex: none;
+  border-radius: 9px;
+  background: var(--rr-surface-inverse);
+  padding: 0 12px;
+  color: var(--rr-ink-inverse);
+  font-size: .58rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .voyager-create-action svg {
+  width: 15px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-featured-card {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 18px;
+  align-items: end;
+  min-height: 164px;
+  padding: 20px;
+  border: 1px solid #2c3033;
+  border-radius: 16px;
+  background: var(--rr-surface-inverse);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .voyager-featured-card::after {
+  content: "VOYAGER";
+  position: absolute;
+  right: -8px;
+  bottom: -18px;
+  color: rgba(255,255,255,.035);
+  font-size: clamp(3.1rem, 8vw, 6.4rem);
+  font-weight: var(--rr-fw-extrabold);
+  letter-spacing: -.08em;
+  pointer-events: none;
+}
+
+.app-shell .voyager-featured-main {
+  position: relative;
+  z-index: 1;
+}
+
+.app-shell .voyager-featured-status {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rr-red);
+  padding: 0 8px;
+  color: var(--rr-ink-inverse);
+  font-size: .48rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-featured-main h3 {
+  margin: 9px 0 0;
+  color: var(--rr-ink-inverse);
+  font-size: clamp(1.15rem, 3vw, 1.8rem);
+  letter-spacing: -.04em;
+}
+
+.app-shell .voyager-featured-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px;
+  margin-top: 9px;
+}
+
+.app-shell .voyager-featured-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--rr-muted-inverse);
+  font-size: .6rem;
+}
+
+.app-shell .voyager-featured-meta svg {
+  width: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-featured-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.app-shell .voyager-featured-chips b {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid rgba(220,27,42,.28);
+  border-radius: 999px;
+  background: rgba(220,27,42,.12);
+  padding: 0 9px;
+  color: #ffb6bc;
+  font-size: .5rem;
+  font-weight: 800;
+}
+
+.app-shell .voyager-featured-chips b.neutral {
+  border-color: rgba(255,255,255,.1);
+  background: rgba(255,255,255,.05);
+  color: #c1c6ca;
+}
+
+.app-shell .voyager-featured-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 7px;
+  min-width: 115px;
+}
+
+.app-shell .voyager-featured-actions button {
+  min-height: 38px;
+  border: 1px solid #393d40;
+  border-radius: 9px;
+  background: var(--rr-surface-inverse-soft);
+  color: var(--rr-ink-inverse);
+  font-size: .55rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-featured-actions button:first-child {
+  border-color: transparent;
+  background: var(--rr-surface);
+  color: #191b1d;
+}
+
+.app-shell .voyager-structured-empty {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 112px;
+  padding: 16px;
+  border: 1px dashed var(--rr-line-strong);
+  border-radius: 14px;
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .voyager-structured-empty.compact {
+  min-height: 94px;
+}
+
+.app-shell .voyager-empty-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-empty-icon svg {
+  width: 20px;
+}
+
+.app-shell .voyager-structured-empty > div {
+  min-width: 0;
+}
+
+.app-shell .voyager-structured-empty strong {
+  display: block;
+  color: var(--rr-ink);
+  font-size: .7rem;
+}
+
+.app-shell .voyager-structured-empty p {
+  max-width: 650px;
+  margin: 4px 0 0;
+  color: var(--rr-muted);
+  font-size: .57rem;
+  line-height: 1.5;
+}
+
+.app-shell .voyager-structured-empty > a {
+  display: inline-flex;
+  min-height: var(--rr-control-sm);
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: var(--rr-surface-inverse);
+  padding: 0 11px;
+  color: var(--rr-ink-inverse);
+  font-size: .54rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.app-shell .voyager-mandatory-card {
+  display: grid;
+  grid-template-columns: minmax(0, .75fr) minmax(0, 1.25fr);
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 15px;
+  background: var(--rr-surface);
+  box-shadow: var(--rr-shadow-soft);
+}
+
+.app-shell .voyager-mandatory-card > div:first-child {
+  display: flex;
+  min-height: 132px;
+  flex-direction: column;
+  justify-content: center;
+  padding: 18px;
+  border-right: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-mandatory-card > div:first-child small {
+  color: var(--rr-red);
+  font-size: .5rem;
+  font-weight: 800;
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-mandatory-card > div:first-child strong {
+  margin-top: 5px;
+  color: var(--rr-ink);
+  font-size: 1.45rem;
+  letter-spacing: -.045em;
+}
+
+.app-shell .voyager-mandatory-card > div:first-child p {
+  margin: 5px 0 0;
+  color: var(--rr-muted);
+  font-size: .57rem;
+  line-height: 1.45;
+}
+
+.app-shell .voyager-mandatory-source {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.app-shell .voyager-mandatory-source > span {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 8px;
+  align-content: center;
+  padding: 15px;
+}
+
+.app-shell .voyager-mandatory-source > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-mandatory-source svg {
+  grid-row: 1 / span 2;
+  width: 30px;
+  height: 30px;
+  padding: 7px;
+  border-radius: 9px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-mandatory-source b {
+  color: var(--rr-ink);
+  font-size: .62rem;
+}
+
+.app-shell .voyager-mandatory-source small {
+  margin-top: 3px;
+  color: var(--rr-muted);
+  font-size: .5rem;
+  line-height: 1.4;
+}
+
+.app-shell .voyager-journal-heading {
+  align-items: center;
+}
+
+.app-shell .voyager-journal-heading .voyager-tabs {
+  margin-bottom: 0;
+  flex: none;
+}
+
+.app-shell .voyager-gallery-hub {
+  margin-bottom: 10px;
+}
+
+.app-shell .voyager-section-count {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rr-surface-muted);
+  padding: 0 9px;
+  color: var(--rr-muted);
+  font-size: .52rem;
+}
+
+.app-shell .voyager-gallery-empty {
+  display: grid;
+  justify-items: center;
+  padding: 18px;
+  border: 1px solid var(--rr-line);
+  border-radius: 14px;
+  background: var(--rr-surface);
+  text-align: center;
+}
+
+.app-shell .voyager-gallery-placeholders {
+  display: grid;
+  grid-template-columns: repeat(3, 86px);
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.app-shell .voyager-gallery-placeholders > span {
+  display: grid;
+  aspect-ratio: 4 / 3;
+  place-items: center;
+  border: 1px dashed var(--rr-line-strong);
+  border-radius: 9px;
+  background: var(--rr-surface-soft);
+  color: var(--rr-muted-2);
+}
+
+.app-shell .voyager-gallery-placeholders svg {
+  width: 20px;
+}
+
+.app-shell .voyager-gallery-empty > strong {
+  color: var(--rr-ink);
+  font-size: .7rem;
+}
+
+.app-shell .voyager-gallery-empty > p {
+  max-width: 520px;
+  margin: 5px 0 0;
+  color: var(--rr-muted);
+  font-size: .56rem;
+  line-height: 1.5;
+}
+
+.app-shell .voyager-gallery-empty > button {
+  display: inline-flex;
+  min-height: var(--rr-control-sm);
+  align-items: center;
+  gap: 6px;
+  margin-top: 11px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--rr-surface-inverse);
+  padding: 0 11px;
+  color: var(--rr-ink-inverse);
+  font-size: .54rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.app-shell .voyager-gallery-empty > button svg {
+  width: 14px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-gallery-hub-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.app-shell .voyager-gallery-hub-grid > button {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 0;
+  border-radius: 12px;
+  background: var(--rr-charcoal-2);
+  padding: 0;
+  cursor: pointer;
+}
+
+.app-shell .voyager-gallery-hub-grid img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.app-shell .voyager-gallery-hub-grid > button > span {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  color: var(--rr-muted-2);
+}
+
+.app-shell .voyager-gallery-hub-grid > button > span svg {
+  width: 25px;
+}
+
+.app-shell .voyager-gallery-hub-grid i {
+  position: absolute;
+  inset: auto 0 0;
+  display: grid;
+  gap: 2px;
+  padding: 24px 10px 9px;
+  background: linear-gradient(to top, rgba(0,0,0,.82), transparent);
+  color: var(--rr-ink-inverse);
+  font-style: normal;
+  text-align: left;
+}
+
+.app-shell .voyager-gallery-hub-grid i b {
+  overflow: hidden;
+  font-size: .6rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-gallery-hub-grid i small {
+  color: var(--rr-muted-inverse);
+  font-size: .48rem;
+}
+
+@media (max-width: 900px) {
+  .app-shell .voyager-overview-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-mandatory-card {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-mandatory-card > div:first-child {
+    border-right: 0;
+    border-bottom: 1px solid var(--rr-line);
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell .voyager-page {
+    gap: 14px;
+  }
+
+  .app-shell .voyager-overview-grid {
+    gap: 7px;
+  }
+
+  .app-shell .voyager-overview-grid > article {
+    grid-template-columns: 30px minmax(0, 1fr);
+    min-height: 72px;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .app-shell .voyager-overview-grid > article > svg {
+    width: 30px;
+    height: 30px;
+    padding: 7px;
+  }
+
+  .app-shell .voyager-overview-grid strong {
+    font-size: .9rem;
+  }
+
+  .app-shell .voyager-overview-grid em {
+    display: none;
+  }
+
+  .app-shell .voyager-section-heading {
+    align-items: flex-start;
+  }
+
+  .app-shell .voyager-section-heading p {
+    font-size: .54rem;
+  }
+
+  .app-shell .voyager-create-action {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: .52rem;
+  }
+
+  .app-shell .voyager-featured-card {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    gap: 14px;
+    padding: 16px;
+  }
+
+  .app-shell .voyager-featured-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .app-shell .voyager-structured-empty {
+    grid-template-columns: 38px minmax(0, 1fr);
+    min-height: 0;
+    padding: 13px;
+  }
+
+  .app-shell .voyager-structured-empty > a {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .voyager-empty-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .app-shell .voyager-mandatory-source {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-mandatory-source > span + span {
+    border-top: 1px solid var(--rr-line);
+    border-left: 0;
+  }
+
+  .app-shell .voyager-journal-heading {
+    display: grid;
+  }
+
+  .app-shell .voyager-journal-heading .voyager-tabs {
+    width: 100%;
+  }
+
+  .app-shell .voyager-gallery-placeholders {
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-gallery-hub-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .voyager-overview-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .app-shell .voyager-overview-grid > article {
+    padding: 9px;
+  }
+
+  .app-shell .voyager-section-heading h3 {
+    font-size: .82rem;
+  }
+
+  .app-shell .voyager-featured-main h3 {
+    font-size: 1.08rem;
+  }
+
+  .app-shell .voyager-gallery-hub-grid {
+    gap: 6px;
+  }
+}
+
+
+/* ==============================================================================
+   Audit hardening · legibility, touch, focus, motion
+   ============================================================================== */
+
+.app-shell .voyager-overview-grid small,
+.app-shell .voyager-section-heading em,
+.app-shell .voyager-featured-status,
+.app-shell .voyager-featured-chips b,
+.app-shell .voyager-featured-meta > span,
+.app-shell .voyager-section-count,
+.app-shell .voyager-gallery-hub-grid i small {
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-section-heading p,
+.app-shell .voyager-structured-empty p,
+.app-shell .voyager-mandatory-card > div:first-child p,
+.app-shell .voyager-mandatory-source small,
+.app-shell .voyager-gallery-empty > p {
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-create-action,
+.app-shell .voyager-featured-actions button,
+.app-shell .voyager-structured-empty > a,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button,
+.app-shell .finance-segments button,
+.app-shell .ledger-export,
+.app-shell .checkin-qr-actions button,
+.app-shell .role-panel .role-list select {
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell .sidebar-user-btn,
+.app-shell .header-bell-btn,
+.app-shell .hamb,
+.app-shell .close-menu {
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+}
+
+.app-shell :where(
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [role="button"],
+  [tabindex]:not([tabindex="-1"])
+):focus-visible {
+  outline: 2px solid var(--rr-focus-outline);
+  outline-offset: 2px;
+  box-shadow: var(--rr-focus-ring);
+}
+
+.app-shell .native-sheet:focus {
+  outline: none;
+}
+
+.app-shell .native-sheet-handle {
+  min-height: var(--rr-control-lg);
+  touch-action: none;
+}
+
+.app-shell .native-sheet-handle::after {
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 720px) {
+  .app-shell input,
+  .app-shell textarea,
+  .app-shell select {
+    font-size: max(1rem, var(--rr-type-body));
+  }
+
+  .app-shell .voyager-overview-grid small,
+  .app-shell .voyager-section-heading em,
+  .app-shell .voyager-featured-status,
+  .app-shell .voyager-featured-chips b,
+  .app-shell .voyager-featured-meta > span,
+  .app-shell .voyager-section-count {
+    font-size: var(--rr-type-caption);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-shell .native-sheet,
+  .app-shell .native-sheet-backdrop,
+  .app-shell > aside,
+  .app-shell .shade,
+  .app-shell .sidebar-subnav,
+  .app-shell .accordion-chevron,
+  .app-shell .voyager-card,
+  .app-shell .floating-action-button {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+
+.app-shell .riding-stat-chart-loading {
+  min-height: 310px;
+  overflow: hidden;
+}
+
+.app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+  width: 100%;
+  min-height: 310px;
+  border-radius: var(--rr-radius-lg);
+}
+
+@media (max-width: 720px) {
+  .app-shell .riding-stat-chart-loading,
+  .app-shell .riding-stat-chart-loading > .skeleton-shimmer {
+    min-height: 260px;
+  }
+}
+
+.app-shell .sidebar-link-label {
+  min-width: 0;
+  flex: 1;
+}
+
+
+/* ==============================================================================
+   Audit polish · readable microcopy and coarse-pointer targets
+   ============================================================================== */
+
+.app-shell .brand small,
+.app-shell .navlabel,
+.app-shell .motto small,
+.app-shell .content > header small,
+.app-shell .page-intro em,
+.app-shell .section-title em,
+.app-shell .form-heading em,
+.app-shell .ledger-head em,
+.app-shell .bottom a small,
+.app-shell .dashboard-premium .hero-tag,
+.app-shell .dashboard-premium .hero-eyebrow em,
+.app-shell .dashboard-premium .stats article span > small:first-child,
+.app-shell .dashboard-premium .dashboard-kpis article span > small:first-child,
+.app-shell .dashboard-premium .dashboard-kpis article span > small:last-child,
+.app-shell .dashboard-premium .dashboard-panel-heading em,
+.app-shell .unified-member-copy > small,
+.app-shell .unified-member-chips span,
+.app-shell .unified-crest-badge > span,
+.app-shell .unified-event-badge small,
+.app-shell .unified-event-badge span,
+.app-shell .unified-hero-eyebrow span,
+.app-shell .unified-hero-eyebrow em,
+.app-shell .unified-personal-stat small,
+.app-shell .unified-community-stat small,
+.app-shell .riding-stat-chart-head small,
+.app-shell .riding-stat-chart-summary small,
+.app-shell .member-directory-brand small,
+.app-shell .member-directory-brand span,
+.app-shell .member-directory-crest span,
+.app-shell .member-directory-eyebrow span,
+.app-shell .member-directory-eyebrow em,
+.app-shell .member-directory-hero-stats small,
+.app-shell .leaderboard-hero-brand small,
+.app-shell .leaderboard-hero-brand span,
+.app-shell .leaderboard-hero-eyebrow span,
+.app-shell .leaderboard-hero-eyebrow em,
+.app-shell .leaderboard-hero-rank-label,
+.app-shell .leaderboard-hero-podium-card small,
+.app-shell .leaderboard-hero-stats small,
+.app-shell .member-passport-head em,
+.app-shell .member-passport-progress-scale small,
+.app-shell .member-passport-progress-callout small,
+.app-shell .member-passport-badges article > span small,
+.app-shell .member-passport-metrics small,
+.app-shell .member-passport-verified,
+.app-shell .member-passport-metrics strong > span,
+.app-shell .member-passport-meta-link,
+.app-shell .voyager-hero em,
+.app-shell .voyager-km small,
+.app-shell .voyager-km span {
+  font-size: var(--rr-type-caption);
+  line-height: 1.3;
+}
+
+.app-shell .dashboard-premium .quick-action-desc,
+.app-shell .dashboard-premium .dashboard-panel-heading > small,
+.app-shell .dashboard-premium .inline-empty small,
+.app-shell .dashboard-premium .support figcaption,
+.app-shell .unified-hero-desc,
+.app-shell .unified-hero-meta p,
+.app-shell .member-directory-hero-copy p,
+.app-shell .leaderboard-hero-copy p,
+.app-shell .riding-stat-empty span,
+.app-shell .voyager-section-heading p,
+.app-shell .voyager-structured-empty p,
+.app-shell .voyager-gallery-empty > p {
+  font-size: var(--rr-type-meta);
+  line-height: 1.45;
+}
+
+.app-shell .login-link,
+.app-shell .agenda-tabs button,
+.app-shell .finance-segments button,
+.app-shell .admin-member-tab-btn,
+.app-shell .riding-stat-range button,
+.app-shell .member-directory-refresh,
+.app-shell .member-directory-refresh-top,
+.app-shell .leaderboard-hero-refresh,
+.app-shell .unified-primary-action,
+.app-shell .unified-secondary-action,
+.app-shell .profile-emboss-action {
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-create-action,
+.app-shell .voyager-gallery-empty > button,
+.app-shell .voyager-tabs button,
+.app-shell .event-management-actions button {
+  font-size: var(--rr-type-meta);
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell .bottom a,
+  .app-shell .login-link,
+  .app-shell .agenda-tabs button,
+  .app-shell .finance-segments button,
+  .app-shell .admin-member-tab-btn,
+  .app-shell .riding-stat-range button,
+  .app-shell .member-directory-refresh,
+  .app-shell .member-directory-refresh-top,
+  .app-shell .leaderboard-hero-refresh,
+  .app-shell .profile-emboss-action,
+  .app-shell .generated-link button,
+  .app-shell .rsvp-list-title button,
+  .app-shell .void-transaction {
+    min-height: var(--rr-control-lg);
+  }
+
+  .app-shell .generated-link button,
+  .app-shell .void-transaction {
+    min-width: var(--rr-control-lg);
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .dashboard-premium .stats article span > small:first-child,
+  .app-shell .dashboard-premium .dashboard-kpis article span > small:first-child,
+  .app-shell .unified-personal-stat small,
+  .app-shell .unified-community-stat small,
+  .app-shell .member-directory-hero-stats small,
+  .app-shell .leaderboard-hero-stats small {
+    font-size: var(--rr-type-caption);
+  }
+}
+
+
+/* ==============================================================================
+   Audit next pass · admin readability and touch resilience
+   ============================================================================== */
+
+.app-shell .checkin-qr-content em,
+.app-shell .checkin-qr-modal p,
+.app-shell .attendance-stats small,
+.app-shell .attendance-list-head small,
+.app-shell .attendance-list small,
+.app-shell .attendance-list em,
+.app-shell .attendance-absent small,
+.app-shell .event-management-list article em,
+.app-shell .event-management-list article small,
+.app-shell .bulletin-management-list span,
+.app-shell .bulletin-management-list small,
+.app-shell .audit-list small,
+.app-shell .audit-list time,
+.app-shell .mapping-grid label em {
+  font-size: var(--rr-type-caption);
+  line-height: 1.35;
+}
+
+.app-shell .checkin-qr-content p,
+.app-shell .checkin-qr-modal small,
+.app-shell .attendance-absent .system-message,
+.app-shell .event-management-list article p {
+  font-size: var(--rr-type-meta);
+  line-height: 1.45;
+}
+
+.app-shell .qr-close {
+  min-width: var(--rr-control-lg);
+  min-height: var(--rr-control-lg);
+}
+
+@media (pointer: coarse) and (max-width: 900px) {
+  .app-shell > aside nav a,
+  .app-shell .sidebar-accordion-header,
+  .app-shell .sidebar-tools summary,
+  .app-shell .sidebar-tools nav a,
+  .app-shell .attendance-export,
+  .app-shell .bulletin-actions button {
+    min-height: var(--rr-control-lg);
+  }
+}
+
+/* ==============================================================================
+   Voyager compact task-first refinement · Impeccable
+   ============================================================================== */
+
+.app-shell .voyager-page {
+  gap: 12px;
+}
+
+.app-shell .voyager-hero.voyager-hero-compact {
+  align-items: center;
+  margin-bottom: 0;
+  padding: 14px 16px;
+  border-radius: 14px;
+}
+
+.app-shell .voyager-hero-compact .voyager-hero-copy h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: -.035em;
+}
+
+.app-shell .voyager-hero-compact .voyager-hero-copy p {
+  max-width: 480px;
+  margin-top: 3px;
+  font-size: var(--rr-type-meta);
+  line-height: 1.4;
+}
+
+.app-shell .voyager-hero-tools {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.app-shell .voyager-km-inline {
+  display: grid;
+  gap: 1px;
+  padding-right: 12px;
+  border-right: 1px solid rgba(255,255,255,.12);
+  text-align: right;
+}
+
+.app-shell .voyager-km-inline small {
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .06em;
+}
+
+.app-shell .voyager-km-inline strong {
+  color: var(--rr-ink-inverse);
+  font-size: .92rem;
+  line-height: 1.1;
+}
+
+.app-shell .voyager-hero-compact .voyager-create-action {
+  min-height: var(--rr-control-lg);
+  padding-inline: 12px;
+}
+
+.app-shell .voyager-command-card {
+  overflow: hidden;
+  border: 1px solid #2f3336;
+  border-radius: 15px;
+  background: var(--rr-surface-inverse);
+  color: var(--rr-ink-inverse);
+}
+
+.app-shell .voyager-command-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px;
+}
+
+.app-shell .voyager-command-copy {
+  min-width: 0;
+}
+
+.app-shell .voyager-command-status {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rr-red);
+  padding: 0 8px;
+  color: #fff;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .05em;
+}
+
+.app-shell .voyager-command-copy h3 {
+  margin: 7px 0 0;
+  overflow: hidden;
+  color: var(--rr-ink-inverse);
+  font-size: 1.22rem;
+  line-height: 1.15;
+  letter-spacing: -.035em;
+  text-overflow: ellipsis;
+}
+
+.app-shell .voyager-command-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 14px;
+  margin-top: 7px;
+}
+
+.app-shell .voyager-command-meta > span {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 5px;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-command-meta svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-command-actions {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+}
+
+.app-shell .voyager-command-actions button {
+  min-height: var(--rr-control-lg);
+  border: 1px solid #3b3f42;
+  border-radius: 9px;
+  background: var(--rr-surface-inverse-soft);
+  padding: 0 12px;
+  color: var(--rr-ink-inverse);
+  font-size: var(--rr-type-meta);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .voyager-command-actions button:first-child {
+  border-color: var(--rr-surface);
+  background: var(--rr-surface);
+  color: var(--rr-ink);
+}
+
+.app-shell .voyager-command-member {
+  display: grid;
+  grid-template-columns: minmax(180px, .58fr) minmax(0, 1.42fr);
+  border-top: 1px solid rgba(255,255,255,.1);
+}
+
+.app-shell .voyager-command-member-copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  padding: 12px 16px;
+}
+
+.app-shell .voyager-command-member-copy small {
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+  letter-spacing: .07em;
+}
+
+.app-shell .voyager-command-member-copy strong {
+  margin-top: 3px;
+  color: var(--rr-ink-inverse);
+  font-size: .92rem;
+}
+
+.app-shell .voyager-command-member-copy p {
+  margin: 3px 0 0;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-meta);
+  line-height: 1.35;
+}
+
+.app-shell .voyager-command-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-width: 0;
+  border-left: 1px solid rgba(255,255,255,.1);
+}
+
+.app-shell .voyager-command-metrics > span,
+.app-shell .voyager-command-metrics > button {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 6px;
+  align-content: center;
+  min-width: 0;
+  min-height: 68px;
+  border: 0;
+  border-left: 1px solid rgba(255,255,255,.08);
+  background: transparent;
+  padding: 10px;
+  color: var(--rr-ink-inverse);
+  text-align: left;
+}
+
+.app-shell .voyager-command-metrics > span:first-child {
+  border-left: 0;
+}
+
+.app-shell .voyager-command-metrics > button {
+  cursor: pointer;
+}
+
+.app-shell .voyager-command-metrics > button:hover {
+  background: rgba(255,255,255,.04);
+}
+
+.app-shell .voyager-command-metrics svg {
+  grid-row: 1 / span 2;
+  width: 16px;
+  height: 16px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-command-metrics small {
+  overflow: hidden;
+  color: var(--rr-muted-inverse);
+  font-size: var(--rr-type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-command-metrics b {
+  overflow: hidden;
+  margin-top: 2px;
+  color: var(--rr-ink-inverse);
+  font-size: .72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-command-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 16px 13px;
+}
+
+.app-shell .voyager-command-tags > span {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(220,27,42,.14);
+  padding: 0 8px;
+  color: #ffc1c6;
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .voyager-command-tags > span.neutral {
+  background: rgba(255,255,255,.07);
+  color: var(--rr-muted-inverse);
+}
+
+.app-shell .voyager-stat-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface);
+}
+
+.app-shell .voyager-stat-strip > span {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 7px;
+  align-content: center;
+  min-width: 0;
+  min-height: 58px;
+  padding: 9px 12px;
+}
+
+.app-shell .voyager-stat-strip > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-stat-strip svg {
+  grid-row: 1 / span 2;
+  width: 16px;
+  height: 16px;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-stat-strip small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  line-height: 1;
+}
+
+.app-shell .voyager-stat-strip strong {
+  overflow: hidden;
+  margin-top: 3px;
+  color: var(--rr-ink);
+  font-size: .8rem;
+  line-height: 1.05;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-journal-primary {
+  gap: 8px;
+}
+
+.app-shell .voyager-journal-primary .voyager-section-heading {
+  align-items: center;
+}
+
+.app-shell .voyager-list {
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface);
+}
+
+.app-shell .voyager-list-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) auto auto;
+  gap: 11px;
+  align-items: center;
+  width: 100%;
+  min-height: 70px;
+  border: 0;
+  border-bottom: 1px solid var(--rr-line);
+  background: transparent;
+  padding: 9px 12px;
+  color: var(--rr-ink);
+  text-align: left;
+}
+
+.app-shell .voyager-list-row:last-child {
+  border-bottom: 0;
+}
+
+.app-shell .voyager-list-row:hover {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .voyager-list-date {
+  display: grid;
+  width: 44px;
+  height: 46px;
+  place-items: center;
+  align-content: center;
+  border-radius: 9px;
+  background: var(--rr-surface-muted);
+}
+
+.app-shell .voyager-list-date b {
+  font-size: .86rem;
+  line-height: 1;
+}
+
+.app-shell .voyager-list-date small {
+  margin-top: 3px;
+  color: var(--rr-red);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-bold);
+}
+
+.app-shell .voyager-list-copy {
+  min-width: 0;
+}
+
+.app-shell .voyager-list-copy strong {
+  display: block;
+  overflow: hidden;
+  font-size: .78rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-list-copy small {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  overflow: hidden;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-shell .voyager-list-copy svg {
+  width: 12px;
+  flex: none;
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-list-meta {
+  display: flex;
+  gap: 12px;
+}
+
+.app-shell .voyager-list-meta > b {
+  display: grid;
+  min-width: 42px;
+  color: var(--rr-ink);
+  font-size: .66rem;
+  line-height: 1.05;
+  text-align: right;
+}
+
+.app-shell .voyager-list-meta small {
+  margin-top: 3px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  font-weight: var(--rr-fw-regular);
+}
+
+.app-shell .voyager-list-flags {
+  display: flex;
+  max-width: 118px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.app-shell .voyager-list-flags i {
+  display: inline-flex;
+  min-height: 22px;
+  align-items: center;
+  border-radius: 999px;
+  background: #fff0f1;
+  padding: 0 7px;
+  color: #ad1420;
+  font-size: var(--rr-type-caption);
+  font-style: normal;
+  font-weight: var(--rr-fw-bold);
+  white-space: nowrap;
+}
+
+.app-shell .voyager-list-flags i.neutral {
+  background: var(--rr-surface-muted);
+  color: var(--rr-muted);
+}
+
+.app-shell .voyager-list-empty {
+  display: flex;
+  min-height: 72px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+}
+
+.app-shell .voyager-list-empty > svg {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  padding: 8px;
+  border-radius: 9px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-list-empty > span {
+  display: grid;
+  gap: 2px;
+}
+
+.app-shell .voyager-list-empty strong {
+  font-size: .68rem;
+}
+
+.app-shell .voyager-list-empty small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+}
+
+.app-shell .voyager-disclosure {
+  overflow: hidden;
+  border: 1px solid var(--rr-line);
+  border-radius: 13px;
+  background: var(--rr-surface);
+}
+
+.app-shell .voyager-disclosure summary {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 13px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.app-shell .voyager-disclosure summary::-webkit-details-marker {
+  display: none;
+}
+
+.app-shell .voyager-disclosure summary > span {
+  display: grid;
+  gap: 2px;
+}
+
+.app-shell .voyager-disclosure summary strong {
+  color: var(--rr-ink);
+  font-size: .7rem;
+}
+
+.app-shell .voyager-disclosure summary small {
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-disclosure summary > b {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--rr-surface-muted);
+  padding: 0 9px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+}
+
+.app-shell .voyager-disclosure[open] summary {
+  background: var(--rr-surface-soft);
+}
+
+.app-shell .voyager-disclosure-body {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-disclosure-body > span {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  column-gap: 8px;
+  align-content: center;
+  min-height: 72px;
+  padding: 11px 13px;
+}
+
+.app-shell .voyager-disclosure-body > span + span {
+  border-left: 1px solid var(--rr-line);
+}
+
+.app-shell .voyager-disclosure-body svg {
+  grid-row: 1 / span 2;
+  width: 28px;
+  height: 28px;
+  padding: 7px;
+  border-radius: 8px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-disclosure-body b {
+  font-size: .64rem;
+}
+
+.app-shell .voyager-disclosure-body small {
+  margin-top: 2px;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-caption);
+  line-height: 1.35;
+}
+
+.app-shell .voyager-gallery-compact {
+  gap: 8px;
+  margin-bottom: 0;
+}
+
+.app-shell .voyager-gallery-preview {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.app-shell .voyager-gallery-preview > button {
+  aspect-ratio: 1 / .74;
+  border-radius: 10px;
+}
+
+.app-shell .voyager-gallery-empty.compact {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  justify-items: stretch;
+  min-height: 70px;
+  padding: 11px 12px;
+  text-align: left;
+}
+
+.app-shell .voyager-gallery-empty.compact > svg {
+  width: 34px;
+  height: 34px;
+  padding: 8px;
+  border-radius: 9px;
+  background: var(--rr-surface-muted);
+  color: var(--rr-red);
+}
+
+.app-shell .voyager-gallery-empty.compact > span {
+  min-width: 0;
+}
+
+.app-shell .voyager-gallery-empty.compact > span strong {
+  display: block;
+  font-size: .68rem;
+}
+
+.app-shell .voyager-gallery-empty.compact > span p {
+  margin: 3px 0 0;
+  color: var(--rr-muted);
+  font-size: var(--rr-type-meta);
+  line-height: 1.35;
+}
+
+.app-shell .voyager-gallery-empty.compact > button {
+  margin-top: 0;
+}
+
+.app-shell .voyager-command-actions button:focus-visible,
+.app-shell .voyager-command-metrics > button:focus-visible,
+.app-shell .voyager-list-row:focus-visible,
+.app-shell .voyager-disclosure summary:focus-visible,
+.app-shell .voyager-gallery-preview > button:focus-visible {
+  outline: 2px solid var(--rr-red);
+  outline-offset: 2px;
+}
+
+@media (max-width: 820px) {
+  .app-shell .voyager-command-member {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-command-member-copy {
+    border-bottom: 1px solid rgba(255,255,255,.1);
+  }
+
+  .app-shell .voyager-command-metrics {
+    border-left: 0;
+  }
+
+  .app-shell .voyager-list-row {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+
+  .app-shell .voyager-list-flags {
+    grid-column: 2 / -1;
+    max-width: none;
+    justify-content: flex-start;
+    margin-top: -4px;
+  }
+}
+
+@media (max-width: 620px) {
+  .app-shell .voyager-page {
+    gap: 10px;
+  }
+
+  .app-shell .voyager-hero.voyager-hero-compact {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 13px;
+  }
+
+  .app-shell .voyager-hero-tools {
+    justify-content: space-between;
+    padding-top: 9px;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+
+  .app-shell .voyager-km-inline {
+    padding-right: 0;
+    border-right: 0;
+    text-align: left;
+  }
+
+  .app-shell .voyager-command-head {
+    grid-template-columns: 1fr;
+    gap: 11px;
+    padding: 14px;
+  }
+
+  .app-shell .voyager-command-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-command-actions button:only-child {
+    grid-column: 1 / -1;
+  }
+
+  .app-shell .voyager-command-member-copy {
+    padding: 11px 14px;
+  }
+
+  .app-shell .voyager-command-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-command-metrics > span,
+  .app-shell .voyager-command-metrics > button {
+    min-height: 58px;
+    border-top: 1px solid rgba(255,255,255,.08);
+    border-left: 1px solid rgba(255,255,255,.08);
+    padding: 9px 10px;
+  }
+
+  .app-shell .voyager-command-metrics > span:nth-child(-n+2),
+  .app-shell .voyager-command-metrics > button:nth-child(-n+2) {
+    border-top: 0;
+  }
+
+  .app-shell .voyager-command-metrics > span:nth-child(odd),
+  .app-shell .voyager-command-metrics > button:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .app-shell .voyager-command-tags {
+    padding: 0 14px 12px;
+  }
+
+  .app-shell .voyager-stat-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .app-shell .voyager-stat-strip > span {
+    min-height: 54px;
+    padding: 8px 10px;
+  }
+
+  .app-shell .voyager-stat-strip > span:nth-child(3) {
+    border-top: 1px solid var(--rr-line);
+    border-left: 0;
+  }
+
+  .app-shell .voyager-stat-strip > span:nth-child(4) {
+    border-top: 1px solid var(--rr-line);
+  }
+
+  .app-shell .voyager-journal-primary .voyager-section-heading {
+    display: grid;
+    gap: 8px;
+  }
+
+  .app-shell .voyager-journal-primary .voyager-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+
+  .app-shell .voyager-list-row {
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    gap: 9px;
+    min-height: 68px;
+    padding: 8px 10px;
+  }
+
+  .app-shell .voyager-list-date {
+    width: 40px;
+    height: 42px;
+  }
+
+  .app-shell .voyager-list-meta {
+    gap: 7px;
+  }
+
+  .app-shell .voyager-list-meta > b {
+    min-width: 34px;
+  }
+
+  .app-shell .voyager-disclosure-body {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell .voyager-disclosure-body > span + span {
+    border-top: 1px solid var(--rr-line);
+    border-left: 0;
+  }
+
+  .app-shell .voyager-gallery-preview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .app-shell .voyager-gallery-empty.compact {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .app-shell .voyager-gallery-empty.compact > button {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-shell .voyager-hero-compact .voyager-hero-copy p {
+    max-width: 30ch;
+  }
+
+  .app-shell .voyager-command-copy h3 {
+    font-size: 1.08rem;
+  }
+
+  .app-shell .voyager-list-meta {
+    display: none;
+  }
+
+  .app-shell .voyager-list-row {
+    grid-template-columns: 40px minmax(0, 1fr);
+  }
+
+  .app-shell .voyager-list-flags {
+    grid-column: 2;
+  }
+
+  .app-shell .voyager-gallery-preview > button {
+    aspect-ratio: 1 / .82;
+  }
+}
+
