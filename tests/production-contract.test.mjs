@@ -374,6 +374,9 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
   const cash = await read("components/cash-screen.tsx");
   const profile = await read("components/profile-screen.tsx");
+  const profileController = await read(
+    "components/profile-screen-controller.ts",
+  );
 
   assert.match(cash, /useMemberAccess/);
   assert.match(cash, /fetchWithCache<CashSnapshot>/);
@@ -382,12 +385,19 @@ test("Cash and profile pages reuse authenticated cache without blank-page reload
   assert.match(cash, /PageSkeleton title="Memuat Kas Revolt\.\.\."/);
   assert.doesNotMatch(cash, /auth\.getUser\(\)/);
 
-  assert.match(profile, /useMemberAccess/);
-  assert.match(profile, /fetchWithCache<ProfileSnapshot>/);
-  assert.match(profile, /ttlMs: 60_000/);
-  assert.match(profile, /profile:\$\{nextAccount\.member_external_id\}/);
-  assert.match(profile, /load\(true\)/);
-  assert.doesNotMatch(profile, /auth\.getUser\(\)/);
+  assert.match(profile, /useProfileScreenController/);
+  assert.match(profileController, /useMemberAccess/);
+  assert.match(
+    profileController,
+    /fetchWithCache<ProfileSnapshot>/,
+  );
+  assert.match(profileController, /ttlMs: 60_000/);
+  assert.match(
+    profileController,
+    /"profile:" \+ account\.member_external_id/,
+  );
+  assert.match(profileController, /load\(true\)/);
+  assert.doesNotMatch(profileController, /auth\.getUser\(\)/);
 });
 
 
@@ -684,11 +694,18 @@ test("Admin dashboard delegates agenda lifecycle to the events workspace", async
 
 test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
   const profile = await read("components/profile-screen.tsx");
+  const controller = await read(
+    "components/profile-screen-controller.ts",
+  );
+  const rideHistory = await read(
+    "components/profile-ride-history.tsx",
+  );
+  const workspace = [profile, controller, rideHistory].join("\n");
 
-  assert.ok(profile.includes("confirmAction"));
-  assert.ok(profile.includes("profile-ride-action"));
-  assert.ok(profile.includes("member_touring:"));
-  assert.ok(profile.includes('invalidateCache("riding:")'));
-  assert.ok(!profile.includes("confirm("));
-  assert.ok(!profile.includes("alert("));
+  assert.ok(rideHistory.includes("confirmAction"));
+  assert.ok(rideHistory.includes("profile-ride-action"));
+  assert.ok(controller.includes("member_touring:"));
+  assert.ok(controller.includes('invalidateCache("riding:")'));
+  assert.ok(!workspace.includes("confirm("));
+  assert.ok(!workspace.includes("alert("));
 });
