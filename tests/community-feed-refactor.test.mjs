@@ -3,10 +3,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readMany = async (...paths) => (await Promise.all(paths.map(read))).join("\n");
 
 test("community feed is split into stable entry, orchestration, data, actions, model, and presentation", async () => {
   const entry = await read("components/community-feed.tsx");
-  const screen = await read("components/community-feed-screen.tsx");
+  const screen = await readMany("components/community-feed-screen.tsx", "components/community-feed-controller.ts");
   const data = await read("components/community-feed-data.ts");
   const actions = await read("components/community-feed-actions.ts");
   const model = await read("components/community-feed-model.ts");

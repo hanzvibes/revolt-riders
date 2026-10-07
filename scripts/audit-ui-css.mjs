@@ -73,6 +73,24 @@ function walk(dir) {
   });
 }
 
+function readCssBundle(relativePath, seen = new Set()) {
+  const normalized = relativePath.replaceAll("\\", "/");
+  if (seen.has(normalized)) return "";
+  seen.add(normalized);
+
+  const absolutePath = path.join(ROOT, normalized);
+  if (!fs.existsSync(absolutePath)) return "";
+
+  const source = fs.readFileSync(absolutePath, "utf8");
+  const baseDir = path.posix.dirname(normalized);
+
+  return source.replace(/@import\s+["']([^"']+)["'];?/g, (statement, target) => {
+    if (!target.startsWith(".")) return statement;
+    const importedPath = path.posix.normalize(path.posix.join(baseDir, target));
+    return readCssBundle(importedPath, seen);
+  });
+}
+
 function lineOf(content, index) {
   return content.slice(0, index).split("\n").length;
 }
@@ -96,7 +114,7 @@ function countImportant(content) {
 for (const file of cssTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  const content = fs.readFileSync(abs, "utf8");
+  const content = readCssBundle(file);
 
   for (const match of content.matchAll(/font-weight\s*:\s*(\d{3})/g)) {
     const value = match[1];
@@ -270,7 +288,7 @@ for (const [file, requiredSnippets] of Object.entries(mobileA11yContracts)) {
 
 const nativeAdminPath = path.join(ROOT, "app/native-admin.css");
 if (fs.existsSync(nativeAdminPath)) {
-  const nativeAdmin = fs.readFileSync(nativeAdminPath, "utf8");
+  const nativeAdmin = readCssBundle("app/native-admin.css");
   const handleBlock =
     nativeAdmin.match(/\.native-sheet-handle\s*\{([\s\S]*?)\}/)?.[1] ?? "";
   if (
@@ -285,7 +303,7 @@ if (fs.existsSync(nativeAdminPath)) {
 
 const systemUiPath = path.join(ROOT, "app/system-ui.css");
 if (fs.existsSync(systemUiPath)) {
-  const systemUi = fs.readFileSync(systemUiPath, "utf8").replace(/\r\n/g, "\n");
+  const systemUi = readCssBundle("app/system-ui.css").replace(/\r\n/g, "\n");
   const mobileActionTypography = `.app-shell .voyager-create-action,
 .app-shell .voyager-gallery-empty > button,
 .app-shell .voyager-tabs button,

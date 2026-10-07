@@ -3,6 +3,26 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readMany = async (...paths) => (await Promise.all(paths.map(read))).join("\n");
+const readSystemCss = () =>
+  readMany(
+    "app/styles/system/core.css",
+    "app/styles/system/dashboard.css",
+    "app/styles/system/riding.css",
+    "app/styles/system/member.css",
+    "app/styles/system/leaderboard.css",
+    "app/styles/system/audit.css",
+    "app/styles/system/voyager.css",
+    "app/styles/system/profile.css",
+    "app/styles/system/leaderboard-stack.css",
+    "app/styles/system/canvas.css",
+  );
+const readCashFeature = () =>
+  readMany("components/cash-screen.tsx", "components/use-cash-screen.ts", "components/cash-screen-model.ts");
+const readProfileFeature = () =>
+  readMany("components/profile-screen.tsx", "components/use-profile-screen.ts", "components/profile-screen-model.ts");
+const readAdminOverview = () =>
+  readMany("components/admin-overview-screen.tsx", "components/use-admin-overview.ts", "components/admin-overview-model.ts");
 
 test("PWA manifest is installable", async () => {
   const manifest = JSON.parse(await read("public/manifest.webmanifest"));
@@ -231,7 +251,7 @@ test("Riding create and review mutations are routed through authorized RPCs", as
 test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(hub, /voyager-overview-grid/);
   assert.match(hub, /Voyager berikutnya/);
@@ -300,7 +320,7 @@ test("Mobile navigation is inert while the drawer is hidden", async () => {
 
 
 test("Audit hardening keeps shared controls touch friendly", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const tokens = await read("app/tokens.css");
 
   assert.match(tokens, /--rr-control-lg: 44px/);
@@ -311,7 +331,7 @@ test("Audit hardening keeps shared controls touch friendly", async () => {
 
 
 test("Reduced motion preserves state changes without blanket-killing the app", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const chart = await read("components/riding-stat-chart.tsx");
 
   assert.doesNotMatch(
@@ -354,7 +374,7 @@ test("Voyager gallery images decode lazily", async () => {
 
 test("Audit polish keeps navigation, cache, and microcopy resilient", async () => {
   const shell = await read("components/app-shell.tsx");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(shell, /DRAWER_FOCUSABLE_SELECTOR/);
   assert.match(shell, /event\.key === "Escape"/);
@@ -372,8 +392,8 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
 
 
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
-  const cash = await read("components/cash-screen.tsx");
-  const profile = await read("components/profile-screen.tsx");
+  const cash = await readCashFeature();
+  const profile = await readProfileFeature();
 
   assert.match(cash, /useMemberAccess/);
   assert.match(cash, /fetchWithCache<CashSnapshot>/);
@@ -475,7 +495,7 @@ test("UI audit budgets prevent legacy design debt from silently increasing", asy
 
 
 test("Audit next pass keeps active admin microcopy and touch targets readable", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(css, /Audit next pass · admin readability and touch resilience/);
   assert.match(css, /checkin-qr-content em[\s\S]*font-size: var\(--rr-type-caption\)/);
@@ -491,8 +511,10 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const auditedPages = [
     "app/admin/events/events-screen.tsx",
     "components/admin-overview-screen.tsx",
+    "components/use-admin-overview.ts",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
+    "components/use-cash-screen.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
   ];
@@ -513,7 +535,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
 test("Voyager makes member status and evidence visible", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(derived, /currentMemberVoyagerEvents/);
   assert.match(derived, /featuredMemberStatus/);
@@ -528,7 +550,7 @@ test("Voyager makes member status and evidence visible", async () => {
 
 test("Event deletion stays behind the authorized RPC", async () => {
   const eventActions = await read("app/admin/events/events-actions.ts");
-  const adminDashboard = await read("components/admin-overview-screen.tsx");
+  const adminDashboard = await readAdminOverview();
   const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
 
   assert.match(eventActions, /rpc\("delete_event"/);
@@ -562,7 +584,7 @@ test("Database performance hardening is migration-tracked", async () => {
 
 
 test("Admin rejection stays behind its authorized RPC", async () => {
-  const admin = await read("components/admin-overview-screen.tsx");
+  const admin = await readAdminOverview();
 
   assert.match(admin, /rpc\(\s*"reject_member_account_request"/);
   assert.doesNotMatch(
@@ -672,7 +694,7 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
 
 
 test("Admin dashboard delegates agenda lifecycle to the events workspace", async () => {
-  const admin = await read("components/admin-overview-screen.tsx");
+  const admin = await readAdminOverview();
   const actions = await read("app/admin/events/events-actions.ts");
 
   assert.doesNotMatch(admin, /sync_event_official_rides/);
@@ -683,7 +705,7 @@ test("Admin dashboard delegates agenda lifecycle to the events workspace", async
 
 
 test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
-  const profile = await read("components/profile-screen.tsx");
+  const profile = await readProfileFeature();
 
   assert.ok(profile.includes("confirmAction"));
   assert.ok(profile.includes("profile-ride-action"));

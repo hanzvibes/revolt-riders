@@ -3,11 +3,12 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readMany = async (...paths) => (await Promise.all(paths.map(read))).join("\n");
 
 test("Member role stays outside privileged navigation and mutations", async () => {
   const shell = await read("components/app-shell.tsx");
   const ridingApproval = await read("app/riding/approval/page.tsx");
-  const cash = await read("components/cash-screen.tsx");
+  const cash = await readMany("components/cash-screen.tsx", "components/use-cash-screen.ts", "components/cash-screen-model.ts");
   const voyager = await read("app/voyager/page.tsx");
   const voyagerModel = await read("app/voyager/voyager-model.ts");
 
@@ -45,7 +46,7 @@ test("Road Captain riding review is guarded in UI and database", async () => {
 });
 
 test("Treasurer cash mutations are guarded in UI and database", async () => {
-  const page = await read("components/cash-screen.tsx");
+  const page = await readMany("components/cash-screen.tsx", "components/use-cash-screen.ts", "components/cash-screen-model.ts");
   const migration = await read(
     "supabase/migrations/20260916123000_add_cash_controls_and_checkin_rotation.sql",
   );
@@ -88,7 +89,7 @@ test("Voyager management is Admin or Superadmin only at both layers", async () =
 });
 
 test("Admin dashboard and role management preserve Superadmin boundary", async () => {
-  const page = await read("components/admin-overview-screen.tsx");
+  const page = await readMany("components/admin-overview-screen.tsx", "components/use-admin-overview.ts", "components/admin-overview-model.ts");
   const migration = await read(
     "supabase/migrations/20260918000100_revolt_riders_comprehensive_fixes.sql",
   );
