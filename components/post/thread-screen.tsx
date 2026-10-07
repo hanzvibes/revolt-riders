@@ -17,7 +17,8 @@ import {
 } from "@/components/community-feed-utils";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache, type AppRole } from "@/context/data-cache-context";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getThreadDataClient } from "@/lib/features/post/thread-data";
+import { buildRepliesByParent, getRootComments } from "@/lib/features/post/thread-model";
 import {
   ExternalLink,
   Heart,
@@ -114,7 +115,7 @@ export function ThreadScreen() {
     setError("");
 
     try {
-      const supabase = getSupabaseBrowserClient();
+      const supabase = getThreadDataClient();
       const { data: rawPost, error: postError } = await supabase
         .from("feed_posts")
         .select(
@@ -234,7 +235,7 @@ export function ThreadScreen() {
   useEffect(() => {
     if (!activeMember || !postId) return;
 
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getThreadDataClient();
     const channel = supabase
       .channel(`feed-thread-${postId}`)
       .on(
@@ -344,7 +345,7 @@ export function ThreadScreen() {
       likeCount: Math.max(0, post.likeCount + (wasLiked ? -1 : 1)),
     });
 
-    const supabase = getSupabaseBrowserClient();
+    const supabase = getThreadDataClient();
     const result = wasLiked
       ? await supabase
           .from("feed_post_likes")
@@ -369,7 +370,7 @@ export function ThreadScreen() {
     setError("");
 
     const { data: createdComment, error: insertError } =
-      await getSupabaseBrowserClient()
+      await getThreadDataClient()
         .from("feed_post_comments")
         .insert({
           post_id: post.id,
@@ -446,7 +447,7 @@ export function ThreadScreen() {
     );
     setError("");
 
-    const { error: deleteError } = await getSupabaseBrowserClient()
+    const { error: deleteError } = await getThreadDataClient()
       .from("feed_post_comments")
       .delete()
       .eq("id", comment.id);
@@ -458,20 +459,14 @@ export function ThreadScreen() {
   };
 
   const rootComments = useMemo(
-    () => comments.filter((comment) => !comment.parent_comment_id),
+    () => getRootComments(comments),
     [comments],
   );
 
-  const repliesByParent = useMemo(() => {
-    const map = new Map<string, ThreadComment[]>();
-    for (const comment of comments) {
-      if (!comment.parent_comment_id) continue;
-      const current = map.get(comment.parent_comment_id) ?? [];
-      current.push(comment);
-      map.set(comment.parent_comment_id, current);
-    }
-    return map;
-  }, [comments]);
+  const repliesByParent = useMemo(
+    () => buildRepliesByParent(comments),
+    [comments],
+  );
 
   if (accessLoading || loading) {
     return (
