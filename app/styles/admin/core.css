@@ -1,0 +1,903 @@
+/* Native-feeling admin surfaces: focused lists with modal/bottom-sheet editors. */
+.admin-native-page {
+  max-width: 1040px;
+}
+.native-page-head {
+  align-items: center;
+}
+.native-page-head .primary-action {
+  flex: none;
+}
+.outline-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-radius-sm);
+  background: #fff;
+  color: var(--rr-ink);
+  padding: 0 15px;
+  font-size: 0.63rem;
+  font-weight: 800;
+  letter-spacing: 0.025em;
+}
+.outline-action:hover {
+  background: #f4f5f6;
+}
+.native-sheet-backdrop {
+  position: fixed;
+  z-index: 80;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(12, 14, 16, 0.46);
+  backdrop-filter: blur(4px);
+  padding: 0;
+  overflow: hidden;
+}
+.native-sheet-backdrop[data-state="open"] {
+  animation: sheet-fade 0.22s ease-out both;
+}
+.native-sheet-backdrop[data-state="closed"] {
+  animation: sheet-fade-out 0.2s ease-in both;
+}
+.native-sheet {
+  --sheet-surface: #ffffff;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: min(680px, 100%);
+  max-height: min(88dvh, 740px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-bottom: 0;
+  border-radius: 22px 22px 0 0;
+  background: var(--sheet-surface);
+  box-shadow: 0 -12px 48px rgba(10, 12, 14, 0.2);
+  overflow: hidden;
+  isolation: isolate;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translate3d(0, 0, 0);
+}
+.native-sheet[data-state="open"] {
+  animation: sheet-rise-native 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.native-sheet[data-state="closed"] {
+  animation: sheet-sink-native 0.22s cubic-bezier(0.32, 0, 0.67, 0) both;
+}
+.native-sheet[data-dragging="true"] {
+  animation: none;
+}
+.native-sheet-handle {
+  display: block;
+  width: 52px;
+  height: var(--rr-control-lg);
+  flex: none;
+  margin: 3px auto 0;
+  border: 0;
+  background: transparent;
+  position: relative;
+  touch-action: none;
+  cursor: grab;
+}
+.native-sheet-handle:after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 38px;
+  height: 4px;
+  border-radius: 99px;
+  background: #d4d8db;
+}
+.native-sheet > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  flex: none;
+  padding: 10px 22px 14px;
+  border-bottom: 1px solid var(--rr-line);
+}
+.native-sheet > header em {
+  display: block;
+  color: var(--rr-red);
+  font-size: 0.56rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+}
+.native-sheet > header h2 {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+  letter-spacing: -0.035em;
+}
+.native-sheet > header button {
+  display: grid;
+  place-items: center;
+  width: var(--rr-control-lg);
+  height: var(--rr-control-lg);
+  border: 0;
+  border-radius: 50%;
+  background: #f1f3f4;
+  color: #303438;
+}
+.native-sheet > header button svg {
+  width: 18px;
+}
+.native-sheet-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  overscroll-behavior-x: none;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+  padding: 18px 22px 0 22px;
+  position: relative;
+}
+.sheet-form,
+.member-sheet-form,
+.event-create-form,
+.bulletin-sheet-form,
+.cash-sheet-form,
+.join-detail-container {
+  padding-bottom: 24px;
+}
+
+@media (max-width: 720px) {
+  .sheet-form,
+  .member-sheet-form,
+  .event-create-form,
+  .bulletin-sheet-form,
+  .cash-sheet-form,
+  .join-detail-container {
+    padding-bottom: max(24px, calc(env(safe-area-inset-bottom) + 12px));
+  }
+}
+.sheet-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.sheet-form label {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  color: #292d30;
+  font-size: 0.65rem;
+  font-weight: 800;
+}
+.sheet-form input,
+.sheet-form select,
+.sheet-form textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: var(--rr-control-lg);
+  border: 1px solid var(--rr-line);
+  border-radius: var(--rr-control-radius);
+  background: #f8f9f9;
+  padding: 10px 12px;
+  color: var(--rr-ink);
+  font: inherit;
+  font-size: 0.72rem;
+  outline: 0;
+}
+.sheet-form textarea {
+  min-height: 100px;
+  resize: vertical;
+  line-height: 1.5;
+}
+.sheet-form input:focus,
+.sheet-form select:focus,
+.sheet-form textarea:focus {
+  border-color: #e49ba2;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(220, 27, 42, 0.08);
+}
+.sheet-form .field-title,
+.sheet-form .field-url,
+.sheet-form .field-start,
+.sheet-form .field-description,
+.sheet-form .error-message,
+.sheet-form .success-message,
+.sheet-form .sheet-actions {
+  grid-column: 1/-1;
+}
+.sheet-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 4px;
+}
+.bulletin-sheet-form {
+  grid-template-columns: 1fr;
+}
+.bulletin-sheet-form > * {
+  grid-column: 1;
+}
+.bulletin-sheet-form .publish-check {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 38px;
+}
+.bulletin-sheet-form .publish-check input {
+  width: 19px;
+  min-height: 19px;
+  height: 19px;
+  padding: 0;
+  accent-color: var(--rr-red);
+}
+.member-sheet-form .error-message,
+.member-sheet-form .sheet-actions {
+  grid-column: 1/-1;
+}
+.admin-launch-card {
+  grid-column: 1/-1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+}
+.admin-launch-card > div {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.admin-launch-card > div > svg {
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border-radius: 11px;
+  background: #17191b;
+  color: #fff;
+  padding: 10px;
+}
+.admin-launch-card em {
+  color: var(--rr-red);
+  font-size: 0.55rem;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.admin-launch-card h2 {
+  margin: 3px 0;
+  font-size: 1.02rem;
+}
+.admin-launch-card p {
+  margin: 0;
+  color: var(--rr-muted);
+  font-size: 0.65rem;
+}
+.admin-launch-card > span {
+  display: flex;
+  gap: 8px;
+  flex: none;
+}
+.admin-event-status-list {
+  grid-template-columns: 1fr 1fr;
+}
+.admin-event-status-list article {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+}
+.admin-event-status-list time {
+  grid-row: 1/3;
+  width: 52px;
+  height: 46px;
+}
+.admin-event-status-list > article > span {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+.admin-event-status-list > article > span b {
+  font-size: 0.7rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-event-status-list > article > span small {
+  margin-top: 3px;
+  font-size: 0.56rem;
+  color: var(--rr-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-event-status-list .event-status {
+  justify-self: end;
+}
+.admin-event-status-list select {
+  grid-column: 2/-1;
+  justify-self: end;
+  width: 118px;
+  margin: 0;
+}
+.member-management-list {
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.member-management-list article {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 11px 12px;
+}
+.member-management-list article > i {
+  grid-row: 1/2;
+  width: 38px;
+  height: 38px;
+}
+.member-management-list article > span {
+  min-width: 0;
+}
+.member-management-list article > em {
+  justify-self: end;
+}
+.member-edit-action {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--rr-line);
+  border-radius: 9px;
+  background: #fff;
+  color: #555b60;
+}
+.member-edit-action svg {
+  width: 17px;
+}
+.member-account-controls {
+  grid-column: 2/-1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  padding-top: 2px;
+}
+.member-account-controls select {
+  width: auto;
+  max-width: 145px;
+  min-height: var(--rr-control-sm);
+  margin: 0;
+}
+.bulletin-management {
+  max-width: none;
+}
+.bulletin-management-list article {
+  padding: 17px 0;
+}
+.bulletin-management-list p {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+.bulletin-actions button {
+  min-height: var(--rr-control-md);
+  border-radius: 9px;
+}
+@keyframes sheet-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes sheet-rise {
+  from {
+    opacity: 0.6;
+    transform: translateY(12px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 900px) {
+  .admin-event-status-list,
+  .member-management-list {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 720px) {
+  .native-page-head {
+    align-items: center;
+    gap: 12px;
+  }
+  .native-page-head p {
+    display: none;
+  }
+  .native-page-head .primary-action {
+    width: 44px;
+    padding: 0;
+    font-size: 0;
+    border-radius: 12px;
+  }
+  .native-page-head .primary-action svg {
+    width: 19px;
+  }
+  .native-sheet-backdrop {
+    padding: 0;
+  }
+  .native-sheet {
+    width: 100%;
+    max-height: 90dvh;
+    border-radius: 20px 20px 0 0;
+  }
+  .native-sheet > header {
+    padding: 10px 18px 12px;
+  }
+  .native-sheet > header h2 {
+    font-size: 1.05rem;
+  }
+  .native-sheet-body {
+    padding: 15px 18px 0 18px;
+  }
+  .sheet-form {
+    gap: 8px;
+  }
+  .sheet-form input,
+  .sheet-form textarea {
+    font-size: 16px;
+  }
+
+  .sheet-form select {
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  .sheet-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 25;
+    margin: 14px -18px 0 -18px;
+    padding: 12px 18px max(16px, env(safe-area-inset-bottom));
+    background: var(--sheet-surface, #fff);
+    border-top: 1px solid var(--rr-line);
+    box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+  }
+  .sheet-actions > * {
+    flex: 1;
+  }
+  .admin-launch-card {
+    padding: 16px;
+    align-items: flex-start;
+  }
+  .admin-launch-card > div > svg {
+    width: 38px;
+    height: 38px;
+  }
+  .admin-launch-card p {
+    display: none;
+  }
+  .admin-launch-card > span {
+    flex-direction: column;
+  }
+  .admin-launch-card .outline-action {
+    display: none;
+  }
+  .admin-launch-card .primary-action {
+    width: 42px;
+    padding: 0;
+    font-size: 0;
+  }
+  .admin-event-status-list article {
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+  }
+  .admin-event-status-list time {
+    width: 48px;
+  }
+  .member-management {
+    padding: 14px;
+  }
+  .member-management .section-title {
+    margin-bottom: 12px;
+  }
+  .member-management-list {
+    gap: 0;
+  }
+  .member-management-list article {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+    border: 0;
+    border-top: 1px solid var(--rr-line);
+    border-radius: 0;
+    background: #fff;
+    padding: 11px 2px;
+  }
+  .member-management-list article:first-child {
+    border-top: 0;
+  }
+  .member-management-list article > i {
+    grid-row: 1/3;
+  }
+  .member-management-list article > em {
+    grid-column: 2;
+    justify-self: start;
+    margin-top: 4px;
+    font-size: 0.5rem;
+  }
+  .member-edit-action {
+    grid-column: 3;
+    grid-row: 1/3;
+  }
+  .member-account-controls {
+    grid-column: 2/4;
+    justify-content: flex-start;
+    padding: 7px 0 1px;
+  }
+  .member-account-controls select {
+    flex: 1;
+    max-width: none;
+  }
+  .bulletin-management {
+    padding: 16px;
+  }
+  .bulletin-management-list article {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .bulletin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+  }
+  .bulletin-actions button {
+    justify-content: center;
+  }
+  .bulletin-management-list p {
+    -webkit-line-clamp: 2;
+  }
+}
+@media (max-width: 430px) {
+  .sheet-form,
+  .event-create-form,
+  .member-sheet-form {
+    grid-template-columns: 1fr;
+  }
+  .sheet-form .field-title,
+  .sheet-form .field-url,
+  .sheet-form .field-start,
+  .sheet-form .field-description,
+  .sheet-form .field-type,
+  .sheet-form .field-location,
+  .sheet-form .field-meetup,
+  .sheet-form .field-end,
+  .sheet-form .error-message,
+  .sheet-form .success-message,
+  .sheet-form .sheet-actions,
+  .member-sheet-form .error-message,
+  .member-sheet-form .sheet-actions {
+    grid-column: 1;
+  }
+  .admin-event-status-list article {
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+  }
+  .admin-event-status-list time {
+    width: 44px;
+  }
+  .admin-event-status-list .event-status {
+    grid-column: 2;
+    justify-self: start;
+  }
+  .admin-event-status-list select {
+    grid-column: 3;
+    grid-row: 1/3;
+    width: 105px;
+  }
+  .admin-launch-card h2 {
+    font-size: 0.88rem;
+  }
+  .admin-launch-card > div {
+    gap: 10px;
+  }
+}
+
+/* Floating actions and bottom sheets are deliberately scoped last to win over older desktop-form rules. */
+.floating-action-button {
+  position: fixed;
+  z-index: 35;
+  right: max(20px, calc(env(safe-area-inset-right) + 16px));
+  bottom: max(22px, calc(env(safe-area-inset-bottom) + 16px));
+  display: grid;
+  place-items: center;
+  width: 54px;
+  height: 54px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--rr-red);
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(220, 27, 42, 0.28);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.floating-action-button svg {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.5;
+}
+.floating-action-button:active {
+  transform: scale(0.94);
+  box-shadow: 0 5px 12px rgba(220, 27, 42, 0.24);
+}
+.native-sheet .sheet-form {
+  gap: 12px;
+}
+.native-sheet .sheet-form label {
+  gap: 5px;
+  font-size: 0.75rem;
+}
+.native-sheet .sheet-form input,
+.native-sheet .sheet-form select,
+.native-sheet .sheet-form textarea {
+  min-height: var(--rr-control-lg);
+  padding: 10px 12px;
+  font-size: 14px;
+  line-height: 1.35;
+}
+.native-sheet .sheet-form textarea {
+  min-height: 84px;
+}
+.native-sheet .sheet-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 25;
+  margin: 16px -22px 0 -22px;
+  padding: 14px 22px max(16px, env(safe-area-inset-bottom));
+  background: var(--sheet-surface, #ffffff);
+  border-top: 1px solid var(--rr-line);
+  box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.native-sheet .sheet-actions .primary-action {
+  flex: 1;
+  min-height: var(--rr-control-lg);
+  font-size: 0.72rem;
+  font-weight: 800;
+  justify-content: center;
+  margin: 0;
+}
+.native-sheet .sheet-actions .outline-action {
+  flex: 0 0 auto;
+  min-width: 90px;
+  min-height: var(--rr-control-lg);
+  font-size: 0.72rem;
+  font-weight: 800;
+  justify-content: center;
+  margin: 0;
+}
+.admin-event-status-list article {
+  min-height: 0;
+}
+.admin-event-status-list article > em {
+  display: none;
+}
+.admin-event-status-list select {
+  grid-column: 3;
+  grid-row: 1/3;
+  align-self: center;
+}
+.admin-event-status-list article {
+  grid-template-columns: 48px minmax(0, 1fr) 118px;
+}
+.admin-event-status-list time {
+  grid-row: 1/3;
+  width: 48px;
+  height: 44px;
+}
+.admin-event-status-list > article > span {
+  grid-column: 2;
+}
+.admin-event-status-list select {
+  width: 118px;
+}
+.admin-grid > .card,
+.admin-launch-card,
+.rsvp-panel,
+.admin-checkin-card,
+.approval-card,
+.role-panel {
+  padding: 24px;
+  border-radius: var(--radius, 14px);
+}
+.admin-checkin-card .form-heading {
+  margin-bottom: 12px;
+}
+.admin-checkin-card .form-heading p {
+  display: none;
+}
+.admin-checkin-card form {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+.admin-checkin-card form label {
+  flex: 1;
+  margin: 0;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+.admin-checkin-card form select {
+  font-size: 0.8125rem;
+  padding: 9px 12px;
+  min-height: var(--rr-control-md);
+  border: 1px solid var(--rr-line);
+  background: #fafbfb;
+  border-radius: var(--rr-radius-sm);
+}
+.admin-checkin-card form select option {
+  font-size: 0.8125rem;
+}
+.admin-checkin-card form .dark-action {
+  min-height: var(--rr-control-md);
+  white-space: nowrap;
+  font-size: 0.68rem;
+}
+.manual-checkin form label {
+  font-size: 0.74rem;
+  font-weight: 800;
+  margin: 6px 0;
+}
+.manual-checkin form select {
+  font-size: 0.8125rem;
+  padding: 9px 12px;
+  min-height: var(--rr-control-md);
+  border: 1px solid var(--rr-line);
+  background: #fafbfb;
+  border-radius: var(--rr-radius-sm);
+}
+.manual-checkin form select option {
+  font-size: 0.8125rem;
+}
+.rsvp-select {
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+.rsvp-select select {
+  font-size: 0.8125rem;
+  padding: 9px 12px;
+  min-height: var(--rr-control-md);
+  border: 1px solid var(--rr-line);
+  background: #fafbfb;
+  border-radius: var(--rr-radius-sm);
+}
+.attendance-list article,
+.attendance-absent article {
+  padding: 10px 0;
+  gap: 12px;
+}
+.attendance-list b,
+.attendance-absent b {
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+.attendance-list small,
+.attendance-absent small {
+  font-size: 0.62rem;
+  color: var(--rr-muted);
+  margin-top: 2px;
+}
+@keyframes sheet-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes sheet-rise-native {
+  from {
+    transform: translate3d(0, 100%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes sheet-sink-native {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, calc(100% + 24px), 0);
+    opacity: 0;
+  }
+}
+@media (max-width: 1024px) {
+  .floating-action-button {
+    bottom: max(78px, calc(env(safe-area-inset-bottom) + 68px));
+  }
+  .native-sheet {
+    width: min(680px, 100%);
+    max-height: min(88dvh, 660px);
+  }
+  .native-sheet .event-create-form {
+    grid-template-columns: 1fr 1fr;
+  }
+  .native-sheet .event-create-form .field-title,
+  .native-sheet .event-create-form .field-url,
+  .native-sheet .event-create-form .field-start,
+  .native-sheet .event-create-form .field-description,
+  .native-sheet .event-create-form .sheet-actions,
+  .native-sheet .event-create-form .error-message {
+    grid-column: 1/-1;
+  }
+  .admin-event-status-list {
+    grid-template-columns: 1fr;
+  }
+  .admin-event-status-list article {
+    grid-template-columns: 48px minmax(0, 1fr) 118px;
+  }
+  .admin-checkin-card form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .admin-checkin-card form label {
+    min-width: 0;
+  }
+  .admin-checkin-card .dark-action {
+    padding-inline: 15px;
+  }
+}
+@media (max-width: 560px) {
+  .native-sheet {
+    max-height: 88dvh;
+  }
+  .native-sheet .sheet-form,
+  .native-sheet .event-create-form,
+  .native-sheet .member-sheet-form {
+    grid-template-columns: 1fr;
+  }
+  .native-sheet .sheet-form > * {
+    grid-column: 1;
+  }
+  .native-sheet .sheet-actions {
+    gap: 8px;
+  }
+  .native-sheet .sheet-actions .outline-action {
+    flex: 0 0 auto;
+    padding-inline: 13px;
+  }
+  .admin-event-status-list article {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+  .admin-event-status-list time {
+    width: 44px;
+  }
+  .admin-event-status-list select {
+    grid-column: 2;
+    grid-row: auto;
+    justify-self: start;
+    width: 132px;
+    margin-top: 3px;
+  }
+  .admin-checkin-card form {
+    grid-template-columns: 1fr;
+  }
+  .admin-checkin-card .dark-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.native-sheet .cash-sheet-form .entry-description,
+.native-sheet .cash-sheet-form .error-message,
+.native-sheet .cash-sheet-form .success-message,
+.native-sheet .cash-sheet-form .sheet-actions {
+  grid-column: 1 / -1;
+}
+
