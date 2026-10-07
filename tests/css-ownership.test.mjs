@@ -27,3 +27,16 @@ test("bottom navigation keeps desktop hiding and reduced-motion behavior", async
   assert.match(bottomNav, /@media\s*\(prefers-reduced-motion:\s*reduce\)/);
   assert.match(bottomNav, /transition:\s*none/);
 });
+
+test("social thread clearance is owned with enough specificity to beat legacy feed rules", async () => {
+  const bottomNav = await read("app/bottom-navigation.css");
+
+  assert.match(
+    bottomNav,
+    /\.app-shell\.social-shell \.community-thread-page\{padding-bottom:calc\(var\(--rr-mobile-page-clearance\)/,
+  );
+  assert.match(
+    bottomNav,
+    /\.app-shell\.social-shell \.community-thread-composer\{bottom:var\(--rr-floating-nav-clearance\)/,
+  );
+});
