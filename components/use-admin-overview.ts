@@ -5,7 +5,7 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-import { Account, AdminEventRecord, PendingRequest, Member, Invitation, Rsvp, BulkLink, ManagedAccount, secureToken, downloadLinks } from "./admin-overview-model";
+import { Account, AdminEventRecord, PendingRequest, Member, Invitation, Rsvp, BulkLink, ManagedAccount, secureToken, sha256, downloadLinks } from "./admin-overview-model";
 
 export function useAdminOverview() {
 

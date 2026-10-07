@@ -5,6 +5,7 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { FloatingActionButton } from "@/components/floating-action-button";
 import { ModalSheet } from "@/components/modal-sheet";
 import { PageState } from "@/components/page-state";
+import { PageSkeleton } from "@/components/skeleton";
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, CircleDollarSign, FileDown, Search, ShieldCheck, Undo2, WalletCards } from "lucide-react";
 
 import { FilterType, rupiah, monthLabel } from "./cash-screen-model";

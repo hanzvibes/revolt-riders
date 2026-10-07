@@ -31,7 +31,7 @@ export type ManagedAccount = {
   role: "member" | "road_captain" | "treasurer" | "admin" | "superadmin";
   status: string;
 };
-const roles: ManagedAccount["role"][] = [
+export const roles: ManagedAccount["role"][] = [
   "member",
   "road_captain",
   "treasurer",
@@ -47,7 +47,7 @@ export const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");
 
-async function sha256(value: string) {
+export async function sha256(value: string) {
   const bytes = new TextEncoder().encode(value);
   const hash = await crypto.subtle.digest("SHA-256", bytes);
   return Array.from(new Uint8Array(hash))

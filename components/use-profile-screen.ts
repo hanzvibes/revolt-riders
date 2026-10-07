@@ -274,7 +274,7 @@ export function useProfileScreen() {
       .filter((ride) => ride.status === "approved")
       .map((ride) => ride.created_at),
     attendedAgendaCount,
-    activeMember: account.status === "active",
+    activeMember: account?.status === "active",
   });
   const previousKmMilestone = riderProgress.level.minKm;
   const nextKmMilestone = riderProgress.level.nextKm;
