@@ -546,7 +546,7 @@ export function CashScreen() {
                     </select>
                   </div>
                   <div className="finance-segments">
-                    {(["all", "income", "expense"] as FilterType[]).map(
+                    {(["all", "income", "expense"] as CashFilterType[]).map(
                       (item) => (
                         <button
                           key={item}
