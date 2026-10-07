@@ -9,7 +9,8 @@ import { PageState } from "@/components/page-state";
 import { PageSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
 import { useMemberAccess } from "@/hooks/use-member-access";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getCashDataClient } from "@/lib/features/cash/cash-data";
+import { calculateCashFlow, calculateExpenseCategories, filterCashTransactions, formatRupiah, getCashMonthKey, getCashMonthLabel, isCashStaffRole, sortCashTransactions, type CashFilterType } from "@/lib/features/cash/cash-model";
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -56,28 +57,6 @@ type Transaction = {
 type TransactionRow = Omit<Transaction, "source" | "amount"> & {
   amount: number | string;
 };
-type FilterType = "all" | "income" | "expense";
-type CashSnapshot = {
-  summary: Summary | null;
-  transactions: Transaction[];
-  dues: Due[];
-};
-
-const rupiah = (value: number) =>
-  new Intl.NumberFormat("id-ID", {
-    style: "currency",
-    currency: "IDR",
-    maximumFractionDigits: 0,
-  }).format(value);
-const isStaffRole = (role?: string) =>
-  ["treasurer", "admin", "superadmin"].includes(role || "");
-const monthKey = (transaction: Transaction) =>
-  (transaction.transaction_date || transaction.created_at).slice(0, 7);
-const monthLabel = (value: string) =>
-  new Intl.DateTimeFormat("id-ID", { month: "long", year: "numeric" }).format(
-    new Date(`${value}-01T00:00:00`),
-  );
-
 export function CashScreen() {
   const { promptAction } = useActionDialog();
   const { user, account: accessAccount, loading: accessLoading } = useMemberAccess();
@@ -98,74 +77,38 @@ export function CashScreen() {
   const [saving, setSaving] = useState(false);
   const [formOpen, setFormOpen] = useState(false);
   const [period, setPeriod] = useState("all");
-  const [filterType, setFilterType] = useState<FilterType>("all");
+  const [filterType, setFilterType] = useState<CashFilterType>("all");
   const [query, setQuery] = useState("");
 
-  const staff = isStaffRole(account?.role);
+  const staff = isCashStaffRole(account?.role);
   const sortedTransactions = useMemo(
-    () =>
-      transactions
-        .slice()
-        .sort((a, b) =>
-          `${b.transaction_date || ""}${b.created_at}`.localeCompare(
-            `${a.transaction_date || ""}${a.created_at}`,
-          ),
-        ),
+    () => sortCashTransactions(transactions),
     [transactions],
   );
   const periods = useMemo(
-    () => Array.from(new Set(sortedTransactions.map(monthKey))).filter(Boolean),
+    () =>
+      Array.from(new Set(sortedTransactions.map(getCashMonthKey))).filter(
+        Boolean,
+      ),
     [sortedTransactions],
   );
   const visibleTransactions = useMemo(
     () =>
-      sortedTransactions
-        .filter((transaction) => {
-          const matchesPeriod =
-            period === "all" || monthKey(transaction) === period;
-          const matchesType =
-            filterType === "all" || transaction.transaction_type === filterType;
-          const haystack =
-            `${transaction.description} ${transaction.category || ""}`.toLowerCase();
-          return (
-            matchesPeriod &&
-            matchesType &&
-            haystack.includes(query.trim().toLowerCase())
-          );
-        })
-        .slice(0, 50),
+      filterCashTransactions(sortedTransactions, {
+        period,
+        type: filterType,
+        query,
+      }),
     [filterType, period, query, sortedTransactions],
   );
   const flow = useMemo(
-    () =>
-      visibleTransactions
-        .filter((transaction) => !transaction.voided_at)
-        .reduce(
-          (total, transaction) => {
-            if (transaction.transaction_type === "income")
-              total.income += transaction.amount;
-            else total.expense += transaction.amount;
-            return total;
-          },
-          { income: 0, expense: 0 },
-        ),
+    () => calculateCashFlow(visibleTransactions),
     [visibleTransactions],
   );
-  const categories = useMemo(() => {
-    const totals = new Map<string, number>();
-    visibleTransactions
-      .filter(
-        (transaction) =>
-          !transaction.voided_at && transaction.transaction_type !== "income",
-      )
-      .forEach((transaction) => {
-        const label = transaction.category || "Lainnya";
-        totals.set(label, (totals.get(label) || 0) + transaction.amount);
-      });
-    return Array.from(totals, ([label, value]) => ({ label, value }))
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 5);
-  }, [visibleTransactions]);
+  const categories = useMemo(
+    () => calculateExpenseCategories(visibleTransactions),
+    [visibleTransactions],
+  );
   const maxCategory = categories[0]?.value || 1;
   const duesTotal = useMemo(
     () => dues.reduce((total, due) => total + Number(due.amount_paid), 0),
@@ -205,7 +148,7 @@ export function CashScreen() {
       const snapshot = await fetchWithCache<CashSnapshot>(
         cacheKey,
         async () => {
-          const supabase = getSupabaseBrowserClient();
+          const supabase = getCashDataClient();
 
           if (isStaffRole(nextAccount.role)) {
             const [summaryResult, imported, production, dueResult] = await Promise.all([
@@ -313,7 +256,7 @@ export function CashScreen() {
     setSuccess("");
     setSaving(true);
     try {
-      const supabase = getSupabaseBrowserClient();
+      const supabase = getCashDataClient();
       if (!user) throw new Error("Sesi login tidak ditemukan.");
       const parsedAmount = Number(amount);
       if (!Number.isFinite(parsedAmount) || parsedAmount <= 0)
@@ -367,7 +310,7 @@ export function CashScreen() {
     setError("");
     setSuccess("");
     try {
-      const { error: voidError } = await getSupabaseBrowserClient().rpc(
+      const { error: voidError } = await getCashDataClient().rpc(
         "void_club_cash_transaction",
         { p_transaction_id: transaction.id, p_reason: reason },
       );
@@ -540,7 +483,7 @@ export function CashScreen() {
                     {staff ? "Rekap iuran tercatat" : "Riwayat iuran kamu"}
                   </h3>
                 </span>
-                <b>{rupiah(duesTotal)}</b>
+                <b>{formatRupiah(duesTotal)}</b>
               </div>
               {dues.length === 0 ? (
                 <p className="system-message">Belum ada iuran yang tercatat.</p>
@@ -565,7 +508,7 @@ export function CashScreen() {
                               : "Tanggal belum tersedia"}
                         </small>
                       </span>
-                      <strong>{rupiah(Number(due.amount_paid))}</strong>
+                      <strong>{formatRupiah(Number(due.amount_paid))}</strong>
                     </article>
                   ))}
                 </div>
@@ -695,7 +638,7 @@ export function CashScreen() {
                       <option value="all">Semua periode</option>
                       {periods.map((item) => (
                         <option key={item} value={item}>
-                          {monthLabel(item)}
+                          {getCashMonthLabel(item)}
                         </option>
                       ))}
                     </select>
@@ -748,7 +691,7 @@ export function CashScreen() {
                               }
                             >
                               {incoming ? "+" : "−"}
-                              {rupiah(transaction.amount)}
+                              {formatRupiah(transaction.amount)}
                             </strong>
                             {transaction.source === "production" &&
                               !transaction.voided_at && (
@@ -779,15 +722,15 @@ export function CashScreen() {
                     <div>
                       <span>
                         <small>Dana masuk</small>
-                        <b className="cash-income">{rupiah(flow.income)}</b>
+                        <b className="cash-income">{formatRupiah(flow.income)}</b>
                       </span>
                       <span>
                         <small>Dana keluar</small>
-                        <b className="cash-expense">{rupiah(flow.expense)}</b>
+                        <b className="cash-expense">{formatRupiah(flow.expense)}</b>
                       </span>
                       <span className="flow-net">
                         <small>Arus bersih</small>
-                        <b>{rupiah(flow.income - flow.expense)}</b>
+                        <b>{formatRupiah(flow.income - flow.expense)}</b>
                       </span>
                     </div>
                   </section>
@@ -808,7 +751,7 @@ export function CashScreen() {
                           <article key={item.label}>
                             <span>
                               <b>{item.label}</b>
-                              <small>{rupiah(item.value)}</small>
+                              <small>{formatRupiah(item.value)}</small>
                             </span>
                             <i>
                               <em
