@@ -170,7 +170,7 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const actions = await read("app/voyager/voyager-actions.ts");
   const manage = await read("app/voyager/voyager-manage-sheet.tsx");
   const voyagerWorkspace = [page, data, actions, manage].join("\n");
-  const nav = await read("components/app-shell.tsx");
+  const nav = await read("components/navigation-config.ts");
   const ridingHistory = await read("app/riding/riding-history.tsx");
 
   assert.match(migration, /create table if not exists public\.event_participants/);
@@ -599,8 +599,10 @@ test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
     "app/admin/events/events-screen.tsx",
     "components/admin-overview-screen.tsx",
+    "components/use-admin-overview.ts",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
+    "components/use-cash-screen.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
     "app/riding/riding-history.tsx",
