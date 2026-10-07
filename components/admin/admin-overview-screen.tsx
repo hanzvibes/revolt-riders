@@ -26,6 +26,7 @@ import {
   ShieldAlert,
   Users,
   UsersRound,
+  X,
 } from "lucide-react";
 import { useDataCache } from "@/context/data-cache-context";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -293,6 +294,49 @@ export function AdminOverviewScreen() {
       const origin = typeof window !== "undefined" ? window.location.origin : "";
       setCheckinUrl(`${origin}/check-in?code=${encodeURIComponent(raw)}`);
     }
+  };
+
+  const approveRequest = async (request: PendingRequest) => {
+    setError("");
+    const { error: approveError } = await getAdminOverviewDataClient().rpc(
+      "approve_member_account_request",
+      { p_request_id: request.id, p_role: "member" },
+    );
+    if (approveError) return setError(approveError.message);
+    setMessage(
+      `${request.member_external_id} berhasil diverifikasi sebagai member.`,
+    );
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
+  };
+
+  const rejectRequest = async (request: PendingRequest) => {
+    if (
+      !await confirmAction({
+        title: "Tolak pendaftaran?",
+        description: `${request.member_external_id} (${request.email}) akan ditolak dan ID RR dibuka kembali untuk pendaftaran ulang.`,
+        confirmLabel: "Tolak Pendaftaran",
+        cancelLabel: "Batal",
+        destructive: true,
+      })
+    )
+      return;
+    setError("");
+    setMessage("");
+    const supabase = getAdminOverviewDataClient();
+    const { error: rpcError } = await supabase.rpc(
+      "reject_member_account_request",
+      { p_request_id: request.id },
+    );
+    if (rpcError) {
+      setError(rpcError.message);
+      return;
+    }
+    setMessage(
+      `Pendaftaran ${request.member_external_id} dibatalkan. ID RR telah dibuka kembali untuk pendaftaran.`,
+    );
+    invalidateCache("admin_dashboard_overview");
+    await load(true);
   };
 
   if (authLoading || (loading && !account))
@@ -750,6 +794,43 @@ export function AdminOverviewScreen() {
           )}
         </section>
 
+        <section className="card approval-card">
+          <div className="section-title">
+            <span>
+              <em>VERIFIKASI</em>
+              <h3>Permintaan akun member</h3>
+            </span>
+            <b>{requests.length}</b>
+          </div>
+          {requests.length === 0 ? (
+            <p className="system-message">
+              Tidak ada permintaan yang menunggu.
+            </p>
+          ) : (
+            requests.map((request) => (
+              <article key={request.id}>
+                <span>
+                  <b>{request.member_external_id}</b>
+                  <small>{request.email ?? "Email tidak tersedia"}</small>
+                </span>
+                <div className="approval-actions">
+                  <button type="button" onClick={() => void approveRequest(request)}>
+                    <Check />
+                    Setujui
+                  </button>
+                  <button
+                    type="button"
+                    className="approval-reject-action"
+                    onClick={() => void rejectRequest(request)}
+                  >
+                    <X size={14} aria-hidden="true" />
+                    Tolak
+                  </button>
+                </div>
+              </article>
+            ))
+          )}
+        </section>
         {error && (
           <p className="error-message admin-message" role="alert">{error}</p>
         )}
