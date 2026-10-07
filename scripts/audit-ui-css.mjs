@@ -419,10 +419,12 @@ for (const file of sharedPageStateTargets) {
 
 const finalConsistencyContracts = {
   "components/profile-screen.tsx": [
+    'role="status" aria-live="polite"',
+  ],
+  "components/profile-ride-history.tsx": [
     "confirmAction",
     "profile-ride-status",
     "profile-ride-action",
-    'role="status" aria-live="polite"',
   ],
   "components/admin-overview-screen.tsx": [
     "counts_as_mandatory,official_distance_km",
