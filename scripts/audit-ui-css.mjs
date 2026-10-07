@@ -427,9 +427,11 @@ const finalConsistencyContracts = {
     "profile-ride-action",
   ],
   "components/admin-overview-screen.tsx": [
-    "counts_as_mandatory,official_distance_km",
     'href="/admin/events"',
     'role="status"',
+  ],
+  "components/admin-overview-data.ts": [
+    "counts_as_mandatory,official_distance_km",
   ],
   "app/admin/events/events-actions.ts": [
     "sync_event_official_rides",

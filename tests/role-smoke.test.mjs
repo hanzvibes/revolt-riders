@@ -89,20 +89,30 @@ test("Voyager management is Admin or Superadmin only at both layers", async () =
 
 test("Admin dashboard and role management preserve Superadmin boundary", async () => {
   const page = await read("components/admin-overview-screen.tsx");
+  const controller = await read(
+    "components/admin-overview-controller.ts",
+  );
+  const data = await read("components/admin-overview-data.ts");
   const migration = await read(
     "supabase/migrations/20260918000100_revolt_riders_comprehensive_fixes.sql",
   );
 
   assert.match(
     page,
-    /\["admin", "superadmin"\]\.includes\(effectiveAccount\.role\)/,
+    /!\["admin", "superadmin"\]\.includes\(account\.role\)/,
   );
   assert.match(
-    page,
-    /const isSuperadmin =\s*isActiveAdmin && effectiveAccount\?\.role === "superadmin"/,
+    controller,
+    /const isSuperadmin =\s*isActiveAdmin && account\?\.role === "superadmin"/,
   );
-  assert.match(page, /isSuperadmin[\s\S]*from\("member_accounts"\)/);
-  assert.match(page, /rpc\(\s*"set_member_account_role"/);
+  assert.match(
+    data,
+    /isSuperadmin[\s\S]*from\("member_accounts"\)/,
+  );
+  assert.match(
+    controller,
+    /rpc\(\s*"set_member_account_role"/,
+  );
 
   assert.match(migration, /v_role not in \('admin', 'superadmin'\)/);
 });
