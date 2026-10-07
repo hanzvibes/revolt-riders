@@ -154,7 +154,9 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const actions = await read("app/voyager/voyager-actions.ts");
   const manage = await read("app/voyager/voyager-manage-sheet.tsx");
   const voyagerWorkspace = [page, data, actions, manage].join("\n");
-  const nav = await read("components/app-shell.tsx");
+  const nav = await read(
+    "components/app-shell-navigation.ts",
+  );
   const ridingHistory = await read("app/riding/riding-history.tsx");
 
   assert.match(migration, /create table if not exists public\.event_participants/);
@@ -294,10 +296,22 @@ test("ModalSheet keeps input focus across parent renders", async () => {
 
 test("Mobile navigation is inert while the drawer is hidden", async () => {
   const shell = await read("components/app-shell.tsx");
+  const controller = await read(
+    "components/app-shell-controller.ts",
+  );
+  const sidebar = await read(
+    "components/app-shell-sidebar.tsx",
+  );
 
-  assert.match(shell, /matchMedia\("\(max-width: 720px\)"\)/);
-  assert.match(shell, /inert=\{isMobileDrawer && !open \? true : undefined\}/);
-  assert.match(shell, /aria-hidden=\{isMobileDrawer && !open \? true : undefined\}/);
+  assert.match(controller, /matchMedia\(\s*"\(max-width: 720px\)"/);
+  assert.match(
+    sidebar,
+    /inert=\{[\s\S]*isMobileDrawer && !open[\s\S]*\}/,
+  );
+  assert.match(
+    sidebar,
+    /aria-hidden=\{[\s\S]*isMobileDrawer && !open[\s\S]*\}/,
+  );
   assert.match(shell, /aria-controls="app-mobile-drawer"/);
   assert.match(shell, /aria-expanded=\{open\}/);
 });
@@ -365,15 +379,22 @@ test("Voyager gallery images decode lazily", async () => {
 
 test("Audit polish keeps navigation, cache, and microcopy resilient", async () => {
   const shell = await read("components/app-shell.tsx");
+  const controller = await read(
+    "components/app-shell-controller.ts",
+  );
+  const sidebar = await read(
+    "components/app-shell-sidebar.tsx",
+  );
+  const workspace = [shell, controller, sidebar].join("\n");
   const css = await read("app/system-ui.css");
 
-  assert.match(shell, /DRAWER_FOCUSABLE_SELECTOR/);
-  assert.match(shell, /event\.key === "Escape"/);
-  assert.match(shell, /event\.key !== "Tab"/);
-  assert.match(shell, /document\.body\.style\.overflow = "hidden"/);
-  assert.match(shell, /inert=\{isMobileDrawer && open \? true : undefined\}/);
-  assert.match(shell, /shell:pending-join-count/);
-  assert.match(shell, /fetchWithCache<number>/);
+  assert.match(controller, /DRAWER_FOCUSABLE_SELECTOR/);
+  assert.match(controller, /event\.key === "Escape"/);
+  assert.match(controller, /event\.key !== "Tab"/);
+  assert.match(controller, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(workspace, /isMobileDrawer/);
+  assert.match(controller, /shell:pending-join-count/);
+  assert.match(controller, /fetchWithCache<number>/);
 
   assert.match(css, /Audit polish · readable microcopy and coarse-pointer targets/);
   assert.match(css, /bottom a small[\s\S]*font-size: var\(--rr-type-caption\)/);
