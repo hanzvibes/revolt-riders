@@ -7,7 +7,7 @@ const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 test("Member role stays outside privileged navigation and mutations", async () => {
   const shell = await read("components/app-shell.tsx");
   const ridingApproval = await read("app/riding/approval/page.tsx");
-  const cash = await read("components/cash-screen.tsx");
+  const cashModel = await read("components/cash-model.ts");
   const voyager = await read("app/voyager/page.tsx");
   const voyagerModel = await read("app/voyager/voyager-model.ts");
 
@@ -21,7 +21,10 @@ test("Member role stays outside privileged navigation and mutations", async () =
   );
 
   assert.match(ridingApproval, /\["road_captain", "admin", "superadmin"\]\.includes/);
-  assert.match(cash, /\["treasurer", "admin", "superadmin"\]\.includes/);
+  assert.match(
+    cashModel,
+    /\["treasurer", "admin", "superadmin"\]\.includes/,
+  );
   assert.match(voyager, /from "\.\/voyager-model"/);
   assert.match(voyagerModel, /role === "admin" \|\| role === "superadmin"/);
 });
@@ -46,15 +49,21 @@ test("Road Captain riding review is guarded in UI and database", async () => {
 
 test("Treasurer cash mutations are guarded in UI and database", async () => {
   const page = await read("components/cash-screen.tsx");
+  const model = await read("components/cash-model.ts");
+  const actions = await read("components/cash-actions.ts");
   const migration = await read(
     "supabase/migrations/20260916123000_add_cash_controls_and_checkin_rotation.sql",
   );
 
+  assert.match(page, /staff/);
   assert.match(
-    page,
-    /const isStaffRole = \(role\?: string\) =>[\s\S]*\["treasurer", "admin", "superadmin"\]\.includes/,
+    model,
+    /\["treasurer", "admin", "superadmin"\]\.includes/,
   );
-  assert.match(page, /rpc\(\s*"void_club_cash_transaction"/);
+  assert.match(
+    actions,
+    /rpc\(\s*"void_club_cash_transaction"/,
+  );
 
   assert.match(
     migration,

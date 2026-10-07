@@ -373,17 +373,21 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
 
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
   const cash = await read("components/cash-screen.tsx");
+  const cashController = await read(
+    "components/cash-screen-controller.ts",
+  );
   const profile = await read("components/profile-screen.tsx");
   const profileController = await read(
     "components/profile-screen-controller.ts",
   );
 
-  assert.match(cash, /useMemberAccess/);
-  assert.match(cash, /fetchWithCache<CashSnapshot>/);
-  assert.match(cash, /ttlMs: 30_000/);
-  assert.match(cash, /invalidateCache\("cash:"\)/);
+  assert.match(cash, /useCashScreenController/);
+  assert.match(cashController, /useMemberAccess/);
+  assert.match(cashController, /fetchWithCache<CashSnapshot>/);
+  assert.match(cashController, /ttlMs: 30_000/);
+  assert.match(cashController, /invalidateCache\("cash:"\)/);
   assert.match(cash, /PageSkeleton title="Memuat Kas Revolt\.\.\."/);
-  assert.doesNotMatch(cash, /auth\.getUser\(\)/);
+  assert.doesNotMatch(cashController, /auth\.getUser\(\)/);
 
   assert.match(profile, /useProfileScreenController/);
   assert.match(profileController, /useMemberAccess/);
@@ -504,6 +508,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
     "components/admin-overview-account-actions.ts",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
+    "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
   ];
@@ -600,6 +605,7 @@ test("Destructive action dialogs use explicit safe labels", async () => {
     "components/admin-overview-screen.tsx",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
+    "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
     "app/riding/riding-history.tsx",
