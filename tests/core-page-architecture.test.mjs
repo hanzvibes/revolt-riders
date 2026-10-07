@@ -56,3 +56,25 @@ test("bottom navigation selectors live outside legacy global and system styleshe
   assert.doesNotMatch(system, /\.app-shell \.bottom(?:\b|[ .:#])/);
   assert.match(bottom, /\.app-shell \.bottom/);
 });
+
+test("admin root is a launcher instead of duplicating member-account workflows", async () => {
+  const screen = await read("components/admin/admin-overview-screen.tsx");
+  const data = await read("lib/features/admin/admin-overview-data.ts");
+
+  for (const href of [
+    "/admin/events",
+    "/admin/members",
+    "/admin/join-requests",
+    "/admin/attendance",
+    "/admin/insights",
+  ]) {
+    assert.match(screen, new RegExp(`href=["']${href}["']`));
+  }
+
+  assert.doesNotMatch(screen, /approve_member_account_request/);
+  assert.doesNotMatch(screen, /reject_member_account_request/);
+  assert.doesNotMatch(screen, /set_member_account_role/);
+  assert.doesNotMatch(screen, /Pengaturan pengurus/);
+  assert.doesNotMatch(screen, /Permintaan akun member/);
+  assert.doesNotMatch(data, /from\("member_accounts"\)/);
+});
