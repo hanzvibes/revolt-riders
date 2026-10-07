@@ -5,7 +5,7 @@ import { CountUpNumber } from "@/components/count-up-number";
 import { PageState } from "@/components/page-state";
 import { CardSkeleton, StatsGridSkeleton } from "@/components/skeleton";
 import { useDataCache } from "@/context/data-cache-context";
-import { getLeaderboardDataClient } from "@/lib/features/leaderboard/leaderboard-data";
+import { fetchLeaderboardRiders, type LeaderboardRider as Rider } from "@/lib/features/leaderboard/leaderboard-data";
 import { buildLeaderboardRankMap, filterLeaderboardRiders, getLeaderboardInitials, getLeaderboardTopStack } from "@/lib/features/leaderboard/leaderboard-model";
 import { motion, useReducedMotion } from "framer-motion";
 import {
@@ -23,12 +23,6 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Rider = {
-  member_external_id: string;
-  full_name: string;
-  total_km: number;
-};
-
 export function LeaderboardScreen() {
   const { user, account, loading: authLoading, fetchWithCache, invalidateCache } = useDataCache();
   const [riders, setRiders] = useState<Rider[]>([]);
@@ -45,35 +39,7 @@ export function LeaderboardScreen() {
       setLoading(true);
       const data = await fetchWithCache<Rider[]>(
         "riding_leaderboard_data",
-        async () => {
-          const supabase = getLeaderboardDataClient();
-          type ProfileRow = {
-            member_external_id: string;
-            full_name: string;
-            nickname?: string | null;
-            total_km: number | string | null;
-          };
-          const { data: profiles, error: profErr } = await supabase
-            .from("member_profiles")
-            .select("member_external_id,full_name,nickname,total_km")
-            .order("total_km", { ascending: false });
-          if (!profErr && profiles && profiles.length > 0) {
-            return (profiles as ProfileRow[]).map((p: ProfileRow) => ({
-              member_external_id: p.member_external_id,
-              full_name: p.nickname ? `${p.nickname} (${p.full_name})` : p.full_name,
-              total_km: Math.round(Number(p.total_km) || 0),
-            }));
-          }
-
-          // Fallback to RPC get_riding_leaderboard
-          const { data: result, error: fetchErr } =
-            await supabase.rpc("get_riding_leaderboard");
-          if (fetchErr) throw profErr || fetchErr;
-          return ((result ?? []) as Rider[]).map((row: Rider) => ({
-            ...row,
-            total_km: Math.round(Number(row.total_km) || 0),
-          }));
-        },
+        fetchLeaderboardRiders,
         { ttlMs: 2 * 60 * 1000 },
       );
 
