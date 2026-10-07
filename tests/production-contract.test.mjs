@@ -126,6 +126,7 @@ test("internal member reads require active accounts and leaderboard uses one KM 
 test("My Garage mutations remain owner-authorized and RPC-only", async () => {
   const migration = await read("supabase/migrations/20260920070800_add_member_motorcycle_garage.sql");
   const page = await read("app/garage/page.tsx");
+  const actions = await read("app/garage/garage-actions.ts");
 
   assert.match(migration, /member_motorcycles_one_primary_idx/);
   assert.match(migration, /ma\.status = 'active'::public\.account_status/);
@@ -136,9 +137,12 @@ test("My Garage mutations remain owner-authorized and RPC-only", async () => {
   assert.match(migration, /delete_member_motorcycle/);
   assert.match(migration, /Motor tidak ditemukan atau bukan milik akun ini/);
 
-  assert.match(page, /rpc\(\s*"save_member_motorcycle"/);
-  assert.match(page, /rpc\(\s*"delete_member_motorcycle"/);
-  assert.doesNotMatch(page, /from\("member_motorcycles"\)\.(insert|update|delete)/);
+  assert.match(actions, /rpc\(\s*"save_member_motorcycle"/);
+  assert.match(actions, /rpc\(\s*"delete_member_motorcycle"/);
+  assert.doesNotMatch(
+    [page, actions].join("\n"),
+    /from\("member_motorcycles"\)\.(insert|update|delete)/,
+  );
 });
 
 
@@ -329,16 +333,23 @@ test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   const riding = await read("app/riding/page.tsx");
   const ridingSummary = await read("app/riding/riding-summary.tsx");
   const garage = await read("app/garage/page.tsx");
+  const garageController = await read(
+    "app/garage/garage-controller.ts",
+  );
 
-  for (const source of [voyager, riding, garage]) {
+  for (const source of [voyager, riding]) {
     assert.match(source, /useDataCache/);
     assert.match(source, /fetchWithCache/);
     assert.match(source, /forceRefresh/);
   }
+  assert.match(garage, /useGarageController/);
+  assert.match(garageController, /useDataCache/);
+  assert.match(garageController, /fetchWithCache/);
+  assert.match(garageController, /forceRefresh/);
 
   assert.match(voyager, /ttlMs: 90_000/);
   assert.match(riding, /ttlMs: 60_000/);
-  assert.match(garage, /ttlMs: 90_000/);
+  assert.match(garageController, /ttlMs: 90_000/);
   assert.match(ridingSummary, /dynamic\(/);
   assert.match(ridingSummary, /components\/riding-stat-chart/);
 });
@@ -507,6 +518,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
     "components/admin-overview-controller.ts",
     "components/admin-overview-account-actions.ts",
     "app/garage/page.tsx",
+    "app/garage/garage-controller.ts",
     "components/cash-screen.tsx",
     "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
@@ -604,6 +616,7 @@ test("Destructive action dialogs use explicit safe labels", async () => {
     "app/admin/events/events-screen.tsx",
     "components/admin-overview-screen.tsx",
     "app/garage/page.tsx",
+    "app/garage/garage-controller.ts",
     "components/cash-screen.tsx",
     "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
