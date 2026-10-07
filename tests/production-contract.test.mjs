@@ -501,6 +501,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const auditedPages = [
     "app/admin/events/events-screen.tsx",
     "components/admin-overview-controller.ts",
+    "components/admin-overview-account-actions.ts",
     "app/garage/page.tsx",
     "components/cash-screen.tsx",
     "app/voyager/page.tsx",
@@ -576,10 +577,13 @@ test("Admin rejection stays behind its authorized RPC", async () => {
   const controller = await read(
     "components/admin-overview-controller.ts",
   );
-  const workspace = [admin, controller].join("\n");
+  const actions = await read(
+    "components/admin-overview-account-actions.ts",
+  );
+  const workspace = [admin, controller, actions].join("\n");
 
   assert.match(
-    controller,
+    actions,
     /rpc\(\s*"reject_member_account_request"/,
   );
   assert.doesNotMatch(

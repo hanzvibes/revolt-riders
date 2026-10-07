@@ -93,6 +93,9 @@ test("Admin dashboard and role management preserve Superadmin boundary", async (
     "components/admin-overview-controller.ts",
   );
   const data = await read("components/admin-overview-data.ts");
+  const accountActions = await read(
+    "components/admin-overview-account-actions.ts",
+  );
   const migration = await read(
     "supabase/migrations/20260918000100_revolt_riders_comprehensive_fixes.sql",
   );
@@ -111,6 +114,10 @@ test("Admin dashboard and role management preserve Superadmin boundary", async (
   );
   assert.match(
     controller,
+    /changeAdminAccountRole/,
+  );
+  assert.match(
+    accountActions,
     /rpc\(\s*"set_member_account_role"/,
   );
 
