@@ -14,6 +14,7 @@ import {
   ChevronDown,
   LogIn,
   Menu,
+  MapPin,
   UserPlus,
   X,
 } from "lucide-react";
