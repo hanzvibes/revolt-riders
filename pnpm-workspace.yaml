@@ -11,3 +11,12 @@ enableGlobalVirtualStore: false
 packageImportMethod: clone-or-copy
 verifyDepsBeforeRun: false
 optimisticRepeatInstall: false
+overrides:
+  browserslist: 4.28.7
+  source-map-js: 1.2.2
+  sharp: 0.35.5
+minimumReleaseAgeExclude:
+  - next@16.3.8
+  - browserslist@4.28.7
+  - source-map-js@1.2.2
+  - sharp@0.35.5
