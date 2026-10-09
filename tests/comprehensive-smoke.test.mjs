@@ -192,24 +192,31 @@ test("Leaderboard formatting rounds kilometer numbers cleanly without decimals",
 // ==============================================================================
 test("AppShell implements streamlined navigation with collapsible operational panel", async () => {
   const shellContent = await read("components/app-shell.tsx");
+  const navigation = await read(
+    "components/app-shell-navigation.ts",
+  );
+  const sidebar = await read(
+    "components/app-shell-sidebar.tsx",
+  );
 
-  // Utama items (5 items)
-  assert.match(shellContent, /\["Home", "\/dashboard", Home\]/);
-  assert.match(shellContent, /\["Agenda", "\/agenda", CalendarDays\]/);
-  assert.match(shellContent, /\["Catat Riding", "\/riding", Bike\]/);
-  assert.match(shellContent, /\["Member", "\/member", UsersRound\]/);
-  assert.match(shellContent, /\["Profil", "\/profil", UserRound\]/);
+  assert.match(navigation, /\["Home", "\/dashboard", Home\]/);
+  assert.match(navigation, /\["Agenda", "\/agenda", CalendarDays\]/);
+  assert.match(navigation, /\["Catat Riding", "\/riding", Bike\]/);
+  assert.match(navigation, /\["Member", "\/member", UsersRound\]/);
+  assert.match(navigation, /\["Profil", "\/profil", UserRound\]/);
 
-  // Komunitas items (4 items)
-  assert.match(shellContent, /\["Leaderboard", "\/leaderboard", Trophy\]/);
-  assert.match(shellContent, /\["Kas Revolt", "\/kas", CircleDollarSign\]/);
-  assert.match(shellContent, /\["Buletin", "\/bulletin", Bell\]/);
-  assert.match(shellContent, /\["Check-in", "\/check-in", ScanLine\]/);
+  assert.match(navigation, /\["Leaderboard", "\/leaderboard", Trophy\]/);
+  assert.match(navigation, /\["Kas Revolt", "\/kas", CircleDollarSign\]/);
+  assert.match(navigation, /\["Buletin", "\/bulletin", Bell\]/);
+  assert.match(navigation, /\["Check-in", "\/check-in", ScanLine\]/);
 
-  // Accordion group navigation
-  assert.match(shellContent, /sidebar-accordion-group/);
-  assert.match(shellContent, /<span className="accordion-title">Operasional<\/span>/);
-  assert.match(shellContent, /<ChevronDown className="accordion-chevron" \/>/);
+  assert.match(shellContent, /AppShellSidebar/);
+  assert.match(sidebar, /sidebar-accordion-group/);
+  assert.match(
+    sidebar,
+    /<span className="accordion-title">\s*Operasional\s*<\/span>/,
+  );
+  assert.match(sidebar, /ChevronDown/);
 });
 
 // ==============================================================================

@@ -5,23 +5,28 @@ import test from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("Member role stays outside privileged navigation and mutations", async () => {
-  const shell = await read("components/app-shell.tsx");
+  const shellController = await read(
+    "components/app-shell-controller.ts",
+  );
   const ridingApproval = await read("app/riding/approval/page.tsx");
-  const cash = await read("app/kas/page.tsx");
+  const cashModel = await read("components/cash-model.ts");
   const voyager = await read("app/voyager/page.tsx");
   const voyagerModel = await read("app/voyager/voyager-model.ts");
 
   assert.match(
-    shell,
-    /canOperational = account\?\.status === "active" && hasRole\(account\.role, \["road_captain", "admin", "superadmin"\]\)/,
+    shellController,
+    /canOperational[\s\S]*account\?\.status === "active"[\s\S]*hasRole\(account\.role,[\s\S]*"road_captain"[\s\S]*"admin"[\s\S]*"superadmin"/,
   );
   assert.match(
-    shell,
-    /canAdmin = account\?\.status === "active" && hasRole\(account\.role, \["admin", "superadmin"\]\)/,
+    shellController,
+    /canAdmin[\s\S]*account\?\.status === "active"[\s\S]*hasRole\(account\.role, \["admin", "superadmin"\]\)/,
   );
 
   assert.match(ridingApproval, /\["road_captain", "admin", "superadmin"\]\.includes/);
-  assert.match(cash, /\["treasurer", "admin", "superadmin"\]\.includes/);
+  assert.match(
+    cashModel,
+    /\["treasurer", "admin", "superadmin"\]\.includes/,
+  );
   assert.match(voyager, /from "\.\/voyager-model"/);
   assert.match(voyagerModel, /role === "admin" \|\| role === "superadmin"/);
 });
@@ -45,16 +50,22 @@ test("Road Captain riding review is guarded in UI and database", async () => {
 });
 
 test("Treasurer cash mutations are guarded in UI and database", async () => {
-  const page = await read("app/kas/page.tsx");
+  const page = await read("components/cash-screen.tsx");
+  const model = await read("components/cash-model.ts");
+  const actions = await read("components/cash-actions.ts");
   const migration = await read(
     "supabase/migrations/20260916123000_add_cash_controls_and_checkin_rotation.sql",
   );
 
+  assert.match(page, /staff/);
   assert.match(
-    page,
-    /const isStaffRole = \(role\?: string\) =>[\s\S]*\["treasurer", "admin", "superadmin"\]\.includes/,
+    model,
+    /\["treasurer", "admin", "superadmin"\]\.includes/,
   );
-  assert.match(page, /rpc\(\s*"void_club_cash_transaction"/);
+  assert.match(
+    actions,
+    /rpc\(\s*"void_club_cash_transaction"/,
+  );
 
   assert.match(
     migration,
@@ -88,21 +99,38 @@ test("Voyager management is Admin or Superadmin only at both layers", async () =
 });
 
 test("Admin dashboard and role management preserve Superadmin boundary", async () => {
-  const page = await read("app/admin/page.tsx");
+  const page = await read("components/admin-overview-screen.tsx");
+  const controller = await read(
+    "components/admin-overview-controller.ts",
+  );
+  const data = await read("components/admin-overview-data.ts");
+  const accountActions = await read(
+    "components/admin-overview-account-actions.ts",
+  );
   const migration = await read(
     "supabase/migrations/20260918000100_revolt_riders_comprehensive_fixes.sql",
   );
 
   assert.match(
     page,
-    /\["admin", "superadmin"\]\.includes\(effectiveAccount\.role\)/,
+    /!\["admin", "superadmin"\]\.includes\(account\.role\)/,
   );
   assert.match(
-    page,
-    /const isSuperadmin =\s*isActiveAdmin && effectiveAccount\?\.role === "superadmin"/,
+    controller,
+    /const isSuperadmin =\s*isActiveAdmin && account\?\.role === "superadmin"/,
   );
-  assert.match(page, /isSuperadmin[\s\S]*from\("member_accounts"\)/);
-  assert.match(page, /rpc\(\s*"set_member_account_role"/);
+  assert.match(
+    data,
+    /isSuperadmin[\s\S]*from\("member_accounts"\)/,
+  );
+  assert.match(
+    controller,
+    /changeAdminAccountRole/,
+  );
+  assert.match(
+    accountActions,
+    /rpc\(\s*"set_member_account_role"/,
+  );
 
   assert.match(migration, /v_role not in \('admin', 'superadmin'\)/);
 });

@@ -45,7 +45,16 @@ const eslintConfig = defineConfig([
     rules: { "react-hooks/purity": "off" },
   },
   {
-    files: ["app/**/page.tsx", "hooks/use-member-access.ts"],
+    files: [
+      "app/**/page.tsx",
+      "components/profile-screen.tsx",
+      "components/member-screen.tsx",
+      "components/cash-screen.tsx",
+      "components/post-thread-screen.tsx",
+      "components/leaderboard-screen.tsx",
+      "components/admin-overview-screen.tsx",
+      "hooks/use-member-access.ts",
+    ],
     rules: {
       "react-hooks/set-state-in-effect": "off",
       "react/no-unescaped-entities": "off",

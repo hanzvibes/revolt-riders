@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readSystemCss = async () => (await Promise.all(["app/system-ui.css", "app/system-ui-features.css", "app/system-ui-refinements.css"].map(read))).join("");
 
 test("PWA manifest is installable", async () => {
   const manifest = JSON.parse(await read("public/manifest.webmanifest"));
@@ -126,6 +127,7 @@ test("internal member reads require active accounts and leaderboard uses one KM 
 test("My Garage mutations remain owner-authorized and RPC-only", async () => {
   const migration = await read("supabase/migrations/20260920070800_add_member_motorcycle_garage.sql");
   const page = await read("app/garage/page.tsx");
+  const actions = await read("app/garage/garage-actions.ts");
 
   assert.match(migration, /member_motorcycles_one_primary_idx/);
   assert.match(migration, /ma\.status = 'active'::public\.account_status/);
@@ -136,9 +138,12 @@ test("My Garage mutations remain owner-authorized and RPC-only", async () => {
   assert.match(migration, /delete_member_motorcycle/);
   assert.match(migration, /Motor tidak ditemukan atau bukan milik akun ini/);
 
-  assert.match(page, /rpc\(\s*"save_member_motorcycle"/);
-  assert.match(page, /rpc\(\s*"delete_member_motorcycle"/);
-  assert.doesNotMatch(page, /from\("member_motorcycles"\)\.(insert|update|delete)/);
+  assert.match(actions, /rpc\(\s*"save_member_motorcycle"/);
+  assert.match(actions, /rpc\(\s*"delete_member_motorcycle"/);
+  assert.doesNotMatch(
+    [page, actions].join("\n"),
+    /from\("member_motorcycles"\)\.(insert|update|delete)/,
+  );
 });
 
 
@@ -150,7 +155,9 @@ test("Voyager activity keeps participants, official KM, and media server-authori
   const actions = await read("app/voyager/voyager-actions.ts");
   const manage = await read("app/voyager/voyager-manage-sheet.tsx");
   const voyagerWorkspace = [page, data, actions, manage].join("\n");
-  const nav = await read("components/app-shell.tsx");
+  const nav = await read(
+    "components/app-shell-navigation.ts",
+  );
   const ridingHistory = await read("app/riding/riding-history.tsx");
 
   assert.match(migration, /create table if not exists public\.event_participants/);
@@ -231,7 +238,7 @@ test("Riding create and review mutations are routed through authorized RPCs", as
 test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(hub, /voyager-overview-grid/);
   assert.match(hub, /Voyager berikutnya/);
@@ -290,17 +297,29 @@ test("ModalSheet keeps input focus across parent renders", async () => {
 
 test("Mobile navigation is inert while the drawer is hidden", async () => {
   const shell = await read("components/app-shell.tsx");
+  const controller = await read(
+    "components/app-shell-controller.ts",
+  );
+  const sidebar = await read(
+    "components/app-shell-sidebar.tsx",
+  );
 
-  assert.match(shell, /matchMedia\("\(max-width: 720px\)"\)/);
-  assert.match(shell, /inert=\{isMobileDrawer && !open \? true : undefined\}/);
-  assert.match(shell, /aria-hidden=\{isMobileDrawer && !open \? true : undefined\}/);
+  assert.match(controller, /matchMedia\(\s*"\(max-width: 720px\)"/);
+  assert.match(
+    sidebar,
+    /inert=\{[\s\S]*isMobileDrawer && !open[\s\S]*\}/,
+  );
+  assert.match(
+    sidebar,
+    /aria-hidden=\{[\s\S]*isMobileDrawer && !open[\s\S]*\}/,
+  );
   assert.match(shell, /aria-controls="app-mobile-drawer"/);
   assert.match(shell, /aria-expanded=\{open\}/);
 });
 
 
 test("Audit hardening keeps shared controls touch friendly", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const tokens = await read("app/tokens.css");
 
   assert.match(tokens, /--rr-control-lg: 44px/);
@@ -311,7 +330,7 @@ test("Audit hardening keeps shared controls touch friendly", async () => {
 
 
 test("Reduced motion preserves state changes without blanket-killing the app", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const chart = await read("components/riding-stat-chart.tsx");
 
   assert.doesNotMatch(
@@ -329,16 +348,23 @@ test("Voyager, Riding, and Garage reuse the shared data cache", async () => {
   const riding = await read("app/riding/page.tsx");
   const ridingSummary = await read("app/riding/riding-summary.tsx");
   const garage = await read("app/garage/page.tsx");
+  const garageController = await read(
+    "app/garage/garage-controller.ts",
+  );
 
-  for (const source of [voyager, riding, garage]) {
+  for (const source of [voyager, riding]) {
     assert.match(source, /useDataCache/);
     assert.match(source, /fetchWithCache/);
     assert.match(source, /forceRefresh/);
   }
+  assert.match(garage, /useGarageController/);
+  assert.match(garageController, /useDataCache/);
+  assert.match(garageController, /fetchWithCache/);
+  assert.match(garageController, /forceRefresh/);
 
   assert.match(voyager, /ttlMs: 90_000/);
   assert.match(riding, /ttlMs: 60_000/);
-  assert.match(garage, /ttlMs: 90_000/);
+  assert.match(garageController, /ttlMs: 90_000/);
   assert.match(ridingSummary, /dynamic\(/);
   assert.match(ridingSummary, /components\/riding-stat-chart/);
 });
@@ -354,15 +380,22 @@ test("Voyager gallery images decode lazily", async () => {
 
 test("Audit polish keeps navigation, cache, and microcopy resilient", async () => {
   const shell = await read("components/app-shell.tsx");
-  const css = await read("app/system-ui.css");
+  const controller = await read(
+    "components/app-shell-controller.ts",
+  );
+  const sidebar = await read(
+    "components/app-shell-sidebar.tsx",
+  );
+  const workspace = [shell, controller, sidebar].join("\n");
+  const css = await readSystemCss();
 
-  assert.match(shell, /DRAWER_FOCUSABLE_SELECTOR/);
-  assert.match(shell, /event\.key === "Escape"/);
-  assert.match(shell, /event\.key !== "Tab"/);
-  assert.match(shell, /document\.body\.style\.overflow = "hidden"/);
-  assert.match(shell, /inert=\{isMobileDrawer && open \? true : undefined\}/);
-  assert.match(shell, /shell:pending-join-count/);
-  assert.match(shell, /fetchWithCache<number>/);
+  assert.match(controller, /DRAWER_FOCUSABLE_SELECTOR/);
+  assert.match(controller, /event\.key === "Escape"/);
+  assert.match(controller, /event\.key !== "Tab"/);
+  assert.match(controller, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(workspace, /isMobileDrawer/);
+  assert.match(controller, /shell:pending-join-count/);
+  assert.match(controller, /fetchWithCache<number>/);
 
   assert.match(css, /Audit polish · readable microcopy and coarse-pointer targets/);
   assert.match(css, /bottom a small[\s\S]*font-size: var\(--rr-type-caption\)/);
@@ -372,22 +405,36 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
 
 
 test("Cash and profile pages reuse authenticated cache without blank-page reloads", async () => {
-  const cash = await read("app/kas/page.tsx");
-  const profile = await read("app/profil/page.tsx");
+  const cash = await read("components/cash-screen.tsx");
+  const cashController = await read(
+    "components/cash-screen-controller.ts",
+  );
+  const profile = await read("components/profile-screen.tsx");
+  const profileController = await read(
+    "components/profile-screen-controller.ts",
+  );
 
-  assert.match(cash, /useMemberAccess/);
-  assert.match(cash, /fetchWithCache<CashSnapshot>/);
-  assert.match(cash, /ttlMs: 30_000/);
-  assert.match(cash, /invalidateCache\("cash:"\)/);
+  assert.match(cash, /useCashScreenController/);
+  assert.match(cashController, /useMemberAccess/);
+  assert.match(cashController, /fetchWithCache<CashSnapshot>/);
+  assert.match(cashController, /ttlMs: 30_000/);
+  assert.match(cashController, /invalidateCache\("cash:"\)/);
   assert.match(cash, /PageSkeleton title="Memuat Kas Revolt\.\.\."/);
-  assert.doesNotMatch(cash, /auth\.getUser\(\)/);
+  assert.doesNotMatch(cashController, /auth\.getUser\(\)/);
 
-  assert.match(profile, /useMemberAccess/);
-  assert.match(profile, /fetchWithCache<ProfileSnapshot>/);
-  assert.match(profile, /ttlMs: 60_000/);
-  assert.match(profile, /profile:\$\{nextAccount\.member_external_id\}/);
-  assert.match(profile, /load\(true\)/);
-  assert.doesNotMatch(profile, /auth\.getUser\(\)/);
+  assert.match(profile, /useProfileScreenController/);
+  assert.match(profileController, /useMemberAccess/);
+  assert.match(
+    profileController,
+    /fetchWithCache<ProfileSnapshot>/,
+  );
+  assert.match(profileController, /ttlMs: 60_000/);
+  assert.match(
+    profileController,
+    /"profile:" \+ account\.member_external_id/,
+  );
+  assert.match(profileController, /load\(true\)/);
+  assert.doesNotMatch(profileController, /auth\.getUser\(\)/);
 });
 
 
@@ -475,7 +522,7 @@ test("UI audit budgets prevent legacy design debt from silently increasing", asy
 
 
 test("Audit next pass keeps active admin microcopy and touch targets readable", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(css, /Audit next pass · admin readability and touch resilience/);
   assert.match(css, /checkin-qr-content em[\s\S]*font-size: var\(--rr-type-caption\)/);
@@ -489,10 +536,13 @@ test("Shared action dialogs replace native browser prompts", async () => {
   const provider = await read("components/action-dialog-provider.tsx");
   const layout = await read("app/layout.tsx");
   const auditedPages = [
-    "app/admin/events/page.tsx",
-    "app/admin/page.tsx",
+    "app/admin/events/events-screen.tsx",
+    "components/admin-overview-controller.ts",
+    "components/admin-overview-account-actions.ts",
     "app/garage/page.tsx",
-    "app/kas/page.tsx",
+    "app/garage/garage-controller.ts",
+    "components/cash-screen.tsx",
+    "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
   ];
@@ -513,7 +563,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
 test("Voyager makes member status and evidence visible", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(derived, /currentMemberVoyagerEvents/);
   assert.match(derived, /featuredMemberStatus/);
@@ -527,12 +577,13 @@ test("Voyager makes member status and evidence visible", async () => {
 });
 
 test("Event deletion stays behind the authorized RPC", async () => {
-  const eventsAdmin = await read("app/admin/events/page.tsx");
-  const adminDashboard = await read("app/admin/page.tsx");
+  const eventActions = await read("app/admin/events/events-actions.ts");
+  const adminDashboard = await read("components/admin-overview-screen.tsx");
   const migration = await read("supabase/migrations/20260920121211_add_voyager_activity_system.sql");
 
-  for (const source of [eventsAdmin, adminDashboard]) {
-    assert.match(source, /rpc\("delete_event"/);
+  assert.match(eventActions, /rpc\("delete_event"/);
+  assert.doesNotMatch(adminDashboard, /rpc\("delete_event"/);
+  for (const source of [eventActions, adminDashboard]) {
     assert.doesNotMatch(source, /from\("events"\)\.delete/);
     assert.doesNotMatch(source, /from\("ride_logs"\)\.(?:delete|update)/);
   }
@@ -561,23 +612,35 @@ test("Database performance hardening is migration-tracked", async () => {
 
 
 test("Admin rejection stays behind its authorized RPC", async () => {
-  const admin = await read("app/admin/page.tsx");
+  const admin = await read("components/admin-overview-screen.tsx");
+  const controller = await read(
+    "components/admin-overview-controller.ts",
+  );
+  const actions = await read(
+    "components/admin-overview-account-actions.ts",
+  );
+  const workspace = [admin, controller, actions].join("\n");
 
-  assert.match(admin, /rpc\(\s*"reject_member_account_request"/);
+  assert.match(
+    actions,
+    /rpc\(\s*"reject_member_account_request"/,
+  );
   assert.doesNotMatch(
-    admin,
+    workspace,
     /from\("member_account_requests"\)\s*\.delete\(/,
   );
-  assert.match(admin, /Tolak Pendaftaran/);
+  assert.match(controller, /Tolak Pendaftaran/);
 });
 
 
 test("Destructive action dialogs use explicit safe labels", async () => {
   const files = [
-    "app/admin/events/page.tsx",
-    "app/admin/page.tsx",
+    "app/admin/events/events-screen.tsx",
+    "components/admin-overview-screen.tsx",
     "app/garage/page.tsx",
-    "app/kas/page.tsx",
+    "app/garage/garage-controller.ts",
+    "components/cash-screen.tsx",
+    "components/cash-screen-controller.ts",
     "app/voyager/page.tsx",
     "app/voyager/voyager-manage-sheet.tsx",
     "app/riding/riding-history.tsx",
@@ -625,13 +688,14 @@ test("Static and Voyager gallery images use Next Image", async () => {
 });
 
 test("Mandatory agenda lifecycle auto-syncs official KM when ready", async () => {
-  const admin = await read("app/admin/events/page.tsx");
+  const screen = await read("app/admin/events/events-screen.tsx");
+  const actions = await read("app/admin/events/events-actions.ts");
 
-  assert.match(admin, /const syncOfficialRidesIfReady = useCallback/);
-  assert.match(admin, /status === "draft"/);
-  assert.match(admin, /Official KM tersinkron ke/);
+  assert.match(actions, /export const syncOfficialRidesIfReady/);
+  assert.match(actions, /status === "draft"/);
+  assert.match(screen, /Official KM tersinkron ke/);
 
-  const calls = admin.match(/await syncOfficialRidesIfReady\(/g) ?? [];
+  const calls = screen.match(/await syncOfficialRidesIfReady\(/g) ?? [];
   assert.ok(
     calls.length >= 3,
     "save, manual sync, and publish/complete lifecycle must share the sync guard",
@@ -669,27 +733,31 @@ test("Ride approval refreshes Member Directory and member detail caches", async 
 });
 
 
-test("Legacy Admin agenda status flow preserves Official KM sync invariant", async () => {
-  const admin = await read("app/admin/page.tsx");
+test("Admin dashboard delegates agenda lifecycle to the events workspace", async () => {
+  const admin = await read("components/admin-overview-screen.tsx");
+  const actions = await read("app/admin/events/events-actions.ts");
 
-  assert.ok(admin.includes("counts_as_mandatory,official_distance_km"));
-  assert.ok(admin.includes('"sync_event_official_rides"'));
-  assert.ok(admin.includes("invalidateRideDerivedCaches"));
-  assert.ok(
-    admin.includes(
-      "Status agenda sudah diperbarui, tetapi Official KM belum tersinkron",
-    ),
-  );
+  assert.doesNotMatch(admin, /sync_event_official_rides/);
+  assert.doesNotMatch(admin, /from\("events"\)\s*\.update/);
+  assert.match(actions, /sync_event_official_rides/);
+  assert.match(actions, /export const updateEventStatus/);
 });
 
 
 test("Profile ride actions use shared dialog and derived cache invalidation", async () => {
-  const profile = await read("app/profil/page.tsx");
+  const profile = await read("components/profile-screen.tsx");
+  const controller = await read(
+    "components/profile-screen-controller.ts",
+  );
+  const rideHistory = await read(
+    "components/profile-ride-history.tsx",
+  );
+  const workspace = [profile, controller, rideHistory].join("\n");
 
-  assert.ok(profile.includes("confirmAction"));
-  assert.ok(profile.includes("profile-ride-action"));
-  assert.ok(profile.includes("member_touring:"));
-  assert.ok(profile.includes('invalidateCache("riding:")'));
-  assert.ok(!profile.includes("confirm("));
-  assert.ok(!profile.includes("alert("));
+  assert.ok(rideHistory.includes("confirmAction"));
+  assert.ok(rideHistory.includes("profile-ride-action"));
+  assert.ok(controller.includes("member_touring:"));
+  assert.ok(controller.includes('invalidateCache("riding:")'));
+  assert.ok(!workspace.includes("confirm("));
+  assert.ok(!workspace.includes("alert("));
 });

@@ -13,6 +13,11 @@ const cssTargets = [
   "app/checkin-qr.css",
 ];
 
+const systemUiParts = ["app/system-ui.css","app/system-ui-features.css","app/system-ui-refinements.css"];
+const readCss = (file) => file === "app/system-ui.css"
+  ? systemUiParts.map((part) => fs.readFileSync(path.join(ROOT, part), "utf8")).join("")
+  : fs.readFileSync(path.join(ROOT, file), "utf8");
+
 const allowedWeights = new Set(["400", "500", "600", "700", "800"]);
 const canonicalTokenTargets = new Set([
   "app/system-ui.css",
@@ -21,11 +26,24 @@ const canonicalTokenTargets = new Set([
   "app/native-admin.css",
 ]);
 
+const cascadeOwnershipTargets = [
+  "app/globals.css",
+  "app/polish.css",
+  "app/checkin-qr.css",
+  "app/form-density.css",
+  "app/native-admin.css",
+  "app/system-ui.css",
+  "app/system-ui-features.css",
+  "app/system-ui-refinements.css",
+  "app/social-feed.css",
+  "app/bottom-navigation.css",
+];
+
 // Existing legacy debt is budgeted so CI prevents regression while cleanup can
 // move these values downward over time.
 const legacyBudgets = {
   "app/system-ui.css": { tinyType: 140, hardcodedHex: 461, important: 354 },
-  "app/globals.css": { tinyType: 132, hardcodedHex: 393, important: 13 },
+  "app/globals.css": { tinyType: 114, hardcodedHex: 346, important: 13 },
   "app/native-admin.css": { tinyType: 57, hardcodedHex: 416, important: 77 },
   "app/polish.css": { tinyType: 17, hardcodedHex: 86, important: 83 },
   "app/form-density.css": { tinyType: 0, hardcodedHex: 0, important: 1 },
@@ -93,10 +111,56 @@ function countImportant(content) {
   return [...content.matchAll(/!important/g)].length;
 }
 
+function collectCssOwnershipEntries(content) {
+  const masked = content.replace(
+    /\/\*[\s\S]*?\*\//g,
+    (comment) => comment.replace(/[^\n]/g, " "),
+  );
+  const stack = [];
+  const entries = [];
+  let statementStart = 0;
+
+  for (let index = 0; index < masked.length; index += 1) {
+    if (masked[index] === "{") {
+      const header = masked.slice(statementStart, index).trim();
+      if (stack.length) stack[stack.length - 1].hasNested = true;
+      stack.push({ header, bodyStart: index + 1, hasNested: false });
+      statementStart = index + 1;
+      continue;
+    }
+
+    if (masked[index] !== "}") continue;
+
+    const node = stack.pop();
+    if (!node) {
+      statementStart = index + 1;
+      continue;
+    }
+
+    if (!node.hasNested && node.header && !node.header.startsWith("@")) {
+      const context = stack
+        .filter((parent) => parent.header.trim().startsWith("@"))
+        .map((parent) => parent.header.replace(/\s+/g, " ").trim())
+        .join(" > ");
+      const selector = node.header.replace(/\s+/g, " ").trim();
+      const body = masked.slice(node.bodyStart, index);
+
+      for (const match of body.matchAll(/([-\w]+)\s*:\s*([^;{}]*?)(?:;|$)/g)) {
+        const property = match[1].trim().toLowerCase();
+        if (property) entries.push({ context, selector, property });
+      }
+    }
+
+    statementStart = index + 1;
+  }
+
+  return entries;
+}
+
 for (const file of cssTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  const content = fs.readFileSync(abs, "utf8");
+  const content = readCss(file);
 
   for (const match of content.matchAll(/font-weight\s*:\s*(\d{3})/g)) {
     const value = match[1];
@@ -198,6 +262,30 @@ for (const file of cssTargets) {
   }
 }
 
+
+const cssDeclarationOwners = new Map();
+
+for (const file of cascadeOwnershipTargets) {
+  const abs = path.join(ROOT, file);
+  if (!fs.existsSync(abs)) continue;
+
+  const content = readCss(file);
+  for (const entry of collectCssOwnershipEntries(content)) {
+    const key = `${entry.context}||${entry.selector}||${entry.property}`;
+    const logicalOwner = systemUiParts.includes(file) ? "app/system-ui.css" : file;
+    const owner = cssDeclarationOwners.get(key);
+
+    if (owner && owner !== logicalOwner) {
+      fatal.push(
+        `CSS ownership overlap: ${entry.selector} / ${entry.property} is declared in both ${owner} and ${file}`,
+      );
+      continue;
+    }
+
+    if (!owner) cssDeclarationOwners.set(key, logicalOwner);
+  }
+}
+
 const accessibilityControlContracts = {
   "app/login/page.tsx": ["auth-member-id", "auth-email", "auth-password"],
   "app/page.tsx": [
@@ -285,7 +373,7 @@ if (fs.existsSync(nativeAdminPath)) {
 
 const systemUiPath = path.join(ROOT, "app/system-ui.css");
 if (fs.existsSync(systemUiPath)) {
-  const systemUi = fs.readFileSync(systemUiPath, "utf8").replace(/\r\n/g, "\n");
+  const systemUi = readCss("app/system-ui.css").replace(/\r\n/g, "\n");
   const mobileActionTypography = `.app-shell .voyager-create-action,
 .app-shell .voyager-gallery-empty > button,
 .app-shell .voyager-tabs button,
@@ -316,12 +404,12 @@ if (!fs.existsSync(sharedPageStatePath)) {
 }
 
 const sharedPageStateTargets = [
-  "app/profil/page.tsx",
+  "components/profile-screen.tsx",
   "app/agenda/page.tsx",
   "app/garage/page.tsx",
-  "app/kas/page.tsx",
-  "app/member/page.tsx",
-  "app/leaderboard/page.tsx",
+  "components/cash-screen.tsx",
+  "components/member-screen.tsx",
+  "components/leaderboard-screen.tsx",
   "app/admin/insights/page.tsx",
   "app/voyager/page.tsx",
 ];
@@ -338,17 +426,29 @@ for (const file of sharedPageStateTargets) {
 }
 
 const finalConsistencyContracts = {
-  "app/profil/page.tsx": [
+  "components/profile-screen.tsx": [
+    'role="status" aria-live="polite"',
+  ],
+  "components/profile-ride-history.tsx": [
     "confirmAction",
     "profile-ride-status",
     "profile-ride-action",
-    'role="status" aria-live="polite"',
   ],
-  "app/admin/page.tsx": [
-    "counts_as_mandatory,official_distance_km",
-    "sync_event_official_rides",
-    "invalidateRideDerivedCaches",
+  "components/admin-overview-screen.tsx": [
+    'href="/admin/events"',
     'role="status"',
+  ],
+  "components/admin-overview-data.ts": [
+    "counts_as_mandatory,official_distance_km",
+  ],
+  "app/admin/events/events-actions.ts": [
+    "sync_event_official_rides",
+    "syncOfficialRidesIfReady",
+  ],
+  "app/admin/events/events-screen.tsx": [
+    "invalidateAgendaCaches",
+    'invalidateCache("riding:")',
+    "syncOfficialRidesIfReady",
   ],
 };
 
@@ -370,7 +470,7 @@ const uiFiles = roots
 const strictTokenizedUiTargets = new Set([
   "app/check-in/page.tsx",
   "app/admin/insights/page.tsx",
-  "app/admin/page.tsx",
+  "components/admin-overview-screen.tsx",
   "app/agenda/page.tsx",
   "components/page-state.tsx",
 ]);
@@ -438,7 +538,7 @@ if (nativeDialogCount) {
 }
 
 console.log("Revolt Riders UI audit");
-console.log(`Checked ${cssTargets.length} CSS layers and ${uiFiles.length} UI files.\n`);
+console.log(`Checked ${cssTargets.length} debt-guarded CSS layers, ${cascadeOwnershipTargets.length} ownership layers, and ${uiFiles.length} UI files.\n`);
 
 if (warnings.length) {
   console.log("Warnings:");
