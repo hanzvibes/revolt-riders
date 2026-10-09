@@ -171,3 +171,39 @@ test("mobile public landing has no document-level horizontal overflow", async ()
     `Document width must match mobile viewport: client=${layout.clientWidth}, viewport=${layout.viewportWidth}`,
   );
 });
+
+test("public join form can be opened and validates required fields without writing data", async () => {
+  await setViewport(1280, 900);
+  await navigate("/");
+  const opened = await execute(`
+    const trigger = document.querySelector(".btn-nav-join");
+    if (!trigger || !trigger.getClientRects().length) return false;
+    trigger.click();
+    return true;
+  `);
+  assert.equal(opened, true, "Join trigger must be visible");
+  await waitUntil(async () => await execute(`
+    const field = document.getElementById("join-full-name");
+    return Boolean(field && field.getClientRects().length);
+  `));
+
+  const form = await execute(`
+    const form = document.querySelector("form.join-form-stack");
+    const fullName = document.getElementById("join-full-name");
+    const whatsapp = document.getElementById("join-whatsapp");
+    return {
+      found: Boolean(form),
+      invalidWhileEmpty: form ? !form.checkValidity() : false,
+      fullNameRequired: Boolean(fullName?.required),
+      whatsappRequired: Boolean(whatsapp?.required),
+      submitPresent: Boolean(form?.querySelector('button[type="submit"]')),
+    };
+  `);
+  assert.deepEqual(form, {
+    found: true,
+    invalidWhileEmpty: true,
+    fullNameRequired: true,
+    whatsappRequired: true,
+    submitPresent: true,
+  });
+});

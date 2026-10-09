@@ -288,7 +288,7 @@ for (const file of cascadeOwnershipTargets) {
 
 const accessibilityControlContracts = {
   "app/login/page.tsx": ["auth-member-id", "auth-email", "auth-password"],
-  "app/page.tsx": [
+  "app/landing-join-modal.tsx": [
     "join-full-name",
     "join-birth-place",
     "join-birth-date",
