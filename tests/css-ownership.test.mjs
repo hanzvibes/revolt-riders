@@ -5,7 +5,7 @@ import test from "node:test";
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
 test("floating bottom navigation geometry has one CSS owner", async () => {
-  const systemUi = await read("app/system-ui.css");
+  const systemUi = (await Promise.all(["app/system-ui.css", "app/system-ui-features.css", "app/system-ui-refinements.css"].map(read))).join("");
   const bottomNav = await read("app/bottom-navigation.css");
 
   assert.doesNotMatch(systemUi, /\/\* Floating bottom nav \*\//);

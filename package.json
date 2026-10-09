@@ -11,6 +11,8 @@
     "start": "next start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "test": "node --test tests/**/*.test.mjs",
+    "test:browser": "node --test tests/browser/public-smoke.mjs",
+    "test:production-integrity": "node --test tests/production/database-integrity.mjs",
     "audit:ui": "node scripts/audit-ui-css.mjs"
   },
   "dependencies": {
@@ -30,7 +32,7 @@
     "google-auth-library": "^11.0.2",
     "input-otp": "^1.4.2",
     "lucide-react": "^1.31.0",
-    "next": "16.3.6",
+    "next": "16.3.8",
     "next-themes": "^0.4.6",
     "qrcode": "1.5.4",
     "radix-ui": "^1.6.7",

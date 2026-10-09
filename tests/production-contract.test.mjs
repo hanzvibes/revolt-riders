@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
+const readSystemCss = async () => (await Promise.all(["app/system-ui.css", "app/system-ui-features.css", "app/system-ui-refinements.css"].map(read))).join("");
 
 test("PWA manifest is installable", async () => {
   const manifest = JSON.parse(await read("public/manifest.webmanifest"));
@@ -237,7 +238,7 @@ test("Riding create and review mutations are routed through authorized RPCs", as
 test("Voyager hub keeps core sections visible even before the first activity exists", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(hub, /voyager-overview-grid/);
   assert.match(hub, /Voyager berikutnya/);
@@ -318,7 +319,7 @@ test("Mobile navigation is inert while the drawer is hidden", async () => {
 
 
 test("Audit hardening keeps shared controls touch friendly", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const tokens = await read("app/tokens.css");
 
   assert.match(tokens, /--rr-control-lg: 44px/);
@@ -329,7 +330,7 @@ test("Audit hardening keeps shared controls touch friendly", async () => {
 
 
 test("Reduced motion preserves state changes without blanket-killing the app", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
   const chart = await read("components/riding-stat-chart.tsx");
 
   assert.doesNotMatch(
@@ -386,7 +387,7 @@ test("Audit polish keeps navigation, cache, and microcopy resilient", async () =
     "components/app-shell-sidebar.tsx",
   );
   const workspace = [shell, controller, sidebar].join("\n");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(controller, /DRAWER_FOCUSABLE_SELECTOR/);
   assert.match(controller, /event\.key === "Escape"/);
@@ -521,7 +522,7 @@ test("UI audit budgets prevent legacy design debt from silently increasing", asy
 
 
 test("Audit next pass keeps active admin microcopy and touch targets readable", async () => {
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(css, /Audit next pass · admin readability and touch resilience/);
   assert.match(css, /checkin-qr-content em[\s\S]*font-size: var\(--rr-type-caption\)/);
@@ -562,7 +563,7 @@ test("Shared action dialogs replace native browser prompts", async () => {
 test("Voyager makes member status and evidence visible", async () => {
   const hub = await read("app/voyager/voyager-hub.tsx");
   const derived = await read("app/voyager/voyager-derived.ts");
-  const css = await read("app/system-ui.css");
+  const css = await readSystemCss();
 
   assert.match(derived, /currentMemberVoyagerEvents/);
   assert.match(derived, /featuredMemberStatus/);

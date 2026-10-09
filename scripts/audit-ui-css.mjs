@@ -13,6 +13,11 @@ const cssTargets = [
   "app/checkin-qr.css",
 ];
 
+const systemUiParts = ["app/system-ui.css","app/system-ui-features.css","app/system-ui-refinements.css"];
+const readCss = (file) => file === "app/system-ui.css"
+  ? systemUiParts.map((part) => fs.readFileSync(path.join(ROOT, part), "utf8")).join("")
+  : fs.readFileSync(path.join(ROOT, file), "utf8");
+
 const allowedWeights = new Set(["400", "500", "600", "700", "800"]);
 const canonicalTokenTargets = new Set([
   "app/system-ui.css",
@@ -28,6 +33,8 @@ const cascadeOwnershipTargets = [
   "app/form-density.css",
   "app/native-admin.css",
   "app/system-ui.css",
+  "app/system-ui-features.css",
+  "app/system-ui-refinements.css",
   "app/social-feed.css",
   "app/bottom-navigation.css",
 ];
@@ -153,7 +160,7 @@ function collectCssOwnershipEntries(content) {
 for (const file of cssTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
-  const content = fs.readFileSync(abs, "utf8");
+  const content = readCss(file);
 
   for (const match of content.matchAll(/font-weight\s*:\s*(\d{3})/g)) {
     const value = match[1];
@@ -262,25 +269,26 @@ for (const file of cascadeOwnershipTargets) {
   const abs = path.join(ROOT, file);
   if (!fs.existsSync(abs)) continue;
 
-  const content = fs.readFileSync(abs, "utf8");
+  const content = readCss(file);
   for (const entry of collectCssOwnershipEntries(content)) {
     const key = `${entry.context}||${entry.selector}||${entry.property}`;
+    const logicalOwner = systemUiParts.includes(file) ? "app/system-ui.css" : file;
     const owner = cssDeclarationOwners.get(key);
 
-    if (owner && owner !== file) {
+    if (owner && owner !== logicalOwner) {
       fatal.push(
         `CSS ownership overlap: ${entry.selector} / ${entry.property} is declared in both ${owner} and ${file}`,
       );
       continue;
     }
 
-    if (!owner) cssDeclarationOwners.set(key, file);
+    if (!owner) cssDeclarationOwners.set(key, logicalOwner);
   }
 }
 
 const accessibilityControlContracts = {
   "app/login/page.tsx": ["auth-member-id", "auth-email", "auth-password"],
-  "app/page.tsx": [
+  "app/landing-join-modal.tsx": [
     "join-full-name",
     "join-birth-place",
     "join-birth-date",
@@ -365,7 +373,7 @@ if (fs.existsSync(nativeAdminPath)) {
 
 const systemUiPath = path.join(ROOT, "app/system-ui.css");
 if (fs.existsSync(systemUiPath)) {
-  const systemUi = fs.readFileSync(systemUiPath, "utf8").replace(/\r\n/g, "\n");
+  const systemUi = readCss("app/system-ui.css").replace(/\r\n/g, "\n");
   const mobileActionTypography = `.app-shell .voyager-create-action,
 .app-shell .voyager-gallery-empty > button,
 .app-shell .voyager-tabs button,
