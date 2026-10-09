@@ -166,9 +166,12 @@ test("mobile public landing has no document-level horizontal overflow", async ()
     layout.scrollWidth <= layout.clientWidth + 1,
     `Landing page overflows horizontally: scrollWidth=${layout.scrollWidth}, clientWidth=${layout.clientWidth}`,
   );
+  // Desktop ChromeDriver may reserve 15px for the vertical scrollbar even at 390px.
+  // Only reject unexpected width gaps; horizontal overflow is checked above.
   assert.ok(
-    Math.abs(layout.clientWidth - layout.viewportWidth) <= 1,
-    `Document width must match mobile viewport: client=${layout.clientWidth}, viewport=${layout.viewportWidth}`,
+    layout.clientWidth <= layout.viewportWidth &&
+      layout.viewportWidth - layout.clientWidth <= 20,
+    `Document width differs beyond scrollbar allowance: client=${layout.clientWidth}, viewport=${layout.viewportWidth}`,
   );
 });
 
